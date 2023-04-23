@@ -9,15 +9,15 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: "Data",
+    name: Module.data.name,
     product: .staticFramework,
     packages: [
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.5.0"))
+        .SPM.RxSwift
     ],
     dependencies: [
-        .project(target: "Common", path: .relativeToRoot("Projects/Common")),
-        .project(target: "Domain", path: .relativeToRoot("Projects/Domain")),
-        .package(product: "RxSwift")
+        .Project.Common,
+        .Project.Domain,
+        .SPM.RxSwift
     ],
     hasTests: false
 )

@@ -9,11 +9,11 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: "Coordinator",
+    name: Module.coordinator.name,
     product: .framework,
     packages: [],
     dependencies: [
-        .project(target: "Common", path: .relativeToRoot("Projects/Common")),
-        .project(target: "Presentation", path: .relativeToRoot("Projects/Presentation"))
+        .Project.Common,
+        .Project.Presentation
     ]
 )

@@ -9,19 +9,19 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: "Presentation",
+    name: Module.presentation.name,
     product: .framework,
     packages: [
-        .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.6.0")),
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.5.0"))
+        .SPM.SnapKit,
+        .SPM.RxSwift
     ],
     dependencies: [
-        .project(target: "Common", path: .relativeToRoot("Projects/Common")),
-        .project(target: "Domain", path: .relativeToRoot("Projects/Domain")),
-        .package(product: "SnapKit"),
-        .package(product: "RxSwift"),
-        .package(product: "RxCocoa"),
-        .package(product: "RxRelay")
+        .Project.Common,
+        .Project.Domain,
+        .SPM.SnapKit,
+        .SPM.RxSwift,
+        .SPM.RxRelay,
+        .SPM.RxCocoa
     ],
     resources: ["Resources/**"]
 )

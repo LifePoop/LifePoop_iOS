@@ -1,0 +1,34 @@
+excluded:
+    - Tuist
+    - Projects/App/Derived
+    - Projects/Common/Derived
+    - Projects/Coordinator/Derived
+    - Projects/Data/Derived
+    - Projects/Domain/Derived
+    - Projects/Presentation/Derived
+    
+identifier_name:
+    min_length:
+        - 2
+    
+function_body_length:
+    - 50
+    - 100
+    
+line_length:
+    - 120
+    - 140
+    
+disabled_rules:
+    - nesting
+    - control_statement
+    - trailing_whitespace
+    - vertical_whitespace
+    - vertical_parameter_alignment
+    - cyclomatic_complexity
+    - void_function_in_ternary
+    - comment_spacing
+    - function_parameter_count
+    
+opt_in_rules:
+    - empty_string

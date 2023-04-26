@@ -17,6 +17,7 @@ let project = Project.makeModule(
     ],
     dependencies: [
         .Project.Utils,
+        .Project.DesignSystem,
         .Project.FeatureLoginDomain,
         .SPM.SnapKit,
         .SPM.RxSwift,

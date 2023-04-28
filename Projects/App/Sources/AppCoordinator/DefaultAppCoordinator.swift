@@ -8,14 +8,7 @@
 
 import UIKit
 
-import CoreDataMapper
-import CoreDIContainer
-import CoreNetworkService
-import CoreStorageService
-import FeatureLoginDIContainer
 import FeatureLoginPresentation
-import FeatureLoginRepository
-import FeatureLoginUseCase
 import Utils
 
 public final class DefaultAppCoordinator: AppCoordinator {
@@ -26,7 +19,6 @@ public final class DefaultAppCoordinator: AppCoordinator {
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
-        registerDependencies()
     }
     
     public func start() {
@@ -42,21 +34,6 @@ public final class DefaultAppCoordinator: AppCoordinator {
                 self?.startHomeCoordinatorFlow()
             }
         }
-    }
-}
-
-// MARK: - Dependency Registration
-
-private extension DefaultAppCoordinator {
-    func registerDependencies() {
-        LoginDIContainer.shared.register(service: LoginUseCase.self) { DefaultLoginUseCase() }
-        LoginDIContainer.shared.register(service: LoginRepository.self) { DefaultLoginRepository() }
-        
-        CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(CoreExampleDataMapper()) }
-        CoreDIContainer.shared.register(service: EndpointService.self) { URLSessionEndpointService.shared }
-        CoreDIContainer.shared.register(service: URLDataService.self) { URLSessionURLDataService.shared }
-        CoreDIContainer.shared.register(service: DiskCacheStorage.self) { FileManagerDiskCacheStorage.shared }
-        CoreDIContainer.shared.register(service: MemoryCacheStorage.self) { NSCacheMemoryCacheStorage.shared }
     }
 }
 

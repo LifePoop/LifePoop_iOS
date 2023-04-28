@@ -12,18 +12,31 @@ let project = Project.makeModule(
     name: Module.App.name,
     platform: .iOS,
     product: .app,
+    packages: [
+        .SPM.RxSwift,
+        .SPM.SnapKit
+    ],
     dependencies: [
+        .SPM.RxSwift,
+        .SPM.RxRelay,
+        .SPM.RxCocoa,
+        .SPM.SnapKit,
+        
         .Project.DesignSystem,
         .Project.Logger,
         .Project.Utils,
         
-        .Project.FeatureLoginContainer,
+        .Project.SharedRepository,
+        .Project.SharedUseCase,
+        
+        .Project.FeatureLoginDIContainer,
         .Project.FeatureLoginData,
         .Project.FeatureLoginDomain,
         .Project.FeatureLoginPresentation,
         
         .Project.CoreComponent,
         .Project.CoreDataMapper,
+        .Project.CoreDIContainer,
         .Project.CoreDTO,
         .Project.CoreEntity,
         .Project.CoreError,

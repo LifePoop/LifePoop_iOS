@@ -15,7 +15,9 @@ let project = Project.makeModule(
         .SPM.RxSwift
     ],
     dependencies: [
-        .Project.Utils,
+        .Project.CoreComponent,
+        .Project.CoreError,
+        .Project.CoreExtension,
         .SPM.RxSwift,
         .SPM.RxCocoa,
         .SPM.RxRelay

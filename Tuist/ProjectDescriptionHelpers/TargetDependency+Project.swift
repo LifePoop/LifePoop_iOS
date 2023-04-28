@@ -35,6 +35,10 @@ public extension TargetDependency.Project {
         target: Module.Core.CoreDataMapper.name,
         path: .relativeToRoot(Module.Core.CoreDataMapper.path)
     )
+    static let CoreDIContainer = TargetDependency.project(
+        target: Module.Core.CoreDIContainer.name,
+        path: .relativeToRoot(Module.Core.CoreDIContainer.path)
+    )
     static let CoreDTO = TargetDependency.project(
         target: Module.Core.CoreDTO.name,
         path: .relativeToRoot(Module.Core.CoreDTO.path)
@@ -67,7 +71,7 @@ public extension TargetDependency.Project {
     // MARK: - Features
     
     /// Login
-    static let FeatureLoginContainer = TargetDependency.project(
+    static let FeatureLoginDIContainer = TargetDependency.project(
         target: Module.Features.Login.containerName,
         path: .relativeToRoot(Module.Features.Login.containerPath)
     )

@@ -77,6 +77,7 @@ public extension Module {
     enum Core: String, CaseIterable {
         case CoreComponent
         case CoreDataMapper
+        case CoreDIContainer
         case CoreDTO
         case CoreEntity
         case CoreError

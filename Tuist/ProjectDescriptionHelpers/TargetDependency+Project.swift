@@ -25,6 +25,18 @@ public extension TargetDependency.Project {
         path: .relativeToRoot(Module.Utils.path)
     )
     
+    // MARK: - Shared
+    
+    static let SharedRepository = TargetDependency.project(
+        target: Module.SharedRepository.name,
+        path: .relativeToRoot(Module.SharedRepository.path)
+    )
+    
+    static let SharedUseCase = TargetDependency.project(
+        target: Module.SharedUseCase.name,
+        path: .relativeToRoot(Module.SharedUseCase.path)
+    )
+    
     // MARK: - Core
     
     static let CoreComponent = TargetDependency.project(

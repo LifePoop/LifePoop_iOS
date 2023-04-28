@@ -12,7 +12,8 @@ public enum Module: String {
     case DesignSystem
     case Logger
     case Utils
-    
+    case SharedRepository
+    case SharedUseCase
     
     public var name: String {
         return rawValue

@@ -16,9 +16,10 @@ let project = Project.makeModule(
         .SPM.RxSwift
     ],
     dependencies: [
-        .Project.Utils,
         .Project.DesignSystem,
+        .Project.Utils,
         .Project.FeatureLoginDomain,
+        .Project.FeatureLoginDIContainer,
         .SPM.SnapKit,
         .SPM.RxSwift,
         .SPM.RxRelay,

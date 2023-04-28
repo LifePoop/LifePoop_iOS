@@ -10,13 +10,10 @@ import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
     name: Module.Features.Login.containerName,
-    product: .staticFramework,
+    product: .framework,
     packages: [],
     dependencies: [
-        .Project.Utils,
-        .Project.FeatureLoginData,
-        .Project.FeatureLoginDomain,
-        .Project.FeatureLoginPresentation
+        .Project.Utils
     ],
     hasTests: false
 )

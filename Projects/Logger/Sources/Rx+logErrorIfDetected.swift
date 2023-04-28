@@ -12,12 +12,11 @@ import RxSwift
 
 public extension ObservableType {
     func logErrorIfDetected() -> Observable<Element> {
-        return self.catch { error -> Observable<Element> in
+        return self.do(onError: { error in
             let errorMessage = error.localizedDescription
             let errorCategory = (error as? OSLoggable)?.category ?? .default
             Logger.log(message: errorMessage, category: errorCategory, type: .error)
-            return Observable.error(error)
-        }
+        })
     }
 }
 

@@ -12,7 +12,7 @@ let project = Project.makeModule(
     name: Module.Utils.name,
     product: .framework,
     packages: [
-        .SPM.RxSwift
+        .SPM.RxSwift.package
     ],
     dependencies: [
         .SPM.RxSwift,

@@ -12,7 +12,7 @@ let project = Project.makeModule(
     name: Module.Features.Login.repositoryName,
     product: .framework,
     packages: [
-        .SPM.RxSwift
+        .SPM.RxSwift.package
     ],
     dependencies: [
         .Project.CoreDataMapper,

@@ -8,10 +8,21 @@
 import ProjectDescription
 
 public extension Package {
-    enum SPM { }
-}
+    enum SPM: CaseIterable {
+        case SnapKit
+        case RxSwift
 
-public extension Package.SPM {
-    static let SnapKit = Package.package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.6.0"))
-    static let RxSwift = Package.package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.5.0"))
+        public var package: Package {
+            switch self {
+            case .SnapKit:
+                return Package.package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.6.0"))
+            case .RxSwift:
+                return Package.package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.5.0"))
+            }
+        }
+
+        public static var allPackages: [Package] {
+            return allCases.map { $0.package }
+        }
+    }
 }

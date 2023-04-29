@@ -12,8 +12,8 @@ let project = Project.makeModule(
     name: Module.Features.Login.presentationName,
     product: .staticFramework,
     packages: [
-        .SPM.SnapKit,
-        .SPM.RxSwift
+        .SPM.SnapKit.package,
+        .SPM.RxSwift.package
     ],
     dependencies: [
         .Project.DesignSystem,

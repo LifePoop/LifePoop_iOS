@@ -8,14 +8,13 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
+let packages = Package.SPM.allPackages
+
 let project = Project.makeModule(
     name: Module.App.name,
     platform: .iOS,
     product: .app,
-    packages: [
-        .SPM.RxSwift,
-        .SPM.SnapKit
-    ],
+    packages: packages,
     dependencies: [
         .SPM.RxSwift,
         .SPM.RxRelay,

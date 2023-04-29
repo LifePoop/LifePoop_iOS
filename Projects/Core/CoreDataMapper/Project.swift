@@ -2,26 +2,24 @@
 //  Project.swift
 //  ProjectDescriptionHelpers
 //
-//  Created by 김상혁 on 2023/04/26.
+//  Created by 김상혁 on 2023/04/29.
 //
-
-import Foundation
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: Module.Core.CoreDataMapper.name,
+    name: Modules.Core(.CoreDataMapper).name,
     product: .framework,
     packages: [
         .SPM.RxSwift.package
     ],
     dependencies: [
-        .Project.CoreDTO,
-        .Project.CoreEntity,
-        .SPM.RxSwift,
-        .SPM.RxCocoa,
-        .SPM.RxRelay
+        .Project.module(.Core(.CoreDTO)).dependency,
+        .Project.module(.Core(.CoreEntity)).dependency,
+        .SPM.RxSwift.dependency,
+        .SPM.RxCocoa.dependency,
+        .SPM.RxRelay.dependency
     ],
     hasTests: false
 )

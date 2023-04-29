@@ -9,16 +9,16 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: Module.Logger.name,
+    name: Modules.Logger.name,
     product: .framework,
     packages: [
         .SPM.RxSwift.package
     ],
     dependencies: [
-        .Project.Utils,
-        .SPM.RxSwift,
-        .SPM.RxCocoa,
-        .SPM.RxRelay
+        .Project.module(.Utils).dependency,
+        .SPM.RxSwift.dependency,
+        .SPM.RxCocoa.dependency,
+        .SPM.RxRelay.dependency
     ],
     hasTests: false
 )

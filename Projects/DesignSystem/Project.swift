@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: Module.DesignSystem.name,
+    name: Modules.DesignSystem.name,
     product: .framework,
     packages: [],
     dependencies: [],

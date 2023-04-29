@@ -8,12 +8,18 @@
 import ProjectDescription
 
 public extension TargetDependency {
-    enum SPM { }
-}
-
-public extension TargetDependency.SPM {
-    static let SnapKit = TargetDependency.package(product: "SnapKit")
-    static let RxSwift = TargetDependency.package(product: "RxSwift")
-    static let RxCocoa = TargetDependency.package(product: "RxCocoa")
-    static let RxRelay = TargetDependency.package(product: "RxRelay")
+    enum SPM: String, CaseIterable {
+        case SnapKit
+        case RxSwift
+        case RxCocoa
+        case RxRelay
+        
+        public var dependency: TargetDependency {
+            return .package(product: rawValue)
+        }
+        
+        public static var allDependencies: [TargetDependency] {
+            return Self.allCases.map { $0.dependency }
+        }
+    }
 }

@@ -1,15 +1,9 @@
 excluded:
     - Tuist
-    - Projects/App/Derived
-    - Projects/Common/Derived
-    - Projects/Coordinator/Derived
-    - Projects/Data/Derived
-    - Projects/Domain/Derived
-    - Projects/Presentation/Derived
     
 identifier_name:
     min_length:
-        - 2
+    - 2
     
 function_body_length:
     - 50

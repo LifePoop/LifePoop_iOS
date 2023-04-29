@@ -9,20 +9,20 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: Module.Features.Login.presentationName,
+    name: Modules.Features(.Login, .presentation).name,
     product: .staticFramework,
     packages: [
-        .SPM.SnapKit,
-        .SPM.RxSwift
+        .SPM.SnapKit.package,
+        .SPM.RxSwift.package
     ],
     dependencies: [
-        .Project.DesignSystem,
-        .Project.Utils,
-        .Project.FeatureLoginDomain,
-        .Project.FeatureLoginDIContainer,
-        .SPM.SnapKit,
-        .SPM.RxSwift,
-        .SPM.RxRelay,
-        .SPM.RxCocoa
+        .Project.module(.DesignSystem).dependency,
+        .Project.module(.Utils).dependency,
+        .Project.module(.Features(.Login, .useCase)).dependency,
+        .Project.module(.Features(.Login, .diContainer)).dependency,
+        .SPM.SnapKit.dependency,
+        .SPM.RxSwift.dependency,
+        .SPM.RxRelay.dependency,
+        .SPM.RxCocoa.dependency
     ]
 )

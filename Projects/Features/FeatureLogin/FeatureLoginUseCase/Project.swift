@@ -9,16 +9,16 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: Module.Features.Login.useCaseName,
+    name: Modules.Features(.Login, .useCase).name,
     product: .framework,
     packages: [
-        .SPM.RxSwift
+        .SPM.RxSwift.package
     ],
     dependencies: [
-        .Project.CoreEntity,
-        .Project.FeatureLoginDIContainer,
-        .Project.Logger,
-        .Project.Utils,
-        .SPM.RxSwift,
+        .Project.module(.Core(.CoreEntity)).dependency,
+        .Project.module(.Features(.Login, .diContainer)).dependency,
+        .Project.module(.Logger).dependency,
+        .Project.module(.Utils).dependency,
+        .SPM.RxSwift.dependency
     ]
 )

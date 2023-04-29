@@ -8,95 +8,28 @@
 import ProjectDescription
 
 public extension TargetDependency {
-    enum Project { }
-}
-
-public extension TargetDependency.Project {
-    static let DesignSystem = TargetDependency.project(
-        target: Module.DesignSystem.name,
-        path: .relativeToRoot(Module.DesignSystem.path)
-    )
-    static let Logger = TargetDependency.project(
-        target: Module.Logger.name,
-        path: .relativeToRoot(Module.Logger.path)
-    )
-    static let Utils = TargetDependency.project(
-        target: Module.Utils.name,
-        path: .relativeToRoot(Module.Utils.path)
-    )
-    
-    // MARK: - Shared
-    
-    static let SharedRepository = TargetDependency.project(
-        target: Module.SharedRepository.name,
-        path: .relativeToRoot(Module.SharedRepository.path)
-    )
-    
-    static let SharedUseCase = TargetDependency.project(
-        target: Module.SharedUseCase.name,
-        path: .relativeToRoot(Module.SharedUseCase.path)
-    )
-    
-    // MARK: - Core
-    
-    static let CoreComponent = TargetDependency.project(
-        target: Module.Core.CoreComponent.name,
-        path: .relativeToRoot(Module.Core.CoreComponent.path)
-    )
-    static let CoreDataMapper = TargetDependency.project(
-        target: Module.Core.CoreDataMapper.name,
-        path: .relativeToRoot(Module.Core.CoreDataMapper.path)
-    )
-    static let CoreDIContainer = TargetDependency.project(
-        target: Module.Core.CoreDIContainer.name,
-        path: .relativeToRoot(Module.Core.CoreDIContainer.path)
-    )
-    static let CoreDTO = TargetDependency.project(
-        target: Module.Core.CoreDTO.name,
-        path: .relativeToRoot(Module.Core.CoreDTO.path)
-    )
-    static let CoreEntity = TargetDependency.project(
-        target: Module.Core.CoreEntity.name,
-        path: .relativeToRoot(Module.Core.CoreEntity.path)
-    )
-    static let CoreError = TargetDependency.project(
-        target: Module.Core.CoreError.name,
-        path: .relativeToRoot(Module.Core.CoreError.path)
-    )
-    static let CoreExtension = TargetDependency.project(
-        target: Module.Core.CoreExtension.name,
-        path: .relativeToRoot(Module.Core.CoreExtension.path)
-    )
-    static let CoreNetworkService = TargetDependency.project(
-        target: Module.Core.CoreNetworkService.name,
-        path: .relativeToRoot(Module.Core.CoreNetworkService.path)
-    )
-    static let CoreStorageService = TargetDependency.project(
-        target: Module.Core.CoreStorageService.name,
-        path: .relativeToRoot(Module.Core.CoreStorageService.path)
-    )
-    static let CoreTarget = TargetDependency.project(
-        target: Module.Core.CoreTarget.name,
-        path: .relativeToRoot(Module.Core.CoreTarget.path)
-    )
-    
-    // MARK: - Features
-    
-    /// Login
-    static let FeatureLoginDIContainer = TargetDependency.project(
-        target: Module.Features.Login.containerName,
-        path: .relativeToRoot(Module.Features.Login.containerPath)
-    )
-    static let FeatureLoginData = TargetDependency.project(
-        target: Module.Features.Login.repositoryName,
-        path: .relativeToRoot(Module.Features.Login.repositoryPath)
-    )
-    static let FeatureLoginDomain = TargetDependency.project(
-        target: Module.Features.Login.useCaseName,
-        path: .relativeToRoot(Module.Features.Login.useCasePath)
-    )
-    static let FeatureLoginPresentation = TargetDependency.project(
-        target: Module.Features.Login.presentationName,
-        path: .relativeToRoot(Module.Features.Login.presentationPath)
-    )
+    enum Project {
+        case module(Modules)
+        
+        public var dependency: TargetDependency {
+            switch self {
+            case .module(let module):
+                return .project(target: module.name, path: .relativeToRoot(module.path))
+            }
+        }
+        
+        public static var allDependencies: [TargetDependency] {
+            let sharedDependencies = SharedModuleType.allCases.map { Project.module(.Shared($0)).dependency }
+            let featureDependencies = FeatureModuleType.allCases.flatMap { feature in
+                FeatureLayerModuleType.allCases.map { Project.module(.Features(feature, $0)).dependency }
+            }
+            let coreDependencies = CoreModuleType.allCases.map { Project.module(.Core($0)).dependency }
+            
+            return [
+                Project.module(.DesignSystem).dependency,
+                Project.module(.Logger).dependency,
+                Project.module(.Utils).dependency
+            ] + sharedDependencies + featureDependencies + coreDependencies
+        }
+    }
 }

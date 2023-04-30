@@ -9,8 +9,6 @@
 import Foundation
 import OSLog
 
-import Logger
-
 public enum FileSystemError: LocalizedError {
     case errorDetected(error: Error)
     case objectDeallocated
@@ -28,11 +26,5 @@ public enum FileSystemError: LocalizedError {
         case .dataNotFound:
             return "Fail to Find Data"
         }
-    }
-}
-
-extension FileSystemError: OSLoggable {
-    public var category: OSLog.LogCategory {
-        return .database
     }
 }

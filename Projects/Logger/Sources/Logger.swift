@@ -10,7 +10,7 @@ import Foundation
 import OSLog
 
 public struct Logger {
-    public static func log(message: String, category: OSLog.LogCategory, type: OSLogType = .error) {
+    public static func log(message: String, category: OSLog.LogCategory, type: OSLogType) {
         #if DEBUG
         let log = OSLog(subsystem: OSLog.subsystem, category: category.value)
         os_log(type, log: log, "\(message)")

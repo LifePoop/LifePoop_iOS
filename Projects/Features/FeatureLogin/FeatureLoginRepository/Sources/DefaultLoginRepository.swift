@@ -12,8 +12,6 @@ import CoreDIContainer
 import CoreEntity
 import CoreNetworkService
 import FeatureLoginUseCase
-import Logger
-
 import Utils
 
 public final class DefaultLoginRepository: LoginRepository {
@@ -33,6 +31,5 @@ public final class DefaultLoginRepository: LoginRepository {
         )
         .decodeMap(CoreExampleDTO.self)
         .transformMap(coreExampleDataMapper)
-        .logErrorIfDetected()
     }
 }

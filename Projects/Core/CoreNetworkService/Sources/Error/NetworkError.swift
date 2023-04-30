@@ -9,8 +9,6 @@
 import Foundation
 import OSLog
 
-import Logger
-
 public enum NetworkError: LocalizedError {
     case errorDetected(error: Error)
     case objectDeallocated
@@ -43,11 +41,5 @@ public enum NetworkError: LocalizedError {
         case .encodeError:
             return "Fail to encode."
         }
-    }
-}
-
-extension NetworkError: OSLoggable {
-   public var category: OSLog.LogCategory {
-        return .network
     }
 }

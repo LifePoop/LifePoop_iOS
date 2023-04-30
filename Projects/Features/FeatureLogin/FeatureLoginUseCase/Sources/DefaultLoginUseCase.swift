@@ -10,6 +10,7 @@ import RxSwift
 
 import CoreEntity
 import FeatureLoginDIContainer
+import Logger
 import Utils
 
 public final class DefaultLoginUseCase: LoginUseCase {
@@ -21,6 +22,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
     public func fetchAccessToken() -> Observable<CoreExampleEntity> {
         return loginRepository
             .fetchAccessToken()
+            .logErrorIfDetected(category: .network)
             .asObservable()
     }
 }

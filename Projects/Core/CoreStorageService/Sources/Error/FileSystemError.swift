@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import OSLog
 
 public enum FileSystemError: LocalizedError {
     case errorDetected(error: Error)

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import OSLog
 
 public enum NetworkError: LocalizedError {
     case errorDetected(error: Error)

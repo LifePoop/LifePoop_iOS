@@ -8,13 +8,9 @@
 
 import RxSwift
 
-import CoreDataMapper
 import CoreDIContainer
-import CoreDTO
 import CoreEntity
-import CoreExtension
 import CoreNetworkService
-import CoreTarget
 import FeatureLoginUseCase
 import Logger
 

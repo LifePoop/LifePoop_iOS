@@ -10,15 +10,10 @@ import Foundation
 
 import RxSwift
 
-import CoreDataMapper
 import CoreDIContainer
-import CoreDTO
 import CoreEntity
-import CoreError
-import CoreExtension
 import CoreNetworkService
 import CoreStorageService
-import CoreTarget
 import Utils
 
 public final class CachedURLDataRepository: URLDataRepository {

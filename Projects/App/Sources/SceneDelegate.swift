@@ -7,7 +7,6 @@
 
 import UIKit
 
-import CoreDataMapper
 import CoreDIContainer
 import CoreNetworkService
 import CoreStorageService

@@ -8,16 +8,10 @@
 
 import RxSwift
 
-import CoreDataMapper
 import CoreDIContainer
-import CoreDTO
 import CoreEntity
-import CoreExtension
 import CoreNetworkService
-import CoreTarget
 import FeatureLoginUseCase
-import Logger
-
 import Utils
 
 public final class DefaultLoginRepository: LoginRepository {
@@ -37,6 +31,5 @@ public final class DefaultLoginRepository: LoginRepository {
         )
         .decodeMap(CoreExampleDTO.self)
         .transformMap(coreExampleDataMapper)
-        .logErrorIfDetected()
     }
 }

@@ -65,24 +65,25 @@ public enum SharedModuleType: String, CaseIterable {
 
 public enum FeatureModuleType: String, CaseIterable {
     case Login
+    
+    var layerModules: [FeatureLayerModuleType] {
+        switch self {
+        case .Login:
+            return [.DIContainer, .Presentation, .UseCase, .Repository]
+        }
+    }
 }
 
 public enum FeatureLayerModuleType: CaseIterable {
+    case DIContainer
     case Presentation
     case UseCase
     case Repository
-    case DIContainer
 }
 
 public enum CoreModuleType: String, CaseIterable {
-    case CoreComponent
-    case CoreDataMapper
     case CoreDIContainer
-    case CoreDTO
     case CoreEntity
-    case CoreError
-    case CoreExtension
     case CoreNetworkService
     case CoreStorageService
-    case CoreTarget
 }

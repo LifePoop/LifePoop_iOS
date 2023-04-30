@@ -6,28 +6,32 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
+import Foundation
 import OSLog
 
 import RxSwift
 
 public extension ObservableType {
-    func logErrorIfDetected() -> Observable<Element> {
+    func logErrorIfDetected(category: OSLog.LogCategory, type: OSLogType = .error) -> Observable<Element> {
         return self.do(onError: { error in
             let errorMessage = error.localizedDescription
-            let errorCategory = (error as? OSLoggable)?.category ?? .default
-            Logger.log(message: errorMessage, category: errorCategory, type: .error)
+            Logger.log(message: errorMessage, category: category, type: type)
         })
     }
 }
 
 public extension PrimitiveSequence where Trait == SingleTrait {
-    func logErrorIfDetected() -> Single<Element> {
-        return self.asObservable().logErrorIfDetected().asSingle()
+    func logErrorIfDetected(category: OSLog.LogCategory, type: OSLogType = .error) -> Single<Element> {
+        return self.asObservable()
+            .logErrorIfDetected(category: category, type: type)
+            .asSingle()
     }
 }
 
 public extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
-    func logErrorIfDetected() -> Completable {
-        return self.asObservable().logErrorIfDetected().asCompletable()
+    func logErrorIfDetected(category: OSLog.LogCategory, type: OSLogType = .error) -> Completable {
+        return self.asObservable()
+            .logErrorIfDetected(category: category, type: type)
+            .asCompletable()
     }
 }

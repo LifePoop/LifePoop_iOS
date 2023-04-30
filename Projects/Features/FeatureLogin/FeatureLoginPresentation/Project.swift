@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: Modules.Features(.Login, .presentation).name,
+    name: Modules.Features(.Login, .Presentation).name,
     product: .staticFramework,
     packages: [
         .SPM.SnapKit.package,
@@ -18,8 +18,8 @@ let project = Project.makeModule(
     dependencies: [
         .Project.module(.DesignSystem).dependency,
         .Project.module(.Utils).dependency,
-        .Project.module(.Features(.Login, .useCase)).dependency,
-        .Project.module(.Features(.Login, .diContainer)).dependency,
+        .Project.module(.Features(.Login, .UseCase)).dependency,
+        .Project.module(.Features(.Login, .DIContainer)).dependency,
         .SPM.SnapKit.dependency,
         .SPM.RxSwift.dependency,
         .SPM.RxRelay.dependency,

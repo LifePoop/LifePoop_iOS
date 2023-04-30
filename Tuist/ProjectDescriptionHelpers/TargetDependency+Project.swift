@@ -20,16 +20,16 @@ public extension TargetDependency {
         
         public static var allDependencies: [TargetDependency] {
             let sharedDependencies = SharedModuleType.allCases.map { Project.module(.Shared($0)).dependency }
+            let coreDependencies = CoreModuleType.allCases.map { Project.module(.Core($0)).dependency }
             let featureDependencies = FeatureModuleType.allCases.flatMap { feature in
                 FeatureLayerModuleType.allCases.map { Project.module(.Features(feature, $0)).dependency }
             }
-            let coreDependencies = CoreModuleType.allCases.map { Project.module(.Core($0)).dependency }
             
             return [
                 Project.module(.DesignSystem).dependency,
                 Project.module(.Logger).dependency,
                 Project.module(.Utils).dependency
-            ] + sharedDependencies + featureDependencies + coreDependencies
+            ] + sharedDependencies + coreDependencies + featureDependencies
         }
     }
 }

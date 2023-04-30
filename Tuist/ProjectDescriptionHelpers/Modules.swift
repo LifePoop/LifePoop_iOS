@@ -30,13 +30,13 @@ public enum Modules {
             return shared.rawValue
         case .Features(let features, let featureLayer):
             switch featureLayer {
-            case .presentation:
+            case .Presentation:
                 return "Feature\(features.rawValue)Presentation"
-            case .useCase:
+            case .UseCase:
                 return "Feature\(features.rawValue)UseCase"
-            case .repository:
+            case .Repository:
                 return "Feature\(features.rawValue)Repository"
-            case .diContainer:
+            case .DIContainer:
                 return "Feature\(features.rawValue)DIContainer"
             }
         case .Core(let core):
@@ -68,10 +68,10 @@ public enum FeatureModuleType: String, CaseIterable {
 }
 
 public enum FeatureLayerModuleType: CaseIterable {
-    case presentation
-    case useCase
-    case repository
-    case diContainer
+    case Presentation
+    case UseCase
+    case Repository
+    case DIContainer
 }
 
 public enum CoreModuleType: String, CaseIterable {

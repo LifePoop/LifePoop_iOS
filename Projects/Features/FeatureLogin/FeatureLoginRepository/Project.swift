@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: Modules.Features(.Login, .repository).name,
+    name: Modules.Features(.Login, .Repository).name,
     product: .framework,
     packages: [
         .SPM.RxSwift.package
@@ -22,7 +22,7 @@ let project = Project.makeModule(
         .Project.module(.Core(.CoreExtension)).dependency,
         .Project.module(.Core(.CoreNetworkService)).dependency,
         .Project.module(.Core(.CoreTarget)).dependency,
-        .Project.module(.Features(.Login, .useCase)).dependency,
+        .Project.module(.Features(.Login, .UseCase)).dependency,
         .Project.module(.Utils).dependency,
         .SPM.RxSwift.dependency
     ]

@@ -11,8 +11,12 @@ import ProjectDescriptionHelpers
 let project = Project.makeModule(
     name: Modules.DesignSystem.name,
     product: .framework,
-    packages: [],
-    dependencies: [],
+    packages: [
+        .SPM.SnapKit.package
+    ],
+    dependencies: [
+        .SPM.SnapKit.dependency
+    ],
     resources: ["Resources/**"],
     hasTests: false
 )

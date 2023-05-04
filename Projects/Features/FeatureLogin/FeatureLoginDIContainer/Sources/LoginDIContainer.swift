@@ -13,9 +13,9 @@ import Utils
 
 public final class LoginDIContainer: DIContainer {
     
+    public var storage: [String: Any] = [:]
+    
     public static let shared = LoginDIContainer()
     
     private init() { }
-    
-    public var storage: [String: Any] = [:]
 }

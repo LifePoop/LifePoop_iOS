@@ -12,9 +12,9 @@ import Utils
 
 public final class HomeDIContainer: DIContainer {
     
+    public var storage: [String: Any] = [:]
+    
     public static let shared = HomeDIContainer()
     
     private init() { }
-    
-    public var storage: [String: Any] = [:]
 }

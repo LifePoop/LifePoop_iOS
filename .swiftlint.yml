@@ -1,10 +1,6 @@
 excluded:
     - Tuist
     
-identifier_name:
-    min_length:
-    - 2
-    
 function_body_length:
     - 50
     - 100
@@ -23,7 +19,10 @@ disabled_rules:
     - void_function_in_ternary
     - comment_spacing
     - function_parameter_count
-    
+    - type_name
+    - closure_parameter_position
+    - identifier_name
+
 opt_in_rules:
     - empty_string
     - sorted_imports

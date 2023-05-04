@@ -8,6 +8,10 @@
 
 import UIKit
 
+import SnapKit
+
+import DesignSystem
+
 public final class StoolLogCollectionViewCell: UICollectionViewCell {
     
     private lazy var containerView: UIView = {

@@ -10,6 +10,8 @@ import UIKit
 
 import SnapKit
 
+import DesignSystem
+
 public final class FriendListCollectionViewCell: UICollectionViewCell {
     
     private let profileImageView = ProfileImageView()

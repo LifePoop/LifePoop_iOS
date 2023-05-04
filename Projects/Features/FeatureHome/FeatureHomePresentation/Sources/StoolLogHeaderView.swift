@@ -10,6 +10,8 @@ import UIKit
 
 import SnapKit
 
+import DesignSystem
+
 public final class StoolLogHeaderView: UICollectionReusableView {
     
     private lazy var todayStoolLogLabel: UILabel = {

@@ -9,6 +9,7 @@
 import UIKit.UIGeometry
 
 public enum Padding {
+    case custom(UIEdgeInsets)
     case small
     case medium
     case large
@@ -21,6 +22,8 @@ public enum Padding {
             return UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         case .large:
             return UIEdgeInsets(top: 12, left: 20, bottom: 12, right: 20)
+        case .custom(let edgeInsets):
+            return edgeInsets
         }
     }
 }

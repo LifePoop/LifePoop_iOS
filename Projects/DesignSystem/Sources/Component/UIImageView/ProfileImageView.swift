@@ -10,15 +10,12 @@ import UIKit
 
 public final class ProfileImageView: CircularImageView {
     
-    private let activeImage = UIImage(
-        named: "profileActivated",
-        in: Bundle(identifier: "LifePoop.DesignSystem"), compatibleWith: nil
-    )?.withRenderingMode(.alwaysOriginal)
-    
-    private let deActiveImage = UIImage(
-        named: "profileDeactivated",
-        in: Bundle(identifier: "LifePoop.DesignSystem"), compatibleWith: nil
-    )?.withRenderingMode(.alwaysOriginal)
+    private let activeImage = DesignSystemAsset.Image
+        .profileActivated.image
+        .withRenderingMode(.alwaysOriginal)
+    private let inactiveImage = DesignSystemAsset.Image
+        .profileInactivated.image
+        .withRenderingMode(.alwaysOriginal)
     
     public init() {
         super.init(frame: .zero)
@@ -35,7 +32,7 @@ public final class ProfileImageView: CircularImageView {
         case true:
             image = activeImage
         case false:
-            image = deActiveImage
+            image = inactiveImage
         }
     }
 }

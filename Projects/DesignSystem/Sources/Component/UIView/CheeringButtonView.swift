@@ -14,10 +14,9 @@ public final class CheeringButtonView: ShadowView {
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        let image = UIImage(
-            named: "TwoFriends",
-            in: Bundle(identifier: "LifePoop.DesignSystem"), compatibleWith: nil
-        )?.withRenderingMode(.alwaysOriginal)
+        let image = DesignSystemAsset.Image
+            .twoFriends.image
+            .withRenderingMode(.alwaysOriginal)
         imageView.image = image
         imageView.contentMode = .scaleAspectFit
         return imageView
@@ -40,10 +39,9 @@ public final class CheeringButtonView: ShadowView {
     
     private lazy var expandLeftImageView: UIImageView = {
         let imageView = UIImageView()
-        let image = UIImage(
-            named: "ExpandLeft",
-            in: Bundle(identifier: "LifePoop.DesignSystem"), compatibleWith: nil
-        )?.withRenderingMode(.alwaysOriginal)
+        let image = DesignSystemAsset.Image
+            .expandLeft.image
+            .withRenderingMode(.alwaysOriginal)
         imageView.image = image
         imageView.contentMode = .scaleAspectFit
         return imageView

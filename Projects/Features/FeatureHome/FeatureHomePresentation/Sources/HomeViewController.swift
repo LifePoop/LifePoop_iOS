@@ -18,19 +18,17 @@ import Utils
 public final class HomeViewController: UIViewController, ViewType {
     
     private lazy var reportBarButtonItem: UIBarButtonItem = {
-        let barButtonImage = UIImage(
-            named: "ReportButton",
-            in: Bundle(identifier: "LifePoop.DesignSystem"), compatibleWith: nil
-        )?.withTintColor(.label, renderingMode: .alwaysOriginal)
+        let barButtonImage = DesignSystemAsset.Image
+            .reportButton.image
+            .withRenderingMode(.alwaysOriginal)
         let barButtonItem = UIBarButtonItem(image: barButtonImage)
         return barButtonItem
     }()
     
     private lazy var lifePoopLogoBarButtonItem: UIBarButtonItem = {
-        let barButtonImage = UIImage(
-            named: "LifePoopLogo",
-            in: Bundle(identifier: "LifePoop.DesignSystem"), compatibleWith: nil
-        )?.withRenderingMode(.alwaysOriginal)
+        let barButtonImage = DesignSystemAsset.Image
+            .lifePoopLogo.image
+            .withRenderingMode(.alwaysOriginal)
         let barButtonItem = UIBarButtonItem(image: barButtonImage)
         return barButtonItem
     }()

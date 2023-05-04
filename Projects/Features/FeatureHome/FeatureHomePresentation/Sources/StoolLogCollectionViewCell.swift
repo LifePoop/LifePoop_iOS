@@ -8,6 +8,10 @@
 
 import UIKit
 
+import SnapKit
+
+import DesignSystem
+
 public final class StoolLogCollectionViewCell: UICollectionViewCell {
     
     private lazy var containerView: UIView = {
@@ -18,10 +22,9 @@ public final class StoolLogCollectionViewCell: UICollectionViewCell {
     }()
     
     private lazy var backgroundImageView: UIImageView = {
-        let image = UIImage(
-            named: "StoolLogBackgroundTile",
-            in: Bundle(identifier: "LifePoop.DesignSystem"), compatibleWith: nil
-        )?.withRenderingMode(.alwaysOriginal)
+        let image = DesignSystemAsset.Image
+            .stoolLogBackgroundTile.image
+            .withRenderingMode(.alwaysOriginal)
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
         return imageView
@@ -44,8 +47,7 @@ public final class StoolLogCollectionViewCell: UICollectionViewCell {
 
 public extension StoolLogCollectionViewCell {
     func configure(with stoolLogEntity: StoolLogEntity) {
-//        profileImageView.setImage(by: stoolLogEntity.isActivated)
-//        nameLabel.text = stoolLogEntity.name
+        
     }
 }
 
@@ -64,9 +66,5 @@ private extension StoolLogCollectionViewCell {
         backgroundImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(16)
         }
-        
-//        nameLabel.snp.makeConstraints { make in
-//            make.centerX.bottom.equalTo(contentView)
-//        }
     }
 }

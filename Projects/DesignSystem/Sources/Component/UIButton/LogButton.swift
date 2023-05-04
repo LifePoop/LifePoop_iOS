@@ -9,7 +9,7 @@
 import UIKit
 
 public final class LogButton: UIButton {
-    init() {
+    public init() {
         super.init(frame: .zero)
         configureUI()
     }

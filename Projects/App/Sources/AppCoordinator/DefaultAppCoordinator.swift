@@ -8,6 +8,7 @@
 
 import UIKit
 
+import FeatureHomePresentation
 import FeatureLoginPresentation
 import Utils
 
@@ -22,7 +23,7 @@ public final class DefaultAppCoordinator: AppCoordinator {
     }
     
     public func start() {
-        coordinate(by: .appDidStart)
+        coordinate(by: .accessTokenDidfetch)
     }
     
     public func coordinate(by action: AppCoordinateAction) {
@@ -50,20 +51,9 @@ private extension DefaultAppCoordinator {
     }
     
     func startHomeCoordinatorFlow() {
-        // TODO: Home Feature
-/*
-        import FeatureHomeDIContainer
-        import FeatureHomePresentation
-        import FeatureHomeRepository
-        import FeatureHomeUseCase
-         
         let homeCoordinator = DefaultHomeCoordinator(navigationController: navigationController)
         add(childCoordinator: homeCoordinator)
         homeCoordinator.start()
- */
-        let homeVC = UIViewController()
-        homeVC.view.backgroundColor = .blue
-        navigationController.setViewControllers([homeVC], animated: true)
     }
 }
 

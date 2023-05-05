@@ -22,10 +22,7 @@ public final class StoolLogCollectionViewCell: UICollectionViewCell {
     }()
     
     private lazy var backgroundImageView: UIImageView = {
-        let image = DesignSystemAsset.Image
-            .stoolLogBackgroundTile.image
-            .withRenderingMode(.alwaysOriginal)
-        let imageView = UIImageView(image: image)
+        let imageView = UIImageView(image: ImageAsset.logBackground.original)
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()

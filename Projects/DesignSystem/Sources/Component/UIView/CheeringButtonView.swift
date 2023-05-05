@@ -14,10 +14,7 @@ public final class CheeringButtonView: ShadowView {
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        let image = DesignSystemAsset.Image
-            .twoFriends.image
-            .withRenderingMode(.alwaysOriginal)
-        imageView.image = image
+        imageView.image = ImageAsset.logFriends.original
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -37,12 +34,9 @@ public final class CheeringButtonView: ShadowView {
         return label
     }()
     
-    private lazy var expandLeftImageView: UIImageView = {
+    private lazy var expandRightImageView: UIImageView = {
         let imageView = UIImageView()
-        let image = DesignSystemAsset.Image
-            .expandLeft.image
-            .withRenderingMode(.alwaysOriginal)
-        imageView.image = image
+        imageView.image = ImageAsset.expandRight.original
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -81,7 +75,7 @@ private extension CheeringButtonView {
     func layoutUI() {
         addSubview(imageView)
         addSubview(titleStackView)
-        addSubview(expandLeftImageView)
+        addSubview(expandRightImageView)
         
         imageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(10)
@@ -95,7 +89,7 @@ private extension CheeringButtonView {
             make.leading.equalTo(imageView.snp.trailing).offset(4)
         }
         
-        expandLeftImageView.snp.makeConstraints { make in
+        expandRightImageView.snp.makeConstraints { make in
             make.centerY.equalTo(subtitleLabel)
             make.leading.equalTo(subtitleLabel.snp.trailing)
         }

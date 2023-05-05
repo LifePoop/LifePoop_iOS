@@ -10,6 +10,10 @@ import UIKit
 import CoreDIContainer
 import CoreNetworkService
 import CoreStorageService
+
+import FeatureHomeDIContainer
+import FeatureHomeRepository
+import FeatureHomeUseCase
 import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
@@ -27,7 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
-        registerDependencies()
+        registerAllDependencies()
         
         let rootNavigationController = UINavigationController()
         appCoordinator = DefaultAppCoordinator(navigationController: rootNavigationController)
@@ -41,16 +45,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 // MARK: - Dependency Registration
 
 private extension SceneDelegate {
-    func registerDependencies() {
-        // MARK: - Core
+    func registerAllDependencies() {
+        registerCoreDependencies()
+        registerLoginDependencies()
+        registerHomeDependencies()
+    }
+    
+    func registerCoreDependencies() {
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(CoreExampleDataMapper()) }
         CoreDIContainer.shared.register(service: EndpointService.self) { URLSessionEndpointService.shared }
         CoreDIContainer.shared.register(service: URLDataService.self) { URLSessionURLDataService.shared }
         CoreDIContainer.shared.register(service: DiskCacheStorage.self) { FileManagerDiskCacheStorage.shared }
         CoreDIContainer.shared.register(service: MemoryCacheStorage.self) { NSCacheMemoryCacheStorage.shared }
-        
-        // MARK: - Login
+    }
+    
+    func registerLoginDependencies() {
         LoginDIContainer.shared.register(service: LoginUseCase.self) { DefaultLoginUseCase() }
         LoginDIContainer.shared.register(service: LoginRepository.self) { DefaultLoginRepository() }
+    }
+    
+    func registerHomeDependencies() {
+        HomeDIContainer.shared.register(service: HomeUseCase.self) { DefaultHomeUseCase() }
+        HomeDIContainer.shared.register(service: HomeRepository.self) { DefaultHomeRepository() }
     }
 }

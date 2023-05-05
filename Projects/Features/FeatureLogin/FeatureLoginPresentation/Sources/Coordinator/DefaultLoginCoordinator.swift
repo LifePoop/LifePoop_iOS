@@ -31,13 +31,11 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
     }
     
     public func coordinate(by coordinateAction: LoginCoordinateAction) {
-        DispatchQueue.main.async { [weak self] in
-            switch coordinateAction {
-            case .userDidAuthorize:
-                self?.showLoginViewController()
-            case .nextButtonDidTap:
-                self?.finishFlow()
-            }
+        switch coordinateAction {
+        case .userDidAuthorize:
+            showLoginViewController()
+        case .nextButtonDidTap:
+            finishFlow()
         }
     }
 }

@@ -11,5 +11,5 @@ import UIKit
 import Utils
 
 public protocol AppCoordinator: Coordinator {
-    func coordinate(by action: AppCoordinateAction)
+    func coordinate(by coordinateAction: AppCoordinateAction)
 }

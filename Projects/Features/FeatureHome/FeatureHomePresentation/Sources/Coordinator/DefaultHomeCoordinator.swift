@@ -25,13 +25,11 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
     }
     
     public func coordinate(by coordinateAction: HomeCoordinateAction) {
-        DispatchQueue.main.async { [weak self] in
-            switch coordinateAction {
-            case .flowDidStart:
-                self?.pushHomeViewController()
-            case .stoolLogButtonDidTap:
-                self?.startStoolLogCoordinatorFlow()
-            }
+        switch coordinateAction {
+        case .flowDidStart:
+            pushHomeViewController()
+        case .stoolLogButtonDidTap:
+            startStoolLogCoordinatorFlow()
         }
     }
 }
@@ -45,11 +43,7 @@ private extension DefaultHomeCoordinator {
         viewController.bind(viewModel: viewModel)
         navigationController.setViewControllers([viewController], animated: true)
     }
-}
-
-// MARK: - Coordinating Methods
-
-private extension DefaultHomeCoordinator {
+    
     func startStoolLogCoordinatorFlow() {
         // TODO: StoolLogCoordinator Flow 구현
         print(#function)

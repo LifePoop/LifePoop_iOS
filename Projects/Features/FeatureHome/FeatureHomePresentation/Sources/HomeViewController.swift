@@ -17,21 +17,9 @@ import Utils
 
 public final class HomeViewController: UIViewController, ViewType {
     
-    private lazy var reportBarButtonItem: UIBarButtonItem = {
-        let barButtonImage = DesignSystemAsset.Image
-            .reportButton.image
-            .withRenderingMode(.alwaysOriginal)
-        let barButtonItem = UIBarButtonItem(image: barButtonImage)
-        return barButtonItem
-    }()
-    
-    private lazy var lifePoopLogoBarButtonItem: UIBarButtonItem = {
-        let barButtonImage = DesignSystemAsset.Image
-            .lifePoopLogo.image
-            .withRenderingMode(.alwaysOriginal)
-        let barButtonItem = UIBarButtonItem(image: barButtonImage)
-        return barButtonItem
-    }()
+    private lazy var settingBarButtonItem = UIBarButtonItem(image: ImageAsset.iconSetting.original)
+    private lazy var reportBarButtonItem = UIBarButtonItem(image: ImageAsset.iconReport.original)
+    private lazy var lifePoopLogoBarButtonItem = UIBarButtonItem(image: ImageAsset.logoSmall.original)
     
     private lazy var collectionViewTopSeparatorView = SeparatorView()
     private lazy var collectionViewBottonSeparatorView = SeparatorView()
@@ -126,7 +114,7 @@ private extension HomeViewController {
     func configureUI() {
         view.backgroundColor = .systemBackground
         navigationItem.leftBarButtonItem = lifePoopLogoBarButtonItem
-        navigationItem.rightBarButtonItem = reportBarButtonItem
+        navigationItem.rightBarButtonItems = [reportBarButtonItem, settingBarButtonItem]
     }
 }
 

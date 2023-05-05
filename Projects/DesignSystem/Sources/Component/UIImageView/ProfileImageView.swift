@@ -10,12 +10,8 @@ import UIKit
 
 public final class ProfileImageView: CircularImageView {
     
-    private let activeImage = DesignSystemAsset.Image
-        .profileActivated.image
-        .withRenderingMode(.alwaysOriginal)
-    private let inactiveImage = DesignSystemAsset.Image
-        .profileInactivated.image
-        .withRenderingMode(.alwaysOriginal)
+    private let activeImage = ImageAsset.storyActive.original
+    private let inactiveImage = ImageAsset.storyInactive.original
     
     public init() {
         super.init(frame: .zero)
@@ -28,11 +24,6 @@ public final class ProfileImageView: CircularImageView {
     }
     
     public func setImage(by isActivated: Bool) {
-        switch isActivated {
-        case true:
-            image = activeImage
-        case false:
-            image = inactiveImage
-        }
+        image = isActivated ? activeImage : inactiveImage
     }
 }

@@ -29,13 +29,11 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
     }
     
     public func coordinate(by coordinateAction: HomeCoordinateAction) {
-        DispatchQueue.main.async { [weak self] in
-            switch coordinateAction {
-            case .flowDidStart:
-                self?.pushHomeViewController()
-            case .stoolLogButtonDidTap:
-                self?.startStoolLogCoordinatorFlow()
-            }
+        switch coordinateAction {
+        case .flowDidStart:
+            pushHomeViewController()
+        case .stoolLogButtonDidTap:
+            startStoolLogCoordinatorFlow()
         }
     }
 }

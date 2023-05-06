@@ -1,5 +1,5 @@
 //
-//  Rx+ToastMessageMap.swift
+//  Rx+toastMessageMap.swift
 //  Utils
 //
 //  Created by 김상혁 on 2023/04/28.

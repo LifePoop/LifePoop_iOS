@@ -26,14 +26,12 @@ public final class DefaultAppCoordinator: AppCoordinator {
         coordinate(by: .accessTokenDidfetch)
     }
     
-    public func coordinate(by action: AppCoordinateAction) {
-        DispatchQueue.main.async { [weak self] in
-            switch action {
-            case .appDidStart:
-                self?.startLoginCoordinatorFlow()
-            case .accessTokenDidfetch:
-                self?.startHomeCoordinatorFlow()
-            }
+    public func coordinate(by coordinateAction: AppCoordinateAction) {
+        switch coordinateAction {
+        case .appDidStart:
+            startLoginCoordinatorFlow()
+        case .accessTokenDidfetch:
+            startHomeCoordinatorFlow()
         }
     }
 }

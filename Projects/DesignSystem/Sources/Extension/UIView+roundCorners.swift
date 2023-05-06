@@ -10,7 +10,7 @@ import UIKit
 
 extension UIView {
     
-    func roundCorners(_ radius: CGFloat = 10) {
+    public func roundCorners(_ radius: CGFloat = 10) {
         self.layer.cornerCurve = .continuous
         self.layer.cornerRadius = radius
         self.clipsToBounds = true

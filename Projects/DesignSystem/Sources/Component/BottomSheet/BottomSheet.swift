@@ -93,7 +93,7 @@ public final class BottomSheet: UIControl {
     
     private func setupViews() {
         
-        self.roundCorners(15)
+        self.roundCorners(30)
         
         addSubview(topBarArea)
         topBarArea.snp.makeConstraints { make in

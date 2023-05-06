@@ -6,9 +6,13 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
+import DesignSystem
+
 import UIKit
 
 import Utils
+
+import FeatureStoolLogPresentation
 
 public final class DefaultHomeCoordinator: HomeCoordinator {
     
@@ -45,13 +49,56 @@ private extension DefaultHomeCoordinator {
         viewController.bind(viewModel: viewModel)
         navigationController.setViewControllers([viewController], animated: true)
     }
+    
+    typealias TransparentBackgroundViewController = UIViewController
+    func presentTransparentBackgroundView() {
+        let backgroundViewController = TransparentBackgroundViewController()
+        backgroundViewController.modalPresentationStyle = .overFullScreen
+        navigationController.present(backgroundViewController, animated: false)
+    }
+    
+    func presentBottomSheetController(contentViewController: UIViewController)
+    -> BottomSheetController? {
+        guard let bottomSheetController = createBottomSheetController(),
+              let parentViewController = navigationController.presentedViewController else {
+            
+            navigationController.presentedViewController?.dismiss(animated: false)
+            return nil
+        }
+        
+        bottomSheetController.setBottomSheet(contentViewController: contentViewController)
+        bottomSheetController.showBottomSheet(toParent: parentViewController)
+
+        return bottomSheetController
+    }
+
+    func createBottomSheetController() -> BottomSheetController? {
+        presentTransparentBackgroundView()
+        guard let parentViewController = navigationController.presentedViewController else { return nil }
+
+        let bottomSheetController = BottomSheetController(
+            bottomSheetHeight: parentViewController.view.bounds.height*0.5
+        )
+        return bottomSheetController
+    }
 }
 
 // MARK: - Coordinating Methods
 
 private extension DefaultHomeCoordinator {
+
     func startStoolLogCoordinatorFlow() {
-        // TODO: StoolLogCoordinator Flow 구현
-        print(#function)
+        let stoolLogCoordinator = DefaultStoolLogCoordinator(
+            navigationController: UINavigationController(),
+            parentCoordinator: self
+        )
+        add(childCoordinator: stoolLogCoordinator)
+
+        guard let bottomSheetController = presentBottomSheetController(
+            contentViewController: stoolLogCoordinator.navigationController
+        ) else { return }
+        
+        bottomSheetController.delegate = stoolLogCoordinator
+        stoolLogCoordinator.start()
     }
 }

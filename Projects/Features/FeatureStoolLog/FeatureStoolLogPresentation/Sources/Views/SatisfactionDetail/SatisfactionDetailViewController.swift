@@ -103,7 +103,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         button.setTitleColor(ColorAsset.white.color, for: .normal)
         button.backgroundColor = ColorAsset.primary.color
-        button.roundCorners(12)
+        button.roundCorners(radius: 12)
         return button
     }()
     

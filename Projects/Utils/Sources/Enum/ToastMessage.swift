@@ -9,11 +9,17 @@
 import Foundation
 
 public enum ToastMessage {
+    case failToFetchFriendList
+    case failToFetchStoolLog
     case failToFetchAccessToken
     case failToFetchImageData
     
     public var localized: String { // TODO: Localizing
         switch self {
+        case .failToFetchFriendList:
+            return "친구 목록을 불러오는 데 실패했습니다."
+        case .failToFetchStoolLog:
+            return "변 기록을 불러오는 데 실패했습니다."
         case .failToFetchAccessToken:
             return "사용자 인증 토큰을 불러오는 데 실패했습니다."
         case .failToFetchImageData:

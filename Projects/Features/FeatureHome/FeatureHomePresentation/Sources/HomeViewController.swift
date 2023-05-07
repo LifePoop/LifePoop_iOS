@@ -99,7 +99,10 @@ public final class HomeViewController: UIViewController, ViewType {
     
     public func bindInput(to viewModel: HomeViewModel) {
         let input = viewModel.input
-        
+
+        logButton.rx.tap
+            .bind(to: input.stoolLogButtonDidTap)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: HomeViewModel) {

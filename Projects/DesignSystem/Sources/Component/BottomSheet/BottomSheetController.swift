@@ -12,7 +12,6 @@ import UIKit
 @objc public protocol BottomSheetDelegate {
     
     @objc optional func bottomSheetDidAppear()
-        
     func bottomSheetDidDisappear()
 }
 
@@ -72,8 +71,8 @@ public final class BottomSheetController: UIViewController {
     public func showBottomSheet(toParent parentViewController: UIViewController, completion: (() -> Void)? = nil) {
         
         parentViewController.addChild(self)
-        parentViewController.view.addSubview(view)
         view.frame = parentViewController.view.bounds
+        parentViewController.view.addSubview(view)
         view.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
@@ -81,7 +80,22 @@ public final class BottomSheetController: UIViewController {
         dimmedView.isHidden = false
         self.didMove(toParent: parentViewController)
     }
+    
+    @objc public func closeBottomSheet() {
 
+        self.dimmedView.isHidden = true
+
+        bottomSheet?.move(
+            upTo: view.bounds.height,
+            duration: 0.25,
+            animation: view.layoutIfNeeded
+        ) { [weak self] _ in
+            
+            self?.view?.removeFromSuperview()
+            self?.delegate?.bottomSheetDidDisappear()
+            self?.removeFromParent()
+        }
+    }
 }
 
 extension BottomSheetController: BottomSheetCloseNotification {
@@ -112,21 +126,5 @@ private extension BottomSheetController {
         }
         
         bottomSheet.delegate = self
-    }
-    
-    @objc func closeBottomSheet() {
-
-        self.dimmedView.isHidden = true
-
-        bottomSheet?.move(
-            upTo: view.bounds.height,
-            duration: 0.1,
-            animation: view.layoutIfNeeded
-        ) { [weak self] _ in
-            
-            self?.removeFromParent()
-            self?.view?.removeFromSuperview()
-            self?.delegate?.bottomSheetDidDisappear()
-        }
     }
 }

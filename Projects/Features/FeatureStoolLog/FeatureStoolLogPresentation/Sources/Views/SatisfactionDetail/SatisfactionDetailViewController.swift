@@ -160,6 +160,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
             .disposed(by: disposeBag)
         
         output.selectableColors
+            .observe(on: MainScheduler.asyncInstance)
             .bind(to: colorSelectCollectionView.rx.items(
                 cellIdentifier: ColorSelectionCell.identifier,
                 cellType: ColorSelectionCell.self)
@@ -169,6 +170,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
             .disposed(by: disposeBag)
         
         output.selectableStiffnessList
+            .observe(on: MainScheduler.asyncInstance)
             .bind(to: stiffnessSelectCollectionView.rx.items(
                 cellIdentifier: StiffnessSelectionCell.identifier,
                 cellType: StiffnessSelectionCell.self)
@@ -178,6 +180,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
             .disposed(by: disposeBag)
         
         output.selectableSizes
+            .observe(on: MainScheduler.asyncInstance)
             .bind(to: sizeSelectionCollectionView.rx.items(
                 cellIdentifier: SizeSelectionCell.identifier,
                 cellType: SizeSelectionCell.self)

@@ -73,12 +73,13 @@ public final class SatisfactionSelectViewModel: ViewModelType {
                 output.satisfactionButtonSelected.asObservable(),
                 output.disatisfactionButtonSelected.asObservable()
             )
+            .filter { isSatisfactionSelected, isDisatisfactionSelected in
+                (!isSatisfactionSelected || !isDisatisfactionSelected)
+                && (isSatisfactionSelected != isDisatisfactionSelected)
+            }
             .withUnretained(self)
             .bind(onNext: { owner, args in
-                let (isSatisfactionSelected, isDisatisfactionSelected) = args
-                guard !isSatisfactionSelected || !isDisatisfactionSelected,
-                      isSatisfactionSelected != isDisatisfactionSelected else { return }
-                
+                let (isSatisfactionSelected, _) = args
                 owner.coordinator?.coordinate(by: .didSelectSatisfaction(isSatisfied: isSatisfactionSelected))
             })
             .disposed(by: disposeBag)

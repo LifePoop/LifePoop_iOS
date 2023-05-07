@@ -33,6 +33,7 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
         let satisfactinoImage = ImageAsset.goodDeselected.image
         button.setImage(ImageAsset.goodDeselected.image, for: .normal)
         button.setImage(ImageAsset.goodSelected.image, for: .highlighted)
+        button.setImage(ImageAsset.goodSelected.image, for: .selected)
         return button
     }()
     
@@ -49,6 +50,7 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
         let button = UIButton(type: .custom)
         button.setImage(ImageAsset.badDeselected.image, for: .normal)
         button.setImage(ImageAsset.badSelected.image, for: .highlighted)
+        button.setImage(ImageAsset.badSelected.image, for: .selected)
         return button
     }()
     
@@ -89,11 +91,7 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
             .asDriver()
             .drive(onNext: { [weak self] isSatisfactionSelected in
                 guard let self = self else { return }
-                
-                let image = isSatisfactionSelected ?
-                    ImageAsset.goodSelected.image :
-                    ImageAsset.goodDeselected.image
-                self.satisfactionButton.setImage(image, for: .normal)
+                self.satisfactionButton.rx.isSelected.onNext(isSatisfactionSelected)
             })
             .disposed(by: disposeBag)
         
@@ -101,11 +99,7 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
             .asDriver()
             .drive(onNext: { [weak self] isDisatisfactionSelected in
                 guard let self = self else { return }
-                
-                let image = isDisatisfactionSelected ?
-                    ImageAsset.badSelected.image :
-                    ImageAsset.badDeselected.image
-                self.disatisfactionButton.setImage(image, for: .normal)
+                self.disatisfactionButton.rx.isSelected.onNext(isDisatisfactionSelected)
             })
             .disposed(by: disposeBag)        
     }

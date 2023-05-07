@@ -8,9 +8,8 @@
 
 import UIKit
 
-import Utils
-
 import DesignSystem
+import Utils
 
 public final class DefaultStoolLogCoordinator: StoolLogCoordinator {
     

@@ -6,9 +6,10 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
-import CoreEntity
 import RxRelay
 import RxSwift
+
+import CoreEntity
 import Utils
 
 public final class SatisfactionDetailViewModel: ViewModelType {

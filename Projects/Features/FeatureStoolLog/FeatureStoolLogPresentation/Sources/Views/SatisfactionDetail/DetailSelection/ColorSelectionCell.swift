@@ -11,9 +11,7 @@ import UIKit
 import SnapKit
 
 import CoreEntity
-
 import DesignSystem
-
 import Utils
 
 final class ColorSelectionCell: UICollectionViewCell {

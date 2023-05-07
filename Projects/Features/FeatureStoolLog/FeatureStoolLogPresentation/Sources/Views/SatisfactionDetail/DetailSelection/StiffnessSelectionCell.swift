@@ -11,7 +11,6 @@ import UIKit
 import SnapKit
 
 import CoreEntity
-
 import DesignSystem
 
 final class StiffnessSelectionCell: UICollectionViewCell {

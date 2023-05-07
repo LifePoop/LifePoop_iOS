@@ -17,19 +17,14 @@ import Utils
 public final class DefaultHomeRepository: HomeRepository {
     
     @Inject(CoreDIContainer.shared) private var urlSessionEndpointService: EndpointService
-    @Inject(CoreDIContainer.shared) private var coreExampleDataMapper: AnyDataMapper<CoreExampleDTO, CoreExampleEntity>
     
     public init() { }
     
-    public func fetchFriendList() -> Single<CoreExampleEntity> {
-        return urlSessionEndpointService.fetchData(
-            endpoint: LifePoopTarget.fetchAccessToken(
-                clientID: "exampleID",
-                clientSecret: "exampleSecret",
-                tempCode: "exampleTestCode"
-            )
-        )
-        .decodeMap(CoreExampleDTO.self)
-        .transformMap(coreExampleDataMapper)
+    public func fetchFriendList() -> Single<[FriendEntity]> {
+        return Single.just(FriendEntity.dummyData)
+    }
+    
+    public func fetchStoolLogs() -> Single<[StoolLogEntity]> {
+        return Single.just(StoolLogEntity.dummyData)
     }
 }

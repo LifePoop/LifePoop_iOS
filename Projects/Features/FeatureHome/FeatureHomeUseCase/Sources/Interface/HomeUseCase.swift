@@ -11,5 +11,6 @@ import RxSwift
 import CoreEntity
 
 public protocol HomeUseCase {
-    func fetchFriendList() -> Observable<CoreExampleEntity>
+    func fetchFriendList() -> Observable<[FriendEntity]>
+    func fetchStoolLogs() -> Observable<[StoolLogEntity]>
 }

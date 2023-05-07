@@ -36,8 +36,12 @@ public final class HomeViewModel: ViewModelType {
         self.coordinator = coordinator
         
         // MARK: - Bind Input - stoolLogButtonDidTap
-        
-//        input.stoolLogButtonDidTap
+        input.stoolLogButtonDidTap
+            .withUnretained(self)
+            .bind(onNext: { owner, _ in
+                owner.coordinator?.coordinate(by: .stoolLogButtonDidTap)
+            })
+            .disposed(by: disposeBag)
         
     }
 }

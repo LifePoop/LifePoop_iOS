@@ -8,6 +8,8 @@
 
 import UIKit
 
+import CoreEntity
+
 public final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<StoolLogListSection, StoolLogEntity> {
     
     private typealias Snapshot = NSDiffableDataSourceSnapshot<StoolLogListSection, StoolLogEntity>

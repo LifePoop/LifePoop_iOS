@@ -106,7 +106,7 @@ public final class HomeViewController: UIViewController, ViewType {
             .bind(to: input.reportButtonDidTap)
             .disposed(by: disposeBag)
 
-        logButton.rx.tap
+        stoolLogButton.rx.tap
             .bind(to: input.stoolLogButtonDidTap)
             .disposed(by: disposeBag)
     }

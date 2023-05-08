@@ -8,6 +8,8 @@
 
 import UIKit
 
+import DesignSystem
+
 public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionProvidable {
     private lazy var headerLayoutSize: NSCollectionLayoutSize = {
         let headerLayoutSize = NSCollectionLayoutSize(

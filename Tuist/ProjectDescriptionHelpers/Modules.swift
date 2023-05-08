@@ -66,12 +66,15 @@ public enum SharedModuleType: String, CaseIterable {
 public enum FeatureModuleType: String, CaseIterable {
     case Login
     case Home
+    case StoolLog
     
     var layerModules: [FeatureLayerModuleType] {
         switch self {
         case .Login:
             return [.DIContainer, .Presentation, .UseCase, .Repository]
         case .Home:
+            return [.DIContainer, .Presentation, .UseCase, .Repository]
+        case .StoolLog:
             return [.DIContainer, .Presentation, .UseCase, .Repository]
         }
     }

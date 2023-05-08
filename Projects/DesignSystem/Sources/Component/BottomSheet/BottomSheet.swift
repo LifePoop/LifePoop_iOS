@@ -24,7 +24,7 @@ public final class BottomSheet: UIControl {
     private let topBar: UIView = {
         let view = UIView()
         view.backgroundColor = .systemGray5
-        view.roundCorners(4)
+        view.roundCorners(radius: 4)
         return view
     }()
     
@@ -93,8 +93,8 @@ public final class BottomSheet: UIControl {
     
     private func setupViews() {
         
-        self.roundCorners(15)
-        
+        self.roundCorners(corners: [.topLeft, .topRight], radius: 30)
+
         addSubview(topBarArea)
         topBarArea.snp.makeConstraints { make in
             make.left.right.top.equalToSuperview()

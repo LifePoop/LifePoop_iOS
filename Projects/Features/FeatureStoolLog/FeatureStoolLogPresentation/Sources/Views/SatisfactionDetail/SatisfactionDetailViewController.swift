@@ -82,7 +82,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 38
-        layout.itemSize = .init(width: 35, height: 46)
+        layout.itemSize = .init(width: 35, height: 52)
 
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(
@@ -185,7 +185,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
                 cellIdentifier: SizeSelectionCell.identifier,
                 cellType: SizeSelectionCell.self)
             ) { _, size, cell in
-                cell.configure(sizeSelection: size)
+                cell.configure(selectableSize: size)
             }
             .disposed(by: disposeBag)
     }
@@ -251,7 +251,7 @@ private extension SatisfactionDetailViewController {
             make.leading.equalTo(sizeTitleLabel.snp.trailing).offset(51)
             make.centerY.equalTo(sizeTitleLabel.snp.top)
             make.trailing.equalToSuperview().inset(79)
-            make.height.equalTo(46)
+            make.height.equalTo(52)
         }
     }
 }

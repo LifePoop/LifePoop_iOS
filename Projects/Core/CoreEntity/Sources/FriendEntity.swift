@@ -23,15 +23,15 @@ extension FriendEntity {
             FriendEntity(name: "김상혁나나", isActivated: false),
             FriendEntity(name: "김상혁다다", isActivated: false),
             FriendEntity(name: "손혜정가가", isActivated: true),
-            FriendEntity(name: "손혜정나나", isActivated: false),
-            FriendEntity(name: "손혜정다다", isActivated: false),
-            FriendEntity(name: "이준우", isActivated: false),
+            FriendEntity(name: "손혜정나나나", isActivated: false),
+            FriendEntity(name: "손혜정다다다", isActivated: false),
+            FriendEntity(name: "이준우가가가", isActivated: false),
             FriendEntity(name: "박서원", isActivated: true),
             FriendEntity(name: "김유빈", isActivated: false),
             FriendEntity(name: "이화정", isActivated: true),
             FriendEntity(name: "김상혁11", isActivated: false),
-            FriendEntity(name: "김상혁12", isActivated: false),
-            FriendEntity(name: "김상혁13", isActivated: true)
+            FriendEntity(name: "김상혁123", isActivated: false),
+            FriendEntity(name: "김상혁123", isActivated: true)
         ]
     }
 }

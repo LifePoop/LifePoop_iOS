@@ -10,6 +10,7 @@ import UIKit
 
 import SnapKit
 
+import CoreEntity
 import DesignSystem
 
 public final class FriendListCollectionViewCell: UICollectionViewCell {
@@ -18,7 +19,7 @@ public final class FriendListCollectionViewCell: UICollectionViewCell {
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .center
         return label
     }()
@@ -31,10 +32,6 @@ public final class FriendListCollectionViewCell: UICollectionViewCell {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    public override func prepareForReuse() {
-        super.prepareForReuse()
     }
 }
 
@@ -53,13 +50,12 @@ private extension FriendListCollectionViewCell {
         contentView.addSubview(nameLabel)
         
         profileImageView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalTo(contentView)
-            make.height.equalTo(profileImageView.snp.width)
-            make.bottom.equalTo(nameLabel.snp.top).offset(-6)
+            make.top.centerX.equalToSuperview()
+            make.bottom.greaterThanOrEqualTo(nameLabel.snp.top).offset(-6)
         }
         
         nameLabel.snp.makeConstraints { make in
-            make.centerX.bottom.equalTo(contentView)
+            make.centerX.bottom.equalToSuperview()
         }
     }
 }

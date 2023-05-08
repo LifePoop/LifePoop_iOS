@@ -10,11 +10,12 @@ import UIKit
 
 import SnapKit
 
+import CoreEntity
 import DesignSystem
 
 public final class StoolLogCollectionViewCell: UICollectionViewCell {
     
-    private lazy var containerView: UIView = {
+    private lazy var backgroundContainerView: UIView = {
         let view = ShadowView()
         view.layer.cornerRadius = 16
         view.backgroundColor = .systemBackground
@@ -23,6 +24,20 @@ public final class StoolLogCollectionViewCell: UICollectionViewCell {
     
     private lazy var backgroundImageView: UIImageView = {
         let imageView = UIImageView(image: ImageAsset.logBackground.original)
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private lazy var dateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "오후 11:58"
+        label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        label.textColor = ColorAsset.gray800.color
+        return label
+    }()
+    
+    private lazy var stoolCharactorImageView: UIImageView = {
+        let imageView = UIImageView(image: ImageAsset.stoolSoftYellow.original)
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -36,10 +51,6 @@ public final class StoolLogCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    public override func prepareForReuse() {
-        super.prepareForReuse()
-    }
 }
 
 public extension StoolLogCollectionViewCell {
@@ -52,16 +63,26 @@ public extension StoolLogCollectionViewCell {
 
 private extension StoolLogCollectionViewCell {
     func layoutUI() {
+        contentView.addSubview(backgroundContainerView)
+        backgroundContainerView.addSubview(backgroundImageView)
+        backgroundImageView.addSubview(dateLabel)
+        backgroundImageView.addSubview(stoolCharactorImageView)
         
-        contentView.addSubview(containerView)
-        containerView.addSubview(backgroundImageView)
-        
-        containerView.snp.makeConstraints { make in
+        backgroundContainerView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(16)
         }
         
         backgroundImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(16)
+        }
+        
+        dateLabel.snp.makeConstraints { make in
+            make.top.trailing.equalToSuperview().inset(16)
+        }
+        
+        stoolCharactorImageView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-16)
         }
     }
 }

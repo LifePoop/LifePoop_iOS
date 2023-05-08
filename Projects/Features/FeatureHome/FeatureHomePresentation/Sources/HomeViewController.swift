@@ -17,26 +17,25 @@ import Utils
 
 public final class HomeViewController: UIViewController, ViewType {
     
-    private lazy var settingBarButtonItem = UIBarButtonItem(image: ImageAsset.iconSetting.original)
-    private lazy var reportBarButtonItem = UIBarButtonItem(image: ImageAsset.iconReport.original)
-    private lazy var lifePoopLogoBarButtonItem = UIBarButtonItem(image: ImageAsset.logoSmall.original)
+    private let settingBarButtonItem = UIBarButtonItem(image: ImageAsset.iconSetting.original)
+    private let reportBarButtonItem = UIBarButtonItem(image: ImageAsset.iconReport.original)
+    private let lifePoopLogoBarButtonItem = UIBarButtonItem(image: ImageAsset.logoSmall.original)
     
-    private lazy var collectionViewTopSeparatorView = SeparatorView()
-    private lazy var collectionViewBottonSeparatorView = SeparatorView()
+    private let collectionViewTopSeparatorView = SeparatorView()
+    private let collectionViewBottonSeparatorView = SeparatorView()
     
     private lazy var friendListCollectionViewDiffableDataSource = FriendListCollectionViewDiffableDataSource(
         collectionView: friendListCollectionView
     )
-    
-    private lazy var friendListCollectionViewLayout: UICollectionViewFlowLayout = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 50, height: 70)
-        layout.sectionInset = UIEdgeInsets(top: 16, left: .zero, bottom: 16, right: 24)
-        layout.minimumLineSpacing = 14
-        return layout
+    private let friendListCollectionViewSectionLayout = FriendListCollectionViewSectionLayout()
+    private lazy var friendListCollectionViewLayout: UICollectionViewCompositionalLayout = {
+        let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        let compositionalLayout = UICollectionViewCompositionalLayout(
+            sectionProvider: friendListCollectionViewSectionLayout.sectionProvider,
+            configuration: configuration
+        )
+        return compositionalLayout
     }()
-    
     private lazy var friendListCollectionView: UICollectionView = {
         let collectionView = UICollectionView(
             frame: .zero,
@@ -47,22 +46,22 @@ public final class HomeViewController: UIViewController, ViewType {
             forCellWithReuseIdentifier: FriendListCollectionViewCell.identifier
         )
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.bounces = false
         return collectionView
     }()
     
     private lazy var stoolLogCollectionViewDiffableDataSource = StoolLogCollectionViewDiffableDataSource(
         collectionView: stoolLogCollectionView
     )
-    private let stoolLogSectionLayout = StoolLogCollectionViewSectionLayout()
+    private let stoolLogCollectionViewSectionLayout = StoolLogCollectionViewSectionLayout()
     private lazy var stoolLogCollectionViewLayout: UICollectionViewCompositionalLayout = {
         let configuration = UICollectionViewCompositionalLayoutConfiguration()
         let compositionalLayout = UICollectionViewCompositionalLayout(
-            sectionProvider: stoolLogSectionLayout.sectionProvider,
+            sectionProvider: stoolLogCollectionViewSectionLayout.sectionProvider,
             configuration: configuration
         )
         return compositionalLayout
     }()
-    
     private lazy var stoolLogCollectionView: UICollectionView = {
         let collectionView = UICollectionView(
             frame: .zero,
@@ -81,7 +80,7 @@ public final class HomeViewController: UIViewController, ViewType {
         return collectionView
     }()
     
-    private lazy var logButton = LogButton()
+    private let stoolLogButton = LifePoopButton(title: "변 기록하기")
     
     public var viewModel: HomeViewModel?
     private let disposeBag = DisposeBag()
@@ -92,13 +91,20 @@ public final class HomeViewController: UIViewController, ViewType {
         layoutUI()
     }
     
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        stoolLogSectionLayout.collectionViewSize = stoolLogCollectionView.bounds.size
-    }
-    
     public func bindInput(to viewModel: HomeViewModel) {
         let input = viewModel.input
+        
+        rx.viewDidLoad
+            .bind(to: input.viewDidLoad)
+            .disposed(by: disposeBag)
+        
+        settingBarButtonItem.rx.tap
+            .bind(to: input.settingButtonDidTap)
+            .disposed(by: disposeBag)
+        
+        reportBarButtonItem.rx.tap
+            .bind(to: input.reportButtonDidTap)
+            .disposed(by: disposeBag)
 
         logButton.rx.tap
             .bind(to: input.stoolLogButtonDidTap)
@@ -108,6 +114,15 @@ public final class HomeViewController: UIViewController, ViewType {
     public func bindOutput(from viewModel: HomeViewModel) {
         let output = viewModel.output
         
+        output.friends
+            .asDriver()
+            .drive(onNext: friendListCollectionViewDiffableDataSource.update)
+            .disposed(by: disposeBag)
+        
+        output.stoolLogs
+            .asDriver()
+            .drive(onNext: stoolLogCollectionViewDiffableDataSource.update)
+            .disposed(by: disposeBag)
     }
 }
 
@@ -129,36 +144,35 @@ private extension HomeViewController {
         view.addSubview(collectionViewBottonSeparatorView)
         view.addSubview(friendListCollectionView)
         view.addSubview(stoolLogCollectionView)
-        view.addSubview(logButton)
+        view.addSubview(stoolLogButton)
         
         collectionViewTopSeparatorView.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(friendListCollectionView)
+            make.leading.equalToSuperview().offset(24)
+            make.trailing.equalToSuperview()
             make.bottom.equalTo(friendListCollectionView.snp.top)
         }
         
         collectionViewBottonSeparatorView.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(friendListCollectionView)
+            make.leading.equalToSuperview().offset(24)
+            make.trailing.equalToSuperview()
             make.top.equalTo(friendListCollectionView.snp.bottom)
         }
         
         friendListCollectionView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.trailing.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(friendListCollectionViewLayout.layoutHeight)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(102)
         }
         
         stoolLogCollectionView.snp.makeConstraints { make in
             make.top.equalTo(collectionViewBottonSeparatorView.snp.bottom).offset(20)
-            make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading)
-            make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             make.bottom.equalToSuperview()
         }
         
-        logButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().offset(-46)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
-            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-24)
+        stoolLogButton.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-12)
         }
     }
 }

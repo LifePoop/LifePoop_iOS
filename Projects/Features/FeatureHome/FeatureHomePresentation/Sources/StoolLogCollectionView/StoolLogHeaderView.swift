@@ -23,7 +23,7 @@ public final class StoolLogHeaderView: UICollectionReusableView {
         return label
     }()
     
-    private lazy var cheeringButtonView = CheeringButtonView()
+    private let cheeringButtonView = CheeringButtonView()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -52,7 +52,6 @@ private extension StoolLogHeaderView {
         cheeringButtonView.snp.makeConstraints { make in
             make.top.equalTo(todayStoolLogLabel.snp.bottom).offset(18)
             make.leading.trailing.equalTo(todayStoolLogLabel)
-            make.height.equalTo(80)
             make.bottom.equalToSuperview()
         }
     }

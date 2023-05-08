@@ -8,6 +8,8 @@
 
 import UIKit
 
+import CoreEntity
+
 public final class FriendListCollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<FriendListSection, FriendEntity> {
     
     private typealias Snapshot = NSDiffableDataSourceSnapshot<FriendListSection, FriendEntity>

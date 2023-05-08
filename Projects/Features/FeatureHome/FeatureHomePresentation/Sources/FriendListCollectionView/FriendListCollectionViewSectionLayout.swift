@@ -8,6 +8,8 @@
 
 import UIKit
 
+import DesignSystem
+
 public final class FriendListCollectionViewSectionLayout: CollectionViewSectionProvidable {
     private lazy var layoutItem: NSCollectionLayoutItem = {
         let layoutSize = NSCollectionLayoutSize(

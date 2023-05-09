@@ -8,14 +8,24 @@
 
 import UIKit
 
-import SnapKit
 import CoreEntity
+import SnapKit
 import DesignSystem
 
 
 final class SizeSelectionCell: UICollectionViewCell {
         
-    private let imageView: UIImageView = UIImageView(image: ImageAsset.sizeSelectMedium.original)
+    private let imageView: UIImageView = UIImageView(image: ImageAsset.sizeSelectMediumDeselected.original)
+    
+    private var selectedImage: UIImage?
+
+    private var deselectedImage: UIImage?
+
+    override var isSelected: Bool {
+        didSet {
+            imageView.image = isSelected ? selectedImage : deselectedImage
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -27,18 +37,21 @@ final class SizeSelectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(sizeSelection: SelectableSize) {
+    func configure(selectableSize: SelectableSize) {
         
-        var image: UIImage
-        switch sizeSelection {
+        switch selectableSize {
         case .small:
-            image = ImageAsset.sizeSelectSmall.image
+            selectedImage = ImageAsset.sizeSelectSmallSelected.image
+            deselectedImage = ImageAsset.sizeSelectSmallDeselected.image
         case .medium:
-            image = ImageAsset.sizeSelectMedium.image
+            selectedImage = ImageAsset.sizeSelectMediumSelected.image
+            deselectedImage = ImageAsset.sizeSelectMediumDeselected.image
         case .large:
-            image = ImageAsset.sizeSelectLarge.image
+            selectedImage = ImageAsset.sizeSelectLargeSelected.image
+            deselectedImage = ImageAsset.sizeSelectLargeDeselected.image
         }
-        imageView.image = image
+        
+        imageView.image = deselectedImage
     }
     
     private func addSubViews() {

@@ -10,14 +10,11 @@ import ProjectDescription
 public extension Package {
     enum SPM: CaseIterable {
         case SnapKit
-        case RxSwift
 
         public var package: Package {
             switch self {
             case .SnapKit:
-                return Package.package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.6.0"))
-            case .RxSwift:
-                return Package.package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.5.0"))
+                return .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.6.0"))
             }
         }
 

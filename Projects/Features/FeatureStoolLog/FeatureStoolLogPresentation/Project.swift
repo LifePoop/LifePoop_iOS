@@ -13,9 +13,9 @@ let project = Project.makeModule(
     product: .staticFramework,
     packages: [
         .SPM.SnapKit.package,
-        .SPM.RxSwift.package
     ],
     dependencies: [
+        .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.DesignSystem).dependency,
         .Project.module(.Utils).dependency,
         .Project.module(.Features(.StoolLog, .UseCase)).dependency,

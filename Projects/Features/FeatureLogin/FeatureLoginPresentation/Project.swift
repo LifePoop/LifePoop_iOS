@@ -12,10 +12,10 @@ let project = Project.makeModule(
     name: Modules.Features(.Login, .Presentation).name,
     product: .staticFramework,
     packages: [
-        .SPM.SnapKit.package,
-        .SPM.RxSwift.package
+        .SPM.SnapKit.package
     ],
     dependencies: [
+        .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.DesignSystem).dependency,
         .Project.module(.Utils).dependency,
         .Project.module(.Features(.Login, .UseCase)).dependency,

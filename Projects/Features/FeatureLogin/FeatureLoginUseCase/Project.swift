@@ -11,9 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.makeModule(
     name: Modules.Features(.Login, .UseCase).name,
     product: .framework,
-    packages: [
-        .SPM.RxSwift.package
-    ],
+    packages: [],
     dependencies: [
         .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.Features(.Login, .DIContainer)).dependency,

@@ -15,7 +15,12 @@ public extension TargetDependency {
         case RxRelay
         
         public var dependency: TargetDependency {
-            return .package(product: rawValue)
+            switch self {
+            case .SnapKit:
+                return .package(product: rawValue)
+            case .RxSwift, .RxCocoa, .RxRelay:
+                return .external(name: rawValue)
+            }
         }
         
         public static var allDependencies: [TargetDependency] {

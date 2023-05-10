@@ -9,6 +9,7 @@ import RxRelay
 import RxSwift
 
 import CoreEntity
+import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
 import FeatureLoginUseCase
 import Utils

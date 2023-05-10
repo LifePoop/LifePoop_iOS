@@ -10,6 +10,7 @@ import RxRelay
 import RxSwift
 
 import CoreEntity
+import FeatureStoolLogCoordinatorInterface
 import Utils
 
 public final class SatisfactionDetailViewModel: ViewModelType {

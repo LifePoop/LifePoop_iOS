@@ -6,13 +6,14 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
-import DesignSystem
 
 import UIKit
 
+import DesignSystem
+import FeatureHomeCoordinatorInterface
+import FeatureHomePresentation
+import FeatureStoolLogCoordinator
 import Utils
-
-import FeatureStoolLogPresentation
 
 public final class DefaultHomeCoordinator: HomeCoordinator {
     

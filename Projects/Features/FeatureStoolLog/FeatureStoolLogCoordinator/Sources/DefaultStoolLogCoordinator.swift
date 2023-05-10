@@ -9,6 +9,8 @@
 import UIKit
 
 import DesignSystem
+import FeatureStoolLogCoordinatorInterface
+import FeatureStoolLogPresentation
 import Utils
 
 public final class DefaultStoolLogCoordinator: StoolLogCoordinator {

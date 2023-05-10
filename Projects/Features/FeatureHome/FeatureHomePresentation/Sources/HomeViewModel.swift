@@ -10,6 +10,7 @@ import RxRelay
 import RxSwift
 
 import CoreEntity
+import FeatureHomeCoordinatorInterface
 import FeatureHomeDIContainer
 import FeatureHomeUseCase
 import Utils

@@ -8,8 +8,9 @@
 
 import UIKit
 
-import FeatureHomePresentation
-import FeatureLoginPresentation
+import FeatureHomeCoordinator
+import FeatureLoginCoordinator
+import FeatureLoginCoordinatorInterface
 import Utils
 
 public final class DefaultAppCoordinator: AppCoordinator {

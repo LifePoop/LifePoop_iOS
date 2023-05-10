@@ -12,17 +12,18 @@ let project = Project.makeModule(
     name: Modules.Features(.Home, .Presentation).name,
     product: .staticFramework,
     packages: [
-        .SPM.SnapKit.package,
-        .SPM.RxSwift.package
+        .SPM.SnapKit.package
     ],
     dependencies: [
+        .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.DesignSystem).dependency,
         .Project.module(.Utils).dependency,
         .Project.module(.Features(.Home, .UseCase)).dependency,
         .Project.module(.Features(.Home, .DIContainer)).dependency,
+        .Project.module(.Features(.Home, .CoordinatorInterface)).dependency,
         .SPM.SnapKit.dependency,
         .SPM.RxSwift.dependency,
         .SPM.RxRelay.dependency,
-        .SPM.RxCocoa.dependency
+        .SPM.RxCocoa.dependency,
     ]
 )

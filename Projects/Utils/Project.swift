@@ -11,9 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.makeModule(
     name: Modules.Utils.name,
     product: .framework,
-    packages: [
-        .SPM.RxSwift.package
-    ],
+    packages: [],
     dependencies: [
         .SPM.RxSwift.dependency,
         .SPM.RxCocoa.dependency,

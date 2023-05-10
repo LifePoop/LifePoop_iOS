@@ -19,9 +19,16 @@ public final class DefaultHomeUseCase: HomeUseCase {
     
     public init() { }
     
-    public func fetchFriendList() -> Observable<CoreExampleEntity> {
+    public func fetchFriendList() -> Observable<[FriendEntity]> {
         return homeRepository
             .fetchFriendList()
+            .logErrorIfDetected(category: .network)
+            .asObservable()
+    }
+    
+    public func fetchStoolLogs() -> Observable<[StoolLogEntity]> {
+        return homeRepository
+            .fetchStoolLogs()
             .logErrorIfDetected(category: .network)
             .asObservable()
     }

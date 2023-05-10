@@ -11,9 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.makeModule(
     name: Modules.Core(.CoreStorageService).name,
     product: .framework,
-    packages: [
-        .SPM.RxSwift.package
-    ],
+    packages: [],
     dependencies: [
         .Project.module(.Core(.CoreEntity)).dependency,
         .SPM.RxSwift.dependency,

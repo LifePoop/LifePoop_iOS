@@ -11,9 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.makeModule(
     name: Modules.Logger.name,
     product: .framework,
-    packages: [
-        .SPM.RxSwift.package
-    ],
+    packages: [],
     dependencies: [
         .Project.module(.Utils).dependency,
         .SPM.RxSwift.dependency,

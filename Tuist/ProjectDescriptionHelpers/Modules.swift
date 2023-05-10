@@ -28,17 +28,8 @@ public enum Modules {
             return "Utils"
         case .Shared(let shared):
             return shared.rawValue
-        case .Features(let features, let featureLayer):
-            switch featureLayer {
-            case .Presentation:
-                return "Feature\(features.rawValue)Presentation"
-            case .UseCase:
-                return "Feature\(features.rawValue)UseCase"
-            case .Repository:
-                return "Feature\(features.rawValue)Repository"
-            case .DIContainer:
-                return "Feature\(features.rawValue)DIContainer"
-            }
+        case .Features(let featureModule, let featureLayerModule):
+            return "Feature\(featureModule.rawValue)\(featureLayerModule.rawValue)"
         case .Core(let core):
             return core.rawValue
         }
@@ -50,8 +41,8 @@ public enum Modules {
             return "Projects/\(name)"
         case .Shared:
             return "Projects/Shared/\(name)"
-        case .Features(let features, _):
-            return "Projects/Features/Feature\(features.rawValue)/\(name)"
+        case .Features(let featureModule, _):
+            return "Projects/Features/Feature\(featureModule.rawValue)/\(name)"
         case .Core:
             return "Projects/Core/\(name)"
         }
@@ -71,17 +62,19 @@ public enum FeatureModuleType: String, CaseIterable {
     var layerModules: [FeatureLayerModuleType] {
         switch self {
         case .Login:
-            return [.DIContainer, .Presentation, .UseCase, .Repository]
+            return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         case .Home:
-            return [.DIContainer, .Presentation, .UseCase, .Repository]
+            return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         case .StoolLog:
-            return [.DIContainer, .Presentation, .UseCase, .Repository]
+            return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         }
     }
 }
 
-public enum FeatureLayerModuleType: CaseIterable {
+public enum FeatureLayerModuleType: String, CaseIterable {
     case DIContainer
+    case Coordinator
+    case CoordinatorInterface
     case Presentation
     case UseCase
     case Repository

@@ -11,9 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.makeModule(
     name: Modules.Features(.StoolLog, .UseCase).name,
     product: .framework,
-    packages: [
-        .SPM.RxSwift.package
-    ],
+    packages: [],
     dependencies: [
         .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.Features(.StoolLog, .DIContainer)).dependency,

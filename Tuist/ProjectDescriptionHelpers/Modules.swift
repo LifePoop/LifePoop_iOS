@@ -62,17 +62,19 @@ public enum FeatureModuleType: String, CaseIterable {
     var layerModules: [FeatureLayerModuleType] {
         switch self {
         case .Login:
-            return [.DIContainer, .Presentation, .UseCase, .Repository]
+            return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         case .Home:
-            return [.DIContainer, .Presentation, .UseCase, .Repository]
+            return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         case .StoolLog:
-            return [.DIContainer, .Presentation, .UseCase, .Repository]
+            return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         }
     }
 }
 
-public enum FeatureLayerModuleType: CaseIterable {
+public enum FeatureLayerModuleType: String, CaseIterable {
     case DIContainer
+    case Coordinator
+    case CoordinatorInterface
     case Presentation
     case UseCase
     case Repository

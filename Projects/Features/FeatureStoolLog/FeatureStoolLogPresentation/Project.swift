@@ -20,6 +20,7 @@ let project = Project.makeModule(
         .Project.module(.Utils).dependency,
         .Project.module(.Features(.StoolLog, .UseCase)).dependency,
         .Project.module(.Features(.StoolLog, .DIContainer)).dependency,
+        .Project.module(.Features(.StoolLog, .CoordinatorInterface)).dependency,
         .SPM.SnapKit.dependency,
         .SPM.RxSwift.dependency,
         .SPM.RxRelay.dependency,

@@ -17,13 +17,12 @@ import Utils
 public final class LoginViewModel: ViewModelType {
     
     public struct Input {
-        let nextButtonDidTap = PublishRelay<Void>()
-        let fetchAccessTokenButtonDidTap = PublishRelay<Void>()
+        let didTapKakaoLoginButton = PublishRelay<Void>()
+        let didTapAppleLoginButton = PublishRelay<Void>()
     }
     
     public struct Output {
-        let accessToken = BehaviorRelay<String>(value: "")
-        let showToastMessage = PublishRelay<String>()
+
     }
     
     public let input = Input()
@@ -38,30 +37,16 @@ public final class LoginViewModel: ViewModelType {
         self.coordinator = coordinator
         
         // MARK: - Bind Input - nextButtonDidTap
-        
-        input.nextButtonDidTap
-            .bind {
-                coordinator?.coordinate(by: .nextButtonDidTap)
-            }
+        input.didTapKakaoLoginButton
+            .bind(onNext: {
+                coordinator?.coordinate(by: .didTapKakaoLoginButton)
+            })
             .disposed(by: disposeBag)
         
-        let fetchedAccessToken = input.fetchAccessTokenButtonDidTap
-            .withUnretained(self)
-            .flatMapMaterialized { `self`, _ in
-                self.loginUseCase.fetchAccessToken()
-            }
-            .share()
-        
-        fetchedAccessToken
-            .compactMap { $0.element }
-            .map { $0.name }
-            .bind(to: output.accessToken)
-            .disposed(by: disposeBag)
-        
-        fetchedAccessToken
-            .compactMap { $0.error }
-            .toastMeessageMap(to: .failToFetchAccessToken)
-            .bind(to: output.showToastMessage)
+        input.didTapAppleLoginButton
+            .bind(onNext: {
+                coordinator?.coordinate(by: .didTapAppleLoginButton)
+            })
             .disposed(by: disposeBag)
     }
 }

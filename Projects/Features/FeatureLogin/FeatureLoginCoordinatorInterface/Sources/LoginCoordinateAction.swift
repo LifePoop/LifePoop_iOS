@@ -9,6 +9,7 @@
 import Foundation
 
 public enum LoginCoordinateAction {
-    case userDidAuthorize
-    case nextButtonDidTap
+    case shouldShowLoginScene
+    case didTapAppleLoginButton
+    case didTapKakaoLoginButton
 }

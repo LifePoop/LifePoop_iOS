@@ -29,14 +29,16 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
     }
     
     public func start() {
-        coordinate(by: .userDidAuthorize)
+        coordinate(by: .shouldShowLoginScene)
     }
     
     public func coordinate(by coordinateAction: LoginCoordinateAction) {
         switch coordinateAction {
-        case .userDidAuthorize:
+        case .shouldShowLoginScene:
             showLoginViewController()
-        case .nextButtonDidTap:
+        case .didTapKakaoLoginButton:
+            finishFlow()
+        case .didTapAppleLoginButton:
             finishFlow()
         }
     }

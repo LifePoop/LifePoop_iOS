@@ -24,7 +24,7 @@ public final class DefaultAppCoordinator: AppCoordinator {
     }
     
     public func start() {
-        coordinate(by: .accessTokenDidfetch)
+        coordinate(by: .appDidStart)
     }
     
     public func coordinate(by coordinateAction: AppCoordinateAction) {

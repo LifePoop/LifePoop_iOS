@@ -17,22 +17,26 @@ import Utils
 
 public final class LoginViewController: UIViewController, ViewType {
     
-    private lazy var nextFlowButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Next", for: .normal)
-        button.setTitleColor(.blue, for: .normal)
-        return button
-    }()
+    private let mainLogoImageView = UIImageView(image: ImageAsset.logoLarge.image)
     
-    private lazy var fetchAccessTokenButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("Fetch AccessToken", for: .normal)
-        button.setTitleColor(.red, for: .normal)
-        return button
-    }()
+    private let mainCharacterImageView = UIImageView(image: ImageAsset.characterLarge.image)
+    
+    private let kakaoTalkLoginButon = LoginButton(
+        title: "카카오로 계속하기",
+        backgroundColor: ColorAsset.kakaoYellow.color,
+        fontColor: ColorAsset.kakaoBrown.color,
+        iconImage: ImageAsset.iconKakao.image
+    )
+    
+    private let appleLoginButton = LoginButton(
+        title: "Apple로 계속하기",
+        backgroundColor: ColorAsset.black.color,
+        fontColor: ColorAsset.white.color,
+        iconImage: ImageAsset.iconApple.image
+    )
     
     public var viewModel: LoginViewModel?
-    private let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,17 +47,17 @@ public final class LoginViewController: UIViewController, ViewType {
     public func bindInput(to viewModel: LoginViewModel) {
         let input = viewModel.input
         
-        nextFlowButton.rx.tap
-            .bind(to: input.nextButtonDidTap)
+        kakaoTalkLoginButon.rx.tap
+            .bind(to: input.didTapKakaoLoginButton)
             .disposed(by: disposeBag)
         
-        fetchAccessTokenButton.rx.tap
-            .bind(to: input.fetchAccessTokenButtonDidTap)
+        appleLoginButton.rx.tap
+            .bind(to: input.didTapAppleLoginButton)
             .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: LoginViewModel) {
-        
+        let output = viewModel.output
     }
 }
 
@@ -61,8 +65,7 @@ public final class LoginViewController: UIViewController, ViewType {
 
 private extension LoginViewController {
     func configureUI() {
-        view.backgroundColor = .systemGray4
-        navigationItem.title = "Login"
+        view.backgroundColor = .systemBackground
     }
 }
 
@@ -70,16 +73,34 @@ private extension LoginViewController {
 
 private extension LoginViewController {
     func layoutUI() {
-        view.addSubview(nextFlowButton)
-        view.addSubview(fetchAccessTokenButton)
-        
-        nextFlowButton.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        let frameHeight = view.frame.height
+        let frameWidth = view.frame.width
+
+        view.addSubview(mainLogoImageView)
+        view.addSubview(mainCharacterImageView)
+        view.addSubview(kakaoTalkLoginButon)
+        view.addSubview(appleLoginButton)
+
+        mainLogoImageView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(frameHeight*0.22)
         }
         
-        fetchAccessTokenButton.snp.makeConstraints { make in
+        mainCharacterImageView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(100)
+            make.top.equalToSuperview().offset(frameHeight*0.38)
+        }
+        
+        kakaoTalkLoginButon.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(mainCharacterImageView.snp.bottom).offset(frameHeight*0.14)
+            make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
+        }
+        
+        appleLoginButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(kakaoTalkLoginButon.snp.bottom).offset(frameHeight*0.01)
+            make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
         }
     }
 }

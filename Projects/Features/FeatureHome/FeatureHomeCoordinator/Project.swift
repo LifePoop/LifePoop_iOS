@@ -16,6 +16,8 @@ let project = Project.makeModule(
         .Project.module(.DesignSystem).dependency,
         .Project.module(.Features(.Home, .Presentation)).dependency,
         .Project.module(.Features(.Home, .CoordinatorInterface)).dependency,
+        .Project.module(.Features(.Setting, .Coordinator)).dependency,
+        .Project.module(.Features(.Setting, .CoordinatorInterface)).dependency,
         .Project.module(.Features(.StoolLog, .Coordinator)).dependency,
         .Project.module(.Utils).dependency,
     ],

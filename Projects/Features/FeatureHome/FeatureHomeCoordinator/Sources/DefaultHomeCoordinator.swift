@@ -12,6 +12,8 @@ import UIKit
 import DesignSystem
 import FeatureHomeCoordinatorInterface
 import FeatureHomePresentation
+import FeatureSettingCoordinator
+import FeatureSettingCoordinatorInterface
 import FeatureStoolLogCoordinator
 import Utils
 
@@ -35,6 +37,8 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
             pushHomeViewController()
         case .stoolLogButtonDidTap:
             startStoolLogCoordinatorFlow()
+        case .settingButtonDidTap:
+            startSettingCoordinatorFlow()
         }
     }
 }
@@ -49,6 +53,14 @@ private extension DefaultHomeCoordinator {
         navigationController.setViewControllers([viewController], animated: true)
     }
     
+    
+    func startSettingCoordinatorFlow() {
+        let settingCoordinator = DefaultSettingCoordinator(
+            navigationController: navigationController,
+            completionDelegate: self
+        )
+        settingCoordinator.start()
+    }
     typealias TransparentBackgroundViewController = UIViewController
     func presentTransparentBackgroundView() {
         let backgroundViewController = TransparentBackgroundViewController()

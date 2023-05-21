@@ -52,6 +52,38 @@ public final class NicknameViewModel: ViewModelType {
     }
     private var essentialConditions: Set<SelectableConfirmationCondition> = []
     
+    private let conditionEntities: [SelectableConfirmationCondition] = [
+        .init(
+            descriptionText: "전체동의",
+            descriptionTextSize: .large,
+            detailTerms: nil,
+            selectionType: .selectAll
+        ),
+        .init(
+            descriptionText: "만 14세 이상입니다.(필수)",
+            descriptionTextSize: .normal,
+            detailTerms: "",
+            selectionType: .essential
+        ),
+        .init(
+            descriptionText: "서비스 이용 약관 (필수)",
+            descriptionTextSize: .normal,
+            detailTerms: "",
+            selectionType: .essential
+        ),
+        .init(
+            descriptionText: "개인정보 수집 및 이용 (필수)",
+            descriptionTextSize: .normal,
+            detailTerms: "",
+            selectionType: .essential
+        ),
+        .init(
+            descriptionText: "이벤트, 프로모션 알림 메일 수신 (선택)",
+            descriptionTextSize: .normal,
+            detailTerms: nil,
+            selectionType: .optional
+        )
+    ]
 
     private weak var coordinator: LoginCoordinator?
     private let disposeBag = DisposeBag()
@@ -139,40 +171,7 @@ public final class NicknameViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.viewDidLoad
-            .map {
-                [
-                   .init(
-                       descriptionText: "전체동의",
-                       descriptionTextSize: .large,
-                       detailTerms: nil,
-                       selectionType: .selectAll
-                   ),
-                   .init(
-                       descriptionText: "만 14세 이상입니다.(필수)",
-                       descriptionTextSize: .normal,
-                       detailTerms: "",
-                       selectionType: .essential
-                   ),
-                   .init(
-                       descriptionText: "서비스 이용 약관 (필수)",
-                       descriptionTextSize: .normal,
-                       detailTerms: "",
-                       selectionType: .essential
-                   ),
-                   .init(
-                       descriptionText: "개인정보 수집 및 이용 (필수)",
-                       descriptionTextSize: .normal,
-                       detailTerms: "",
-                       selectionType: .essential
-                   ),
-                   .init(
-                       descriptionText: "이벤트, 프로모션 알림 메일 수신 (선택)",
-                       descriptionTextSize: .normal,
-                       detailTerms: nil,
-                       selectionType: .optional
-                   )
-               ]
-            }
+            .compactMap { [weak self] _ in self?.conditionEntities }
             .do(onNext: { [weak self] in
                 self?.essentialConditions = Set($0.filter { $0.selectionType == .essential })
             })

@@ -52,9 +52,15 @@ public final class NicknameViewController: UIViewController, ViewType {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationController?.setNavigationBarHidden(false, animated: false)
+        configureHandlingTouchEvent()
         configureUI()
         layoutUI()
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        nicknameTextField.becomeFirstResponder()
     }
     
     public func bindInput(to viewModel: NicknameViewModel) {
@@ -133,8 +139,19 @@ public final class NicknameViewController: UIViewController, ViewType {
 
 private extension NicknameViewController {
     
+    func configureHandlingTouchEvent() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func handleTapGesture(_ gesture: UITapGestureRecognizer) {
+         view.endEditing(true) // Hide the keyboard
+     }
+    
     func configureUI() {
         
+        navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.leftBarButtonItem = leftBarButton
         view.backgroundColor = .systemBackground
     }

@@ -22,6 +22,8 @@ final public class ConditionalTextField: UIControl {
     private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textField.delegate = self
+        textField.clearButtonMode = .whileEditing
         return textField
     }()
     
@@ -121,5 +123,23 @@ final public class ConditionalTextField: UIControl {
             make.leading.equalToSuperview()
             make.top.equalTo(separatorView.snp.bottom).offset(15)
         }
+    }
+}
+
+extension ConditionalTextField: UITextFieldDelegate {
+    
+    @discardableResult
+    public override func becomeFirstResponder() -> Bool {
+        textField.becomeFirstResponder()
+    }
+ 
+    @discardableResult
+    public override func resignFirstResponder() -> Bool {
+        textField.resignFirstResponder()
+    }
+    
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

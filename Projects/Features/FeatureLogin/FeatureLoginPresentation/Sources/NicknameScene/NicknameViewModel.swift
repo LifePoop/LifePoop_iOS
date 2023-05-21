@@ -25,7 +25,7 @@ public final class NicknameViewModel: ViewModelType {
 
     public struct Input {
         let didTapNextButton = PublishRelay<Void>()
-        let nicknameInput = PublishRelay<String>()
+        let didEnterTextValue = PublishRelay<String>()
         let didSelectConfirmCondition = PublishRelay<SelectableConfirmationCondition>()
         let didDeselectConfirmCondition = PublishRelay<SelectableConfirmationCondition>()
         let didSelectAllEssentialConditions = PublishRelay<Bool>()
@@ -45,6 +45,7 @@ public final class NicknameViewModel: ViewModelType {
 
     private var selectedConditions: Set<SelectableConfirmationCondition> = [] {
         didSet {
+            // TODO: 바인딩 메소드로 이동시키고, 유효성 판단 여부는 UseCase로 이동시켜도 될 지 다시 확인해야 함
             input.didSelectAllEssentialConditions.accept(
                 essentialConditions.isSubset(of: selectedConditions)
             )
@@ -52,6 +53,7 @@ public final class NicknameViewModel: ViewModelType {
     }
     private var essentialConditions: Set<SelectableConfirmationCondition> = []
     
+    // TODO: Repository -> UseCase 순서로 거쳐오도록 수정해야 함
     private let conditionEntities: [SelectableConfirmationCondition] = [
         .init(
             descriptionText: "전체동의",
@@ -142,8 +144,9 @@ public final class NicknameViewModel: ViewModelType {
                 owner.selectedConditions = selectedConditions
             })
             .disposed(by: disposeBag)
-        
-        let nicknameInputStatus = input.nicknameInput
+
+        // TODO: 텍스트 입력값 유효성 판단은 UseCase 내부로 이동해야 함
+        let nicknameInputStatus = input.didEnterTextValue
             .map { text -> (isPossible: Bool, status: TextFieldStatus) in
                 guard !text.isEmpty else { return (false, .none(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")) }
 

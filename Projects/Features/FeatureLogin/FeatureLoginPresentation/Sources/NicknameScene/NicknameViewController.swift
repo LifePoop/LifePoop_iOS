@@ -71,7 +71,7 @@ public final class NicknameViewController: UIViewController, ViewType {
             .disposed(by: disposeBag)
         
         nicknameTextField.rx.text
-            .bind(to: input.nicknameInput)
+            .bind(to: input.didEnterTextValue)
             .disposed(by: disposeBag)
         
         conditionSelectionCollectionView.rx.modelSelected(SelectableConfirmationCondition.self)

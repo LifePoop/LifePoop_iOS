@@ -29,17 +29,21 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
     }
     
     public func start() {
-        coordinate(by: .shouldShowLoginScene)
+        coordinate(by: .shouldShowLaunchScreen)
     }
     
     public func coordinate(by coordinateAction: LoginCoordinateAction) {
         switch coordinateAction {
+        case .shouldShowLaunchScreen:
+            showLaunchScreenViewController()
         case .shouldShowLoginScene:
             showLoginViewController()
-        case .didTapKakaoLoginButton:
+        case .didTapKakaoLoginButton, .didTapAppleLoginButton:
+            showNicknameViewController()
+        case .didTapNicknameSetButton:
             finishFlow()
-        case .didTapAppleLoginButton:
-            finishFlow()
+        case .shouldPopCurrentScene:
+            popCurrentViewController()
         }
     }
 }
@@ -47,14 +51,33 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
 // MARK: - Coordinating Methods
 
 private extension DefaultLoginCoordinator {
+    
+    func showLaunchScreenViewController() {
+        let viewController = LaunchScreenViewController()
+        let viewModel = LaunchScreenViewModel(coordinator: self)
+        viewController.bind(viewModel: viewModel)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
     func showLoginViewController() {
         let viewController = LoginViewController()
         let viewModel = LoginViewModel(coordinator: self)
         viewController.bind(viewModel: viewModel)
-        navigationController.setViewControllers([viewController], animated: false)
+        navigationController.pushViewController(viewController, animated: false)
+    }
+    
+    func showNicknameViewController() {
+        let viewController = NicknameViewController()
+        let viewModel = NicknameViewModel(coordinator: self)
+        viewController.bind(viewModel: viewModel)
+        navigationController.pushViewController(viewController, animated: true)
     }
     
     func finishFlow() {
         flowCompletionDelegate?.showNextFlow()
+    }
+    
+    func popCurrentViewController() {
+        navigationController.popViewController(animated: true)
     }
 }

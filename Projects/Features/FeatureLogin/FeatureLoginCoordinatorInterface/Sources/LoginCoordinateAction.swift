@@ -9,7 +9,10 @@
 import Foundation
 
 public enum LoginCoordinateAction {
+    case shouldShowLaunchScreen
     case shouldShowLoginScene
+    case shouldPopCurrentScene
     case didTapAppleLoginButton
     case didTapKakaoLoginButton
+    case didTapNicknameSetButton
 }

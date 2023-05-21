@@ -5,6 +5,9 @@
 //  Created by 김상혁 on 2023/04/26.
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
+
+import Foundation
+
 import RxRelay
 import RxSwift
 
@@ -22,7 +25,7 @@ public final class LoginViewModel: ViewModelType {
     }
     
     public struct Output {
-
+        let bannerImages = BehaviorRelay<[Data]>(value: [])
     }
     
     public let input = Input()

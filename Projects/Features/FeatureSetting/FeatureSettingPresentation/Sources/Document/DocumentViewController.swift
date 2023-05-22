@@ -52,11 +52,6 @@ public final class DocumentViewController: LifePoopViewController, ViewType {
     
     // MARK: - UI Setup
     
-    public override func configureUI() {
-        super.configureUI()
-        title = "프로필 정보 수정"
-    }
-    
     public override func layoutUI() {
         super.layoutUI()
         view.addSubview(textView)

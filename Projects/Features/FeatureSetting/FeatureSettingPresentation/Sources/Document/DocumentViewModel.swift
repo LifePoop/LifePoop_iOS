@@ -34,5 +34,10 @@ public final class DocumentViewModel: ViewModelType {
             .compactMap { Bundle.utils?.text(from: documentType.textFile) }
             .bind(to: output.documentText)
             .disposed(by: disposeBag)
+        
+        input.viewDidLoad
+            .map { documentType.title }
+            .bind(to: output.title)
+            .disposed(by: disposeBag)
     }
 }

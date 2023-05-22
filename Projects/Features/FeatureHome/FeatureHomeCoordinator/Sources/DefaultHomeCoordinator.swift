@@ -53,6 +53,20 @@ private extension DefaultHomeCoordinator {
         navigationController.setViewControllers([viewController], animated: true)
     }
     
+    func startStoolLogCoordinatorFlow() {
+        let stoolLogCoordinator = DefaultStoolLogCoordinator(
+            navigationController: UINavigationController(),
+            parentCoordinator: self
+        )
+        add(childCoordinator: stoolLogCoordinator)
+
+        guard let bottomSheetController = presentBottomSheetController(
+            contentViewController: stoolLogCoordinator.navigationController
+        ) else { return }
+        
+        bottomSheetController.delegate = stoolLogCoordinator
+        stoolLogCoordinator.start()
+    }
     
     func startSettingCoordinatorFlow() {
         let settingCoordinator = DefaultSettingCoordinator(
@@ -61,6 +75,11 @@ private extension DefaultHomeCoordinator {
         )
         settingCoordinator.start()
     }
+}
+
+// MARK: - Supporting Methods
+
+private extension DefaultHomeCoordinator {
     typealias TransparentBackgroundViewController = UIViewController
     func presentTransparentBackgroundView() {
         let backgroundViewController = TransparentBackgroundViewController()
@@ -94,22 +113,10 @@ private extension DefaultHomeCoordinator {
     }
 }
 
-// MARK: - Coordinating Methods
+// MARK: - Adopt Coordinator Completion Delegate
 
-private extension DefaultHomeCoordinator {
-
-    func startStoolLogCoordinatorFlow() {
-        let stoolLogCoordinator = DefaultStoolLogCoordinator(
-            navigationController: UINavigationController(),
-            parentCoordinator: self
-        )
-        add(childCoordinator: stoolLogCoordinator)
-
-        guard let bottomSheetController = presentBottomSheetController(
-            contentViewController: stoolLogCoordinator.navigationController
-        ) else { return }
-        
-        bottomSheetController.delegate = stoolLogCoordinator
-        stoolLogCoordinator.start()
+extension DefaultHomeCoordinator: SettingCoordinatorCompletionDelegate {
+    public func finishFlow() {
+        remove(childCoordinator: .setting)
     }
 }

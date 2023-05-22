@@ -30,6 +30,11 @@ public final class SettingTextTapTableViewCell: BaseSettingTextTapTableViewCell,
         let input = viewModel.input
         
         input.cellDidDequeue.accept(())
+        
+        tapGesture.rx.event
+            .map { _ in }
+            .bind(to: input.cellDidTap)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: SettingTextTapCellViewModel) {
@@ -43,8 +48,4 @@ public final class SettingTextTapTableViewCell: BaseSettingTextTapTableViewCell,
             .bind(to: addtionalTextLabel.rx.text)
             .disposed(by: disposeBag)
     }
-    
-//    public override func handleCellDidTap() {
-//        viewModel?.input.cellDidTap.accept(())
-//    }
 }

@@ -31,7 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
-        configureNavigationBarBackButton()
+        configureNavigationBarBackButtonItem()
         registerAllDependencies()
         
         let rootNavigationController = UINavigationController()
@@ -74,7 +74,7 @@ private extension SceneDelegate {
 // MARK: - UI Setup
 
 private extension SceneDelegate {
-    func configureNavigationBarBackButton() {
+    func configureNavigationBarBackButtonItem() {
         let emptyImage = UIImage()
         UINavigationBar.appearance().backIndicatorImage = emptyImage
         UINavigationBar.appearance().backIndicatorTransitionMaskImage = emptyImage

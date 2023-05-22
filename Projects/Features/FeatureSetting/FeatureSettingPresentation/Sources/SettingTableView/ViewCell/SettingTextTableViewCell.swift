@@ -30,6 +30,8 @@ public final class SettingTextTableViewCell: BaseSettingTableViewCell, ViewType 
         disposeBag = DisposeBag()
     }
     
+    // MARK: - ViewModel Binding
+    
     public func bindInput(to viewModel: SettingTextCellViewModel) {
         let input = viewModel.input
         
@@ -47,6 +49,8 @@ public final class SettingTextTableViewCell: BaseSettingTableViewCell, ViewType 
             .bind(to: settingLabel.rx.text)
             .disposed(by: disposeBag)
     }
+    
+    // MARK: - UI Setup
     
     override public func layoutUI() {
         super.layoutUI()

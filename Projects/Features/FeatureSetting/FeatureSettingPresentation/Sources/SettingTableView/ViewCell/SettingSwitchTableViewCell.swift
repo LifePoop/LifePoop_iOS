@@ -30,6 +30,8 @@ public final class SettingSwitchTableViewCell: BaseSettingTableViewCell, ViewTyp
         disposeBag = DisposeBag()
     }
     
+    // MARK: - ViewModel Binding
+    
     public func bindInput(to viewModel: SettingSwitchCellViewModel) {
         let input = viewModel.input
         
@@ -47,6 +49,8 @@ public final class SettingSwitchTableViewCell: BaseSettingTableViewCell, ViewTyp
             .bind(to: settingSwitch.rx.isOn)
             .disposed(by: disposeBag)
     }
+    
+    // MARK: - UI Setup
     
     override public func layoutUI() {
         super.layoutUI()

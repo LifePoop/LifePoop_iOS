@@ -24,6 +24,8 @@ public final class SettingTextTapTableViewCell: BaseSettingTextTapTableViewCell,
         disposeBag = DisposeBag()
     }
     
+    // MARK: - ViewModel Binding
+    
     public func bindInput(to viewModel: SettingTextTapCellViewModel) {
         let input = viewModel.input
         

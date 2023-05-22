@@ -30,6 +30,8 @@ public final class SettingLoginTypeTableViewCell: BaseSettingTableViewCell, View
         disposeBag = DisposeBag()
     }
     
+    // MARK: - ViewModel Binding
+    
     public func bindInput(to viewModel: SettingLoginTypeCellViewModel) {
         let input = viewModel.input
         
@@ -53,10 +55,12 @@ public final class SettingLoginTypeTableViewCell: BaseSettingTableViewCell, View
                 case .none:
                     return UIImage()
                 }
-            } // FIXME: Image Mapper 만들어서 LoginState와 연계
+            }
             .bind(to: loginTypeImageView.rx.image)
             .disposed(by: disposeBag)
     }
+    
+    // MARK: - UI Setup
     
     override public func layoutUI() {
         super.layoutUI()

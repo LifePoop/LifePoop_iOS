@@ -24,6 +24,8 @@ public class SettingTapTableViewCell: BaseSettingTapTableViewCell, ViewType {
         disposeBag = DisposeBag()
     }
     
+    // MARK: - ViewModel Binding
+    
     public func bindInput(to viewModel: SettingTapCellViewModel) {
         let input = viewModel.input
         

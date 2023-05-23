@@ -8,6 +8,7 @@
 
 import UIKit
 
+import DesignSystem
 import FeatureSettingCoordinatorInterface
 import FeatureSettingPresentation
 import Utils
@@ -40,10 +41,8 @@ public final class DefaultSettingCoordinator: SettingCoordinator {
             completionDelegate?.finishFlow()
         case .profileInfoDidTap:
             pushProfileInfoViewController()
-        case .termsOfServiceDidTap:
-            pushDocumentViewController(by: .termsOfService)
-        case .privacyPolicyDidTap:
-            pushDocumentViewController(by: .privacyPolicy)
+        case .termsOfServiceDidTap(let title, let text), .privacyPolicyDidTap(let title, let text):
+            pushDocumentViewController(with: title, text: text)
         case .sendFeedbackDidTap:
             pushFeedbackViewController()
         case .withdrawButtonDidTap:
@@ -75,10 +74,8 @@ private extension DefaultSettingCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func pushDocumentViewController(by documentType: DocumentType) {
-        let viewController = DocumentViewController()
-        let viewModel = DocumentViewModel(documentType: documentType)
-        viewController.bind(viewModel: viewModel)
+    func pushDocumentViewController(with title: String, text: String?) {
+        let viewController = DocumentViewController(title: title, text: text)
         navigationController.pushViewController(viewController, animated: true)
     }
     

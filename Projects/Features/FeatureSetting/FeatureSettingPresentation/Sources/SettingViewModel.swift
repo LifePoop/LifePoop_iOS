@@ -12,9 +12,9 @@ import RxRelay
 import RxSwift
 
 import CoreEntity
+import FeatureSettingCoordinatorInterface
 import FeatureSettingDIContainer
 import FeatureSettingUseCase
-import FeatureSettingCoordinatorInterface
 import Utils
 
 public final class SettingViewModel: ViewModelType {
@@ -104,11 +104,15 @@ public final class SettingViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.termsOfserviceDidTap
-            .bind { coordinator?.coordinate(by: .termsOfServiceDidTap) }
+            .map { DocumentType.termsOfService }
+            .compactMap { ($0.title, Bundle.utils?.text(from: $0.textFile)) }
+            .bind { coordinator?.coordinate(by: .termsOfServiceDidTap(title: $0, text: $1)) }
             .disposed(by: disposeBag)
         
         input.privacyPolicyDidTap
-            .bind { coordinator?.coordinate(by: .privacyPolicyDidTap) }
+            .map { DocumentType.privacyPolicy }
+            .compactMap { ($0.title, Bundle.utils?.text(from: $0.textFile)) }
+            .bind { coordinator?.coordinate(by: .termsOfServiceDidTap(title: $0, text: $1)) }
             .disposed(by: disposeBag)
         
         input.feedbackDidTap

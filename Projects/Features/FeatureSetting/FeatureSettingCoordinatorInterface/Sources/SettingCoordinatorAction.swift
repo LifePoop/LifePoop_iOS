@@ -12,8 +12,8 @@ public enum SettingCoordinateAction {
     case flowDidStart
     case flowDidFinish
     case profileInfoDidTap
-    case termsOfServiceDidTap
-    case privacyPolicyDidTap
+    case termsOfServiceDidTap(title: String, text: String?)
+    case privacyPolicyDidTap(title: String, text: String?)
     case sendFeedbackDidTap
     case withdrawButtonDidTap
     case logOutConfirmButtonDidTap

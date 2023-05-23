@@ -19,10 +19,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
     
     public init() { }
     
-    public func fetchAccessToken() -> Observable<CoreExampleEntity> {
-        return loginRepository
-            .fetchAccessToken()
-            .logErrorIfDetected(category: .network)
-            .asObservable()
+    public func fetchAccessToken() -> Single<KakaoAuthResult> {
+        return loginRepository.fetchAccessToken()
     }
 }

@@ -11,5 +11,5 @@ import RxSwift
 import CoreEntity
 
 public protocol LoginRepository {
-    func fetchAccessToken() -> Single<CoreExampleEntity>
+    func fetchAccessToken() -> Single<KakaoAuthResult>
 }

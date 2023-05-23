@@ -41,9 +41,14 @@ public final class LoginViewModel: ViewModelType {
         
         // MARK: - Bind Input - nextButtonDidTap
         input.didTapKakaoLoginButton
-            .bind(onNext: {
-                coordinator?.coordinate(by: .didTapKakaoLoginButton)
+            .withUnretained(self)
+            .flatMapLatest { owner, _ in owner.loginUseCase.fetchAccessToken() }
+            .bind(onNext: { result in
+                print(result)
             })
+//            .bind(onNext: {
+//                coordinator?.coordinate(by: .didTapKakaoLoginButton)
+//            })
             .disposed(by: disposeBag)
         
         input.didTapAppleLoginButton

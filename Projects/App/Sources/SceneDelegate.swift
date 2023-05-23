@@ -18,6 +18,9 @@ import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
 
+import KakaoSDKAuth
+import KakaoSDKCommon
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
@@ -34,6 +37,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         configureNavigationBarBackButtonItem()
         registerAllDependencies()
         
+        initKakaoAuthSDKInfo()
+        
         let rootNavigationController = UINavigationController()
         appCoordinator = DefaultAppCoordinator(navigationController: rootNavigationController)
         appCoordinator?.start()
@@ -41,7 +46,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = rootNavigationController
         window?.makeKeyAndVisible()
     }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+
+        if AuthApi.isKakaoTalkLoginUrl(url) {
+            _ = AuthController.handleOpenUrl(url: url)
+        }
+    }
 }
+
+// MARK: - KakaoAuthSDK Initialization
+
+private extension SceneDelegate {
+    func initKakaoAuthSDKInfo() {
+        KakaoSDK.initSDK(appKey: "f7f327d46b7184823676acc9d0a2035c")
+    }
+}
+
 
 // MARK: - Dependency Registration
 

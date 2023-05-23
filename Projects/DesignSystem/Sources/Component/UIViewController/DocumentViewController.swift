@@ -17,6 +17,7 @@ open class DocumentViewController: LifePoopViewController {
         textView.contentInset = UIEdgeInsets(top: 10, left: 24, bottom: 20, right: 24)
         textView.contentInsetAdjustmentBehavior = .never
         textView.font = .systemFont(ofSize: 12)
+        textView.isEditable = false
         return textView
     }()
     

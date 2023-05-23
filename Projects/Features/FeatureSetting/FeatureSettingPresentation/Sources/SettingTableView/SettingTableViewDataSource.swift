@@ -10,27 +10,28 @@ import UIKit
 
 public final class SettingTableViewDataSource: NSObject, UITableViewDataSource {
     
-    private var cellViewModels: [SettingListSection: [any SettingCellViewModel]] = [:]
+    private var sectionCellViewModelMap: [SettingListSection: [any SettingCellViewModel]] = [:]
     
     public func setCellViewModels(_ cellViewModels: [any SettingCellViewModel]) {
-        self.cellViewModels = Dictionary(grouping: cellViewModels) {
-            $0.model.section
+        cellViewModels.forEach { cellViewModel in
+            let section = SettingSectionMapper.mapSection(for: cellViewModel.model)
+            sectionCellViewModelMap[section, default: []].append(cellViewModel)
         }
     }
     
     public func numberOfSections(in tableView: UITableView) -> Int {
-        return cellViewModels.keys.count
+        return sectionCellViewModelMap.keys.count
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let section = SettingListSection(rawValue: section),
-              let numberOfRows = cellViewModels[section]?.count else { return .zero }
+              let numberOfRows = sectionCellViewModelMap[section]?.count else { return .zero }
         return numberOfRows
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let section = SettingListSection(rawValue: indexPath.section),
-              let cellViewModelsInSection = cellViewModels[section] else {
+              let cellViewModelsInSection = sectionCellViewModelMap[section] else {
             return UITableViewCell()
         }
         

@@ -147,42 +147,43 @@ public final class SettingViewModel: ViewModelType {
 
 private extension SettingViewModel {
     func generateSettingCellViewModel(by settingType: SettingType) -> any SettingCellViewModel {
+        let model = SettingModelFactory.createModel(for: settingType)
         switch settingType {
         case .loginType:
             return SettingLoginTypeCellViewModel(
-                model: settingType.model,
+                model: model,
                 loginType: state.userLoginType
             )
         case .profile:
             return SettingTextTapCellViewModel(
-                model: settingType.model,
+                model: model,
                 text: state.userNickname,
                 tapAction: input.profileInfoDidTap
             )
         case .autoLogin:
             return SettingSwitchCellViewModel(
-                model: settingType.model,
+                model: model,
                 isSwitchOn: state.isAutoLoginOn,
                 switchToggleAction: input.useAutoLoginDidToggle
             )
         case .version:
             return SettingTextCellViewModel(
-                model: settingType.model,
+                model: model,
                 text: state.version
             )
         case .termsOfService:
             return SettingTapCellViewModel(
-                model: settingType.model,
+                model: model,
                 tapAction: input.termsOfserviceDidTap
             )
         case .privacyPolicy:
             return SettingTapCellViewModel(
-                model: settingType.model,
+                model: model,
                 tapAction: input.privacyPolicyDidTap
             )
         case .sendFeedback:
             return SettingTapCellViewModel(
-                model: settingType.model,
+                model: model,
                 tapAction: input.feedbackDidTap
             )
         }

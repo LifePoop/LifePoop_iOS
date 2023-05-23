@@ -34,18 +34,10 @@ struct SettingCellFactory {
             return cell
         case .tap:
             guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: SettingTapTableViewCell.identifier,
+                withIdentifier: SettingTapActionTableViewCell.identifier,
                 for: indexPath
-            ) as? SettingTapTableViewCell,
-            let viewModel = viewModel as? SettingTapCellViewModel else { return UITableViewCell() }
-            cell.bind(viewModel: viewModel)
-            return cell
-        case .textTap:
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: SettingTextTapTableViewCell.identifier,
-                for: indexPath
-            ) as? SettingTextTapTableViewCell,
-            let viewModel = viewModel as? SettingTextTapCellViewModel else { return UITableViewCell() }
+            ) as? SettingTapActionTableViewCell,
+            let viewModel = viewModel as? SettingTapActionCellViewModel else { return UITableViewCell() }
             cell.bind(viewModel: viewModel)
             return cell
         case .text:

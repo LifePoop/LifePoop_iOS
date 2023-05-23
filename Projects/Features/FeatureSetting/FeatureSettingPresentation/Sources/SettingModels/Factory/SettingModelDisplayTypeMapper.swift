@@ -13,13 +13,11 @@ struct SettingModelDisplayTypeMapper {
         switch model.type {
         case .loginType:
             return .loginType
-        case .profile:
-            return .textTap
         case .autoLogin:
             return .`switch`
         case .version:
             return .text
-        case .termsOfService, .privacyPolicy, .sendFeedback:
+        case .profile, .termsOfService, .privacyPolicy, .sendFeedback:
             return .tap
         }
     }

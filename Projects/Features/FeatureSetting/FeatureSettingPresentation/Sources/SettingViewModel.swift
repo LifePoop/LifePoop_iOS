@@ -159,10 +159,10 @@ private extension SettingViewModel {
                 loginType: state.userLoginType
             )
         case .profile:
-            return SettingTextTapCellViewModel(
+            return SettingTapActionCellViewModel(
                 model: model,
-                text: state.userNickname,
-                tapAction: input.profileInfoDidTap
+                tapAction: input.profileInfoDidTap,
+                additionalText: state.userNickname
             )
         case .autoLogin:
             return SettingSwitchCellViewModel(
@@ -176,17 +176,17 @@ private extension SettingViewModel {
                 text: state.version
             )
         case .termsOfService:
-            return SettingTapCellViewModel(
+            return SettingTapActionCellViewModel(
                 model: model,
                 tapAction: input.termsOfserviceDidTap
             )
         case .privacyPolicy:
-            return SettingTapCellViewModel(
+            return SettingTapActionCellViewModel(
                 model: model,
                 tapAction: input.privacyPolicyDidTap
             )
         case .sendFeedback:
-            return SettingTapCellViewModel(
+            return SettingTapActionCellViewModel(
                 model: model,
                 tapAction: input.feedbackDidTap
             )

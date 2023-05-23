@@ -30,16 +30,12 @@ public final class SettingViewController: LifePoopViewController, ViewType {
             forCellReuseIdentifier: SettingSwitchTableViewCell.identifier
         )
         tableView.register(
-            SettingTapTableViewCell.self,
-            forCellReuseIdentifier: SettingTapTableViewCell.identifier
+            SettingTapActionTableViewCell.self,
+            forCellReuseIdentifier: SettingTapActionTableViewCell.identifier
         )
         tableView.register(
             SettingTextTableViewCell.self,
             forCellReuseIdentifier: SettingTextTableViewCell.identifier
-        )
-        tableView.register(
-            SettingTextTapTableViewCell.self,
-            forCellReuseIdentifier: SettingTextTapTableViewCell.identifier
         )
         tableView.register(
             SettingTableHeaderView.self,

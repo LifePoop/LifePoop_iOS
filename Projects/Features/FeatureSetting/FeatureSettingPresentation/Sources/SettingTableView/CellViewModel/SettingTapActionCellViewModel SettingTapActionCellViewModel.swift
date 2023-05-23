@@ -1,5 +1,5 @@
 //
-//  SettingTapCellViewModel.swift
+//  SettingTapActionCellViewModel.swift
 //  FeatureSettingPresentation
 //
 //  Created by 김상혁 on 2023/05/21.
@@ -13,7 +13,7 @@ import RxSwift
 
 import Utils
 
-public final class SettingTapCellViewModel: SettingCellViewModel {
+public final class SettingTapActionCellViewModel: SettingCellViewModel {
     
     public struct Input {
         let cellDidDequeue = PublishRelay<Void>()
@@ -22,16 +22,18 @@ public final class SettingTapCellViewModel: SettingCellViewModel {
     
     public struct Output {
         let settingDescription = BehaviorRelay<String>(value: "")
+        let additionalText: BehaviorRelay<String>?
     }
     
     public let input = Input()
-    public let output = Output()
+    public let output: Output
     public let model: SettingModel
     
     private let disposeBag = DisposeBag()
     
-    public init(model: SettingModel, tapAction: PublishRelay<Void>) {
+    public init(model: SettingModel, tapAction: PublishRelay<Void>, additionalText: BehaviorRelay<String>? = nil) {
         self.model = model
+        self.output = Output(additionalText: additionalText)
         
         input.cellDidDequeue
             .map { model.description }

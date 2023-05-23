@@ -12,6 +12,5 @@ public enum SettingInfoDisplayType {
     case loginType
     case `switch`
     case tap
-    case textTap
     case text
 }

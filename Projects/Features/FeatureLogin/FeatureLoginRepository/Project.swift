@@ -18,6 +18,9 @@ let project = Project.makeModule(
         .Project.module(.Core(.CoreNetworkService)).dependency,
         .Project.module(.Features(.Login, .UseCase)).dependency,
         .Project.module(.Utils).dependency,
-        .SPM.RxSwift.dependency
+        .SPM.RxSwift.dependency,
+        .SPM.KakaoSDKAuth.dependency,
+        .SPM.KakaoSDKCommon.dependency,
+        .SPM.KakaoSDKUser.dependency
     ]
 )

@@ -13,12 +13,17 @@ public extension TargetDependency {
         case RxSwift
         case RxCocoa
         case RxRelay
-        
+        case KakaoSDKCommon
+        case KakaoSDKAuth
+        case KakaoSDKUser
+
         public var dependency: TargetDependency {
             switch self {
             case .SnapKit:
                 return .package(product: rawValue)
             case .RxSwift, .RxCocoa, .RxRelay:
+                return .external(name: rawValue)
+            case .KakaoSDKCommon, .KakaoSDKAuth, .KakaoSDKUser:
                 return .external(name: rawValue)
             }
         }

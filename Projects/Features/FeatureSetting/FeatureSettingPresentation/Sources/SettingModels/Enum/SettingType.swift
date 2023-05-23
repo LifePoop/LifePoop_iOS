@@ -16,23 +16,4 @@ public enum SettingType: CaseIterable {
     case termsOfService
     case privacyPolicy
     case sendFeedback
-    
-    var model: SettingModel {
-        switch self {
-        case .loginType:
-            return LoginTypeSettingModel()
-        case .profile:
-            return ProfileSettingModel()
-        case .autoLogin:
-            return AutoLoginSettingModel()
-        case .version:
-            return VersionSettingModel()
-        case .termsOfService:
-            return TermsOfServiceSettingModel()
-        case .privacyPolicy:
-            return PrivacyPolicySettingModel()
-        case .sendFeedback:
-            return SendFeedbackSettingModel()
-        }
-    }
 }

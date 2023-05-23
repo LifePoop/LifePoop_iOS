@@ -31,6 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
+        configureNavigationBarBackButtonItem()
         registerAllDependencies()
         
         let rootNavigationController = UINavigationController()
@@ -67,5 +68,15 @@ private extension SceneDelegate {
     func registerHomeDependencies() {
         HomeDIContainer.shared.register(service: HomeUseCase.self) { DefaultHomeUseCase() }
         HomeDIContainer.shared.register(service: HomeRepository.self) { DefaultHomeRepository() }
+    }
+}
+
+// MARK: - UI Setup
+
+private extension SceneDelegate {
+    func configureNavigationBarBackButtonItem() {
+        let emptyImage = UIImage()
+        UINavigationBar.appearance().backIndicatorImage = emptyImage
+        UINavigationBar.appearance().backIndicatorTransitionMaskImage = emptyImage
     }
 }

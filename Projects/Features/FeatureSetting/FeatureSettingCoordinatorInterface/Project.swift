@@ -2,21 +2,18 @@
 //  Project.swift
 //  ProjectDescriptionHelpers
 //
-//  Created by 김상혁 on 2023/04/19.
+//  Created by 김상혁 on 2023/05/10.
 //
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeModule(
-    name: Modules.Utils.name,
+    name: Modules.Features(.Setting, .CoordinatorInterface).name,
     product: .framework,
     packages: [],
     dependencies: [
-        .SPM.RxSwift.dependency,
-        .SPM.RxCocoa.dependency,
-        .SPM.RxRelay.dependency
+        .Project.module(.Utils).dependency
     ],
-    resources: ["Resources/**"],
     hasTests: false
 )

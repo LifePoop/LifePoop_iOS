@@ -36,48 +36,6 @@ public final class SettingTableViewDataSource: NSObject, UITableViewDataSource {
         }
         
         let cellViewModel = cellViewModelsInSection[indexPath.row]
-        
-        switch cellViewModel.model.displayType {
-        case .loginType:
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: SettingLoginTypeTableViewCell.identifier,
-                for: indexPath
-            ) as? SettingLoginTypeTableViewCell else { return UITableViewCell() }
-            guard let viewModel = cellViewModel as? SettingLoginTypeCellViewModel else { return UITableViewCell() }
-            cell.bind(viewModel: viewModel)
-            return cell
-        case .switch:
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: SettingSwitchTableViewCell.identifier,
-                for: indexPath
-            ) as? SettingSwitchTableViewCell else { return UITableViewCell() }
-            guard let viewModel = cellViewModel as? SettingSwitchCellViewModel else { return UITableViewCell() }
-            cell.bind(viewModel: viewModel)
-            return cell
-        case .tap:
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: SettingTapTableViewCell.identifier,
-                for: indexPath
-            ) as? SettingTapTableViewCell else { return UITableViewCell() }
-            guard let viewModel = cellViewModel as? SettingTapCellViewModel else { return UITableViewCell() }
-            cell.bind(viewModel: viewModel)
-            return cell
-        case .textTap:
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: SettingTextTapTableViewCell.identifier,
-                for: indexPath
-            ) as? SettingTextTapTableViewCell else { return UITableViewCell() }
-            guard let viewModel = cellViewModel as? SettingTextTapCellViewModel else { return UITableViewCell() }
-            cell.bind(viewModel: viewModel)
-            return cell
-        case .text:
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: SettingTextTableViewCell.identifier,
-                for: indexPath
-            ) as? SettingTextTableViewCell else { return UITableViewCell() }
-            guard let viewModel = cellViewModel as? SettingTextCellViewModel else { return UITableViewCell() }
-            cell.bind(viewModel: viewModel)
-            return cell
-        }
+        return SettingCellFactory.dequeueAndBindCell(tableView, at: indexPath, with: cellViewModel)
     }
 }

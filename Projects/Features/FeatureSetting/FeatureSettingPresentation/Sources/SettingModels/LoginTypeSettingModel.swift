@@ -10,6 +10,5 @@ import Foundation
 
 public struct LoginTypeSettingModel: SettingModel {
     public let description: String = "로그인 정보"
-    public let section: SettingListSection = .info
-    public let displayType: SettingInfoDisplayType = .loginType
+    public let type: SettingType = .loginType
 }

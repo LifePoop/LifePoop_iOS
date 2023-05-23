@@ -10,6 +10,5 @@ import Foundation
 
 public struct SendFeedbackSettingModel: SettingModel {
     public let description: String = "의견 보내기"
-    public let section: SettingListSection = .support
-    public let displayType: SettingInfoDisplayType = .tap
+    public let type: SettingType = .sendFeedback
 }

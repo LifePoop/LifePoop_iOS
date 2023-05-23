@@ -10,6 +10,5 @@ import Foundation
 
 public struct AutoLoginSettingModel: SettingModel {
     public let description: String = "자동 로그인 사용"
-    public let section: SettingListSection = .info
-    public let displayType: SettingInfoDisplayType = .switch
+    public let type: SettingType = .autoLogin
 }

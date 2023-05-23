@@ -10,6 +10,5 @@ import Foundation
 
 public struct ProfileSettingModel: SettingModel {
     public let description: String = "프로필 정보"
-    public let section: SettingListSection = .info
-    public let displayType: SettingInfoDisplayType = .textTap
+    public let type: SettingType = .profile
 }

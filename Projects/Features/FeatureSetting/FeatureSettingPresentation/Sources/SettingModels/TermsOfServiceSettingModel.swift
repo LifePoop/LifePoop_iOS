@@ -10,6 +10,5 @@ import Foundation
 
 public struct TermsOfServiceSettingModel: SettingModel {
     public let description: String = "서비스 이용 약관"
-    public let section: SettingListSection = .support
-    public let displayType: SettingInfoDisplayType = .tap
+    public let type: SettingType = .termsOfService
 }

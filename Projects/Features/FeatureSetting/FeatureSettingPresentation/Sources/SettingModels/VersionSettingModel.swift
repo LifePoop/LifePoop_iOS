@@ -10,6 +10,5 @@ import Foundation
 
 public struct VersionSettingModel: SettingModel {
     public let description: String = "버전 정보"
-    public let section: SettingListSection = .info
-    public let displayType: SettingInfoDisplayType = .text
+    public let type: SettingType = .version
 }

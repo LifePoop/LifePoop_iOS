@@ -10,6 +10,5 @@ import Foundation
 
 public protocol SettingModel {
     var description: String { get }
-    var section: SettingListSection { get }
-    var displayType: SettingInfoDisplayType { get }
+    var type: SettingType { get }
 }

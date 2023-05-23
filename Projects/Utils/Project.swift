@@ -17,5 +17,6 @@ let project = Project.makeModule(
         .SPM.RxCocoa.dependency,
         .SPM.RxRelay.dependency
     ],
+    resources: ["Resources/**"],
     hasTests: false
 )

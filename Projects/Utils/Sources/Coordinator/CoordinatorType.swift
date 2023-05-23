@@ -13,4 +13,5 @@ public enum CoordinatorType: Hashable {
     case login
     case home
     case stoolLog
+    case setting
 }

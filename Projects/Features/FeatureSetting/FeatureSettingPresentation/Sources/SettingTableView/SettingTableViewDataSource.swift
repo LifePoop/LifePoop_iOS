@@ -14,7 +14,7 @@ public final class SettingTableViewDataSource: NSObject, UITableViewDataSource {
     
     public func setCellViewModels(_ cellViewModels: [any SettingCellViewModel]) {
         cellViewModels.forEach { cellViewModel in
-            let section = SettingSectionMapper.mapSection(for: cellViewModel.model)
+            let section = SettingModelSectionMapper.mapSection(for: cellViewModel.model)
             sectionCellViewModelMap[section, default: []].append(cellViewModel)
         }
     }

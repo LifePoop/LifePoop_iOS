@@ -23,8 +23,14 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
     public var navigationController: UINavigationController
     public let type: CoordinatorType = .home
     
-    public init(navigationController: UINavigationController) {
+    public weak var flowCompletionDelegate: HomeCoordinatorCompletionDelegate?
+    
+    public init(
+        navigationController: UINavigationController,
+        flowCompletionDelegate: HomeCoordinatorCompletionDelegate?
+    ) {
         self.navigationController = navigationController
+        self.flowCompletionDelegate =  flowCompletionDelegate
     }
     
     public func start() {
@@ -35,6 +41,8 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
         switch coordinateAction {
         case .flowDidStart:
             pushHomeViewController()
+        case .flowDidFinish:
+            flowCompletionDelegate?.finishFlow()
         case .stoolLogButtonDidTap:
             startStoolLogCoordinatorFlow()
         case .settingButtonDidTap:
@@ -118,5 +126,13 @@ private extension DefaultHomeCoordinator {
 extension DefaultHomeCoordinator: SettingCoordinatorCompletionDelegate {
     public func finishFlow() {
         remove(childCoordinator: .setting)
+    }
+    
+    public func finishFlow(by completion: SettingFlowCompletion) {
+        remove(childCoordinator: .setting)
+        switch completion {
+        case .userDidWithdraw, .userDidLogout:
+            flowCompletionDelegate?.finishFlow()
+        }
     }
 }

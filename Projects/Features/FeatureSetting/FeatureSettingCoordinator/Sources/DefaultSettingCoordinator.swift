@@ -47,8 +47,10 @@ public final class DefaultSettingCoordinator: SettingCoordinator {
             pushFeedbackViewController()
         case .withdrawButtonDidTap:
             pushWithdrawalViewController()
-        case .logOutConfirmButtonDidTap, .withdrawConfirmButtonDidTap:
-            startLoginCoordinatorFlow()
+        case .logOutConfirmButtonDidTap:
+            completionDelegate?.finishFlow(by: .userDidLogout)
+        case .withdrawConfirmButtonDidTap:
+            completionDelegate?.finishFlow(by: .userDidWithdraw)
         }
     }
     

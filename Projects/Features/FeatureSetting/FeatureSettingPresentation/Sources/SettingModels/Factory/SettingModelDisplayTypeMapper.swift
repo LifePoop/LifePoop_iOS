@@ -17,7 +17,7 @@ struct SettingModelDisplayTypeMapper {
             return .`switch`
         case .version:
             return .text
-        case .profile, .termsOfService, .privacyPolicy, .sendFeedback:
+        case .profile, .feedVisibility, .termsOfService, .privacyPolicy, .sendFeedback:
             return .tap
         }
     }

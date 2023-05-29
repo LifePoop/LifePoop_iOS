@@ -159,11 +159,22 @@ private extension SettingViewModel {
                 loginType: state.userLoginType
             )
         case .profile:
-            return SettingTapActionCellViewModel(
+            let cellViewModel = SettingTapActionCellViewModel(
                 model: model,
-                tapAction: input.profileInfoDidTap,
-                additionalText: state.userNickname
+                tapAction: input.profileInfoDidTap
             )
+            cellViewModel.bindCellText(with: state.userNickname)
+            return cellViewModel
+        case .feedVisibility:
+            let cellViewModel = SettingTapActionCellViewModel(
+                model: model,
+                tapAction: input.feedVisibilityDidTap
+            )
+            state.feedVisibility
+                .compactMap { $0?.text }
+                .bind(to: cellViewModel.output.additionalText)
+                .disposed(by: disposeBag)
+            return cellViewModel
         case .autoLogin:
             return SettingSwitchCellViewModel(
                 model: model,

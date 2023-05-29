@@ -1,5 +1,5 @@
 //
-//  LoginError.swift
+//  AuthenticationError.swift
 //  FeatureLoginRepository
 //
 //  Created by Lee, Joon Woo on 2023/05/25.
@@ -8,7 +8,8 @@
 
 import Foundation
 
-public enum LoginError: Error {
+public enum AuthenticationError: Error {
+    case authInfoNotInitialized
     case kakaoTalkLoginNotAvailable
     case authTokenNil
 }

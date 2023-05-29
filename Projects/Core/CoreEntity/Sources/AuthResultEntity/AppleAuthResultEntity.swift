@@ -8,11 +8,11 @@
 
 import Foundation
 
-public struct AppleAuthResultEntity {
+public struct AppleAuthResultEntity: AuthResultPossessable {
     
-    public let identityToken: String
+    public let accessToken: String
     
-    public init(identityToken: String) {
-        self.identityToken = identityToken
+    public init(accessToken: String) {
+        self.accessToken = accessToken
     }
 }

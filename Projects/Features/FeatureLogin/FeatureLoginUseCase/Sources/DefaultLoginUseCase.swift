@@ -19,7 +19,12 @@ public final class DefaultLoginUseCase: LoginUseCase {
     
     public init() { }
     
-    public func fetchAccessToken() -> Single<KakaoAuthResult> {
-        return loginRepository.fetchAccessToken()
+    public func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity> {
+        return loginRepository.fetchKakaoAuthToken()
+    }
+    
+    public func fetchAppleAuthToken() -> Single<AppleAuthResultEntity> {
+        return loginRepository.fetchAppleAuthToken().catchAndReturn(.init(identityToken: "nil"))
+
     }
 }

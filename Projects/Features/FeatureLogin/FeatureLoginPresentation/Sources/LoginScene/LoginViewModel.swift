@@ -42,17 +42,19 @@ public final class LoginViewModel: ViewModelType {
         // MARK: - Bind Input - nextButtonDidTap
         input.didTapKakaoLoginButton
             .withUnretained(self)
-            .flatMapLatest { owner, _ in owner.loginUseCase.fetchAccessToken() }
+            .flatMapLatest { owner, _ in owner.loginUseCase.fetchKakaoAuthToken() }
             .bind(onNext: { result in
+                // 임시로 토큰값 확인
                 print(result)
+                coordinator?.coordinate(by: .didTapKakaoLoginButton)
             })
-//            .bind(onNext: {
-//                coordinator?.coordinate(by: .didTapKakaoLoginButton)
-//            })
             .disposed(by: disposeBag)
         
         input.didTapAppleLoginButton
-            .bind(onNext: {
+            .withUnretained(self)
+            .flatMapLatest { owner, _ in owner.loginUseCase.fetchAppleAuthToken() }
+            .bind(onNext: { result in
+                print(result)
                 coordinator?.coordinate(by: .didTapAppleLoginButton)
             })
             .disposed(by: disposeBag)

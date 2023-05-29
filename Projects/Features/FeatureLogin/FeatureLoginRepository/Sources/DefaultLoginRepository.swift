@@ -6,6 +6,8 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
+import AuthenticationServices
+
 import KakaoSDKAuth
 import KakaoSDKCommon
 import KakaoSDKUser
@@ -17,39 +19,55 @@ import CoreNetworkService
 import FeatureLoginUseCase
 import Utils
 
-public final class DefaultLoginRepository: LoginRepository {
+public final class DefaultLoginRepository: NSObject, LoginRepository {
     
-    @Inject(CoreDIContainer.shared) private var urlSessionEndpointService: EndpointService
-    @Inject(CoreDIContainer.shared) private var coreExampleDataMapper: AnyDataMapper<CoreExampleDTO, CoreExampleEntity>
+    public override init() { }
     
-    public init() { }
-    
-    public func fetchAccessToken() -> Single<KakaoAuthResult> {
-        Single.create { observer in
-            
-            if UserApi.isKakaoTalkLoginAvailable() {
-                UserApi.shared.loginWithKakaoTalk(completion: { token, error in
-                    if let error = error {
-                        observer(.failure(error))
-                        return
-                    }
-                    
-                    guard let token = token else { return }
-                    let result = KakaoAuthResult(accessToken: token.accessToken, refreshToken: token.refreshToken)
-                    observer(.success(result))
-                })
+    public func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity> {
+        Single.create { [weak self] observer in
+            guard UserApi.isKakaoTalkLoginAvailable() else {
+                observer(.failure(LoginError.kakaoTalkLoginNotAvailable))
+                return Disposables.create { }
             }
             
+            UserApi.shared.loginWithKakaoTalk(completion: { token, error in
+                if let error = error {
+                    observer(.failure(error))
+                    return
+                }
+                
+                guard let token = token else {
+                    observer(.failure(LoginError.authTokenNil))
+                    return
+                }
+                
+                let result = KakaoAuthResultEntity(accessToken: token.accessToken, refreshToken: token.refreshToken)
+                observer(.success(result))
+                
+                self?.saveAuthTokenInKeyChain(token.accessToken)
+                self?.saveAuthTokenInKeyChain(token.refreshToken)
+            })
+
             return Disposables.create { }
         }
-//        return urlSessionEndpointService.fetchData(
-//            endpoint: LifePoopTarget.fetchAccessToken(
-//                clientID: "exampleID",
-//                clientSecret: "exampleSecret",
-//                tempCode: "exampleTestCode"
-//            )
-//        )
-//        .decodeMap(CoreExampleDTO.self)
-//        .transformMap(coreExampleDataMapper)
+    }
+    
+    public func fetchAppleAuthToken() -> Single<AppleAuthResultEntity> {
+        let appleIdProvider = ASAuthorizationAppleIDProvider()
+
+        return appleIdProvider.rx.login(scope: [.fullName, .email])
+            .compactMap { $0.credential as? ASAuthorizationAppleIDCredential }
+            .compactMap { $0.identityToken }
+            .compactMap { String(data: $0, encoding: .utf8) }
+            .map { AppleAuthResultEntity(identityToken: $0) }
+            .asSingle()
+    }
+}
+
+private extension DefaultLoginRepository {
+
+    // 키체인에 저장 처리
+    func saveAuthTokenInKeyChain(_ token: String) {
+        
     }
 }

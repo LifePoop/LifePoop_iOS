@@ -10,6 +10,9 @@ import RxSwift
 
 import CoreEntity
 
-public protocol LoginRepository {
-    func fetchAccessToken() -> Single<KakaoAuthResult>
+public protocol LoginRepository: AnyObject {
+    
+    func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity>
+    
+    func fetchAppleAuthToken() -> Single<AppleAuthResultEntity>
 }

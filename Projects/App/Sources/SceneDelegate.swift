@@ -7,6 +7,7 @@
 
 import UIKit
 
+import CoreAuthentication
 import CoreDIContainer
 import CoreNetworkService
 import CoreStorageService
@@ -18,8 +19,7 @@ import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
 
-import KakaoSDKAuth
-import KakaoSDKCommon
+import Utils
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -38,6 +38,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         registerAllDependencies()
         
         initKakaoAuthSDKInfo()
+        initAppleAuthInfo(with: window)
         
         let rootNavigationController = UINavigationController()
         appCoordinator = DefaultAppCoordinator(navigationController: rootNavigationController)
@@ -50,9 +51,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
 
-        if AuthApi.isKakaoTalkLoginUrl(url) {
-            _ = AuthController.handleOpenUrl(url: url)
-        }
+        KakaoAuthManager.handleLoginUrl(url)
     }
 }
 
@@ -60,7 +59,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 private extension SceneDelegate {
     func initKakaoAuthSDKInfo() {
-        KakaoSDK.initSDK(appKey: "f7f327d46b7184823676acc9d0a2035c")
+        KakaoAuthManager.initAuthInfo(rightAfter: nil)
+    }
+    
+    func initAppleAuthInfo(with keyWindow: UIWindow?) {
+        AppleAuthManager.initAuthInfo(rightAfter: {
+            ASAuthorizationControllerProxy.targetWindow = keyWindow
+        })
     }
 }
 

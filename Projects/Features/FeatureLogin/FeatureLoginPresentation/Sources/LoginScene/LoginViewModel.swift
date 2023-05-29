@@ -54,6 +54,7 @@ public final class LoginViewModel: ViewModelType {
             .withUnretained(self)
             .flatMapLatest { owner, _ in owner.loginUseCase.fetchAppleAuthToken() }
             .bind(onNext: { result in
+                // 임시로 토큰값 확인
                 print(result)
                 coordinator?.coordinate(by: .didTapAppleLoginButton)
             })

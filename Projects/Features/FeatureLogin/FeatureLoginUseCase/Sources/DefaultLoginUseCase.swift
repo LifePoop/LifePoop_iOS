@@ -20,11 +20,18 @@ public final class DefaultLoginUseCase: LoginUseCase {
     public init() { }
     
     public func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity> {
-        return loginRepository.fetchKakaoAuthToken()
+        return loginRepository.fetchAccessToken(for: .kakao)
+            .asObservable()
+            .compactMap { $0 as? KakaoAuthResultEntity }
+            .asSingle()
+            .catch { _ in Single.never() }
     }
     
     public func fetchAppleAuthToken() -> Single<AppleAuthResultEntity> {
-        return loginRepository.fetchAppleAuthToken().catchAndReturn(.init(identityToken: "nil"))
-
+        return loginRepository.fetchAccessToken(for: .apple)
+            .asObservable()
+            .compactMap { $0 as? AppleAuthResultEntity }
+            .asSingle()
+            .catch { _ in Single.never() }
     }
 }

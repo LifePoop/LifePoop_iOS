@@ -29,7 +29,12 @@ public extension TargetDependency {
         }
         
         public static var allDependencies: [TargetDependency] {
-            return Self.allCases.map { $0.dependency }
+            return [
+                Self.SnapKit.dependency,
+                Self.RxSwift.dependency,
+                Self.RxCocoa.dependency,
+                Self.RxRelay.dependency
+            ]
         }
     }
 }

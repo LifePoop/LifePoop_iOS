@@ -28,7 +28,7 @@ public extension TargetDependency {
             let allDependencies = [
                 Project.module(.DesignSystem).dependency,
                 Project.module(.Logger).dependency,
-                Project.module(.Utils).dependency
+                Project.module(.Utils).dependency,
             ] + sharedDependencies + coreDependencies + featureDependencies
             
             return allDependencies

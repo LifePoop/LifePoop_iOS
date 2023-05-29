@@ -13,14 +13,12 @@ let project = Project.makeModule(
     product: .framework,
     packages: [],
     dependencies: [
+        .Project.module(.Core(.CoreAuthentication)).dependency,
         .Project.module(.Core(.CoreDIContainer)).dependency,
         .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.Core(.CoreNetworkService)).dependency,
         .Project.module(.Features(.Login, .UseCase)).dependency,
         .Project.module(.Utils).dependency,
-        .SPM.RxSwift.dependency,
-        .SPM.KakaoSDKAuth.dependency,
-        .SPM.KakaoSDKCommon.dependency,
-        .SPM.KakaoSDKUser.dependency
+        .SPM.RxSwift.dependency
     ]
 )

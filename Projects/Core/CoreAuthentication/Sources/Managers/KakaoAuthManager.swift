@@ -41,7 +41,7 @@ public final class KakaoAuthManager: AuthManagable {
         }
     }
         
-    public func fetchToken() -> Single<AuthResultPossessable> {
+    public func fetchToken() -> Single<AccessTokenPossessable> {
         Single.create { observer in
             guard KakaoAuthManager.isAlreadyInitialized else {
                 observer(.failure(AuthenticationError.authInfoNotInitialized))

@@ -1,5 +1,5 @@
 //
-//  AuthResultPossessable.swift
+//  AccessTokenPossessable.swift
 //  CoreEntity
 //
 //  Created by 이준우 on 2023/05/30.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol AuthResultPossessable {
+public protocol AccessTokenPossessable: Codable {
     
     var accessToken: String { get }
 }

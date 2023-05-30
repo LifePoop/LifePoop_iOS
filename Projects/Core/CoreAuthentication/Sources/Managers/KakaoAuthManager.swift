@@ -44,12 +44,12 @@ public final class KakaoAuthManager: AuthManagable {
     public func fetchToken() -> Single<AuthResultPossessable> {
         Single.create { observer in
             guard KakaoAuthManager.isAlreadyInitialized else {
-                observer(.failure(LoginError.authInfoNotInitialized))
+                observer(.failure(AuthenticationError.authInfoNotInitialized))
                 return Disposables.create { }
             }
             
             guard UserApi.isKakaoTalkLoginAvailable() else {
-                observer(.failure(LoginError.kakaoTalkLoginNotAvailable))
+                observer(.failure(AuthenticationError.kakaoTalkLoginNotAvailable))
                 return Disposables.create { }
             }
             
@@ -60,7 +60,7 @@ public final class KakaoAuthManager: AuthManagable {
                 }
                 
                 guard let token = token else {
-                    observer(.failure(LoginError.authTokenNil))
+                    observer(.failure(AuthenticationError.authTokenNil))
                     return
                 }
                 

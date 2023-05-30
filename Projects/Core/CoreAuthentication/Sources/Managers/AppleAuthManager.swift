@@ -29,7 +29,7 @@ public final class AppleAuthManager: AuthManagable {
     
     public func fetchToken() -> Single<AuthResultPossessable> {
         guard AppleAuthManager.isAlreadyInitialized else {
-            return Single.error(LoginError.authInfoNotInitialized)
+            return Single.error(AuthenticationError.authInfoNotInitialized)
         }
         
         let provider = ASAuthorizationAppleIDProvider()

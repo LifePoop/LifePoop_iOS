@@ -34,17 +34,21 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
     }
     
     public func coordinate(by coordinateAction: LoginCoordinateAction) {
-        switch coordinateAction {
-        case .shouldShowLaunchScreen:
-            showLaunchScreenViewController()
-        case .shouldShowLoginScene:
-            showLoginViewController()
-        case .didTapKakaoLoginButton, .didTapAppleLoginButton:
-            showNicknameViewController()
-        case .shouldFinishLoginFlow:
-            finishFlow()
-        case .shouldPopCurrentScene:
-            popCurrentViewController()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            switch coordinateAction {
+            case .shouldShowLaunchScreen:
+                self.showLaunchScreenViewController()
+            case .shouldShowLoginScene:
+                self.showLoginViewController()
+            case .didTapKakaoLoginButton, .didTapAppleLoginButton:
+                self.showNicknameViewController()
+            case .shouldFinishLoginFlow:
+                self.finishFlow()
+            case .shouldPopCurrentScene:
+                self.popCurrentViewController()
+            }
         }
     }
 }

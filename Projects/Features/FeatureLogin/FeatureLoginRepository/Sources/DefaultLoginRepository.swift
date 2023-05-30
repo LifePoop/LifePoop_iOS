@@ -29,6 +29,24 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
     }
     
     public func fetchAccessToken(for loginType: LoginType) -> Single<AccessTokenPossessable> {
+        
         authManager(for: loginType).fetchToken()
+            .do(onSuccess: { [weak self] in
+                let authInfo = UserAuthInfo(loginType: loginType, authToken: $0)
+                self?.saveAuthInfoInKeyChain(authInfo, forKey: .userAuthInfo)
+            })
+    }
+}
+
+extension DefaultLoginRepository: KeyChainManagable {
+    
+    @discardableResult
+    private func saveAuthInfoInKeyChain(_ authInfo: UserAuthInfo, forKey key: ItemKey) -> Bool {
+        do {
+            try saveObject(authInfo, forKey: .userAuthInfo)
+            return true
+        } catch {
+            return false
+        }
     }
 }

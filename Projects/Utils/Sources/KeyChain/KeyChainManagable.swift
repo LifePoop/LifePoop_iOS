@@ -14,18 +14,33 @@ public protocol KeyChainManagable: AnyObject { }
 
 extension KeyChainManagable {
     
-    public func saveObject<T: Codable>(_ object: T, forKey key: ItemKey) throws {
-        let encodedData = try JSONEncoder().encode(object)
+    func keychainQuery(for action: KeyChainAction, key: ItemKey, value: (any Encodable)? = nil) -> CFDictionary {
         
-        let keychainQuery: [String: Any] = [
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key.rawValue,
-            kSecValueData as String: encodedData,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked
         ]
         
-        if let _ = try? getObject(asTypeOf: T.self, forKey: key) {
-            try removeObject(object, forKey: key)
+        switch action {
+        case .get:
+            query[kSecReturnData as String] = kCFBooleanTrue
+            query[kSecMatchLimit as String] = kSecMatchLimitOne
+        case .save:
+            query[kSecValueData as String] = value
+            query[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlocked
+        case .remove: break
+        }
+        
+        return query as CFDictionary
+    }
+    
+    public func saveObjectToKeyChain<T: Codable>(_ object: T, forKey key: ItemKey) async throws {
+        let encodedData = try JSONEncoder().encode(object)
+        
+        let keychainQuery = keychainQuery(for: .get, key: key, value: encodedData)
+        let isObjectAlreadyExists = (try await getObjectFromKeyChain(asTypeOf: T.self, forKey: key)) != nil
+        if isObjectAlreadyExists {
+            try await removeObjectFromKeyChain(object, forKey: key)
         }
                 
         let addStatus = SecItemAdd(keychainQuery as CFDictionary, nil)
@@ -34,38 +49,32 @@ extension KeyChainManagable {
         }
     }
     
-    public func getObject<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) throws -> T? {
+    public func getObjectFromKeyChain<T: Decodable>(
+        asTypeOf targetType: T.Type,
+        forKey key: ItemKey
+    ) async throws -> T? {
         
-        let keychainQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key.rawValue,
-            kSecReturnData as String: kCFBooleanTrue!,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        
+        let keychainQuery = keychainQuery(for: .save, key: key)
         var result: AnyObject?
-        let loadStatus = SecItemCopyMatching(keychainQuery as CFDictionary, &result)
+        let loadStatus = SecItemCopyMatching(keychainQuery, &result)
         
-        if loadStatus != errSecSuccess {
-            throw KeyChainError.gettingDataFailed(status: loadStatus)
+        switch loadStatus {
+        case errSecSuccess: break
+        case errSecItemNotFound: return nil
+        default: throw KeyChainError.gettingDataFailed(status: loadStatus)
         }
         
         guard let loadedData = result as? Data else {
             throw KeyChainError.nilData(status: loadStatus)
         }
                 
-        return try? JSONDecoder().decode(targetType, from: loadedData)
+        return try JSONDecoder().decode(targetType, from: loadedData)
     }
     
-    public func removeObject<T: Encodable>(_ object: T, forKey key: ItemKey) throws {
-        let encodedData = try JSONEncoder().encode(object)
-    
-        let keychainQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key.rawValue,
-         ]
-        
-        let removalStatus = SecItemDelete(keychainQuery as CFDictionary)
+    public func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) async throws {
+
+        let keychainQuery = keychainQuery(for: .remove, key: key)
+        let removalStatus = SecItemDelete(keychainQuery)
         
         if removalStatus != errSecSuccess {
             throw KeyChainError.removingDataFailed(status: removalStatus)

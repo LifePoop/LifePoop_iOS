@@ -17,7 +17,7 @@ import FeatureLoginDIContainer
 import FeatureLoginUseCase
 import Utils
 
-public final class LaunchScreenViewModel: ViewModelType {
+public final class LaunchScreenViewModel: ViewModelType, KeyChainManagable {
     
     public struct Input {
         let viewWillDisappear = PublishRelay<Void>()
@@ -30,6 +30,13 @@ public final class LaunchScreenViewModel: ViewModelType {
     public let input = Input()
     public let output = Output()
     
+    private var hasAccessToekn: Bool {
+        if let _ = try? getObject(asTypeOf: UserAuthInfo.self, forKey: .userAuthInfo) {
+            return true
+        } else {
+            return false
+        }
+    }
     
     private weak var coordinator: LoginCoordinator?
     private let disposeBag = DisposeBag()
@@ -37,12 +44,16 @@ public final class LaunchScreenViewModel: ViewModelType {
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
         
-        // MARK: - Bind Input - nextButtonDidTap
         input.viewWillDisappear
-            .bind(onNext: {
-                coordinator?.coordinate(by: .shouldShowLoginScene)
+            .withUnretained(self)
+            .compactMap { $0.0.hasAccessToekn }
+            .bind(onNext: { hasToken in
+                if hasToken {
+                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                } else {
+                    coordinator?.coordinate(by: .shouldShowLoginScene)
+                }
             })
             .disposed(by: disposeBag)
-
     }
 }

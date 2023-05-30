@@ -100,7 +100,7 @@ public final class NicknameViewModel: ViewModelType {
                 
         input.didTapNextButton
             .bind(onNext: { _ in
-                coordinator.coordinate(by: .didTapNicknameSetButton)
+                coordinator.coordinate(by: .shouldFinishLoginFlow)
             })
             .disposed(by: disposeBag)
         

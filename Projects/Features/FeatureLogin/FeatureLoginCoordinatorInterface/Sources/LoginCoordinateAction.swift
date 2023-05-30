@@ -14,5 +14,5 @@ public enum LoginCoordinateAction {
     case shouldPopCurrentScene
     case didTapAppleLoginButton
     case didTapKakaoLoginButton
-    case didTapNicknameSetButton
+    case shouldFinishLoginFlow
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 
+import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginPresentation
 import Utils
@@ -40,7 +41,7 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
             showLoginViewController()
         case .didTapKakaoLoginButton, .didTapAppleLoginButton:
             showNicknameViewController()
-        case .didTapNicknameSetButton:
+        case .shouldFinishLoginFlow:
             finishFlow()
         case .shouldPopCurrentScene:
             popCurrentViewController()

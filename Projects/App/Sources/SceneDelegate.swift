@@ -55,7 +55,6 @@ private extension SceneDelegate {
     func registerCoreDependencies() {
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(CoreExampleDataMapper()) }
         CoreDIContainer.shared.register(service: EndpointService.self) { URLSessionEndpointService.shared }
-        CoreDIContainer.shared.register(service: URLDataService.self) { URLSessionURLDataService.shared }
         CoreDIContainer.shared.register(service: DiskCacheStorage.self) { FileManagerDiskCacheStorage.shared }
         CoreDIContainer.shared.register(service: MemoryCacheStorage.self) { NSCacheMemoryCacheStorage.shared }
     }

@@ -17,6 +17,12 @@ import FeatureHomeUseCase
 import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
+import FeatureSettingDIContainer
+import FeatureSettingRepository
+import FeatureSettingUseCase
+import SharedDIContainer
+import SharedRepository
+import SharedUseCase
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -48,8 +54,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 private extension SceneDelegate {
     func registerAllDependencies() {
         registerCoreDependencies()
+        registerSharedDependencies()
         registerLoginDependencies()
         registerHomeDependencies()
+        registerSettingDependencies()
     }
     
     func registerCoreDependencies() {
@@ -57,6 +65,15 @@ private extension SceneDelegate {
         CoreDIContainer.shared.register(service: EndpointService.self) { URLSessionEndpointService.shared }
         CoreDIContainer.shared.register(service: DiskCacheStorage.self) { FileManagerDiskCacheStorage.shared }
         CoreDIContainer.shared.register(service: MemoryCacheStorage.self) { NSCacheMemoryCacheStorage.shared }
+    }
+    
+    func registerSharedDependencies() {
+        SharedDIContainer.shared.register(service: NicknameUseCase.self) { DefaultNicknameUseCase() }
+        SharedDIContainer.shared.register(service: LoginTypeUseCase.self) { DefaultLoginTypeUseCase() }
+        SharedDIContainer.shared.register(service: AutoLoginUseCase.self) { DefaultAutoLoginUseCase() }
+        SharedDIContainer.shared.register(service: FeedVisibilityUseCase.self) { DefaultFeedVisibilityUseCase() }
+        SharedDIContainer.shared.register(service: ProfileCharacterUseCase.self) { DefaultProfileCharacterUseCase() }
+        SharedDIContainer.shared.register(service: UserDefaultsRepository.self) { DefaultUserDefaultsRepository() }
     }
     
     func registerLoginDependencies() {
@@ -67,6 +84,10 @@ private extension SceneDelegate {
     func registerHomeDependencies() {
         HomeDIContainer.shared.register(service: HomeUseCase.self) { DefaultHomeUseCase() }
         HomeDIContainer.shared.register(service: HomeRepository.self) { DefaultHomeRepository() }
+    }
+    
+    func registerSettingDependencies() {
+        SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
     }
 }
 

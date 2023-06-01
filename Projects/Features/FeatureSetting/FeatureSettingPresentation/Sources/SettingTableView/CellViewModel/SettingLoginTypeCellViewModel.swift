@@ -11,6 +11,7 @@ import Foundation
 import RxRelay
 import RxSwift
 
+import CoreEntity
 import Utils
 
 public final class SettingLoginTypeCellViewModel: SettingCellViewModel {

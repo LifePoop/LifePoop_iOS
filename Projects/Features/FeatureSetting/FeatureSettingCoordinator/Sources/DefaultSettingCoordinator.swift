@@ -8,6 +8,9 @@
 
 import UIKit
 
+import RxRelay
+
+import CoreEntity
 import DesignSystem
 import FeatureSettingCoordinatorInterface
 import FeatureSettingPresentation
@@ -39,8 +42,12 @@ public final class DefaultSettingCoordinator: SettingCoordinator {
             pushSettingViewController()
         case .flowDidFinish:
             completionDelegate?.finishFlow()
-        case .profileInfoDidTap:
-            pushProfileInfoViewController()
+        case .profileInfoDidTap(let userNickname):
+            pushProfileInfoViewController(with: userNickname)
+        case .profileCharacterEditDidTap(let profileCharacter):
+            presentProfileEditViewController(with: profileCharacter)
+        case .feedVisibilityDidTap(let feedVisibility):
+            presentFeedVisibilityViewController(with: feedVisibility)
         case .termsOfServiceDidTap(let title, let text), .privacyPolicyDidTap(let title, let text):
             pushDocumentViewController(with: title, text: text)
         case .sendFeedbackDidTap:
@@ -69,11 +76,25 @@ private extension DefaultSettingCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func pushProfileInfoViewController() {
+    func pushProfileInfoViewController(with userNickname: BehaviorRelay<String>) {
         let viewController = ProfileViewController()
-        let viewModel = ProfileViewModel(coordinator: self)
+        let viewModel = ProfileViewModel(coordinator: self, userNickname: userNickname)
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    func presentProfileEditViewController(with profileCharacter: BehaviorRelay<ProfileCharacter?>) {
+        let viewController = ProfileEditViewController()
+        let viewModel = ProfileEditViewModel(coordinator: self, profileCharacter: profileCharacter)
+        viewController.bind(viewModel: viewModel)
+        presentBottomSheetController(contentViewController: viewController, heightRatio: 0.415)
+    }
+    
+    func presentFeedVisibilityViewController(with feedVisibility: BehaviorRelay<FeedVisibility?>) {
+        let viewController = FeedVisibilityViewController()
+        let viewModel = FeedVisibilityViewModel(coordinator: self, feedVisibility: feedVisibility)
+        viewController.bind(viewModel: viewModel)
+        presentBottomSheetController(contentViewController: viewController, heightRatio: 0.25)
     }
     
     func pushDocumentViewController(with title: String, text: String?) {
@@ -94,8 +115,16 @@ private extension DefaultSettingCoordinator {
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }
-    
-    func startLoginCoordinatorFlow() {
-        print(#function)
+}
+
+private extension DefaultSettingCoordinator {
+    func presentBottomSheetController(contentViewController: UIViewController, heightRatio: Double) {
+        // FIXME: 스크롤시 Navigation Bar 영역이 어두워지지 않음
+        guard let presentedViewController = navigationController.topViewController else { return }
+        let bottomSheetController = BottomSheetController(
+            bottomSheetHeight: presentedViewController.view.bounds.height * heightRatio
+        )
+        bottomSheetController.setBottomSheet(contentViewController: contentViewController)
+        bottomSheetController.showBottomSheet(toParent: presentedViewController)
     }
 }

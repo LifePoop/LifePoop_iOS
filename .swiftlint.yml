@@ -1,10 +1,6 @@
 excluded:
     - Tuist
     
-function_body_length:
-    - 50
-    - 100
-    
 line_length:
     - 120
     - 140
@@ -22,6 +18,7 @@ disabled_rules:
     - type_name
     - closure_parameter_position
     - identifier_name
+    - function_body_length
 
 opt_in_rules:
     - empty_string

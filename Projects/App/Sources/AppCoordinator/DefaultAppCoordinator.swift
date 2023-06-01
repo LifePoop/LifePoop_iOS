@@ -9,6 +9,7 @@
 import UIKit
 
 import FeatureHomeCoordinator
+import FeatureHomeCoordinatorInterface
 import FeatureLoginCoordinator
 import FeatureLoginCoordinatorInterface
 import Utils

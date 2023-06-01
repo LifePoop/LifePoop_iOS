@@ -25,7 +25,8 @@ public final class FeedbackTextView: UIControl {
     
     private lazy var doneBarButtonItem: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done,
+            title: "완료",
+            style: .done,
             target: nil,
             action: #selector(tapDoneBarButton)
         )

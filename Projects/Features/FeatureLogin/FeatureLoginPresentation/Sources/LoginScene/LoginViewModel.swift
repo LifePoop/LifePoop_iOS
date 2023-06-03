@@ -40,7 +40,6 @@ public final class LoginViewModel: ViewModelType {
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
         
-        // MARK: - Bind Input - nextButtonDidTap
         input.didTapKakaoLoginButton
             .withUnretained(self)
             .flatMapLatest { owner, _ in owner.loginUseCase.fetchKakaoAuthToken() }

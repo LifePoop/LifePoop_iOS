@@ -24,7 +24,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
             .asObservable()
             .compactMap { $0 as? KakaoAuthResultEntity }
             .asSingle()
-            .catch { _ in Single.never() }
+            .logErrorIfDetected(category: .authentication)
     }
     
     public func fetchAppleAuthToken() -> Single<AppleAuthResultEntity> {
@@ -32,6 +32,6 @@ public final class DefaultLoginUseCase: LoginUseCase {
             .asObservable()
             .compactMap { $0 as? AppleAuthResultEntity }
             .asSingle()
-            .catch { _ in Single.never() }
+            .logErrorIfDetected(category: .authentication)
     }
 }

@@ -19,6 +19,7 @@ public extension OSLog {
         case allocation
         case network
         case database
+        case authentication
         
         var value: String {
             switch self {
@@ -30,6 +31,8 @@ public extension OSLog {
                 return Constant.OSLogCategory.network
             case .database:
                 return Constant.OSLogCategory.database
+            case .authentication:
+                return Constant.OSLogCategory.authentication
             }
         }
     }

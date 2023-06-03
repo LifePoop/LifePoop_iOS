@@ -17,8 +17,10 @@ import RxSwift
 
 public final class KakaoAuthManager: AuthManagable {
 
-    public static internal(set) var isAlreadyInitialized: Bool = false
-    
+    private static var _isAlreadyInitialized = false
+    public static var isAlreadyInitialized: Bool {
+        _isAlreadyInitialized
+    }
     public init() { }
     
     public static func initAuthInfo(rightAfter preparation: (() -> Void)?) {
@@ -31,7 +33,7 @@ public final class KakaoAuthManager: AuthManagable {
             // FIXME: 추후 키값 코드에서 감춰놔야 함
             KakaoSDK.initSDK(appKey: "f7f327d46b7184823676acc9d0a2035c")
             
-            isAlreadyInitialized = true
+            _isAlreadyInitialized = true
         }
     }
     

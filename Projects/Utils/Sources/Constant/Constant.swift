@@ -35,5 +35,6 @@ public extension Constant {
         public static let allocation = "Allocation"
         public static let network = "Network"
         public static let database = "Database"
+        public static let authentication = "Authentication"
     }
 }

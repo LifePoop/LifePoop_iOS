@@ -13,7 +13,10 @@ import CoreEntity
 
 public final class AppleAuthManager: AuthManagable {
     
-    public static internal(set) var isAlreadyInitialized: Bool = false
+    private static var _isAlreadyInitialized = false
+    public static var isAlreadyInitialized: Bool {
+        _isAlreadyInitialized
+    }
     
     public init() { }
     
@@ -23,7 +26,7 @@ public final class AppleAuthManager: AuthManagable {
         
         let serialQueue = DispatchQueue(label: "serial-queue-auth-auth")
         serialQueue.sync {
-            isAlreadyInitialized = true
+            _isAlreadyInitialized = true
         }
     }
     

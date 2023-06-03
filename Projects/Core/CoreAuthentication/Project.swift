@@ -21,6 +21,5 @@ let project = Project.makeModule(
         .SPM.KakaoSDKCommon.dependency,
         .SPM.KakaoSDKUser.dependency,
     ],
-    resources: ["Resources/**"],
     hasTests: false
 )

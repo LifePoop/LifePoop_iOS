@@ -131,6 +131,14 @@ public final class LoginViewController: UIViewController, ViewType {
                 cell.contentView.backgroundColor = index % 2 == 1 ? .systemGray4 : .systemCyan
             }
             .disposed(by: disposeBag)
+        
+        output.errorDidOccur
+            .observe(on: MainScheduler.asyncInstance)
+            .bind(onNext: { error in
+                // Toast 노출
+                print(error)
+            })
+            .disposed(by: disposeBag)
     }
 }
 

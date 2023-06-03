@@ -9,7 +9,9 @@
 import RxSwift
 
 import CoreEntity
+import Utils
 
-public protocol LoginRepository {
-    func fetchAccessToken() -> Single<CoreExampleEntity>
+public protocol LoginRepository: AnyObject {
+    
+    func fetchAccessToken(for loginType: LoginType) -> Single<AuthResultPossessable>
 }

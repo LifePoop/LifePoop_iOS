@@ -7,6 +7,7 @@
 
 import UIKit
 
+import CoreAuthentication
 import CoreDIContainer
 import CoreNetworkService
 import CoreStorageService
@@ -17,6 +18,8 @@ import FeatureHomeUseCase
 import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
+
+import Utils
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -34,6 +37,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         configureNavigationBarBackButtonItem()
         registerAllDependencies()
         
+        initKakaoAuthSDKInfo()
+        initAppleAuthInfo(with: window)
+        
         let rootNavigationController = UINavigationController()
         appCoordinator = DefaultAppCoordinator(navigationController: rootNavigationController)
         appCoordinator?.start()
@@ -41,7 +47,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = rootNavigationController
         window?.makeKeyAndVisible()
     }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+
+        KakaoAuthManager.handleLoginUrl(url)
+    }
 }
+
+// MARK: - KakaoAuthSDK Initialization
+
+private extension SceneDelegate {
+    func initKakaoAuthSDKInfo() {
+        KakaoAuthManager.initAuthInfo(rightAfter: nil)
+    }
+    
+    func initAppleAuthInfo(with keyWindow: UIWindow?) {
+        AppleAuthManager.initAuthInfo(rightAfter: {
+            ASAuthorizationControllerProxy.targetWindow = keyWindow
+        })
+    }
+}
+
 
 // MARK: - Dependency Registration
 

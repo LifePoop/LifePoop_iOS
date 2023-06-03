@@ -26,6 +26,7 @@ public final class LoginViewModel: ViewModelType {
     
     public struct Output {
         let bannerImages = BehaviorRelay<[Data]>(value: [])
+        let errorDidOccur = PublishRelay<Error>()
     }
     
     public let input = Input()
@@ -39,16 +40,23 @@ public final class LoginViewModel: ViewModelType {
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
         
-        // MARK: - Bind Input - nextButtonDidTap
         input.didTapKakaoLoginButton
-            .bind(onNext: {
+            .withUnretained(self)
+            .flatMapLatest { owner, _ in owner.loginUseCase.fetchKakaoAuthToken() }
+            .subscribe(with: self, onNext: { `self`, result in
                 coordinator?.coordinate(by: .didTapKakaoLoginButton)
+            }, onError: { `self`, error in
+                self.output.errorDidOccur.accept(error)
             })
             .disposed(by: disposeBag)
         
         input.didTapAppleLoginButton
-            .bind(onNext: {
+            .withUnretained(self)
+            .flatMapLatest { owner, _ in owner.loginUseCase.fetchAppleAuthToken() }
+            .subscribe(with: self, onNext: { `self`, result in
                 coordinator?.coordinate(by: .didTapAppleLoginButton)
+            }, onError: { `self`, error in
+                self.output.errorDidOccur.accept(error)
             })
             .disposed(by: disposeBag)
     }

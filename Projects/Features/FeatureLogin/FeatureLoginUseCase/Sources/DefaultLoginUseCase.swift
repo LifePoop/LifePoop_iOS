@@ -19,10 +19,19 @@ public final class DefaultLoginUseCase: LoginUseCase {
     
     public init() { }
     
-    public func fetchAccessToken() -> Observable<CoreExampleEntity> {
-        return loginRepository
-            .fetchAccessToken()
-            .logErrorIfDetected(category: .network)
+    public func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity> {
+        return loginRepository.fetchAccessToken(for: .kakao)
             .asObservable()
+            .compactMap { $0 as? KakaoAuthResultEntity }
+            .asSingle()
+            .logErrorIfDetected(category: .authentication)
+    }
+    
+    public func fetchAppleAuthToken() -> Single<AppleAuthResultEntity> {
+        return loginRepository.fetchAccessToken(for: .apple)
+            .asObservable()
+            .compactMap { $0 as? AppleAuthResultEntity }
+            .asSingle()
+            .logErrorIfDetected(category: .authentication)
     }
 }

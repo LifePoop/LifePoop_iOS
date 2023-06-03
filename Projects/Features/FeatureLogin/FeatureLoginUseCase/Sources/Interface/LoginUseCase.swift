@@ -11,5 +11,6 @@ import RxSwift
 import CoreEntity
 
 public protocol LoginUseCase {
-    func fetchAccessToken() -> Observable<CoreExampleEntity>
+    func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity>
+    func fetchAppleAuthToken() -> Single<AppleAuthResultEntity>
 }

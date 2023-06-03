@@ -84,6 +84,7 @@ public enum FeatureLayerModuleType: String, CaseIterable {
 }
 
 public enum CoreModuleType: String, CaseIterable {
+    case CoreAuthentication
     case CoreDIContainer
     case CoreEntity
     case CoreNetworkService

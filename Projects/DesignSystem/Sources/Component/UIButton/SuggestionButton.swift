@@ -10,7 +10,7 @@ import UIKit
 
 import SnapKit
 
-open class SuggestionButton: PaddingButton {
+public final class SuggestionButton: PaddingButton {
     
     private let label: UILabel = {
         let label = UILabel()

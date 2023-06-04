@@ -19,6 +19,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
     
     @Inject(LoginDIContainer.shared) private var loginRepository: LoginRepository
     @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
+    @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
 
     public init() { }
     
@@ -27,6 +28,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
 
             do {
                 try self?.keyChainRepository.saveObjectToKeyChain(userInfo, forKey: .userAuthInfo)
+                self?.userDefaultsRepository.updateValue(for: .userNickname, with: userInfo.nickname)
                 observer(.success(()))
             } catch let error {
                 observer(.failure(error))
@@ -52,5 +54,5 @@ public final class DefaultLoginUseCase: LoginUseCase {
             .map { UserAuthInfoEntity(loginType: loginType, authToken: $0) }
             .asSingle()
             .logErrorIfDetected(category: .authentication)
-    }    
+    }
 }

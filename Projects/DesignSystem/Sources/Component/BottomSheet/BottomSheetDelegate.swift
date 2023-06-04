@@ -11,5 +11,5 @@ import Foundation
 @objc public protocol BottomSheetDelegate {
     
     @objc optional func bottomSheetDidAppear()
-    func bottomSheetDidDisappear()
+    @objc optional func bottomSheetDidDisappear()
 }

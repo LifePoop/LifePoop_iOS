@@ -91,7 +91,7 @@ public final class BottomSheetController: UIViewController {
         ) { [weak self] _ in
             
             self?.view?.removeFromSuperview()
-            self?.delegate?.bottomSheetDidDisappear()
+            self?.delegate?.bottomSheetDidDisappear?()
             self?.parent?.dismiss(animated: false)
             self?.parent?.removeFromParent()
             self?.removeFromParent()

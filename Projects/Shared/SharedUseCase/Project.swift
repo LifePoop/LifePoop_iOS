@@ -13,8 +13,8 @@ let project = Project.makeModule(
     product: .framework,
     packages: [],
     dependencies: [
-        .Project.module(.Core(.CoreDIContainer)).dependency,
         .Project.module(.Core(.CoreEntity)).dependency,
+        .Project.module(.Shared(.SharedDIContainer)).dependency,
         .Project.module(.Logger).dependency,
         .Project.module(.Utils).dependency,
         .SPM.RxSwift.dependency

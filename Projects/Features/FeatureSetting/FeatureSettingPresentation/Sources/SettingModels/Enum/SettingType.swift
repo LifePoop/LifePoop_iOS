@@ -8,9 +8,11 @@
 
 import Foundation
 
+@frozen
 public enum SettingType: CaseIterable {
     case loginType
     case profile
+    case feedVisibility
     case autoLogin
     case version
     case termsOfService

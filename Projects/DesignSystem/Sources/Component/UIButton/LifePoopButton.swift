@@ -8,24 +8,35 @@
 
 import UIKit
 
-public final class LifePoopButton: UIButton {
+public final class LifePoopButton: PaddingButton {
     
     private let title: String
     
     public override var isHighlighted: Bool {
-        didSet {
-            switch oldValue {
+        willSet {
+            switch newValue {
             case true:
-                configuration?.baseBackgroundColor = ColorAsset.primary.color
+                backgroundColor = ColorAsset.disabledBlue.color
             case false:
-                configuration?.baseBackgroundColor = ColorAsset.disabledBlue.color
+                backgroundColor = ColorAsset.primary.color
+            }
+        }
+    }
+    
+    public override var isEnabled: Bool {
+        willSet {
+            switch newValue {
+            case true:
+                backgroundColor = ColorAsset.primary.color
+            case false:
+                backgroundColor = ColorAsset.disabledBlue.color
             }
         }
     }
     
     public init(title: String) {
         self.title = title
-        super.init(frame: .zero)
+        super.init(padding: Padding.custom(UIEdgeInsets(top: 17.5, left: .zero, bottom: 17.5, right: .zero)))
         configure()
     }
     
@@ -35,15 +46,18 @@ public final class LifePoopButton: UIButton {
     }
     
     private func configure() {
-        var config = UIButton.Configuration.filled()
-        config.cornerStyle = .large
-        config.contentInsets = .init(top: 17.5, leading: 17.5, bottom: 17.5, trailing: 17.5)
-        config.baseBackgroundColor = ColorAsset.primary.color
-        
-        var attributedTitleText = AttributedString(title)
-        attributedTitleText.font = .systemFont(ofSize: 16, weight: .bold)
-        config.attributedTitle = attributedTitleText
-        
-        configuration = config
+        clipsToBounds = true
+        layer.cornerRadius = 12
+        backgroundColor = ColorAsset.primary.color
+        let attributedTitle = NSAttributedString(
+            string: title,
+            attributes: [
+                .foregroundColor: UIColor.systemBackground,
+                .font: UIFont.systemFont(ofSize: 16, weight: .bold)
+            ]
+        )
+        setAttributedTitle(attributedTitle, for: .normal)
+        setTitleColor(.systemBackground, for: .normal)
+        setTitleColor(.systemBackground, for: .disabled)
     }
 }

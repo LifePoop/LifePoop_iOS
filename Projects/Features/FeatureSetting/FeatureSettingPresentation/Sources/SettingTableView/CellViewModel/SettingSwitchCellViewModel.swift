@@ -22,7 +22,7 @@ public final class SettingSwitchCellViewModel: SettingCellViewModel {
     
     public struct Output {
         let settingDescription = BehaviorRelay<String>(value: "")
-        let isSwitchOn: BehaviorRelay<Bool>
+        let shouldSwitchOn: BehaviorRelay<Bool>
     }
     
     public let input = Input()
@@ -33,7 +33,7 @@ public final class SettingSwitchCellViewModel: SettingCellViewModel {
     
     public init(model: SettingModel, isSwitchOn: BehaviorRelay<Bool>, switchToggleAction: PublishRelay<Bool>) {
         self.model = model
-        self.output = Output(isSwitchOn: isSwitchOn)
+        self.output = Output(shouldSwitchOn: isSwitchOn)
         
         input.cellDidDequeue
             .map { model.description }

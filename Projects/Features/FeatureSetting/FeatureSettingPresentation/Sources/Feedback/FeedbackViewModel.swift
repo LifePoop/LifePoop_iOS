@@ -19,10 +19,11 @@ public final class FeedbackViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
+        let suggestionButtonDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
-        let showErrorMessage = PublishRelay<String>()
+        let showSuggestionType = PublishRelay<Void>()
     }
     
     public let input = Input()
@@ -33,5 +34,13 @@ public final class FeedbackViewModel: ViewModelType {
     
     public init(coordinator: SettingCoordinator?) {
         self.coordinator = coordinator
+        
+        input.suggestionButtonDidTap
+            .bind(to: output.showSuggestionType)
+            .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        print("\(self) \(#function)") // TODO: Remove
     }
 }

@@ -17,6 +17,14 @@ import Utils
 
 public final class WithdrawalViewController: LifePoopViewController, ViewType {
     
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = false
+        return scrollView
+    }()
+    
+    private let scrollContentView = UIView()
+    
     private lazy var reasonSelectLabel: UILabel = {
         let label = UILabel()
         label.text = "탈퇴 사유 선택"
@@ -25,31 +33,21 @@ public final class WithdrawalViewController: LifePoopViewController, ViewType {
     }()
     
     private let reasonButtons = WithdrawReason.allCases.map {
-        SelectableTextRadioButton(index: $0.index, title: $0.title)
+        SelectableTextRadioButtonView(index: $0.index, title: $0.title)
     }
     
     private lazy var reasonSelectStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: reasonButtons)
         stackView.axis = .vertical
-        stackView.spacing = 16
         stackView.alignment = .leading
         stackView.distribution = .equalSpacing
         return stackView
     }()
     
-    //TODO: placeholder textview 타입 별도로 만들기 (isEditing에 따라 placeholer, textColor 변경하기)
-    private lazy var reasonTextView: UITextView = {
-        let textView = UITextView()
-        let placeholder = "이 외에 불편했던 점을 작성해주세요. (선택)"
-        let placeholderColor = ColorAsset.gray800.color
-        textView.textColor = placeholderColor
-        textView.text = placeholder
-        textView.font = .systemFont(ofSize: 14)
-        textView.contentInset = UIEdgeInsets(top: 15, left: 20, bottom: 15, right: 20)
-        textView.backgroundColor = ColorAsset.gray200.color
-        textView.layer.cornerRadius = 6
-        return textView
-    }()
+    private let reasonTextView = FeedbackTextView(
+        placeholder: "이 외에 불편했던 점을 작성해주세요. (선택)",
+        maximumTextCount: 100
+    )
     
     private let withdrawAlertView = LifePoopAlertView(type: .withdraw)
     
@@ -62,13 +60,19 @@ public final class WithdrawalViewController: LifePoopViewController, ViewType {
     public var viewModel: WithdrawalViewModel?
     private let disposeBag = DisposeBag()
     
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        addTapGesture()
+        addNotificationCenterKeyboardObserver()
+    }
+    
     // MARK: - ViewModel Binding
     
     public func bindInput(to viewModel: WithdrawalViewModel) {
         let input = viewModel.input
         
         let selectedReasonIndex = reasonButtons.map { button in
-            button.rx.tap.map { button.index }
+            button.containerButton.rx.tap.map { button.index }
         }
         Observable.merge(selectedReasonIndex)
             .bind(to: input.reasonDidSelectAt)
@@ -115,7 +119,7 @@ public final class WithdrawalViewController: LifePoopViewController, ViewType {
     }
     
     // MARK: - UI Setup
-        
+    
     public override func configureUI() {
         super.configureUI()
         title = "탈퇴하기"
@@ -123,30 +127,92 @@ public final class WithdrawalViewController: LifePoopViewController, ViewType {
     
     public override func layoutUI() {
         super.layoutUI()
-        view.addSubview(reasonSelectLabel)
-        view.addSubview(reasonSelectStackView)
-        view.addSubview(reasonTextView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentView)
+        scrollContentView.addSubview(reasonSelectLabel)
+        scrollContentView.addSubview(reasonSelectStackView)
+        scrollContentView.addSubview(reasonTextView)
         view.addSubview(withdrawButton)
         
+        scrollView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        scrollView.contentLayoutGuide.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(reasonTextView.snp.bottom)
+        }
+        
+        scrollContentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
         reasonSelectLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(22)
-            make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
+            make.top.equalToSuperview().offset(22)
+            make.leading.equalToSuperview().offset(24)
         }
         
         reasonSelectStackView.snp.makeConstraints { make in
             make.top.equalTo(reasonSelectLabel.snp.bottom).offset(42)
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         reasonTextView.snp.makeConstraints { make in
             make.top.equalTo(reasonSelectStackView.snp.bottom).offset(35)
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
-            make.height.equalTo(view.safeAreaLayoutGuide).multipliedBy(0.3)
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.height.equalTo(181)
         }
         
         withdrawButton.snp.makeConstraints { make in
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-16)
         }
+    }
+}
+
+// MARK: - Tap Gesture Methods
+
+private extension WithdrawalViewController {
+    func addTapGesture() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+}
+
+// MARK: - Keyboard Notification Methods
+
+private extension WithdrawalViewController {
+    func addNotificationCenterKeyboardObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow(notification:)),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide(notification:)),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        let keyboardFrameNotification = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        let keyboardHeight = keyboardFrameNotification?.cgRectValue.height ?? .zero
+        
+        let keyboardTopY = view.frame.maxY - keyboardHeight
+        let textViewBottomY = reasonTextView.convert(reasonTextView.bounds, to: view).maxY
+        
+        let offsetY = textViewBottomY - keyboardTopY
+        scrollView.contentOffset.y += offsetY
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        scrollView.setContentOffset(.zero, animated: true)
     }
 }

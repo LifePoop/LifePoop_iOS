@@ -14,32 +14,22 @@ import RxSwift
 import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
-import FeatureLoginUseCase
+import SharedDIContainer
+import SharedUseCase
 import Utils
 
-public final class LaunchScreenViewModel: ViewModelType, KeyChainManagable {
+public final class LaunchScreenViewModel: ViewModelType {
     
     public struct Input {
         let viewWillDisappear = PublishRelay<Void>()
     }
     
-    public struct Output {
-
-    }
+    public struct Output { }
+    
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserAuthInfoUseCase
     
     public let input = Input()
     public let output = Output()
-    
-    private func hasAccessToken() async -> Bool {
-        if let authInfo = try? await getObjectFromKeyChain(asTypeOf: UserAuthInfo.self, forKey: .userAuthInfo) {
-            // TODO: 앱 재기동했을 때 로그인 과정 확인하기 위한 임시처리
-            try? await self.removeObjectFromKeyChain(authInfo, forKey: .userAuthInfo)
-            return true
-        } else {
-            return false
-        }
-
-    }
     
     private weak var coordinator: LoginCoordinator?
     private let disposeBag = DisposeBag()
@@ -48,17 +38,24 @@ public final class LaunchScreenViewModel: ViewModelType, KeyChainManagable {
         self.coordinator = coordinator
         
         input.viewWillDisappear
+            .debug()
             .withUnretained(self)
-            .bind(onNext: { `self`, hasToken in
-                Task {
-                    let hasToken = await self.hasAccessToken()
-                    if hasToken {
-                        coordinator?.coordinate(by: .shouldFinishLoginFlow)
-                    } else {
-                        coordinator?.coordinate(by: .shouldShowLoginScene)
-                    }
+            .flatMapLatest { `self`, _ in
+                self.hasAccessToken()
+            }
+            .bind(onNext: { hasToken in
+                if hasToken {
+                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                } else {
+                    coordinator?.coordinate(by: .shouldShowLoginScene)
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func hasAccessToken() -> Single<Bool> {
+        userInfoUseCase.userAuthInfo
+            .map { $0.loginType != nil }
+            .catchAndReturn(false)
     }
 }

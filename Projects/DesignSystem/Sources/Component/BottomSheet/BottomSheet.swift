@@ -75,7 +75,7 @@ public final class BottomSheet: UIControl {
             updateConstraints(updatedY)
             recognizer.setTranslation(.zero, in: self)
         }
-        UIView.animate(withDuration: 0.0, delay: .zero, animations: layoutIfNeeded)
+        UIView.animate(withDuration: 0.3, delay: .zero, animations: layoutIfNeeded)
         
         //recognizer이 끝났을 때 상태 업데이트
         guard recognizer.state == .ended else { return }
@@ -88,7 +88,7 @@ public final class BottomSheet: UIControl {
             isClosed = true
         }
         
-        UIView.animate(withDuration: 0.4, delay: .zero, animations: layoutIfNeeded)
+        UIView.animate(withDuration: 0.3, delay: .zero, animations: layoutIfNeeded)
     }
     
     private func setupViews() {
@@ -104,7 +104,8 @@ public final class BottomSheet: UIControl {
         topBarArea.addSubview(topBar)
         topBar.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.5)
+            make.width.equalTo(78)
+//            make.width.equalToSuperview().multipliedBy(0.39)
             make.height.equalTo(7)
         }
         

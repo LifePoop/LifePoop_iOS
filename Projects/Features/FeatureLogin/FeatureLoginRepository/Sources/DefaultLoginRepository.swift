@@ -15,7 +15,7 @@ import CoreNetworkService
 import FeatureLoginUseCase
 import Utils
 
-public final class DefaultLoginRepository: NSObject, LoginRepository, KeyChainManagable {
+public final class DefaultLoginRepository: NSObject, LoginRepository {
     
     public override init() { }
     
@@ -29,13 +29,6 @@ public final class DefaultLoginRepository: NSObject, LoginRepository, KeyChainMa
     }
     
     public func fetchAccessToken(for loginType: LoginType) -> Single<AccessTokenPossessable> {
-        
         authManager(for: loginType).fetchToken()
-            .do(onSuccess: { authToken in
-                Task { [weak self] in
-                    let authInfo = UserAuthInfo(loginType: loginType, authToken: authToken)
-                    try? await self?.saveObjectToKeyChain(authInfo, forKey: .userAuthInfo)
-                }
-            })
     }
 }

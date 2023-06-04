@@ -11,12 +11,15 @@ import RxSwift
 import CoreEntity
 import FeatureLoginDIContainer
 import Logger
+import SharedDIContainer
+import SharedUseCase
 import Utils
 
 public final class DefaultLoginUseCase: LoginUseCase {
     
     @Inject(LoginDIContainer.shared) private var loginRepository: LoginRepository
-    
+    @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
+
     public init() { }
     
     public func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity?> {
@@ -24,6 +27,17 @@ public final class DefaultLoginUseCase: LoginUseCase {
             .asObservable()
             .compactMap { $0 as? KakaoAuthResultEntity }
             .asSingle()
+            .do(onSuccess: { [weak self] authToken in
+                guard let authToken = authToken,
+                      let self = self else { return }
+                
+                let authInfo = UserAuthInfo(loginType: .kakao, authToken: authToken)
+                do {
+                    try self.keyChainRepository.saveObjectToKeyChain(authInfo, forKey: .userAuthInfo)
+                } catch let error {
+                    Logger.log(message: "\(error)", category: .authentication, type: .error)
+                }
+            })
             .logErrorIfDetected(category: .authentication)
     }
     
@@ -32,6 +46,17 @@ public final class DefaultLoginUseCase: LoginUseCase {
             .asObservable()
             .compactMap { $0 as? AppleAuthResultEntity }
             .asSingle()
+            .do(onSuccess: { [weak self] authToken in
+                guard let authToken = authToken,
+                      let self = self else { return }
+
+                let authInfo = UserAuthInfo(loginType: .apple, authToken: authToken)
+                do {
+                    try self.keyChainRepository.saveObjectToKeyChain(authInfo, forKey: .userAuthInfo)
+                } catch let error {
+                    Logger.log(message: "\(error)", category: .authentication, type: .error)
+                }
+            })
             .logErrorIfDetected(category: .authentication)
     }
 }

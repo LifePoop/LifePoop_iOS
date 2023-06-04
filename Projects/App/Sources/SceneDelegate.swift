@@ -96,11 +96,12 @@ private extension SceneDelegate {
     
     func registerSharedDependencies() {
         SharedDIContainer.shared.register(service: NicknameUseCase.self) { DefaultNicknameUseCase() }
-        SharedDIContainer.shared.register(service: LoginTypeUseCase.self) { DefaultLoginTypeUseCase() }
+        SharedDIContainer.shared.register(service: UserAuthInfoUseCase.self) { DefaultUserAuthInfoUseCase() }
         SharedDIContainer.shared.register(service: AutoLoginUseCase.self) { DefaultAutoLoginUseCase() }
         SharedDIContainer.shared.register(service: FeedVisibilityUseCase.self) { DefaultFeedVisibilityUseCase() }
         SharedDIContainer.shared.register(service: ProfileCharacterUseCase.self) { DefaultProfileCharacterUseCase() }
         SharedDIContainer.shared.register(service: UserDefaultsRepository.self) { DefaultUserDefaultsRepository() }
+        SharedDIContainer.shared.register(service: KeyChainRepository.self) { DefaultKeyChainRepository() }
     }
     
     func registerLoginDependencies() {

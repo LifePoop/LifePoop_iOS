@@ -42,21 +42,33 @@ public final class LoginViewModel: ViewModelType {
         
         input.didTapKakaoLoginButton
             .withUnretained(self)
-            .flatMapLatest { owner, _ in owner.loginUseCase.fetchKakaoAuthToken() }
-            .subscribe(with: self, onNext: { `self`, result in
+            .flatMapLatest { `self`, _ in
+                `self`.loginUseCase
+                    .fetchKakaoAuthToken()
+                    .catch { error in
+                        self.output.errorDidOccur.accept(error)
+                        return Single.just(nil)
+                    }
+            }
+            .filter { $0 != nil }
+            .bind(onNext: { _ in
                 coordinator?.coordinate(by: .didTapKakaoLoginButton)
-            }, onError: { `self`, error in
-                self.output.errorDidOccur.accept(error)
             })
             .disposed(by: disposeBag)
         
         input.didTapAppleLoginButton
             .withUnretained(self)
-            .flatMapLatest { owner, _ in owner.loginUseCase.fetchAppleAuthToken() }
-            .subscribe(with: self, onNext: { `self`, result in
+            .flatMapLatest { `self`, _ in
+                `self`.loginUseCase
+                    .fetchAppleAuthToken()
+                    .catch { error in
+                        self.output.errorDidOccur.accept(error)
+                        return Single.just(nil)
+                    }
+            }
+            .filter { $0 != nil }
+            .bind(onNext: { _ in
                 coordinator?.coordinate(by: .didTapAppleLoginButton)
-            }, onError: { `self`, error in
-                self.output.errorDidOccur.accept(error)
             })
             .disposed(by: disposeBag)
     }

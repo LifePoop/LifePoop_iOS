@@ -19,7 +19,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
     
     public init() { }
     
-    public func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity> {
+    public func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity?> {
         return loginRepository.fetchAccessToken(for: .kakao)
             .asObservable()
             .compactMap { $0 as? KakaoAuthResultEntity }
@@ -27,7 +27,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
             .logErrorIfDetected(category: .authentication)
     }
     
-    public func fetchAppleAuthToken() -> Single<AppleAuthResultEntity> {
+    public func fetchAppleAuthToken() -> Single<AppleAuthResultEntity?> {
         return loginRepository.fetchAccessToken(for: .apple)
             .asObservable()
             .compactMap { $0 as? AppleAuthResultEntity }

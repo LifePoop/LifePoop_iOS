@@ -1,5 +1,5 @@
 //
-//  DefaultUserAuthInfoUseCase.swift
+//  DefaultUserInfoUseCase.swift
 //  SharedUseCase
 //
 //  Created by 김상혁 on 2023/05/27.
@@ -14,23 +14,22 @@ import CoreEntity
 import SharedDIContainer
 import Utils
 
-public final class DefaultUserAuthInfoUseCase: UserAuthInfoUseCase {
+public final class DefaultUserInfoUseCase: UserInfoUseCase {
     
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
     
     public init() { }
 
-    public var userAuthInfo: Single<UserAuthInfo> {
+    public var userInfo: Single<UserInfoEntity> {
         Single.create { [weak self] observer in
             guard let self = self else { return Disposables.create() }
             do {
                 let authInfo = try self.keyChainRepository.getObjectFromKeyChain(
-                    asTypeOf: UserAuthInfo.self,
+                    asTypeOf: UserInfoEntity.self,
                     forKey: .userAuthInfo
                 )
                 
-                try self.keyChainRepository.removeObjectFromKeyChain(authInfo, forKey: .userAuthInfo)
                 observer(.success(authInfo))
             } catch let error {
                 observer(.failure(error))

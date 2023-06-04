@@ -1,24 +1,32 @@
 //
-//  KeyChainManagable.swift
-//  Utils
+//  DefaultKeyChainRepository.swift
+//  SharedRepository
 //
-//  Created by 이준우 on 2023/05/30.
+//  Created by 이준우 on 2023/06/04.
 //  Copyright © 2023 Lifepoo. All rights reserved.
 //
 
 import Foundation
-
 import Security
 
-public protocol KeyChainManagable: AnyObject { }
+import SharedUseCase
 
-extension KeyChainManagable {
+public enum KeyChainError: Error {
+    case addingDataFailed(status: OSStatus)
+    case gettingDataFailed(status: OSStatus)
+    case removingDataFailed(status: OSStatus)
+    case nilData(status: OSStatus)
+}
+
+public final class DefaultKeyChainRepository: KeyChainRepository {
     
-    func keychainQuery(for action: KeyChainAction, key: ItemKey, value: (any Encodable)? = nil) -> CFDictionary {
+    public init() { }
+
+    public func keychainQuery(for action: KeyChainAction, key: ItemKey, value: (any Encodable)? = nil) -> CFDictionary {
         
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key.rawValue,
+            kSecAttrAccount as String: key.rawValue
         ]
         
         switch action {
@@ -34,13 +42,13 @@ extension KeyChainManagable {
         return query as CFDictionary
     }
     
-    public func saveObjectToKeyChain<T: Codable>(_ object: T, forKey key: ItemKey) async throws {
+    public func saveObjectToKeyChain<T: Codable>(_ object: T, forKey key: ItemKey) throws {
         let encodedData = try JSONEncoder().encode(object)
         
-        let keychainQuery = keychainQuery(for: .get, key: key, value: encodedData)
-        let isObjectAlreadyExists = (try await getObjectFromKeyChain(asTypeOf: T.self, forKey: key)) != nil
+        let keychainQuery = keychainQuery(for: .save, key: key, value: encodedData)
+        let isObjectAlreadyExists = (try? getObjectFromKeyChain(asTypeOf: T.self, forKey: key)) != nil
         if isObjectAlreadyExists {
-            try await removeObjectFromKeyChain(object, forKey: key)
+            try removeObjectFromKeyChain(object, forKey: key)
         }
                 
         let addStatus = SecItemAdd(keychainQuery as CFDictionary, nil)
@@ -52,15 +60,15 @@ extension KeyChainManagable {
     public func getObjectFromKeyChain<T: Decodable>(
         asTypeOf targetType: T.Type,
         forKey key: ItemKey
-    ) async throws -> T? {
+    ) throws -> T {
         
-        let keychainQuery = keychainQuery(for: .save, key: key)
+        let keychainQuery = keychainQuery(for: .get, key: key)
         var result: AnyObject?
         let loadStatus = SecItemCopyMatching(keychainQuery, &result)
         
         switch loadStatus {
         case errSecSuccess: break
-        case errSecItemNotFound: return nil
+        case errSecItemNotFound: throw KeyChainError.gettingDataFailed(status: loadStatus)
         default: throw KeyChainError.gettingDataFailed(status: loadStatus)
         }
         
@@ -71,7 +79,7 @@ extension KeyChainManagable {
         return try JSONDecoder().decode(targetType, from: loadedData)
     }
     
-    public func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) async throws {
+    public func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) throws {
 
         let keychainQuery = keychainQuery(for: .remove, key: key)
         let removalStatus = SecItemDelete(keychainQuery)

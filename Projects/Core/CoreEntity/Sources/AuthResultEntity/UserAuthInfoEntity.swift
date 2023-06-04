@@ -1,5 +1,5 @@
 //
-//  UserAuthInfo.swift
+//  UserAuthInfoEntity.swift
 //  CoreEntity
 //
 //  Created by 이준우 on 2023/05/30.
@@ -10,7 +10,7 @@ import Foundation
 
 import Utils
 
-public struct UserAuthInfo: Codable {
+public struct UserAuthInfoEntity: Codable {
 
     public let loginType: LoginType?
     public let authToken: AccessTokenPossessable?
@@ -39,6 +39,7 @@ public struct UserAuthInfo: Codable {
         default:
             self.authToken = nil
         }
+        
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -51,5 +52,6 @@ public struct UserAuthInfo: Codable {
         } else if let appleAuthToken = authToken as? AppleAuthResultEntity {
             try container.encode(appleAuthToken, forKey: .authToken)
         }
+        
     }
 }

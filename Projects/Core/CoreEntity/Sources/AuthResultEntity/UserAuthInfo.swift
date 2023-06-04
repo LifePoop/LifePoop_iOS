@@ -12,8 +12,8 @@ import Utils
 
 public struct UserAuthInfo: Codable {
 
-    let loginType: LoginType?
-    let authToken: AccessTokenPossessable?
+    public let loginType: LoginType?
+    public let authToken: AccessTokenPossessable?
 
     enum CodingKeys: String, CodingKey {
         case authToken

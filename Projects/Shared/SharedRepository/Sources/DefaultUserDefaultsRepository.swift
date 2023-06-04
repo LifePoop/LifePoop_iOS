@@ -19,7 +19,7 @@ public final class DefaultUserDefaultsRepository: UserDefaultsRepository {
     
     public func getValue<T: Codable>(for key: UserDefaultsKeys) -> T? {
         if let data = userDefaults.data(forKey: key.rawKey) {
-            let value = try? PropertyListDecoder().decode(T.self, from: data)
+            let value = try? JSONDecoder().decode(T.self, from: data)
             return value
         }
         return userDefaults.object(forKey: key.rawKey) as? T
@@ -31,7 +31,7 @@ public final class DefaultUserDefaultsRepository: UserDefaultsRepository {
     }
     
     public func updateValue<T: Codable>(for key: UserDefaultsKeys, with newValue: T) {
-        if let data = try? PropertyListEncoder().encode(newValue) {
+        if let data = try? JSONEncoder().encode(newValue) {
             userDefaults.set(data, forKey: key.rawKey)
             return
         }

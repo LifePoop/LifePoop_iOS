@@ -22,8 +22,12 @@ public final class DefaultUserDefaultsRepository: UserDefaultsRepository {
             let value = try? PropertyListDecoder().decode(T.self, from: data)
             return value
         }
-        
         return userDefaults.object(forKey: key.rawKey) as? T
+    }
+    
+    public func getValue<T: RawRepresentable>(for key: UserDefaultsKeys) -> T? where T.RawValue: Codable {
+        guard let rawValue = userDefaults.object(forKey: key.rawKey) as? T.RawValue else { return nil }
+        return T.init(rawValue: rawValue)
     }
     
     public func updateValue<T: Codable>(for key: UserDefaultsKeys, with newValue: T) {
@@ -31,8 +35,11 @@ public final class DefaultUserDefaultsRepository: UserDefaultsRepository {
             userDefaults.set(data, forKey: key.rawKey)
             return
         }
-        
         userDefaults.setValue(newValue, forKey: key.rawKey)
+    }
+    
+    public func updateValue<T: RawRepresentable>(for key: UserDefaultsKeys, with newValue: T) where T.RawValue: Codable {
+        userDefaults.setValue(newValue.rawValue, forKey: key.rawKey)
     }
     
     public func removeValue(for key: UserDefaultsKeys) {

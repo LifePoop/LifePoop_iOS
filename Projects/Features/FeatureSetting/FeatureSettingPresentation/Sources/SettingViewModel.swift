@@ -63,13 +63,10 @@ public final class SettingViewModel: ViewModelType {
         
         input.viewDidLoad
             .withUnretained(self)
-            .flatMap { `self`, _ in
-                self.userSettingUseCase.loginType
-            }
-            .compactMap { $0 }
+            .flatMap { `self`, _ in self.userSettingUseCase.loginType }
             .bind(to: state.userLoginType)
             .disposed(by: disposeBag)
-        
+
         input.viewDidLoad
             .withUnretained(self)
             .flatMap { `self`, _ in

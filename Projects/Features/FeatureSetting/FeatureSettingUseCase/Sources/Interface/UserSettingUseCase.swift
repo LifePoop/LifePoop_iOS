@@ -14,7 +14,7 @@ import CoreEntity
 
 public protocol UserSettingUseCase {
     var nickname: BehaviorSubject<String?> { get }
-    var loginType: BehaviorSubject<LoginType?> { get }
+    var loginType: Single<LoginType?> { get }
     var isAutoLoginActivated: BehaviorSubject<Bool?> { get }
     var feedVisibility: BehaviorSubject<FeedVisibility?> { get }
     func updateNickname(to newNickname: String)

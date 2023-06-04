@@ -18,7 +18,7 @@ import Utils
 public final class DefaultUserSettingUseCase: UserSettingUseCase {
     
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
-    @Inject(SharedDIContainer.shared) private var loginTypeUseCase: LoginTypeUseCase
+    @Inject(SharedDIContainer.shared) private var userAuthInfoUseCase: UserAuthInfoUseCase
     @Inject(SharedDIContainer.shared) private var autoLoginUseCase: AutoLoginUseCase
     @Inject(SharedDIContainer.shared) private var feedVisibilityUseCase: FeedVisibilityUseCase
     
@@ -28,8 +28,10 @@ public final class DefaultUserSettingUseCase: UserSettingUseCase {
         return nicknameUseCase.nickname
     }
     
-    public var loginType: BehaviorSubject<LoginType?> {
-        return loginTypeUseCase.loginType
+    public var loginType: Single<LoginType?> {
+        userAuthInfoUseCase.userAuthInfo
+            .map { $0.loginType }
+            .catchAndReturn(nil)
     }
     
     public var isAutoLoginActivated: BehaviorSubject<Bool?> {
@@ -45,7 +47,7 @@ public final class DefaultUserSettingUseCase: UserSettingUseCase {
     }
     
     public func updateLoginType(to newLoginType: LoginType) {
-        loginTypeUseCase.updateLoginType(to: newLoginType)
+        userAuthInfoUseCase.updateLoginType(to: newLoginType)
     }
     
     public func updateIsAutoLoginActivated(to newValue: Bool) {

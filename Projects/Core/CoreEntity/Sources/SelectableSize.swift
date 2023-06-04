@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum SelectableSize: CaseIterable {
+public enum SelectableSize: Int, CaseIterable {
     
     case small
     case medium

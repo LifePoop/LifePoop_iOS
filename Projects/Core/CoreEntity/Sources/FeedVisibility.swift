@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum FeedVisibility: Codable, CaseIterable {
+public enum FeedVisibility: Int, Codable, CaseIterable {
     case `private`
     case `public`
     

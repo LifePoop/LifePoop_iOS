@@ -26,7 +26,7 @@ public final class LaunchScreenViewModel: ViewModelType {
     
     public struct Output { }
     
-    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserAuthInfoUseCase
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     
     public let input = Input()
     public let output = Output()
@@ -54,8 +54,8 @@ public final class LaunchScreenViewModel: ViewModelType {
     }
     
     private func hasAccessToken() -> Single<Bool> {
-        userInfoUseCase.userAuthInfo
-            .map { $0.loginType != nil }
+        userInfoUseCase.userInfo
+            .map { _ in true }
             .catchAndReturn(false)
     }
 }

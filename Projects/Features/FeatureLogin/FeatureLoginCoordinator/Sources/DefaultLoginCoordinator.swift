@@ -42,8 +42,10 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
                 self.showLaunchScreenViewController()
             case .shouldShowLoginScene:
                 self.showLoginViewController()
-            case .didTapKakaoLoginButton, .didTapAppleLoginButton:
-                self.showNicknameViewController()
+            case .didTapKakaoLoginButton(let authInfo):
+                self.showNicknameViewController(with: authInfo)
+            case .didTapAppleLoginButton(let authInfo):
+                self.showNicknameViewController(with: authInfo)
             case .shouldFinishLoginFlow:
                 self.finishFlow()
             case .shouldPopCurrentScene:
@@ -71,9 +73,9 @@ private extension DefaultLoginCoordinator {
         navigationController.pushViewController(viewController, animated: false)
     }
     
-    func showNicknameViewController() {
+    func showNicknameViewController(with authInfo: UserAuthInfoEntity) {
         let viewController = NicknameViewController()
-        let viewModel = NicknameViewModel(coordinator: self)
+        let viewModel = NicknameViewModel(coordinator: self, authInfo: authInfo)
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }

@@ -13,6 +13,8 @@ import RxSwift
 
 import CoreEntity
 import FeatureLoginCoordinatorInterface
+import FeatureLoginDIContainer
+import FeatureLoginUseCase
 import Utils
 
 public final class NicknameViewModel: ViewModelType {
@@ -42,6 +44,8 @@ public final class NicknameViewModel: ViewModelType {
     
     public let input = Input()
     public let output = Output()
+    
+    @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
 
     private var selectedConditions: Set<SelectableConfirmationCondition> = [] {
         didSet {
@@ -88,10 +92,12 @@ public final class NicknameViewModel: ViewModelType {
     ]
 
     private weak var coordinator: LoginCoordinator?
+    private let authInfo: UserAuthInfoEntity
     private let disposeBag = DisposeBag()
     
-    public init(coordinator: LoginCoordinator?) {
+    public init(coordinator: LoginCoordinator?, authInfo: UserAuthInfoEntity) {
         self.coordinator = coordinator
+        self.authInfo = authInfo
         bind()
     }
     
@@ -99,6 +105,14 @@ public final class NicknameViewModel: ViewModelType {
         guard let coordinator = self.coordinator else { return }
                 
         input.didTapNextButton
+            .withLatestFrom(output.activateNextButton)
+            .filter { $0 }
+            .withLatestFrom(input.didEnterTextValue)
+            .withUnretained(self)
+            .flatMapLatest { `self`, nickname in
+                let userInfo = UserInfoEntity(nickname: nickname, authInfo: self.authInfo)
+                return self.loginUseCase.saveUserInfo(userInfo)
+            }
             .bind(onNext: { _ in
                 coordinator.coordinate(by: .shouldFinishLoginFlow)
             })

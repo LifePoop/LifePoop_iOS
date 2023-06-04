@@ -44,15 +44,15 @@ public final class LoginViewModel: ViewModelType {
             .withUnretained(self)
             .flatMapLatest { `self`, _ in
                 `self`.loginUseCase
-                    .fetchKakaoAuthToken()
+                    .fetchUserAuthInfo(for: .kakao)
                     .catch { error in
                         self.output.errorDidOccur.accept(error)
                         return Single.just(nil)
                     }
             }
-            .filter { $0 != nil }
-            .bind(onNext: { _ in
-                coordinator?.coordinate(by: .didTapKakaoLoginButton)
+            .compactMap { $0 }
+            .bind(onNext: {
+                coordinator?.coordinate(by: .didTapKakaoLoginButton(userAuthInfo: $0))
             })
             .disposed(by: disposeBag)
         
@@ -60,15 +60,15 @@ public final class LoginViewModel: ViewModelType {
             .withUnretained(self)
             .flatMapLatest { `self`, _ in
                 `self`.loginUseCase
-                    .fetchAppleAuthToken()
+                    .fetchUserAuthInfo(for: .apple)
                     .catch { error in
                         self.output.errorDidOccur.accept(error)
                         return Single.just(nil)
                     }
             }
-            .filter { $0 != nil }
-            .bind(onNext: { _ in
-                coordinator?.coordinate(by: .didTapAppleLoginButton)
+            .compactMap { $0 }
+            .bind(onNext: {
+                coordinator?.coordinate(by: .didTapAppleLoginButton(userAuthInfo: $0))
             })
             .disposed(by: disposeBag)
     }

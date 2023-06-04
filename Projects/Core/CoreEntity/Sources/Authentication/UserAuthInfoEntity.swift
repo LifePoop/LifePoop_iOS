@@ -8,8 +8,6 @@
 
 import Foundation
 
-import Utils
-
 public struct UserAuthInfoEntity: Codable {
 
     public let loginType: LoginType?

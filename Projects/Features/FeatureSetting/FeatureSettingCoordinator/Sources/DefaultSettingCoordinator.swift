@@ -119,12 +119,11 @@ private extension DefaultSettingCoordinator {
 
 private extension DefaultSettingCoordinator {
     func presentBottomSheetController(contentViewController: UIViewController, heightRatio: Double) {
-        // FIXME: 스크롤시 Navigation Bar 영역이 어두워지지 않음
-        guard let presentedViewController = navigationController.topViewController else { return }
+        let parentViewController = navigationController
         let bottomSheetController = BottomSheetController(
-            bottomSheetHeight: presentedViewController.view.bounds.height * heightRatio
+            bottomSheetHeight: parentViewController.view.bounds.height * heightRatio
         )
         bottomSheetController.setBottomSheet(contentViewController: contentViewController)
-        bottomSheetController.showBottomSheet(toParent: presentedViewController)
+        bottomSheetController.showBottomSheet(toParent: parentViewController)
     }
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 
+import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginPresentation
 import Utils
@@ -33,17 +34,23 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
     }
     
     public func coordinate(by coordinateAction: LoginCoordinateAction) {
-        switch coordinateAction {
-        case .shouldShowLaunchScreen:
-            showLaunchScreenViewController()
-        case .shouldShowLoginScene:
-            showLoginViewController()
-        case .didTapKakaoLoginButton, .didTapAppleLoginButton:
-            showNicknameViewController()
-        case .didTapNicknameSetButton:
-            finishFlow()
-        case .shouldPopCurrentScene:
-            popCurrentViewController()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            switch coordinateAction {
+            case .shouldShowLaunchScreen:
+                self.showLaunchScreenViewController()
+            case .shouldShowLoginScene:
+                self.showLoginViewController()
+            case .didTapKakaoLoginButton(let authInfo):
+                self.showNicknameViewController(with: authInfo)
+            case .didTapAppleLoginButton(let authInfo):
+                self.showNicknameViewController(with: authInfo)
+            case .shouldFinishLoginFlow:
+                self.finishFlow()
+            case .shouldPopCurrentScene:
+                self.popCurrentViewController()
+            }
         }
     }
 }
@@ -66,9 +73,9 @@ private extension DefaultLoginCoordinator {
         navigationController.pushViewController(viewController, animated: false)
     }
     
-    func showNicknameViewController() {
+    func showNicknameViewController(with authInfo: UserAuthInfoEntity) {
         let viewController = NicknameViewController()
-        let viewModel = NicknameViewModel(coordinator: self)
+        let viewModel = NicknameViewModel(coordinator: self, authInfo: authInfo)
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }

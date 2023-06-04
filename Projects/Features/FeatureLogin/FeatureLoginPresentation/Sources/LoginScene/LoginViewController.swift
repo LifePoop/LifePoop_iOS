@@ -52,8 +52,8 @@ public final class LoginViewController: UIViewController, ViewType {
     
     private let kakaoTalkLoginButon = LoginButton(
         title: "카카오로 계속하기",
-        backgroundColor: ColorAsset.kakaoYellow.color,
-        fontColor: ColorAsset.kakaoBrown.color,
+        backgroundColor: ColorAsset.pooYellow.color,
+        fontColor: ColorAsset.pooBrown.color,
         iconImage: ImageAsset.iconKakao.image
     )
     

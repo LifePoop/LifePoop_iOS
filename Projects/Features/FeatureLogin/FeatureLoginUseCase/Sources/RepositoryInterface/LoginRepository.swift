@@ -13,5 +13,5 @@ import Utils
 
 public protocol LoginRepository: AnyObject {
     
-    func fetchAccessToken(for loginType: LoginType) -> Single<AuthResultPossessable>
+    func fetchAccessToken(for loginType: LoginType) -> Single<AccessTokenPossessable>
 }

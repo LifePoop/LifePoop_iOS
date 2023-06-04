@@ -10,4 +10,5 @@ import Foundation
 
 public protocol SettingCoordinatorCompletionDelegate: AnyObject {
     func finishFlow()
+    func finishFlow(by completion: SettingFlowCompletion)
 }

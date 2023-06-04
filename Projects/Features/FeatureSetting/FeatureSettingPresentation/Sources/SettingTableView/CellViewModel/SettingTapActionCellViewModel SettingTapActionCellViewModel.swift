@@ -22,18 +22,17 @@ public final class SettingTapActionCellViewModel: SettingCellViewModel {
     
     public struct Output {
         let settingDescription = BehaviorRelay<String>(value: "")
-        let additionalText: BehaviorRelay<String>?
+        let additionalText = BehaviorRelay<String>(value: "")
     }
     
     public let input = Input()
-    public let output: Output
+    public let output = Output()
     public let model: SettingModel
     
     private let disposeBag = DisposeBag()
     
-    public init(model: SettingModel, tapAction: PublishRelay<Void>, additionalText: BehaviorRelay<String>? = nil) {
+    public init(model: SettingModel, tapAction: PublishRelay<Void>) {
         self.model = model
-        self.output = Output(additionalText: additionalText)
         
         input.cellDidDequeue
             .map { model.description }
@@ -42,6 +41,12 @@ public final class SettingTapActionCellViewModel: SettingCellViewModel {
         
         input.cellDidTap
             .bind(to: tapAction)
+            .disposed(by: disposeBag)
+    }
+    
+    public func bindCellText(with relay: BehaviorRelay<String>) {
+        relay
+            .bind(to: output.additionalText)
             .disposed(by: disposeBag)
     }
 }

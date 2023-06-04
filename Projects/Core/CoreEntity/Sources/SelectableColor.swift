@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum SelectableColor: CaseIterable {
+public enum SelectableColor: Codable, CaseIterable {
 
     case brown
     case black

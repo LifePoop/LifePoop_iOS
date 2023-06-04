@@ -11,6 +11,6 @@ import RxSwift
 import CoreEntity
 
 public protocol LoginUseCase {
-    func fetchKakaoAuthToken() -> Single<KakaoAuthResultEntity>
-    func fetchAppleAuthToken() -> Single<AppleAuthResultEntity>
+    func saveUserInfo(_ userInfo: UserInfoEntity) -> Single<Void>
+    func fetchUserAuthInfo(for loginType: LoginType) -> Single<UserAuthInfoEntity?>
 }

@@ -30,7 +30,7 @@ public final class AppleAuthManager: AuthManagable {
         }
     }
     
-    public func fetchToken() -> Single<AuthResultPossessable> {
+    public func fetchToken() -> Single<AccessTokenPossessable> {
         guard AppleAuthManager.isAlreadyInitialized else {
             return Single.error(AuthenticationError.authInfoNotInitialized)
         }

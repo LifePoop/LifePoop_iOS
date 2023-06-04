@@ -42,21 +42,33 @@ public final class LoginViewModel: ViewModelType {
         
         input.didTapKakaoLoginButton
             .withUnretained(self)
-            .flatMapLatest { owner, _ in owner.loginUseCase.fetchKakaoAuthToken() }
-            .subscribe(with: self, onNext: { `self`, result in
-                coordinator?.coordinate(by: .didTapKakaoLoginButton)
-            }, onError: { `self`, error in
-                self.output.errorDidOccur.accept(error)
+            .flatMapLatest { `self`, _ in
+                `self`.loginUseCase
+                    .fetchUserAuthInfo(for: .kakao)
+                    .catch { error in
+                        self.output.errorDidOccur.accept(error)
+                        return Single.just(nil)
+                    }
+            }
+            .compactMap { $0 }
+            .bind(onNext: {
+                coordinator?.coordinate(by: .didTapKakaoLoginButton(userAuthInfo: $0))
             })
             .disposed(by: disposeBag)
         
         input.didTapAppleLoginButton
             .withUnretained(self)
-            .flatMapLatest { owner, _ in owner.loginUseCase.fetchAppleAuthToken() }
-            .subscribe(with: self, onNext: { `self`, result in
-                coordinator?.coordinate(by: .didTapAppleLoginButton)
-            }, onError: { `self`, error in
-                self.output.errorDidOccur.accept(error)
+            .flatMapLatest { `self`, _ in
+                `self`.loginUseCase
+                    .fetchUserAuthInfo(for: .apple)
+                    .catch { error in
+                        self.output.errorDidOccur.accept(error)
+                        return Single.just(nil)
+                    }
+            }
+            .compactMap { $0 }
+            .bind(onNext: {
+                coordinator?.coordinate(by: .didTapAppleLoginButton(userAuthInfo: $0))
             })
             .disposed(by: disposeBag)
     }

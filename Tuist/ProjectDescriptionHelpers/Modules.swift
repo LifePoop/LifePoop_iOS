@@ -50,6 +50,7 @@ public enum Modules {
 }
 
 public enum SharedModuleType: String, CaseIterable {
+    case SharedDIContainer
     case SharedRepository
     case SharedUseCase
 }

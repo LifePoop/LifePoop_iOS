@@ -10,6 +10,7 @@ import Foundation
 
 public enum HomeCoordinateAction {
     case flowDidStart
+    case flowDidFinish
     case stoolLogButtonDidTap
     case settingButtonDidTap
 }

@@ -28,7 +28,7 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
         }
     }
     
-    public func fetchAccessToken(for loginType: LoginType) -> Single<AuthResultPossessable> {
+    public func fetchAccessToken(for loginType: LoginType) -> Single<AccessTokenPossessable> {
         authManager(for: loginType).fetchToken()
     }
 }

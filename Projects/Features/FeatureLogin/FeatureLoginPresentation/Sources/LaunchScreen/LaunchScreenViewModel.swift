@@ -14,7 +14,8 @@ import RxSwift
 import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
-import FeatureLoginUseCase
+import SharedDIContainer
+import SharedUseCase
 import Utils
 
 public final class LaunchScreenViewModel: ViewModelType {
@@ -23,13 +24,12 @@ public final class LaunchScreenViewModel: ViewModelType {
         let viewWillDisappear = PublishRelay<Void>()
     }
     
-    public struct Output {
-
-    }
+    public struct Output { }
+    
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     
     public let input = Input()
     public let output = Output()
-    
     
     private weak var coordinator: LoginCoordinator?
     private let disposeBag = DisposeBag()
@@ -37,12 +37,25 @@ public final class LaunchScreenViewModel: ViewModelType {
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
         
-        // MARK: - Bind Input - nextButtonDidTap
         input.viewWillDisappear
-            .bind(onNext: {
-                coordinator?.coordinate(by: .shouldShowLoginScene)
+            .debug()
+            .withUnretained(self)
+            .flatMapLatest { `self`, _ in
+                self.hasAccessToken()
+            }
+            .bind(onNext: { hasToken in
+                if hasToken {
+                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                } else {
+                    coordinator?.coordinate(by: .shouldShowLoginScene)
+                }
             })
             .disposed(by: disposeBag)
-
+    }
+    
+    private func hasAccessToken() -> Single<Bool> {
+        userInfoUseCase.userInfo
+            .map { _ in true }
+            .catchAndReturn(false)
     }
 }

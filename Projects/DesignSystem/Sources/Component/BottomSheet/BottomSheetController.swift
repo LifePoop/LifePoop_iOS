@@ -9,12 +9,6 @@
 import SnapKit
 import UIKit
 
-@objc public protocol BottomSheetDelegate {
-    
-    @objc optional func bottomSheetDidAppear()
-    func bottomSheetDidDisappear()
-}
-
 public final class BottomSheetController: UIViewController {
     
     private var bottomSheet: BottomSheet?

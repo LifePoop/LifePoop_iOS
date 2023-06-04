@@ -68,10 +68,9 @@ private extension DefaultHomeCoordinator {
         )
         add(childCoordinator: stoolLogCoordinator)
 
-        guard let bottomSheetController = presentBottomSheetController(
+        let bottomSheetController = presentBottomSheetController(
             contentViewController: stoolLogCoordinator.navigationController
-        ) else { return }
-        
+        )
         bottomSheetController.delegate = stoolLogCoordinator
         stoolLogCoordinator.start()
     }
@@ -88,35 +87,16 @@ private extension DefaultHomeCoordinator {
 // MARK: - Supporting Methods
 
 private extension DefaultHomeCoordinator {
-    typealias TransparentBackgroundViewController = UIViewController
-    func presentTransparentBackgroundView() {
-        let backgroundViewController = TransparentBackgroundViewController()
-        backgroundViewController.modalPresentationStyle = .overFullScreen
-        navigationController.present(backgroundViewController, animated: false)
-    }
     
-    func presentBottomSheetController(contentViewController: UIViewController)
-    -> BottomSheetController? {
-        guard let bottomSheetController = createBottomSheetController(),
-              let parentViewController = navigationController.presentedViewController else {
-            
-            navigationController.presentedViewController?.dismiss(animated: false)
-            return nil
-        }
+    func presentBottomSheetController(contentViewController: UIViewController) -> BottomSheetController {
+        let parentViewController = navigationController
+        let bottomSheetController =  BottomSheetController(
+            bottomSheetHeight: navigationController.view.bounds.height*0.5
+        )
         
         bottomSheetController.setBottomSheet(contentViewController: contentViewController)
-        bottomSheetController.showBottomSheet(toParent: parentViewController)
+        bottomSheetController.showBottomSheet(toParent: navigationController)
 
-        return bottomSheetController
-    }
-
-    func createBottomSheetController() -> BottomSheetController? {
-        presentTransparentBackgroundView()
-        guard let parentViewController = navigationController.presentedViewController else { return nil }
-
-        let bottomSheetController = BottomSheetController(
-            bottomSheetHeight: parentViewController.view.bounds.height*0.5
-        )
         return bottomSheetController
     }
 }

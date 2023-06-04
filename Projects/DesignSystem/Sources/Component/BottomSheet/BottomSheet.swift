@@ -62,8 +62,7 @@ public final class BottomSheet: UIControl {
     }
     
     private func addPanGestureRecognizer() {
-        topBarArea.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
-        contentBackgroundView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
+        self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
     }
     
     @objc private func didPan(_ recognizer: UIPanGestureRecognizer) {
@@ -96,23 +95,19 @@ public final class BottomSheet: UIControl {
     private func setupViews() {
         
         self.roundCorners(corners: [.topLeft, .topRight], radius: 30)
-
-        addSubview(topBarArea)
-        topBarArea.snp.makeConstraints { make in
-            make.left.right.top.equalToSuperview()
-            make.height.equalTo(21)
-        }
+        backgroundColor = .systemBackground
         
-        topBarArea.addSubview(topBar)
+        addSubview(topBar)
         topBar.snp.makeConstraints { make in
-            make.centerX.centerY.equalToSuperview()
+            make.top.equalToSuperview().inset(10)
+            make.centerX.equalToSuperview()
             make.width.equalTo(78)
             make.height.equalTo(7)
         }
         
         addSubview(contentBackgroundView)
         contentBackgroundView.snp.makeConstraints { make in
-            make.top.equalTo(topBarArea.snp.bottom)
+            make.top.equalTo(topBar.snp.bottom).offset(23)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }

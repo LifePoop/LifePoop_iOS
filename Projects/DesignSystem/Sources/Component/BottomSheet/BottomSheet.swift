@@ -61,8 +61,8 @@ public final class BottomSheet: UIControl {
     }
     
     private func addPanGestureRecognizer() {
-        let recognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan))
-        topBarArea.addGestureRecognizer(recognizer)
+        topBarArea.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
+        contentBackgroundView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
     }
     
     @objc private func didPan(_ recognizer: UIPanGestureRecognizer) {

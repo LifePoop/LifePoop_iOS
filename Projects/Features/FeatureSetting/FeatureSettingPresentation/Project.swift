@@ -21,6 +21,8 @@ let project = Project.makeModule(
         .Project.module(.Features(.Setting, .UseCase)).dependency,
         .Project.module(.Features(.Setting, .DIContainer)).dependency,
         .Project.module(.Features(.Setting, .CoordinatorInterface)).dependency,
+        .Project.module(.Shared(.SharedDIContainer)).dependency,
+        .Project.module(.Shared(.SharedUseCase)).dependency,
         .SPM.SnapKit.dependency,
         .SPM.RxSwift.dependency,
         .SPM.RxRelay.dependency,

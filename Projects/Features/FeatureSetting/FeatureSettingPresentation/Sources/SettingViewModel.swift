@@ -15,6 +15,8 @@ import CoreEntity
 import FeatureSettingCoordinatorInterface
 import FeatureSettingDIContainer
 import FeatureSettingUseCase
+import SharedDIContainer
+import SharedUseCase
 import Utils
 
 public final class SettingViewModel: ViewModelType {
@@ -54,6 +56,7 @@ public final class SettingViewModel: ViewModelType {
     private let state = State()
     
     @Inject(SettingDIContainer.shared) private var userSettingUseCase: UserSettingUseCase
+    @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
     
     private weak var coordinator: SettingCoordinator?
     private let disposeBag = DisposeBag()
@@ -104,7 +107,11 @@ public final class SettingViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.viewDidLoad
-            .map { BundleResourceAccessor.appVersion }
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.bundleResourceUseCase.determineAppVersion()
+            }
+            .compactMap { $0.element }
             .bind(to: state.version)
             .disposed(by: disposeBag)
         
@@ -144,13 +151,25 @@ public final class SettingViewModel: ViewModelType {
         
         input.termsOfserviceDidTap
             .map { DocumentType.termsOfService }
-            .compactMap { ($0.title, BundleResourceAccessor.readText(from: $0.textFile)) }
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, documentType -> Observable<(String, String)> in
+                let title = Observable.just(documentType.title)
+                let text = self.bundleResourceUseCase.readText(from: documentType.textFile)
+                return Observable.zip(title, text)
+            }
+            .compactMap { $0.element }
             .bind { coordinator?.coordinate(by: .termsOfServiceDidTap(title: $0, text: $1)) }
             .disposed(by: disposeBag)
         
         input.privacyPolicyDidTap
             .map { DocumentType.privacyPolicy }
-            .compactMap { ($0.title, BundleResourceAccessor.readText(from: $0.textFile)) }
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, documentType -> Observable<(String, String)> in
+                let title = Observable.just(documentType.title)
+                let text = self.bundleResourceUseCase.readText(from: documentType.textFile)
+                return Observable.zip(title, text)
+            }
+            .compactMap { $0.element }
             .bind { coordinator?.coordinate(by: .termsOfServiceDidTap(title: $0, text: $1)) }
             .disposed(by: disposeBag)
         

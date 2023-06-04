@@ -6,8 +6,9 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
-import SnapKit
 import UIKit
+
+import SnapKit
 
 protocol BottomSheetCloseNotification: NSObject {
     func notifyBottomSheetClosed()
@@ -80,7 +81,8 @@ public final class BottomSheet: UIControl {
         //recognizer이 끝났을 때 상태 업데이트
         guard recognizer.state == .ended else { return }
         let isDownward = recognizer.velocity(in: self).y > 0
-        let yPosition: CGFloat = isDownward ? (updatedY > maxTopOffset*0.8 ? maxTopOffset : minTopOffset) : minTopOffset
+        let shouldMoveDown = updatedY > maxTopOffset * 0.8
+        let yPosition: CGFloat = isDownward ? (shouldMoveDown ? maxTopOffset : minTopOffset) : minTopOffset
         
         updateConstraints(yPosition)
         
@@ -105,7 +107,6 @@ public final class BottomSheet: UIControl {
         topBar.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
             make.width.equalTo(78)
-//            make.width.equalToSuperview().multipliedBy(0.39)
             make.height.equalTo(7)
         }
         

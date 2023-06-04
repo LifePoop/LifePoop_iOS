@@ -6,8 +6,9 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
-import SnapKit
 import UIKit
+
+import SnapKit
 
 public final class BottomSheetController: UIViewController {
     
@@ -107,7 +108,10 @@ extension BottomSheetController: BottomSheetCloseNotification {
 
 private extension BottomSheetController {
     
-    func presentTransparentBackgroundView(toParent parentViewController: UIViewController) -> TransparentBackgroundViewController {
+    func presentTransparentBackgroundView(
+        toParent parentViewController: UIViewController
+    ) -> TransparentBackgroundViewController {
+        
         let backgroundViewController = TransparentBackgroundViewController()
         backgroundViewController.modalPresentationStyle = .overFullScreen
         

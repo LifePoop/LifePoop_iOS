@@ -18,4 +18,3 @@ public struct UserInfoEntity: Codable {
         self.authInfo = authInfo
     }
 }
-

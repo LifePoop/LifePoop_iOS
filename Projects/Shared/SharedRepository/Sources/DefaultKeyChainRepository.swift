@@ -11,12 +11,7 @@ import Security
 
 import SharedUseCase
 
-public enum KeyChainError: Error {
-    case addingDataFailed(status: OSStatus)
-    case gettingDataFailed(status: OSStatus)
-    case removingDataFailed(status: OSStatus)
-    case nilData(status: OSStatus)
-}
+import RxSwift
 
 public final class DefaultKeyChainRepository: KeyChainRepository {
     
@@ -57,6 +52,20 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
         }
     }
     
+    public func saveObjectToKeyChainAsCompletable<T: Codable>(_ object: T, forKey key: ItemKey) -> Completable {
+        Completable.create { [weak self] observer in
+
+            do {
+                try self?.saveObjectToKeyChain(object, forKey: key)
+                observer(.completed)
+            } catch let error {
+                observer(.error(error))
+            }
+            
+            return Disposables.create { }
+        }
+    }
+    
     public func getObjectFromKeyChain<T: Decodable>(
         asTypeOf targetType: T.Type,
         forKey key: ItemKey
@@ -79,6 +88,26 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
         return try JSONDecoder().decode(targetType, from: loadedData)
     }
     
+    public func getObjectFromKeyChainAsSingle<T: Decodable>(
+        asTypeOf targetType: T.Type,
+        forKey key: ItemKey
+    ) -> Single<T> {
+        Single.create { [weak self] observer in
+            
+            do {
+                let optionalObject = try self?.getObjectFromKeyChain(asTypeOf: targetType, forKey: key)
+                guard let object = optionalObject else {
+                    throw KeyChainError.nilData(status: .zero)
+                }
+                observer(.success(object))
+            } catch let error {
+                observer(.failure(error))
+            }
+            
+            return Disposables.create { }
+        }
+    }
+    
     public func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) throws {
 
         let keychainQuery = keychainQuery(for: .remove, key: key)
@@ -86,6 +115,20 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
         
         if removalStatus != errSecSuccess {
             throw KeyChainError.removingDataFailed(status: removalStatus)
+        }
+    }
+    
+    public func removeObjectFromKeyChainAsCompletable<T: Encodable>(_ object: T, forKey key: ItemKey) -> Completable {
+        Completable.create { [weak self] observer in
+            
+            do {
+                try self?.removeObjectFromKeyChain(object, forKey: key)
+                observer(.completed)
+            } catch let error {
+                observer(.error(error))
+            }
+            
+            return Disposables.create { }
         }
     }
 }

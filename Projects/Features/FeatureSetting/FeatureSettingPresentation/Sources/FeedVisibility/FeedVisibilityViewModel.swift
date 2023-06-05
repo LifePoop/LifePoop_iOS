@@ -49,8 +49,7 @@ public final class FeedVisibilityViewModel: ViewModelType {
         
         input.viewDidLoad
             .withLatestFrom(state.feedVisibility)
-            .compactMap { $0 }
-            .compactMap { FeedVisibility.indexOf(case: $0) }
+            .compactMap { $0?.index }
             .bind(to: output.selectFeedVisibilityAt)
             .disposed(by: disposeBag)
         
@@ -60,8 +59,7 @@ public final class FeedVisibilityViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         state.feedVisibility
-            .compactMap { $0 }
-            .compactMap { FeedVisibility.indexOf(case: $0) }
+            .compactMap { $0?.index }
             .bind(to: output.selectFeedVisibilityAt)
             .disposed(by: disposeBag)
     }

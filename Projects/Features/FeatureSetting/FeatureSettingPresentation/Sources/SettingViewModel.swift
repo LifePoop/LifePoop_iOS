@@ -41,14 +41,15 @@ public final class SettingViewModel: ViewModelType {
         let footerViewModel = BehaviorRelay<SettingTableFooterViewModel?>(value: nil)
         let showLogoutAlert = PublishRelay<Void>()
         let dismissLogoutAlert = PublishRelay<Void>()
+        let showErrorMessage = PublishRelay<String>()
     }
     
     public struct State {
         let userLoginType = BehaviorRelay<LoginType?>(value: nil)
+        let userNickname = BehaviorRelay<String?>(value: nil)
         let feedVisibility = BehaviorRelay<FeedVisibility?>(value: nil)
-        let userNickname = BehaviorRelay<String>(value: "")
-        let isAutoLoginOn = BehaviorRelay<Bool>(value: false)
-        let version = BehaviorRelay<String>(value: "")
+        let isAutoLoginOn = BehaviorRelay<Bool?>(value: nil)
+        let version = BehaviorRelay<String?>(value: nil)
     }
     
     public let input = Input()
@@ -64,45 +65,41 @@ public final class SettingViewModel: ViewModelType {
     public init(coordinator: SettingCoordinator?) {
         self.coordinator = coordinator
         
+        // MARK: - Bind Input
+        
         input.viewDidLoad
             .withUnretained(self)
-            .flatMap { `self`, _ in
+            .flatMapMaterialized { `self`, _ in
                 self.userSettingUseCase.loginType
             }
-            .compactMap { $0 }
+            .compactMap { $0.element }
             .bind(to: state.userLoginType)
             .disposed(by: disposeBag)
         
         input.viewDidLoad
             .withUnretained(self)
-            .flatMap { `self`, _ in
-                self.userSettingUseCase.feedVisibility
-            }
-            .compactMap { $0 }
-            .bind(to: state.feedVisibility)
-            .disposed(by: disposeBag)
-        
-        state.feedVisibility
-            .distinctUntilChanged()
-            .compactMap { $0 }
-            .bind(onNext: userSettingUseCase.updateFeedVisibility)
-            .disposed(by: disposeBag)
-        
-        input.viewDidLoad
-            .withUnretained(self)
-            .flatMap { `self`, _ in
+            .flatMapMaterialized { `self`, _ in
                 self.userSettingUseCase.nickname
             }
-            .compactMap { $0 }
+            .compactMap { $0.element }
             .bind(to: state.userNickname)
             .disposed(by: disposeBag)
         
         input.viewDidLoad
             .withUnretained(self)
-            .flatMap { `self`, _ in
+            .flatMapMaterialized { `self`, _ in
+                self.userSettingUseCase.feedVisibility
+            }
+            .compactMap { $0.element }
+            .bind(to: state.feedVisibility)
+            .disposed(by: disposeBag)
+        
+        input.viewDidLoad
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
                 self.userSettingUseCase.isAutoLoginActivated
             }
-            .compactMap { $0 }
+            .compactMap { $0.element }
             .bind(to: state.isAutoLoginOn)
             .disposed(by: disposeBag)
         
@@ -146,7 +143,7 @@ public final class SettingViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.useAutoLoginDidToggle
-            .bind(onNext: userSettingUseCase.updateIsAutoLoginActivated)
+            .bind(to: state.isAutoLoginOn)
             .disposed(by: disposeBag)
         
         input.termsOfserviceDidTap
@@ -197,6 +194,31 @@ public final class SettingViewModel: ViewModelType {
         
         input.withdrawButtonDidTap
             .bind { coordinator?.coordinate(by: .withdrawButtonDidTap) }
+            .disposed(by: disposeBag)
+        
+        // MARK: - Bind State
+        
+        state.feedVisibility
+            .distinctUntilChanged()
+            .compactMap { $0 }
+            .withUnretained(self)
+            .flatMapCompletableMaterialized { `self`, isActivated in
+                self.userSettingUseCase.updateFeedVisibility(to: isActivated)
+            }
+            .compactMap { $0.error }
+            .toastMeessageMap(to: .setting(.failToChangeFeedVisibility))
+            .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
+        
+        state.isAutoLoginOn
+            .compactMap { $0 }
+            .withUnretained(self)
+            .flatMapCompletableMaterialized { `self`, isActivated in
+                self.userSettingUseCase.updateIsAutoLoginActivated(to: isActivated)
+            }
+            .compactMap { $0.error }
+            .toastMeessageMap(to: .setting(.failToChangeIsAutoLogin))
+            .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
     }
     

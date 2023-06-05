@@ -78,7 +78,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
             .bind(onNext: profileImageEditView.setProfileImageView)
             .disposed(by: disposeBag)
         
-        output.userNickName
+        output.setUserNickname
             .bind(to: nicknameTextField.rx.text)
             .disposed(by: disposeBag)
     }

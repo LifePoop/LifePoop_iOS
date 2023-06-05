@@ -23,25 +23,16 @@ public final class DefaultLoginUseCase: LoginUseCase {
 
     public init() { }
     
-    public func saveUserInfo(_ userInfo: UserInfoEntity) -> Single<Void> {
-        Single.create { [weak self] observer in
-
-            do {
-                try self?.keyChainRepository.saveObjectToKeyChain(userInfo, forKey: .userAuthInfo)
-                self?.userDefaultsRepository.updateValue(for: .userNickname, with: userInfo.nickname)
-                observer(.success(()))
-            } catch let error {
-                observer(.failure(error))
-            }
-
-            return Disposables.create { }
-        }
-        .logErrorIfDetected(category: .authentication)
-
+    public func saveUserInfo(_ userInfo: UserInfoEntity) -> Completable {
+        keyChainRepository
+            .saveObjectToKeyChainAsCompletable(userInfo, forKey: .userAuthInfo)
+            .concat(self.userDefaultsRepository.updateValue(for: .userNickname, with: userInfo.nickname))
+            .concat(self.userDefaultsRepository.updateValue(for: .userLoginType, with: userInfo.authInfo.loginType))
+            .logErrorIfDetected(category: .authentication)
     }
     
-    public func fetchUserAuthInfo(for loginType: LoginType) -> Single<UserAuthInfoEntity?> {
-        return loginRepository.fetchAccessToken(for: loginType)
+    public func fetchUserAuthInfo(for loginType: LoginType) -> Observable<UserAuthInfoEntity?> {
+        loginRepository.fetchAccessToken(for: loginType)
             .asObservable()
             .compactMap {
                 switch loginType {
@@ -52,7 +43,6 @@ public final class DefaultLoginUseCase: LoginUseCase {
                 }
             }
             .map { UserAuthInfoEntity(loginType: loginType, authToken: $0) }
-            .asSingle()
             .logErrorIfDetected(category: .authentication)
     }
 }

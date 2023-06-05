@@ -13,6 +13,7 @@ let project = Project.makeModule(
     product: .framework,
     packages: [],
     dependencies: [
+        .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.Utils).dependency,
     ],
     hasTests: false

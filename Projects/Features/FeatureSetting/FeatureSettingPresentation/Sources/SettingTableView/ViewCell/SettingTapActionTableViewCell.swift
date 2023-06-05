@@ -67,7 +67,7 @@ public class SettingTapActionTableViewCell: BaseSettingTableViewCell, ViewType {
             .bind(to: descriptionLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.additionalText?
+        output.additionalText
             .bind(to: addtionalTextLabel.rx.text)
             .disposed(by: disposeBag)
     }

@@ -9,6 +9,7 @@
 import UIKit
 
 import FeatureHomeCoordinator
+import FeatureHomeCoordinatorInterface
 import FeatureLoginCoordinator
 import FeatureLoginCoordinatorInterface
 import Utils
@@ -50,7 +51,10 @@ private extension DefaultAppCoordinator {
     }
     
     func startHomeCoordinatorFlow() {
-        let homeCoordinator = DefaultHomeCoordinator(navigationController: navigationController)
+        let homeCoordinator = DefaultHomeCoordinator(
+            navigationController: navigationController,
+            flowCompletionDelegate: self
+        )
         add(childCoordinator: homeCoordinator)
         homeCoordinator.start()
     }
@@ -62,5 +66,12 @@ extension DefaultAppCoordinator: LoginCoordinatorCompletionDelegate {
     public func showNextFlow() {
         remove(childCoordinator: .login)
         coordinate(by: .accessTokenDidfetch)
+    }
+}
+
+extension DefaultAppCoordinator: HomeCoordinatorCompletionDelegate {
+    public func finishFlow() {
+        remove(childCoordinator: .home)
+        coordinate(by: .appDidStart)
     }
 }

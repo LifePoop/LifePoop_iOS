@@ -18,6 +18,12 @@ import FeatureHomeUseCase
 import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
+import FeatureSettingDIContainer
+import FeatureSettingRepository
+import FeatureSettingUseCase
+import SharedDIContainer
+import SharedRepository
+import SharedUseCase
 
 import Utils
 
@@ -75,16 +81,28 @@ private extension SceneDelegate {
 private extension SceneDelegate {
     func registerAllDependencies() {
         registerCoreDependencies()
+        registerSharedDependencies()
         registerLoginDependencies()
         registerHomeDependencies()
+        registerSettingDependencies()
     }
     
     func registerCoreDependencies() {
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(CoreExampleDataMapper()) }
         CoreDIContainer.shared.register(service: EndpointService.self) { URLSessionEndpointService.shared }
-        CoreDIContainer.shared.register(service: URLDataService.self) { URLSessionURLDataService.shared }
         CoreDIContainer.shared.register(service: DiskCacheStorage.self) { FileManagerDiskCacheStorage.shared }
         CoreDIContainer.shared.register(service: MemoryCacheStorage.self) { NSCacheMemoryCacheStorage.shared }
+    }
+    
+    func registerSharedDependencies() {
+        SharedDIContainer.shared.register(service: BundleResourceUseCase.self) { DefaultBundleResourceUseCase() }
+        SharedDIContainer.shared.register(service: NicknameUseCase.self) { DefaultNicknameUseCase() }
+        SharedDIContainer.shared.register(service: LoginTypeUseCase.self) { DefaultLoginTypeUseCase() }
+        SharedDIContainer.shared.register(service: AutoLoginUseCase.self) { DefaultAutoLoginUseCase() }
+        SharedDIContainer.shared.register(service: FeedVisibilityUseCase.self) { DefaultFeedVisibilityUseCase() }
+        SharedDIContainer.shared.register(service: ProfileCharacterUseCase.self) { DefaultProfileCharacterUseCase() }
+        SharedDIContainer.shared.register(service: BundleResourceRepository.self) { DefaultBundleResourceRepository() }
+        SharedDIContainer.shared.register(service: UserDefaultsRepository.self) { DefaultUserDefaultsRepository() }
     }
     
     func registerLoginDependencies() {
@@ -96,13 +114,17 @@ private extension SceneDelegate {
         HomeDIContainer.shared.register(service: HomeUseCase.self) { DefaultHomeUseCase() }
         HomeDIContainer.shared.register(service: HomeRepository.self) { DefaultHomeRepository() }
     }
+    
+    func registerSettingDependencies() {
+        SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
+    }
 }
 
 // MARK: - UI Setup
 
 private extension SceneDelegate {
     func configureNavigationBarBackButtonItem() {
-        let emptyImage = UIImage()
+        let emptyImage = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).image { _ in }
         UINavigationBar.appearance().backIndicatorImage = emptyImage
         UINavigationBar.appearance().backIndicatorTransitionMaskImage = emptyImage
     }

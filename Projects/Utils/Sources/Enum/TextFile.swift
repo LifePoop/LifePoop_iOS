@@ -12,7 +12,7 @@ public enum TextFile: String {
     case privacyPolicy = "PrivacyPolicy"
     case termsOfService = "TermsOfService"
     
-    var name: String {
+    public var name: String {
         return rawValue
     }
 }

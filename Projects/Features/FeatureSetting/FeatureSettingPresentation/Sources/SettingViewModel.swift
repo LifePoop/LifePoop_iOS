@@ -15,14 +15,17 @@ import CoreEntity
 import FeatureSettingCoordinatorInterface
 import FeatureSettingDIContainer
 import FeatureSettingUseCase
+import SharedDIContainer
+import SharedUseCase
 import Utils
 
 public final class SettingViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
-        let viewDidDisappear = PublishRelay<Void>()
+        let viewWillAppear = PublishRelay<Void>()
         let profileInfoDidTap = PublishRelay<Void>()
+        let feedVisibilityDidTap = PublishRelay<Void>()
         let useAutoLoginDidToggle = PublishRelay<Bool>()
         let termsOfserviceDidTap = PublishRelay<Void>()
         let privacyPolicyDidTap = PublishRelay<Void>()
@@ -38,18 +41,23 @@ public final class SettingViewModel: ViewModelType {
         let footerViewModel = BehaviorRelay<SettingTableFooterViewModel?>(value: nil)
         let showLogoutAlert = PublishRelay<Void>()
         let dismissLogoutAlert = PublishRelay<Void>()
+        let showErrorMessage = PublishRelay<String>()
     }
     
     public struct State {
         let userLoginType = BehaviorRelay<LoginType?>(value: nil)
-        let userNickname = BehaviorRelay<String>(value: "")
-        let isAutoLoginOn = BehaviorRelay<Bool>(value: false)
-        let version = BehaviorRelay<String>(value: "")
+        let userNickname = BehaviorRelay<String?>(value: nil)
+        let feedVisibility = BehaviorRelay<FeedVisibility?>(value: nil)
+        let isAutoLoginOn = BehaviorRelay<Bool?>(value: nil)
+        let version = BehaviorRelay<String?>(value: nil)
     }
     
     public let input = Input()
     public let output = Output()
     private let state = State()
+    
+    @Inject(SettingDIContainer.shared) private var userSettingUseCase: UserSettingUseCase
+    @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
     
     private weak var coordinator: SettingCoordinator?
     private let disposeBag = DisposeBag()
@@ -57,23 +65,50 @@ public final class SettingViewModel: ViewModelType {
     public init(coordinator: SettingCoordinator?) {
         self.coordinator = coordinator
         
+        // MARK: - Bind Input
+        
         input.viewDidLoad
-            .map { .kakao }
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.userSettingUseCase.loginType
+            }
+            .compactMap { $0.element }
             .bind(to: state.userLoginType)
             .disposed(by: disposeBag)
         
         input.viewDidLoad
-            .map { "밀키똥" } // FIXME: Execute Nickname UseCase
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.userSettingUseCase.nickname
+            }
+            .compactMap { $0.element }
             .bind(to: state.userNickname)
             .disposed(by: disposeBag)
         
         input.viewDidLoad
-            .map { true } // FIXME: Execute AutoLogin UseCase
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.userSettingUseCase.feedVisibility
+            }
+            .compactMap { $0.element }
+            .bind(to: state.feedVisibility)
+            .disposed(by: disposeBag)
+        
+        input.viewDidLoad
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.userSettingUseCase.isAutoLoginActivated
+            }
+            .compactMap { $0.element }
             .bind(to: state.isAutoLoginOn)
             .disposed(by: disposeBag)
         
         input.viewDidLoad
-            .map { "1.0.1" } // FIXME: Execute Version UseCase
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.bundleResourceUseCase.determineAppVersion()
+            }
+            .compactMap { $0.element }
             .bind(to: state.version)
             .disposed(by: disposeBag)
         
@@ -94,24 +129,44 @@ public final class SettingViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.profileInfoDidTap
-            .bind { coordinator?.coordinate(by: .profileInfoDidTap) }
+            .withUnretained(self)
+            .bind { `self`, _ in
+                coordinator?.coordinate(by: .profileInfoDidTap(userNickname: self.state.userNickname))
+            }
+            .disposed(by: disposeBag)
+        
+        input.feedVisibilityDidTap
+            .withUnretained(self)
+            .bind { `self`, _ in
+                coordinator?.coordinate(by: .feedVisibilityDidTap(feedVisibility: self.state.feedVisibility))
+            }
             .disposed(by: disposeBag)
         
         input.useAutoLoginDidToggle
-            .bind { isOn in
-                // TODO: Execute AutoLogin UseCase
-            }
+            .bind(to: state.isAutoLoginOn)
             .disposed(by: disposeBag)
         
         input.termsOfserviceDidTap
             .map { DocumentType.termsOfService }
-            .compactMap { ($0.title, Bundle.utils?.text(from: $0.textFile)) }
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, documentType -> Observable<(String, String)> in
+                let title = Observable.just(documentType.title)
+                let text = self.bundleResourceUseCase.readText(from: documentType.textFile)
+                return Observable.zip(title, text)
+            }
+            .compactMap { $0.element }
             .bind { coordinator?.coordinate(by: .termsOfServiceDidTap(title: $0, text: $1)) }
             .disposed(by: disposeBag)
         
         input.privacyPolicyDidTap
             .map { DocumentType.privacyPolicy }
-            .compactMap { ($0.title, Bundle.utils?.text(from: $0.textFile)) }
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, documentType -> Observable<(String, String)> in
+                let title = Observable.just(documentType.title)
+                let text = self.bundleResourceUseCase.readText(from: documentType.textFile)
+                return Observable.zip(title, text)
+            }
+            .compactMap { $0.element }
             .bind { coordinator?.coordinate(by: .termsOfServiceDidTap(title: $0, text: $1)) }
             .disposed(by: disposeBag)
         
@@ -140,6 +195,31 @@ public final class SettingViewModel: ViewModelType {
         input.withdrawButtonDidTap
             .bind { coordinator?.coordinate(by: .withdrawButtonDidTap) }
             .disposed(by: disposeBag)
+        
+        // MARK: - Bind State
+        
+        state.feedVisibility
+            .distinctUntilChanged()
+            .compactMap { $0 }
+            .withUnretained(self)
+            .flatMapCompletableMaterialized { `self`, isActivated in
+                self.userSettingUseCase.updateFeedVisibility(to: isActivated)
+            }
+            .compactMap { $0.error }
+            .toastMeessageMap(to: .setting(.failToChangeFeedVisibility))
+            .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
+        
+        state.isAutoLoginOn
+            .compactMap { $0 }
+            .withUnretained(self)
+            .flatMapCompletableMaterialized { `self`, isActivated in
+                self.userSettingUseCase.updateIsAutoLoginActivated(to: isActivated)
+            }
+            .compactMap { $0.error }
+            .toastMeessageMap(to: .setting(.failToChangeIsAutoLogin))
+            .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
     }
     
     deinit {
@@ -159,11 +239,22 @@ private extension SettingViewModel {
                 loginType: state.userLoginType
             )
         case .profile:
-            return SettingTapActionCellViewModel(
+            let cellViewModel = SettingTapActionCellViewModel(
                 model: model,
-                tapAction: input.profileInfoDidTap,
-                additionalText: state.userNickname
+                tapAction: input.profileInfoDidTap
             )
+            cellViewModel.bindCellText(with: state.userNickname)
+            return cellViewModel
+        case .feedVisibility:
+            let cellViewModel = SettingTapActionCellViewModel(
+                model: model,
+                tapAction: input.feedVisibilityDidTap
+            )
+            state.feedVisibility
+                .compactMap { $0?.text }
+                .bind(to: cellViewModel.output.additionalText)
+                .disposed(by: disposeBag)
+            return cellViewModel
         case .autoLogin:
             return SettingSwitchCellViewModel(
                 model: model,

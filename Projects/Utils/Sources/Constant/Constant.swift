@@ -33,6 +33,8 @@ public extension Constant {
     enum OSLogCategory {
         public static let `default` = "Default"
         public static let allocation = "Allocation"
+        public static let bundle = "Bundle"
+        public static let userDefaults = "UserDefaults"
         public static let network = "Network"
         public static let database = "Database"
         public static let authentication = "Authentication"

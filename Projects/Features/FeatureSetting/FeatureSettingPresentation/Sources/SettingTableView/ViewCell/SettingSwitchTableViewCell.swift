@@ -36,6 +36,10 @@ public final class SettingSwitchTableViewCell: BaseSettingTableViewCell, ViewTyp
         let input = viewModel.input
         
         input.cellDidDequeue.accept(())
+        
+        settingSwitch.rx.isOn
+            .bind(to: input.switchDidToggle)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: SettingSwitchCellViewModel) {
@@ -45,7 +49,7 @@ public final class SettingSwitchTableViewCell: BaseSettingTableViewCell, ViewTyp
             .bind(to: descriptionLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.isSwitchOn
+        output.toggleSwitch
             .bind(to: settingSwitch.rx.isOn)
             .disposed(by: disposeBag)
     }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum SelectableStiffness: CaseIterable {
+public enum SelectableStiffness: Int, Codable, CaseIterable { // FIXME: 네이밍 수정
     
     case soft
     case normal

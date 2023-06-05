@@ -22,22 +22,32 @@ public final class SettingSwitchCellViewModel: SettingCellViewModel {
     
     public struct Output {
         let settingDescription = BehaviorRelay<String>(value: "")
-        let isSwitchOn: BehaviorRelay<Bool>
+        let toggleSwitch = PublishRelay<Bool>()
+    }
+    
+    public struct State {
+        let isSwitchOn: BehaviorRelay<Bool?>
     }
     
     public let input = Input()
-    public let output: Output
+    public let output = Output()
+    public let state: State
     public let model: SettingModel
-    
     private let disposeBag = DisposeBag()
     
-    public init(model: SettingModel, isSwitchOn: BehaviorRelay<Bool>, switchToggleAction: PublishRelay<Bool>) {
+    public init(model: SettingModel, isSwitchOn: BehaviorRelay<Bool?>, switchToggleAction: PublishRelay<Bool>) {
         self.model = model
-        self.output = Output(isSwitchOn: isSwitchOn)
+        self.state = State(isSwitchOn: isSwitchOn)
         
         input.cellDidDequeue
             .map { model.description }
             .bind(to: output.settingDescription)
+            .disposed(by: disposeBag)
+        
+        input.cellDidDequeue
+            .withLatestFrom(state.isSwitchOn)
+            .compactMap { $0 }
+            .bind(to: output.toggleSwitch)
             .disposed(by: disposeBag)
         
         input.switchDidToggle

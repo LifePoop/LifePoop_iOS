@@ -18,7 +18,7 @@ import Utils
 public final class DefaultUserSettingUseCase: UserSettingUseCase {
     
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
-    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
+    @Inject(SharedDIContainer.shared) private var loginTypeUseCase: LoginTypeUseCase
     @Inject(SharedDIContainer.shared) private var autoLoginUseCase: AutoLoginUseCase
     @Inject(SharedDIContainer.shared) private var feedVisibilityUseCase: FeedVisibilityUseCase
     

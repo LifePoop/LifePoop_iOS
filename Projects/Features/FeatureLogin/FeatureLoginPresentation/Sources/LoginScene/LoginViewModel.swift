@@ -26,7 +26,7 @@ public final class LoginViewModel: ViewModelType {
     
     public struct Output {
         let bannerImages = BehaviorRelay<[Data]>(value: [])
-        let errorDidOccur = PublishRelay<Error>()
+        let showErrorMessage = PublishRelay<String>()
     }
     
     public let input = Input()
@@ -40,36 +40,42 @@ public final class LoginViewModel: ViewModelType {
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
         
-        input.didTapKakaoLoginButton
+        let fetchKakaoToken = input.didTapKakaoLoginButton
             .withUnretained(self)
-            .flatMapLatest { `self`, _ in
-                `self`.loginUseCase
-                    .fetchUserAuthInfo(for: .kakao)
-                    .catch { error in
-                        self.output.errorDidOccur.accept(error)
-                        return Single.just(nil)
-                    }
+            .flatMapMaterialized { `self`, _ in
+                `self`.loginUseCase.fetchUserAuthInfo(for: .kakao)
             }
+            .share()
+        
+        fetchKakaoToken
+            .compactMap { $0.element }
             .compactMap { $0 }
-            .bind(onNext: {
-                coordinator?.coordinate(by: .didTapKakaoLoginButton(userAuthInfo: $0))
-            })
+            .bind(onNext: { coordinator?.coordinate(by: .didTapKakaoLoginButton(userAuthInfo: $0)) })
             .disposed(by: disposeBag)
         
-        input.didTapAppleLoginButton
+        fetchKakaoToken
+            .compactMap { $0.error }
+            .map { $0.localizedDescription }
+            .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
+        
+        let fetchAppleToken = input.didTapAppleLoginButton
             .withUnretained(self)
-            .flatMapLatest { `self`, _ in
-                `self`.loginUseCase
-                    .fetchUserAuthInfo(for: .apple)
-                    .catch { error in
-                        self.output.errorDidOccur.accept(error)
-                        return Single.just(nil)
-                    }
+            .flatMapMaterialized { `self`, _ in
+                `self`.loginUseCase.fetchUserAuthInfo(for: .apple)
             }
+            .share()
+        
+        fetchAppleToken
+            .compactMap { $0.element }
             .compactMap { $0 }
-            .bind(onNext: {
-                coordinator?.coordinate(by: .didTapAppleLoginButton(userAuthInfo: $0))
-            })
+            .bind(onNext: { coordinator?.coordinate(by: .didTapAppleLoginButton(userAuthInfo: $0))} )
+            .disposed(by: disposeBag)
+        
+        fetchAppleToken
+            .compactMap { $0.error }
+            .map { $0.localizedDescription }
+            .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
     }
 }

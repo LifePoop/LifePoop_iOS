@@ -18,48 +18,48 @@ import Utils
 public final class DefaultUserSettingUseCase: UserSettingUseCase {
     
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
-    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
+    @Inject(SharedDIContainer.shared) private var loginTypeUseCase: LoginTypeUseCase
     @Inject(SharedDIContainer.shared) private var autoLoginUseCase: AutoLoginUseCase
     @Inject(SharedDIContainer.shared) private var feedVisibilityUseCase: FeedVisibilityUseCase
     
     public init() { }
     
-    public var nickname: BehaviorSubject<String?> {
+    public var nickname: Observable<String?> {
         return nicknameUseCase.nickname
     }
     
-    public var loginType: Single<LoginType?> {
-        userInfoUseCase.userInfo
-            .map { $0.authInfo.loginType }
-            .catchAndReturn(nil)
+    public var loginType: Observable<LoginType?> {
+        return loginTypeUseCase.loginType
     }
     
-    public var isAutoLoginActivated: BehaviorSubject<Bool?> {
+    public var isAutoLoginActivated: Observable<Bool?> {
         return autoLoginUseCase.isAutoLoginActivated
     }
     
-    public var feedVisibility: BehaviorSubject<FeedVisibility?> {
+    public var feedVisibility: Observable<FeedVisibility?> {
         return feedVisibilityUseCase.feedVisibility
     }
     
-    public func updateNickname(to newNickname: String) {
-        nicknameUseCase.updateNickname(to: newNickname)
+    public func updateNickname(to newNickname: String) -> Completable {
+        return nicknameUseCase.updateNickname(to: newNickname)
     }
     
-    public func updateLoginType(to newLoginType: LoginType) {
-        userInfoUseCase.updateLoginType(to: newLoginType)
+    public func updateLoginType(to newLoginType: LoginType) -> Completable {
+        return loginTypeUseCase.updateLoginType(to: newLoginType)
     }
     
-    public func updateIsAutoLoginActivated(to newValue: Bool) {
-        autoLoginUseCase.updateIsAutoLoginActivated(to: newValue)
+    public func updateIsAutoLoginActivated(to newValue: Bool) -> Completable {
+        return autoLoginUseCase.updateIsAutoLoginActivated(to: newValue)
     }
     
-    public func updateFeedVisibility(to newFeedVisibility: FeedVisibility) {
-        feedVisibilityUseCase.updateFeedVisibility(to: newFeedVisibility)
+    public func updateFeedVisibility(to newFeedVisibility: FeedVisibility) -> Completable {
+        return feedVisibilityUseCase.updateFeedVisibility(to: newFeedVisibility)
     }
     
-    public func configureDefaultUserSetting() {
-        updateFeedVisibility(to: .public)
-        updateIsAutoLoginActivated(to: true)
+    public func configureDefaultUserSetting() -> Completable {
+        return Completable.zip(
+            updateFeedVisibility(to: .public),
+            updateIsAutoLoginActivated(to: true)
+        )
     }
 }

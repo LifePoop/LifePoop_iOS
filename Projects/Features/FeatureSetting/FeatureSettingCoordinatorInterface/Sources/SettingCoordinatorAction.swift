@@ -15,7 +15,7 @@ import CoreEntity
 public enum SettingCoordinateAction {
     case flowDidStart
     case flowDidFinish
-    case profileInfoDidTap(userNickname: BehaviorRelay<String>)
+    case profileInfoDidTap(userNickname: BehaviorRelay<String?>)
     case profileCharacterEditDidTap(profileCharacter: BehaviorRelay<ProfileCharacter?>)
     case feedVisibilityDidTap(feedVisibility: BehaviorRelay<FeedVisibility?>)
     case termsOfServiceDidTap(title: String, text: String?)

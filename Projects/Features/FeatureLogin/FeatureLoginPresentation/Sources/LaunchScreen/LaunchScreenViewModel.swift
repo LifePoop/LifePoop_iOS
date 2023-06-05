@@ -14,6 +14,7 @@ import RxSwift
 import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
+import Logger
 import SharedDIContainer
 import SharedUseCase
 import Utils
@@ -21,7 +22,8 @@ import Utils
 public final class LaunchScreenViewModel: ViewModelType {
     
     public struct Input {
-        let viewWillDisappear = PublishRelay<Void>()
+        let viewWillAppear = PublishRelay<Void>()
+        let didFinishPreparation = PublishRelay<Void>()
     }
     
     public struct Output { }
@@ -37,11 +39,31 @@ public final class LaunchScreenViewModel: ViewModelType {
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
         
-        input.viewWillDisappear
-            .debug()
+        let preparationResult = input.viewWillAppear
+            .withUnretained(self)
+            .flatMapCompletableMaterialized {  `self`, _ in
+                self.userInfoUseCase.clearUserAuthInfoIfNeeded()
+            }
+            .share()
+        
+        preparationResult
+            .compactMap { $0.element }
+            .bind(to: input.didFinishPreparation)
+            .disposed(by: disposeBag)
+        
+        preparationResult
+            .compactMap { $0.error }
+            .bind(onNext: { error in
+                Logger.log(message: error.localizedDescription, category: .authentication, type: .error)
+            })
+            .disposed(by: disposeBag)
+        
+        input.didFinishPreparation
             .withUnretained(self)
             .flatMapLatest { `self`, _ in
-                self.hasAccessToken()
+                self.userInfoUseCase.userInfo
+                    .map { _ in true }
+                    .catchAndReturn(false)
             }
             .bind(onNext: { hasToken in
                 if hasToken {
@@ -51,11 +73,5 @@ public final class LaunchScreenViewModel: ViewModelType {
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    private func hasAccessToken() -> Single<Bool> {
-        userInfoUseCase.userInfo
-            .map { _ in true }
-            .catchAndReturn(false)
     }
 }

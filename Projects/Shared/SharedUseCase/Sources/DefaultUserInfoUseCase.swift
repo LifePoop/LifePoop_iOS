@@ -2,7 +2,7 @@
 //  DefaultUserInfoUseCase.swift
 //  SharedUseCase
 //
-//  Created by 김상혁 on 2023/05/27.
+//  Created by Lee, Joon Woo on 2023/06/05.
 //  Copyright © 2023 Lifepoo. All rights reserved.
 //
 
@@ -15,32 +15,39 @@ import SharedDIContainer
 import Utils
 
 public final class DefaultUserInfoUseCase: UserInfoUseCase {
-    
+
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
     
     public init() { }
 
-    public var userInfo: Single<UserInfoEntity> {
-        Single.create { [weak self] observer in
-            guard let self = self else { return Disposables.create() }
-            do {
-                let authInfo = try self.keyChainRepository.getObjectFromKeyChain(
-                    asTypeOf: UserInfoEntity.self,
-                    forKey: .userAuthInfo
-                )
-                
-                observer(.success(authInfo))
-            } catch let error {
-                observer(.failure(error))
-            }
-            
-            return Disposables.create { }
-        }
+    public var userInfo: Observable<UserInfoEntity> {
+        keyChainRepository
+            .getObjectFromKeyChainAsSingle(asTypeOf: UserInfoEntity.self, forKey: .userAuthInfo)
+            .asObservable()
     }
     
-    // TODO: KeyChain에서 인증정보 가져오기 때문에 해당 함수 수정 혹은 삭제 여부 확인 필요
-    public func updateLoginType(to newLoginType: LoginType) {
-        userDefaultsRepository.updateValue(for: .userLoginType, with: newLoginType)
+    private var isAppNotFirstlyLaunched: Observable<Bool> {
+        userDefaultsRepository.getValue(for: .isAppNotFirstlyLaunched)
+            .map { $0 ?? false }
+            .catchAndReturn(false)
+            .asObservable()
+    }
+    
+    public func clearUserAuthInfoIfNeeded() -> Completable {
+        isAppNotFirstlyLaunched
+            .filter { !$0 }
+            .withUnretained(self)
+            .flatMapLatest { `self`, _ in
+                self.keyChainRepository
+                    .getObjectFromKeyChainAsSingle(asTypeOf: UserInfoEntity.self, forKey: .userAuthInfo)
+            }
+            .withUnretained(self)
+            .flatMapLatest { `self`, userInfo in
+                self.keyChainRepository
+                    .removeObjectFromKeyChainAsCompletable(userInfo, forKey: .userAuthInfo)
+                    .concat(self.userDefaultsRepository.updateValue(for: .isAppNotFirstlyLaunched, with: true))
+            }
+            .asCompletable()
     }
 }

@@ -10,6 +10,8 @@ import Foundation
 
 import Security
 
+import RxSwift
+
 public enum ItemKey: String {
     
     case userAuthInfo = "user_auth_info"
@@ -28,7 +30,13 @@ public protocol KeyChainRepository: AnyObject {
     
     func saveObjectToKeyChain<T: Codable>(_ object: T, forKey key: ItemKey) throws
     
-    func getObjectFromKeyChain<T: Decodable>( asTypeOf targetType: T.Type, forKey key: ItemKey) throws -> T
+    func saveObjectToKeyChainAsCompletable<T: Codable>(_ object: T, forKey key: ItemKey) -> Completable
+    
+    func getObjectFromKeyChain<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) throws -> T
+    
+    func getObjectFromKeyChainAsSingle<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) -> Single<T>
     
     func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) throws
+    
+    func removeObjectFromKeyChainAsCompletable<T: Encodable>(_ object: T, forKey key: ItemKey) -> Completable
 }

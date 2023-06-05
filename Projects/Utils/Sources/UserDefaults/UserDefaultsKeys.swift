@@ -15,6 +15,8 @@ public enum UserDefaultsKeys: String {
     case isAutoLoginActivated = "IsAutoLoginActivated"
     case profileCharacter = "ProfileCharacter"
     
+    case isAppNotFirstlyLaunched = "IsAppNotFirstlyLaunched"
+    
     public var rawKey: String {
         return rawValue
     }

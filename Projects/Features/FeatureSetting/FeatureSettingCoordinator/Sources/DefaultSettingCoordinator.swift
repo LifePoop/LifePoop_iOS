@@ -76,7 +76,7 @@ private extension DefaultSettingCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func pushProfileInfoViewController(with userNickname: BehaviorRelay<String>) {
+    func pushProfileInfoViewController(with userNickname: BehaviorRelay<String?>) {
         let viewController = ProfileViewController()
         let viewModel = ProfileViewModel(coordinator: self, userNickname: userNickname)
         viewController.bind(viewModel: viewModel)

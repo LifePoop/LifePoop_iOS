@@ -1,5 +1,5 @@
 //
-//  DefaultFeedVisibilityUseCase.swift
+//  DefaultLoginTypeUseCase.swift
 //  SharedUseCase
 //
 //  Created by 김상혁 on 2023/05/27.
@@ -15,22 +15,22 @@ import Logger
 import SharedDIContainer
 import Utils
 
-public final class DefaultFeedVisibilityUseCase: FeedVisibilityUseCase {
+public final class DefaultLoginTypeUseCase: LoginTypeUseCase {
     
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     
     public init() { }
     
-    public var feedVisibility: Observable<FeedVisibility?> {
+    public var loginType: Observable<LoginType?> {
         return userDefaultsRepository
-            .getValue(for: .feedVisibility)
+            .getValue(for: .userLoginType)
             .logErrorIfDetected(category: .userDefaults)
             .asObservable()
     }
     
-    public func updateFeedVisibility(to newFeedVisibility: FeedVisibility) -> Completable {
+    public func updateLoginType(to newLoginType: LoginType) -> Completable {
         return userDefaultsRepository
-            .updateValue(for: .feedVisibility, with: newFeedVisibility)
+            .updateValue(for: .userLoginType, with: newLoginType)
             .logErrorIfDetected(category: .userDefaults)
     }
 }

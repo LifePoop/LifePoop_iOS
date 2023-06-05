@@ -105,14 +105,14 @@ public final class NicknameViewModel: ViewModelType {
         guard let coordinator = self.coordinator else { return }
                 
         input.didTapNextButton
-            .withLatestFrom(output.activateNextButton)
-            .filter { $0 }
+            .throttle(.seconds(3), latest: false, scheduler: MainScheduler.instance)
             .withLatestFrom(input.didEnterTextValue)
             .withUnretained(self)
-            .flatMapLatest { `self`, nickname in
+            .flatMapLatestCompletableMaterialized { `self`, nickname in
                 let userInfo = UserInfoEntity(nickname: nickname, authInfo: self.authInfo)
                 return self.loginUseCase.saveUserInfo(userInfo)
             }
+            .throttle(.seconds(1), scheduler: MainScheduler.instance)
             .bind(onNext: { _ in
                 coordinator.coordinate(by: .shouldFinishLoginFlow)
             })

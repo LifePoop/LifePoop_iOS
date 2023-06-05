@@ -49,7 +49,7 @@ public final class SettingSwitchTableViewCell: BaseSettingTableViewCell, ViewTyp
             .bind(to: descriptionLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.shouldSwitchOn
+        output.toggleSwitch
             .bind(to: settingSwitch.rx.isOn)
             .disposed(by: disposeBag)
     }

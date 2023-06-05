@@ -18,8 +18,8 @@ import Utils
 
 public final class FeedVisibilityViewController: LifePoopViewController, ViewType {
     
-    private let feedVisibilityButtons = FeedVisibility.allCases.enumerated().map { (index, element) in
-        let buttonView = FeedVisibilitySelectionButtonView(index: index, title: element.text)
+    private let feedVisibilityButtons = FeedVisibility.allCases.map { element in
+        let buttonView = FeedVisibilitySelectionButtonView(index: element.index, title: element.text)
         buttonView.descriptionLabel.font = .systemFont(ofSize: 18, weight: .bold)
         return buttonView
     }

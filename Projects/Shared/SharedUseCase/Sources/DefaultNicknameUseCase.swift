@@ -10,19 +10,26 @@ import Foundation
 
 import RxSwift
 
+import Logger
 import SharedDIContainer
 import Utils
 
 public final class DefaultNicknameUseCase: NicknameUseCase {
+    
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     
     public init() { }
     
-    public var nickname: BehaviorSubject<String?> {
-        return BehaviorSubject<String?>(value: userDefaultsRepository.getValue(for: .userNickname))
+    public var nickname: Observable<String?> {
+        return userDefaultsRepository
+            .getValue(for: .userNickname)
+            .logErrorIfDetected(category: .userDefaults)
+            .asObservable()
     }
     
-    public func updateNickname(to newNickname: String) {
-        userDefaultsRepository.updateValue(for: .userNickname, with: newNickname)
+    public func updateNickname(to newNickname: String) -> Completable {
+        return userDefaultsRepository
+            .updateValue(for: .isAutoLoginActivated, with: newNickname)
+            .logErrorIfDetected(category: .userDefaults)
     }
 }

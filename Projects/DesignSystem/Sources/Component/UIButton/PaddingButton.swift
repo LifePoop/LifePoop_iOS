@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class PaddingButton: UIButton {
+public class PaddingButton: UIButton {
     
     private let padding: UIEdgeInsets
 

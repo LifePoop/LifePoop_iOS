@@ -13,6 +13,6 @@ import RxSwift
 import CoreEntity
 
 public protocol FeedVisibilityUseCase {
-    var feedVisibility: BehaviorSubject<FeedVisibility?> { get }
-    func updateFeedVisibility(to newFeedVisibility: FeedVisibility)
+    var feedVisibility: Observable<FeedVisibility?> { get }
+    func updateFeedVisibility(to newFeedVisibility: FeedVisibility) -> Completable
 }

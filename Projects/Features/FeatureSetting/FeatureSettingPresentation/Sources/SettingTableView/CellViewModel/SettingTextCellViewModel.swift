@@ -21,7 +21,7 @@ public final class SettingTextCellViewModel: SettingCellViewModel {
     
     public struct Output {
         let settingDescription = BehaviorRelay<String>(value: "")
-        let text: BehaviorRelay<String>
+        let text: BehaviorRelay<String?>
     }
     
     public let input = Input()
@@ -30,7 +30,7 @@ public final class SettingTextCellViewModel: SettingCellViewModel {
     
     private let disposeBag = DisposeBag()
     
-    public init(model: SettingModel, text: BehaviorRelay<String>) {
+    public init(model: SettingModel, text: BehaviorRelay<String?>) {
         self.model = model
         self.output = Output(text: text)
         

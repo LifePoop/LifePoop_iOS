@@ -11,31 +11,55 @@ import Foundation
 import SharedUseCase
 import Utils
 
+import RxSwift
+
 public final class DefaultUserDefaultsRepository: UserDefaultsRepository {
     
     private let userDefaults = UserDefaults.standard
     
     public init() { }
     
-    public func getValue<T: Codable>(for key: UserDefaultsKeys) -> T? {
+    public func getValue<T: Codable>(for key: UserDefaultsKeys) -> Single<T?> {
         if let data = userDefaults.data(forKey: key.rawKey) {
-            let value = try? PropertyListDecoder().decode(T.self, from: data)
-            return value
+            do {
+                let value = try JSONDecoder().decode(T.self, from: data)
+                return .just(value)
+            } catch {
+                return .error(UserDefaultsError.errorDetected(for: key, error: error))
+            }
         }
         
-        return userDefaults.object(forKey: key.rawKey) as? T
+        let value = userDefaults.object(forKey: key.rawKey) as? T
+        return .just(value)
     }
     
-    public func updateValue<T: Codable>(for key: UserDefaultsKeys, with newValue: T) {
-        if let data = try? PropertyListEncoder().encode(newValue) {
+    public func getValue<T: RawRepresentable>(for key: UserDefaultsKeys) -> Single<T?> where T.RawValue: Codable {
+        if let rawValue = userDefaults.object(forKey: key.rawKey) as? T.RawValue, let value = T(rawValue: rawValue) {
+            return .just(value)
+        }
+        return .just(nil)
+    }
+    
+    public func updateValue<T: Codable>(for key: UserDefaultsKeys, with newValue: T) -> Completable {
+        do {
+            let data = try JSONEncoder().encode(newValue)
             userDefaults.set(data, forKey: key.rawKey)
-            return
+            return .empty()
+        } catch {
+            return .error(UserDefaultsError.errorDetected(for: key, error: error))
         }
-        
-        userDefaults.setValue(newValue, forKey: key.rawKey)
     }
     
-    public func removeValue(for key: UserDefaultsKeys) {
+    public func updateValue<T: RawRepresentable>(
+        for key: UserDefaultsKeys,
+        with newValue: T
+    ) -> Completable where T.RawValue: Codable {
+        userDefaults.set(newValue.rawValue, forKey: key.rawKey)
+        return .empty()
+    }
+    
+    public func removeValue(for key: UserDefaultsKeys) -> Completable {
         userDefaults.removeObject(forKey: key.rawKey)
+        return .empty()
     }
 }

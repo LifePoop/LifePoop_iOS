@@ -79,9 +79,12 @@ public final class ProfileEditViewModel: ViewModelType {
         state.profileCharacter
             .compactMap { $0 }
             .withUnretained(self)
-            .bind { `self`, profileCharacter in
+            .flatMapCompletableMaterialized { `self`, profileCharacter in
                 self.profileCharacterUseCase.updateProfileCharacter(to: profileCharacter)
             }
+            .compactMap { $0.error }
+            .toastMeessageMap(to: .setting(.failToChangeProfileCharacter))
+            .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
     }
 }

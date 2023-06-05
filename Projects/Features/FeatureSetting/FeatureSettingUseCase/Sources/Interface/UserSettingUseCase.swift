@@ -13,12 +13,12 @@ import RxSwift
 import CoreEntity
 
 public protocol UserSettingUseCase {
-    var nickname: BehaviorSubject<String?> { get }
-    var loginType: Single<LoginType?> { get }
-    var isAutoLoginActivated: BehaviorSubject<Bool?> { get }
-    var feedVisibility: BehaviorSubject<FeedVisibility?> { get }
-    func updateNickname(to newNickname: String)
-    func updateLoginType(to newLoginType: LoginType)
-    func updateIsAutoLoginActivated(to isActivated: Bool)
-    func updateFeedVisibility(to newFeedVisibility: FeedVisibility)
+    var nickname: Observable<String?> { get }
+    var loginType: Observable<LoginType?> { get }
+    var isAutoLoginActivated: Observable<Bool?> { get }
+    var feedVisibility: Observable<FeedVisibility?> { get }
+    func updateNickname(to newNickname: String) -> Completable
+    func updateLoginType(to newLoginType: LoginType) -> Completable
+    func updateIsAutoLoginActivated(to isActivated: Bool) -> Completable
+    func updateFeedVisibility(to newFeedVisibility: FeedVisibility) -> Completable
 }

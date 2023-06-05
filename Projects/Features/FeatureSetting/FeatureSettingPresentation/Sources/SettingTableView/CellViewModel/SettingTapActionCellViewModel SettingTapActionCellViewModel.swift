@@ -44,8 +44,9 @@ public final class SettingTapActionCellViewModel: SettingCellViewModel {
             .disposed(by: disposeBag)
     }
     
-    public func bindCellText(with relay: BehaviorRelay<String>) {
+    public func bindCellText(with relay: BehaviorRelay<String?>) {
         relay
+            .compactMap { $0 }
             .bind(to: output.additionalText)
             .disposed(by: disposeBag)
     }

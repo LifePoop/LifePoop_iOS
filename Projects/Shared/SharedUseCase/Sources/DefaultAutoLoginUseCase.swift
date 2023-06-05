@@ -10,19 +10,26 @@ import Foundation
 
 import RxSwift
 
+import Logger
 import SharedDIContainer
 import Utils
 
 public final class DefaultAutoLoginUseCase: AutoLoginUseCase {
+    
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     
     public init() { }
     
-    public var isAutoLoginActivated: BehaviorSubject<Bool?> {
-        return BehaviorSubject<Bool?>(value: userDefaultsRepository.getValue(for: .isAutoLoginActivated))
+    public var isAutoLoginActivated: Observable<Bool?> {
+        return userDefaultsRepository
+            .getValue(for: .isAutoLoginActivated)
+            .logErrorIfDetected(category: .userDefaults)
+            .asObservable()
     }
     
-    public func updateIsAutoLoginActivated(to newValue: Bool) {
-        userDefaultsRepository.updateValue(for: .isAutoLoginActivated, with: newValue)
+    public func updateIsAutoLoginActivated(to isActivated: Bool) -> Completable {
+        return userDefaultsRepository
+            .updateValue(for: .isAutoLoginActivated, with: isActivated)
+            .logErrorIfDetected(category: .userDefaults)
     }
 }

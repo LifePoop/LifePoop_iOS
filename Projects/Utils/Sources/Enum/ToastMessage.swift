@@ -13,6 +13,7 @@ public enum ToastMessage {
     case failToFetchStoolLog
     case failToFetchAccessToken
     case failToFetchImageData
+    case setting(SettingToastMessageType)
     
     public var localized: String { // TODO: Localizing
         switch self {
@@ -24,6 +25,26 @@ public enum ToastMessage {
             return "사용자 인증 토큰을 불러오는 데 실패했습니다."
         case .failToFetchImageData:
             return "이미지 데이터를 불러오는 데 실패했습니다."
+        case .setting(let settingType):
+            switch settingType {
+            case .failToChangeNickname:
+                return "닉네임 변경을 적용하는 데 실패했습니다."
+            case .failToChangeProfileCharacter:
+                return "프로필 캐릭터를 변경하는 데 실패했습니다."
+            case .failToChangeFeedVisibility:
+                return "공개범위 설정을 변경하는 데 실패했습니다."
+            case .failToChangeIsAutoLogin:
+                return "자동 로그인 설정을 변경하는 데 실패했습니다."
+            }
         }
+    }
+}
+
+public extension ToastMessage {
+    enum SettingToastMessageType {
+        case failToChangeNickname
+        case failToChangeProfileCharacter
+        case failToChangeFeedVisibility
+        case failToChangeIsAutoLogin
     }
 }

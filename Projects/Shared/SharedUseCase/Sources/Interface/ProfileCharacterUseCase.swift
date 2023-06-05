@@ -13,14 +13,14 @@ import RxSwift
 import CoreEntity
 
 public protocol ProfileCharacterUseCase {
-    var profileCharacter: BehaviorSubject<ProfileCharacter?> { get }
-    func updateProfileCharacter(to newProfileCharacter: ProfileCharacter)
+    var profileCharacter: Observable<ProfileCharacter?> { get }
+    func updateProfileCharacter(to newProfileCharacter: ProfileCharacter) -> Completable
     func updateProfileCharacterColor(
         from existingCharacter: ProfileCharacter,
         to newColor: SelectableColor
-    ) -> ProfileCharacter
+    ) -> Completable
     func updateProfileCharacterStiffness(
         from existingCharacter: ProfileCharacter,
         to newStiffness: SelectableStiffness
-    ) -> ProfileCharacter
+    ) -> Completable
 }

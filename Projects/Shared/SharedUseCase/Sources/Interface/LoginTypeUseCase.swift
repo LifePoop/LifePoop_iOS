@@ -13,6 +13,6 @@ import RxSwift
 import CoreEntity
 
 public protocol LoginTypeUseCase {
-    var loginType: BehaviorSubject<LoginType?> { get }
-    func updateLoginType(to newLoginType: LoginType)
+    var loginType: Observable<LoginType?> { get }
+    func updateLoginType(to newLoginType: LoginType) -> Completable
 }

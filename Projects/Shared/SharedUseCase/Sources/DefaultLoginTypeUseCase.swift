@@ -11,19 +11,26 @@ import Foundation
 import RxSwift
 
 import CoreEntity
+import Logger
 import SharedDIContainer
 import Utils
 
 public final class DefaultLoginTypeUseCase: LoginTypeUseCase {
+    
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     
     public init() { }
     
-    public var loginType: BehaviorSubject<LoginType?> {
-        return BehaviorSubject<LoginType?>(value: userDefaultsRepository.getValue(for: .userLoginType))
+    public var loginType: Observable<LoginType?> {
+        return userDefaultsRepository
+            .getValue(for: .userLoginType)
+            .logErrorIfDetected(category: .userDefaults)
+            .asObservable()
     }
     
-    public func updateLoginType(to newLoginType: LoginType) {
-        userDefaultsRepository.updateValue(for: .userLoginType, with: newLoginType)
+    public func updateLoginType(to newLoginType: LoginType) -> Completable {
+        return userDefaultsRepository
+            .updateValue(for: .userLoginType, with: newLoginType)
+            .logErrorIfDetected(category: .userDefaults)
     }
 }

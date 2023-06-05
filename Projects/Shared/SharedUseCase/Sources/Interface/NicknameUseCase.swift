@@ -11,6 +11,6 @@ import Foundation
 import RxSwift
 
 public protocol NicknameUseCase {
-    var nickname: BehaviorSubject<String?> { get }
-    func updateNickname(to newNickname: String)
+    var nickname: Observable<String?> { get }
+    func updateNickname(to newNickname: String) -> Completable
 }

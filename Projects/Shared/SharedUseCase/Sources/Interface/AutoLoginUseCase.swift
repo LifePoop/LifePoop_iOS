@@ -11,6 +11,6 @@ import Foundation
 import RxSwift
 
 public protocol AutoLoginUseCase {
-    var isAutoLoginActivated: BehaviorSubject<Bool?> { get }
-    func updateIsAutoLoginActivated(to newValue: Bool)
+    var isAutoLoginActivated: Observable<Bool?> { get }
+    func updateIsAutoLoginActivated(to newValue: Bool) -> Completable
 }

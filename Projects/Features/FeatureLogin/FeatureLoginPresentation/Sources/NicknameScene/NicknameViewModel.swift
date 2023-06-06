@@ -112,7 +112,7 @@ public final class NicknameViewModel: ViewModelType {
                 let userInfo = UserInfoEntity(nickname: nickname, authInfo: self.authInfo)
                 return self.loginUseCase.saveUserInfo(userInfo)
             }
-            .throttle(.seconds(1), scheduler: MainScheduler.instance)
+            .filter { $0.isCompleted }
             .bind(onNext: { _ in
                 coordinator.coordinate(by: .shouldFinishLoginFlow)
             })

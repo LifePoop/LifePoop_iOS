@@ -24,24 +24,35 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
 
     public var userInfo: Observable<UserInfoEntity?> {
         keyChainRepository
-            .getObjectFromKeyChainAsSingle(asTypeOf: UserInfoEntity.self, forKey: .userAuthInfo)
+            .getObjectFromKeyChain(asTypeOf: UserInfoEntity.self, forKey: .userAuthInfo)
+            .logErrorIfDetected(category: .authentication)
             .catchAndReturn(nil)
             .asObservable()
+            .do(onNext: { userInfo in
+                let nickname = userInfo?.nickname ?? "nil"
+                let loginType = userInfo?.authInfo.loginType?.rawValue ?? "nil"
+                Logger.log(
+                    message: "사용자 정보 확인: \(nickname), 로그인 유형: \(loginType)",
+                    category: .authentication,
+                    type: .debug
+                )
+            })
     }
     
-    private var isAppNotFirstlyLaunched: Observable<Bool> {
-        userDefaultsRepository.getValue(for: .isAppNotFirstlyLaunched)
-            .map { $0 ?? false }
-            .catchAndReturn(false)
+    private var isAppFirstlyLaunched: Observable<Bool> {
+        userDefaultsRepository.getValue(for: .isAppFirstlyLaunched)
+            .logErrorIfDetected(category: .database)
+            .map { $0 ?? true }
+            .catchAndReturn(true)
             .asObservable()
     }
     
     public func clearUserAuthInfoIfNeeded() -> Completable {
-        isAppNotFirstlyLaunched
+        isAppFirstlyLaunched
             .do(onNext: {
-                Logger.log(message: "앱 설치 후 최초 기동 여부 확인: \(!$0)", category: .authentication, type: .debug)
+                Logger.log(message: "앱 설치 후 최초 기동 여부 확인: \($0)", category: .authentication, type: .debug)
             })
-            .filter { !$0 }
+            .filter { $0 }
             .withUnretained(self)
             .do(onNext: { _, _ in
                 Logger.log(message: "KeyChain에서 사용자 인증 정보를 확인합니다.", category: .authentication, type: .debug)
@@ -49,18 +60,11 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             .flatMapLatest { `self`, _ in
                 self.userInfo.catchAndReturn(nil)
             }
-            .do(onNext: {
-                Logger.log(
-                    message: "사용자 닉네임:\($0?.nickname ?? "nil"), 로그인 유형:\($0?.authInfo.loginType?.rawValue ?? "nil")",
-                    category: .authentication,
-                    type: .debug
-                )
-            })
             .compactMap { $0 }
             .withUnretained(self)
             .flatMapLatest { `self`, userInfo in
                 self.keyChainRepository
-                    .removeObjectFromKeyChainAsCompletable(userInfo, forKey: .userAuthInfo)
+                    .removeObjectFromKeyChain(userInfo, forKey: .userAuthInfo)
                     .do(onCompleted: {
                         Logger.log(
                             message: "KeyChain에서 기존 사용자 정보 제거 완료",
@@ -68,7 +72,7 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
                             type: .debug
                         )
                     })
-                    .concat(self.userDefaultsRepository.updateValue(for: .isAppNotFirstlyLaunched, with: true))
+                    .concat(self.userDefaultsRepository.updateValue(for: .isAppFirstlyLaunched, with: false))
             }
             .asCompletable()
     }

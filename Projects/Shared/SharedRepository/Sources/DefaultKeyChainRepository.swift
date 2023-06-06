@@ -16,8 +16,61 @@ import RxSwift
 public final class DefaultKeyChainRepository: KeyChainRepository {
     
     public init() { }
+    
+    public func saveObjectToKeyChain<T: Codable>(
+        _ object: T,
+        forKey key: ItemKey
+    ) -> Completable {
+        Completable.create { [weak self] observer in
+            
+            do {
+                try self?.saveNewObjectToKeyChain(object, forKey: key)
+                observer(.completed)
+            } catch let error {
+                observer(.error(error))
+            }
+            
+            return Disposables.create { }
+        }
+    }
+    
+    public func getObjectFromKeyChain<T: Decodable>(
+        asTypeOf targetType: T.Type,
+        forKey key: ItemKey
+    ) -> Single<T?> {
+        Single.create { [weak self] observer in
+            
+            do {
+                guard let self = self else { throw KeyChainError.nilData(status: -999) }
+                
+                let targetObject: T? = try self.getObjectFromKeyChain(asTypeOf: targetType, forKey: key)
+                observer(.success(targetObject))
+            } catch let error {
+                observer(.failure(error))
+            }
+            
+            return Disposables.create { }
+        }
+    }
+    
+    public func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) -> Completable {
+        Completable.create { [weak self] observer in
+            
+            do {
+                try self?.removeExistingObjectFromKeyChain(object, forKey: key)
+                observer(.completed)
+            } catch let error {
+                observer(.error(error))
+            }
+            
+            return Disposables.create { }
+        }
+    }
+}
 
-    public func keychainQuery(for action: KeyChainAction, key: ItemKey, value: (any Encodable)? = nil) -> CFDictionary {
+private extension DefaultKeyChainRepository {
+    
+    func keychainQuery(for action: KeyChainAction, key: ItemKey, value: (any Encodable)? = nil) -> CFDictionary {
         
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -37,13 +90,13 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
         return query as CFDictionary
     }
     
-    public func saveObjectToKeyChain<T: Codable>(_ object: T, forKey key: ItemKey) throws {
+    func saveNewObjectToKeyChain<T: Codable>(_ object: T, forKey key: ItemKey) throws {
         let encodedData = try JSONEncoder().encode(object)
         
         let keychainQuery = keychainQuery(for: .save, key: key, value: encodedData)
         let isObjectAlreadyExists = (try? getObjectFromKeyChain(asTypeOf: T.self, forKey: key)) != nil
         if isObjectAlreadyExists {
-            try removeObjectFromKeyChain(object, forKey: key)
+            try removeExistingObjectFromKeyChain(object, forKey: key)
         }
                 
         let addStatus = SecItemAdd(keychainQuery as CFDictionary, nil)
@@ -52,21 +105,7 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
         }
     }
     
-    public func saveObjectToKeyChainAsCompletable<T: Codable>(_ object: T, forKey key: ItemKey) -> Completable {
-        Completable.create { [weak self] observer in
-
-            do {
-                try self?.saveObjectToKeyChain(object, forKey: key)
-                observer(.completed)
-            } catch let error {
-                observer(.error(error))
-            }
-            
-            return Disposables.create { }
-        }
-    }
-    
-    public func getObjectFromKeyChain<T: Decodable>(
+    func getObjectFromKeyChain<T: Decodable>(
         asTypeOf targetType: T.Type,
         forKey key: ItemKey
     ) throws -> T? {
@@ -88,47 +127,13 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
         return try JSONDecoder().decode(targetType, from: loadedData)
     }
     
-    public func getObjectFromKeyChainAsSingle<T: Decodable>(
-        asTypeOf targetType: T.Type,
-        forKey key: ItemKey
-    ) -> Single<T?> {
-        Single.create { [weak self] observer in
-            
-            do {
-                let optionalObject = try self?.getObjectFromKeyChain(asTypeOf: targetType, forKey: key)
-                guard let object = optionalObject else {
-                    throw KeyChainError.nilData(status: .zero)
-                }
-                observer(.success(object))
-            } catch let error {
-                observer(.failure(error))
-            }
-            
-            return Disposables.create { }
-        }
-    }
-    
-    public func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) throws {
+    func removeExistingObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) throws {
 
         let keychainQuery = keychainQuery(for: .remove, key: key)
         let removalStatus = SecItemDelete(keychainQuery)
         
         if removalStatus != errSecSuccess {
             throw KeyChainError.removingDataFailed(status: removalStatus)
-        }
-    }
-    
-    public func removeObjectFromKeyChainAsCompletable<T: Encodable>(_ object: T, forKey key: ItemKey) -> Completable {
-        Completable.create { [weak self] observer in
-            
-            do {
-                try self?.removeObjectFromKeyChain(object, forKey: key)
-                observer(.completed)
-            } catch let error {
-                observer(.error(error))
-            }
-            
-            return Disposables.create { }
         }
     }
 }

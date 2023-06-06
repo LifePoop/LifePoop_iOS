@@ -39,20 +39,20 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             })
     }
     
-    private var isAppNotFirstlyLaunched: Observable<Bool> {
-        userDefaultsRepository.getValue(for: .isAppNotFirstlyLaunched)
+    private var isAppFirstlyLaunched: Observable<Bool> {
+        userDefaultsRepository.getValue(for: .isAppFirstlyLaunched)
             .logErrorIfDetected(category: .database)
-            .map { $0 ?? false }
-            .catchAndReturn(false)
+            .map { $0 ?? true }
+            .catchAndReturn(true)
             .asObservable()
     }
     
     public func clearUserAuthInfoIfNeeded() -> Completable {
-        isAppNotFirstlyLaunched
+        isAppFirstlyLaunched
             .do(onNext: {
-                Logger.log(message: "앱 설치 후 최초 기동 여부 확인: \(!$0)", category: .authentication, type: .debug)
+                Logger.log(message: "앱 설치 후 최초 기동 여부 확인: \($0)", category: .authentication, type: .debug)
             })
-            .filter { !$0 }
+            .filter { $0 }
             .withUnretained(self)
             .do(onNext: { _, _ in
                 Logger.log(message: "KeyChain에서 사용자 인증 정보를 확인합니다.", category: .authentication, type: .debug)
@@ -72,7 +72,7 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
                             type: .debug
                         )
                     })
-                    .concat(self.userDefaultsRepository.updateValue(for: .isAppNotFirstlyLaunched, with: true))
+                    .concat(self.userDefaultsRepository.updateValue(for: .isAppFirstlyLaunched, with: false))
             }
             .asCompletable()
     }

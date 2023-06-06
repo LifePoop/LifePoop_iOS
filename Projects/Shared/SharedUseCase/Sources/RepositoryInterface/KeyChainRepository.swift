@@ -26,17 +26,7 @@ public enum KeyChainAction {
 
 public protocol KeyChainRepository: AnyObject {
     
-    func keychainQuery(for action: KeyChainAction, key: ItemKey, value: (any Encodable)?) -> CFDictionary
-    
-    func saveObjectToKeyChain<T: Codable>(_ object: T, forKey key: ItemKey) throws
-    
-    func saveObjectToKeyChainAsCompletable<T: Codable>(_ object: T, forKey key: ItemKey) -> Completable
-    
-    func getObjectFromKeyChain<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) throws -> T?
-    
-    func getObjectFromKeyChainAsSingle<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) -> Single<T?>
-    
-    func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) throws
-    
-    func removeObjectFromKeyChainAsCompletable<T: Encodable>(_ object: T, forKey key: ItemKey) -> Completable
+    func saveObjectToKeyChain<T: Codable>(_ object: T, forKey key: ItemKey) -> Completable
+    func getObjectFromKeyChain<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) -> Single<T?>
+    func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) -> Completable
 }

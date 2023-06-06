@@ -14,7 +14,6 @@ import RxSwift
 import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
-import Logger
 import SharedDIContainer
 import SharedUseCase
 import Utils
@@ -54,7 +53,7 @@ public final class LaunchScreenViewModel: ViewModelType {
         preparationResult
             .compactMap { $0.error }
             .bind(onNext: { error in
-                Logger.log(message: error.localizedDescription, category: .authentication, type: .error)
+                print("\(error) 확인 -> 추후 확인 후 토스트 메시지 혹은 다른 시각적 요소 출력으로 대체")
             })
             .disposed(by: disposeBag)
         
@@ -66,10 +65,8 @@ public final class LaunchScreenViewModel: ViewModelType {
             }
             .bind(onNext: { hasToken in
                 if hasToken {
-                    Logger.log(message: "홈 화면으로 이동", category: .authentication, type: .debug)
                     coordinator?.coordinate(by: .shouldFinishLoginFlow)
                 } else {
-                    Logger.log(message: "로그인 화면으로 이동", category: .authentication, type: .debug)
                     coordinator?.coordinate(by: .shouldShowLoginScene)
                 }
             })

@@ -133,8 +133,8 @@ public final class LoginViewController: UIViewController, ViewType {
             .disposed(by: disposeBag)
         
         output.showErrorMessage
-            .bind(onNext: {
-                print("vc: \($0)")
+            .bind(onNext: { error in
+                print("\(error) 확인 -> 추후 확인 후 토스트 메시지 혹은 다른 시각적 요소 출력으로 대체")
             })
             .disposed(by: disposeBag)
     }

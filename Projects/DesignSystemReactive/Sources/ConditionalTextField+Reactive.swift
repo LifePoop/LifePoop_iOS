@@ -8,12 +8,12 @@
 
 import UIKit
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 import DesignSystem
 
-public extension Reactive where Base == ConditionalTextField { // FIXME: 공통 모듈로 분리
+public extension Reactive where Base == ConditionalTextField {
     var text: ControlProperty<String> {
         base.rx.controlProperty(
             editingEvents: .valueChanged,

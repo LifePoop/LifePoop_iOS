@@ -13,6 +13,7 @@ import RxSwift
 import SnapKit
 
 import DesignSystem
+import DesignSystemReactive
 import EntityUIMapper
 import Utils
 
@@ -67,8 +68,9 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)
         
-        nicknameTextField.rx // TODO: How?
-        
+        nicknameTextField.rx.text
+            .bind(to: input.nicknameDidChange)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: ProfileViewModel) {
@@ -205,17 +207,5 @@ private extension ProfileViewController {
     
     @objc func keyboardWillHide(notification: NSNotification) {
         scrollView.setContentOffset(.zero, animated: true)
-    }
-}
-
-extension Reactive where Base == ConditionalTextField { // FIXME: 공통 모듈로 분리
-    var text: ControlProperty<String> {
-        base.rx.controlProperty(
-            editingEvents: .valueChanged,
-            getter: { $0.text ?? "" },
-            setter: { insertField, text in
-                insertField.text = text
-            }
-        )
     }
 }

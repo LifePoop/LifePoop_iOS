@@ -62,13 +62,14 @@ public final class LaunchScreenViewModel: ViewModelType {
             .withUnretained(self)
             .flatMapLatest { `self`, _ in
                 self.userInfoUseCase.userInfo
-                    .map { _ in true }
-                    .catchAndReturn(false)
+                    .map { $0 != nil }
             }
             .bind(onNext: { hasToken in
                 if hasToken {
+                    Logger.log(message: "홈 화면으로 이동", category: .authentication, type: .debug)
                     coordinator?.coordinate(by: .shouldFinishLoginFlow)
                 } else {
+                    Logger.log(message: "로그인 화면으로 이동", category: .authentication, type: .debug)
                     coordinator?.coordinate(by: .shouldShowLoginScene)
                 }
             })

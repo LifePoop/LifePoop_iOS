@@ -25,7 +25,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
     
     public func saveUserInfo(_ userInfo: UserInfoEntity) -> Completable {
         keyChainRepository
-            .saveObjectToKeyChainAsCompletable(userInfo, forKey: .userAuthInfo)
+            .saveObjectToKeyChain(userInfo, forKey: .userAuthInfo)
             .concat(self.userDefaultsRepository.updateValue(for: .userNickname, with: userInfo.nickname))
             .concat(self.userDefaultsRepository.updateValue(for: .userLoginType, with: userInfo.authInfo.loginType))
             .logErrorIfDetected(category: .authentication)

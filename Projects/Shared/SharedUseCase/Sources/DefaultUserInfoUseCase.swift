@@ -24,13 +24,24 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
 
     public var userInfo: Observable<UserInfoEntity?> {
         keyChainRepository
-            .getObjectFromKeyChainAsSingle(asTypeOf: UserInfoEntity.self, forKey: .userAuthInfo)
+            .getObjectFromKeyChain(asTypeOf: UserInfoEntity.self, forKey: .userAuthInfo)
+            .logErrorIfDetected(category: .authentication)
             .catchAndReturn(nil)
             .asObservable()
+            .do(onNext: { userInfo in
+                let nickname = userInfo?.nickname ?? "nil"
+                let loginType = userInfo?.authInfo.loginType?.rawValue ?? "nil"
+                Logger.log(
+                    message: "사용자 정보 확인: \(nickname), 로그인 유형: \(loginType)",
+                    category: .authentication,
+                    type: .debug
+                )
+            })
     }
     
     private var isAppNotFirstlyLaunched: Observable<Bool> {
         userDefaultsRepository.getValue(for: .isAppNotFirstlyLaunched)
+            .logErrorIfDetected(category: .database)
             .map { $0 ?? false }
             .catchAndReturn(false)
             .asObservable()
@@ -49,18 +60,11 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             .flatMapLatest { `self`, _ in
                 self.userInfo.catchAndReturn(nil)
             }
-            .do(onNext: {
-                Logger.log(
-                    message: "사용자 닉네임:\($0?.nickname ?? "nil"), 로그인 유형:\($0?.authInfo.loginType?.rawValue ?? "nil")",
-                    category: .authentication,
-                    type: .debug
-                )
-            })
             .compactMap { $0 }
             .withUnretained(self)
             .flatMapLatest { `self`, userInfo in
                 self.keyChainRepository
-                    .removeObjectFromKeyChainAsCompletable(userInfo, forKey: .userAuthInfo)
+                    .removeObjectFromKeyChain(userInfo, forKey: .userAuthInfo)
                     .do(onCompleted: {
                         Logger.log(
                             message: "KeyChain에서 기존 사용자 정보 제거 완료",

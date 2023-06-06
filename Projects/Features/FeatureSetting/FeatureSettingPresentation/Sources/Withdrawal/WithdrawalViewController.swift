@@ -44,7 +44,7 @@ public final class WithdrawalViewController: LifePoopViewController, ViewType {
         return stackView
     }()
     
-    private let reasonTextView = FeedbackTextView(
+    private let reasonTextView = FeedbackTextViewContainerView(
         placeholder: "이 외에 불편했던 점을 작성해주세요. (선택)",
         maximumTextCount: 100
     )

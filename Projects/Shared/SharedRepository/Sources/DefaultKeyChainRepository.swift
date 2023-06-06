@@ -69,7 +69,7 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
     public func getObjectFromKeyChain<T: Decodable>(
         asTypeOf targetType: T.Type,
         forKey key: ItemKey
-    ) throws -> T {
+    ) throws -> T? {
         
         let keychainQuery = keychainQuery(for: .get, key: key)
         var result: AnyObject?
@@ -91,7 +91,7 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
     public func getObjectFromKeyChainAsSingle<T: Decodable>(
         asTypeOf targetType: T.Type,
         forKey key: ItemKey
-    ) -> Single<T> {
+    ) -> Single<T?> {
         Single.create { [weak self] observer in
             
             do {

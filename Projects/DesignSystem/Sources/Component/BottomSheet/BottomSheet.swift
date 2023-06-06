@@ -6,8 +6,9 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
-import SnapKit
 import UIKit
+
+import SnapKit
 
 protocol BottomSheetCloseNotification: NSObject {
     func notifyBottomSheetClosed()
@@ -61,8 +62,7 @@ public final class BottomSheet: UIControl {
     }
     
     private func addPanGestureRecognizer() {
-        let recognizer = UIPanGestureRecognizer(target: self, action: #selector(didPan))
-        topBarArea.addGestureRecognizer(recognizer)
+        self.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(didPan)))
     }
     
     @objc private func didPan(_ recognizer: UIPanGestureRecognizer) {
@@ -75,12 +75,13 @@ public final class BottomSheet: UIControl {
             updateConstraints(updatedY)
             recognizer.setTranslation(.zero, in: self)
         }
-        UIView.animate(withDuration: 0.0, delay: .zero, animations: layoutIfNeeded)
+        UIView.animate(withDuration: 0.3, delay: .zero, animations: layoutIfNeeded)
         
         //recognizer이 끝났을 때 상태 업데이트
         guard recognizer.state == .ended else { return }
         let isDownward = recognizer.velocity(in: self).y > 0
-        let yPosition: CGFloat = isDownward ? (updatedY > maxTopOffset*0.8 ? maxTopOffset : minTopOffset) : minTopOffset
+        let shouldMoveDown = updatedY > maxTopOffset * 0.8
+        let yPosition: CGFloat = isDownward ? (shouldMoveDown ? maxTopOffset : minTopOffset) : minTopOffset
         
         updateConstraints(yPosition)
         
@@ -88,29 +89,25 @@ public final class BottomSheet: UIControl {
             isClosed = true
         }
         
-        UIView.animate(withDuration: 0.4, delay: .zero, animations: layoutIfNeeded)
+        UIView.animate(withDuration: 0.3, delay: .zero, animations: layoutIfNeeded)
     }
     
     private func setupViews() {
         
         self.roundCorners(corners: [.topLeft, .topRight], radius: 30)
-
-        addSubview(topBarArea)
-        topBarArea.snp.makeConstraints { make in
-            make.left.right.top.equalToSuperview()
-            make.height.equalTo(21)
-        }
+        backgroundColor = .systemBackground
         
-        topBarArea.addSubview(topBar)
+        addSubview(topBar)
         topBar.snp.makeConstraints { make in
-            make.centerX.centerY.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(0.5)
+            make.top.equalToSuperview().inset(10)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(78)
             make.height.equalTo(7)
         }
         
         addSubview(contentBackgroundView)
         contentBackgroundView.snp.makeConstraints { make in
-            make.top.equalTo(topBarArea.snp.bottom)
+            make.top.equalTo(topBar.snp.bottom).offset(23)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }

@@ -132,11 +132,9 @@ public final class LoginViewController: UIViewController, ViewType {
             }
             .disposed(by: disposeBag)
         
-        output.errorDidOccur
-            .observe(on: MainScheduler.asyncInstance)
+        output.showErrorMessage
             .bind(onNext: { error in
-                // Toast 노출
-                print(error)
+                print("\(error) 확인 -> 추후 확인 후 토스트 메시지 혹은 다른 시각적 요소 출력으로 대체")
             })
             .disposed(by: disposeBag)
     }

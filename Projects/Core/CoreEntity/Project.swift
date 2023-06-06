@@ -12,6 +12,8 @@ let project = Project.makeModule(
     name: Modules.Core(.CoreEntity).name,
     product: .framework,
     packages: [],
-    dependencies: [],
+    dependencies: [
+        .Project.module(.Utils).dependency
+    ],
     hasTests: false
 )

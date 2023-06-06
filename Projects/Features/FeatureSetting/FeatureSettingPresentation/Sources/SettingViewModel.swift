@@ -75,7 +75,7 @@ public final class SettingViewModel: ViewModelType {
             .compactMap { $0.element }
             .bind(to: state.userLoginType)
             .disposed(by: disposeBag)
-        
+
         input.viewDidLoad
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in

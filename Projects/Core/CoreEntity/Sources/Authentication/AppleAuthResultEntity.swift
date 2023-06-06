@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct AppleAuthResultEntity: AuthResultPossessable {
+public struct AppleAuthResultEntity: AccessTokenPossessable {
     
     public let accessToken: String
     

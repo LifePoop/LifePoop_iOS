@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum LoginType: Codable {
+public enum LoginType: String, Codable {
     case apple
     case kakao
 }

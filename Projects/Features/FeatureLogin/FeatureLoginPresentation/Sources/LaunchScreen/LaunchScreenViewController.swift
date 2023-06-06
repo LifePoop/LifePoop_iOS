@@ -8,6 +8,7 @@
 
 import UIKit
 
+import RxSwift
 import SnapKit
 
 import DesignSystem
@@ -21,32 +22,25 @@ public final class LaunchScreenViewController: UIViewController, ViewType {
     private let mainCharacterImageView = UIImageView(image: ImageAsset.characterLarge.image)
 
     public var viewModel: LaunchScreenViewModel?
+    
+    private let disposeBag = DisposeBag()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
         layoutUI()
     }
-        
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) { [weak self] in
-            // 다음 화면으로 전환
-            self?.viewModel?.input.viewWillDisappear.accept(())
-        }
-    }
-    
+
     public func bindInput(to viewModel: LaunchScreenViewModel) {
         let input = viewModel.input
         
-    
+        rx.viewWillAppear
+            .debounce(.seconds(1), scheduler: MainScheduler.instance)
+            .bind(to: input.viewWillAppear)
+            .disposed(by: disposeBag)
     }
     
-    public func bindOutput(from viewModel: LaunchScreenViewModel) {
-        let output = viewModel.output
-        
-    }
+    public func bindOutput(from viewModel: LaunchScreenViewModel) { }
 }
 
 // MARK: - UI Configuration

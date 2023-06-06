@@ -9,7 +9,7 @@
 import Foundation
 
 // 임시로 인증토큰 확인하기 위한 구조체
-public struct KakaoAuthResultEntity: Codable, AuthResultPossessable {
+public struct KakaoAuthResultEntity: Codable, AccessTokenPossessable {
 
     public let accessToken: String
     public let refreshToken: String

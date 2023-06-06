@@ -58,7 +58,7 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
             do {
                 try self?.saveObjectToKeyChain(object, forKey: key)
                 observer(.completed)
-            } catch {
+            } catch let error {
                 observer(.error(error))
             }
             
@@ -69,7 +69,7 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
     public func getObjectFromKeyChain<T: Decodable>(
         asTypeOf targetType: T.Type,
         forKey key: ItemKey
-    ) throws -> T? {
+    ) throws -> T {
         
         let keychainQuery = keychainQuery(for: .get, key: key)
         var result: AnyObject?
@@ -77,7 +77,7 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
         
         switch loadStatus {
         case errSecSuccess: break
-        case errSecItemNotFound: return nil
+        case errSecItemNotFound: throw KeyChainError.gettingDataFailed(status: loadStatus)
         default: throw KeyChainError.gettingDataFailed(status: loadStatus)
         }
         
@@ -91,7 +91,7 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
     public func getObjectFromKeyChainAsSingle<T: Decodable>(
         asTypeOf targetType: T.Type,
         forKey key: ItemKey
-    ) -> Single<T?> {
+    ) -> Single<T> {
         Single.create { [weak self] observer in
             
             do {
@@ -100,7 +100,7 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
                     throw KeyChainError.nilData(status: .zero)
                 }
                 observer(.success(object))
-            } catch {
+            } catch let error {
                 observer(.failure(error))
             }
             
@@ -124,7 +124,7 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
             do {
                 try self?.removeObjectFromKeyChain(object, forKey: key)
                 observer(.completed)
-            } catch {
+            } catch let error {
                 observer(.error(error))
             }
             

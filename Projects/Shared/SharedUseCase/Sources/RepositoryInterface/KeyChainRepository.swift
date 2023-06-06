@@ -32,9 +32,9 @@ public protocol KeyChainRepository: AnyObject {
     
     func saveObjectToKeyChainAsCompletable<T: Codable>(_ object: T, forKey key: ItemKey) -> Completable
     
-    func getObjectFromKeyChain<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) throws -> T
+    func getObjectFromKeyChain<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) throws -> T?
     
-    func getObjectFromKeyChainAsSingle<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) -> Single<T>
+    func getObjectFromKeyChainAsSingle<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) -> Single<T?>
     
     func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) throws
     

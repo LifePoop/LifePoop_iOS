@@ -14,7 +14,7 @@ import CoreEntity
 
 public protocol UserInfoUseCase {
 
-    var userInfo: Observable<UserInfoEntity> { get }
+    var userInfo: Observable<UserInfoEntity?> { get }
     
     func clearUserAuthInfoIfNeeded() -> Completable
 }

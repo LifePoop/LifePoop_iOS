@@ -16,7 +16,7 @@ public extension OSLog {
     
     enum LogCategory {
         case `default`
-        case allocation
+        case deallocation
         case userDefaults
         case bundle
         case network
@@ -31,8 +31,8 @@ public extension OSLog {
                 return Constant.OSLogCategory.bundle
             case .userDefaults:
                 return Constant.OSLogCategory.userDefaults
-            case .allocation:
-                return Constant.OSLogCategory.allocation
+            case .deallocation:
+                return Constant.OSLogCategory.deallocation
             case .network:
                 return Constant.OSLogCategory.network
             case .database:

@@ -6,14 +6,9 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
-import SnapKit
 import UIKit
 
-@objc public protocol BottomSheetDelegate {
-    
-    @objc optional func bottomSheetDidAppear()
-    func bottomSheetDidDisappear()
-}
+import SnapKit
 
 public final class BottomSheetController: UIViewController {
     
@@ -69,21 +64,25 @@ public final class BottomSheetController: UIViewController {
     }
     
     public func showBottomSheet(toParent parentViewController: UIViewController, completion: (() -> Void)? = nil) {
+        let backgroundViewController = presentTransparentBackgroundView(toParent: parentViewController)
         
-        parentViewController.addChild(self)
-        view.frame = parentViewController.view.bounds
-        parentViewController.view.addSubview(view)
+        backgroundViewController.addChild(self)
+        view.frame = backgroundViewController.view.bounds
+        backgroundViewController.view.addSubview(view)
         view.snp.makeConstraints { make in
             make.top.bottom.leading.trailing.equalToSuperview()
         }
         
         dimmedView.isHidden = false
-        self.didMove(toParent: parentViewController)
+        self.didMove(toParent: backgroundViewController)
+
+        completion?()
     }
+    
     
     @objc public func closeBottomSheet() {
 
-        self.dimmedView.isHidden = true
+        self.dimmedView.isHidden = true 
 
         bottomSheet?.move(
             upTo: view.bounds.height,
@@ -92,7 +91,9 @@ public final class BottomSheetController: UIViewController {
         ) { [weak self] _ in
             
             self?.view?.removeFromSuperview()
-            self?.delegate?.bottomSheetDidDisappear()
+            self?.delegate?.bottomSheetDidDisappear?()
+            self?.parent?.dismiss(animated: false)
+            self?.parent?.removeFromParent()
             self?.removeFromParent()
         }
     }
@@ -107,6 +108,17 @@ extension BottomSheetController: BottomSheetCloseNotification {
 
 private extension BottomSheetController {
     
+    func presentTransparentBackgroundView(
+        toParent parentViewController: UIViewController
+    ) -> TransparentBackgroundViewController {
+        
+        let backgroundViewController = TransparentBackgroundViewController()
+        backgroundViewController.modalPresentationStyle = .overFullScreen
+        
+        parentViewController.present(backgroundViewController, animated: false)
+        return backgroundViewController
+    }
+
     func setupViews() {
         guard let bottomSheet = bottomSheet else { return }
         

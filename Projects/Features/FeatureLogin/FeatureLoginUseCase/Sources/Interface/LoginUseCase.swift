@@ -11,5 +11,6 @@ import RxSwift
 import CoreEntity
 
 public protocol LoginUseCase {
-    func fetchAccessToken() -> Observable<CoreExampleEntity>
+    func saveUserInfo(_ userInfo: UserInfoEntity) -> Completable
+    func fetchUserAuthInfo(for loginType: LoginType) -> Observable<UserAuthInfoEntity?>
 }

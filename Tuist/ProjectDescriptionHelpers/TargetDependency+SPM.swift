@@ -13,18 +13,28 @@ public extension TargetDependency {
         case RxSwift
         case RxCocoa
         case RxRelay
-        
+        case KakaoSDKCommon
+        case KakaoSDKAuth
+        case KakaoSDKUser
+
         public var dependency: TargetDependency {
             switch self {
             case .SnapKit:
                 return .package(product: rawValue)
             case .RxSwift, .RxCocoa, .RxRelay:
                 return .external(name: rawValue)
+            case .KakaoSDKCommon, .KakaoSDKAuth, .KakaoSDKUser:
+                return .external(name: rawValue)
             }
         }
         
         public static var allDependencies: [TargetDependency] {
-            return Self.allCases.map { $0.dependency }
+            return [
+                Self.SnapKit.dependency,
+                Self.RxSwift.dependency,
+                Self.RxCocoa.dependency,
+                Self.RxRelay.dependency
+            ]
         }
     }
 }

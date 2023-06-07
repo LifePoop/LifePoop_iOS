@@ -10,6 +10,8 @@ import ProjectDescription
 public enum Modules {
     case App
     case DesignSystem
+    case DesignSystemReactive
+    case EntityUIMapper
     case Logger
     case Utils
     case Shared(SharedModuleType)
@@ -22,6 +24,10 @@ public enum Modules {
             return "App"
         case .DesignSystem:
             return "DesignSystem"
+        case .DesignSystemReactive:
+            return "DesignSystemReactive"
+        case .EntityUIMapper:
+            return "EntityUIMapper"
         case .Logger:
             return "Logger"
         case .Utils:
@@ -37,7 +43,7 @@ public enum Modules {
     
     public var path: String {
         switch self {
-        case .App, .DesignSystem, .Logger, .Utils:
+        case .App, .DesignSystem, .DesignSystemReactive, .EntityUIMapper, .Logger, .Utils:
             return "Projects/\(name)"
         case .Shared:
             return "Projects/Shared/\(name)"
@@ -50,6 +56,7 @@ public enum Modules {
 }
 
 public enum SharedModuleType: String, CaseIterable {
+    case SharedDIContainer
     case SharedRepository
     case SharedUseCase
 }
@@ -58,6 +65,7 @@ public enum FeatureModuleType: String, CaseIterable {
     case Login
     case Home
     case StoolLog
+    case Setting
     
     var layerModules: [FeatureLayerModuleType] {
         switch self {
@@ -66,6 +74,8 @@ public enum FeatureModuleType: String, CaseIterable {
         case .Home:
             return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         case .StoolLog:
+            return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
+        case .Setting:
             return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         }
     }
@@ -81,6 +91,7 @@ public enum FeatureLayerModuleType: String, CaseIterable {
 }
 
 public enum CoreModuleType: String, CaseIterable {
+    case CoreAuthentication
     case CoreDIContainer
     case CoreEntity
     case CoreNetworkService

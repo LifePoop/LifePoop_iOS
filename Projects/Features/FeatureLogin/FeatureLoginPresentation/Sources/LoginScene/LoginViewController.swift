@@ -52,8 +52,8 @@ public final class LoginViewController: UIViewController, ViewType {
     
     private let kakaoTalkLoginButon = LoginButton(
         title: "카카오로 계속하기",
-        backgroundColor: ColorAsset.kakaoYellow.color,
-        fontColor: ColorAsset.kakaoBrown.color,
+        backgroundColor: ColorAsset.pooYellow.color,
+        fontColor: ColorAsset.pooBrown.color,
         iconImage: ImageAsset.iconKakao.image
     )
     
@@ -130,6 +130,12 @@ public final class LoginViewController: UIViewController, ViewType {
                 // TODO: 셀 면적 확인하기 위한 임시처리
                 cell.contentView.backgroundColor = index % 2 == 1 ? .systemGray4 : .systemCyan
             }
+            .disposed(by: disposeBag)
+        
+        output.showErrorMessage
+            .bind(onNext: { error in
+                print("\(error) 확인 -> 추후 확인 후 토스트 메시지 혹은 다른 시각적 요소 출력으로 대체")
+            })
             .disposed(by: disposeBag)
     }
 }

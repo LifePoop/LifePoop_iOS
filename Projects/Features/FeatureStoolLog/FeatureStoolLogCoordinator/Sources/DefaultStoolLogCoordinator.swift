@@ -80,7 +80,6 @@ private extension DefaultStoolLogCoordinator {
 extension DefaultStoolLogCoordinator: BottomSheetDelegate {
     
     public func bottomSheetDidDisappear() {
-        parentCoordinator?.navigationController.presentedViewController?.dismiss(animated: false)
         parentCoordinator?.remove(childCoordinator: .stoolLog)
     }
 }

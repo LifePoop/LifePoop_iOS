@@ -37,7 +37,7 @@ final class SizeSelectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(selectableSize: SelectableSize) {
+    func configure(selectableSize: StoolSize) {
         
         switch selectableSize {
         case .small:

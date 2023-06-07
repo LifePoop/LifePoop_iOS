@@ -15,6 +15,7 @@ let project = Project.makeModule(
         .SPM.SnapKit.package
     ],
     dependencies: [
+        .Project.module(.Logger).dependency,
         .SPM.SnapKit.dependency
     ],
     resources: ["Resources/**"],

@@ -19,16 +19,16 @@ public final class SatisfactionDetailViewModel: ViewModelType {
         let isSatisfied = BehaviorRelay<Bool>(value: true)
         let didTapLeftBarbutton = PublishRelay<Void>()
         let didTapCompleteButton = PublishRelay<Void>()
-        let didSelectColor = PublishRelay<SelectableColor>()
-        let didSelectStiffness = PublishRelay<SelectableStiffness>()
-        let didSelectSize = PublishRelay<SelectableSize>()
+        let didSelectColor = PublishRelay<StoolColor>()
+        let didSelectShape = PublishRelay<StoolShape>()
+        let didSelectSize = PublishRelay<StoolSize>()
     }
     
     public struct Output {
         let titleText = BehaviorRelay<String>(value: "왜 만족했나요?")
-        let selectableColors = Observable.of(SelectableColor.allCases)
-        let selectableStiffnessList = Observable.of(SelectableStiffness.allCases)
-        let selectableSizes = Observable.of(SelectableSize.allCases)
+        let selectableColors = Observable.of(StoolColor.allCases)
+        let selectableShapes = Observable.of(StoolShape.allCases)
+        let selectableSizes = Observable.of(StoolSize.allCases)
     }
     
     public let input = Input()
@@ -36,11 +36,11 @@ public final class SatisfactionDetailViewModel: ViewModelType {
     
     private weak var coordinator: StoolLogCoordinator?
     private var disposeBag = DisposeBag()
-        
+    
     public init(coordinator: StoolLogCoordinator?, isSatisfied: Bool) {
         self.coordinator = coordinator
         bindInputToOutput()
-
+        
         input.isSatisfied.accept(isSatisfied)
     }
     
@@ -57,12 +57,12 @@ public final class SatisfactionDetailViewModel: ViewModelType {
                 owner.coordinator?.coordinate(by: .goBack)
             })
             .disposed(by: disposeBag)
-                
+        
         let selectedStatus = Observable
             .combineLatest(
                 input.isSatisfied,
                 input.didSelectColor,
-                input.didSelectStiffness,
+                input.didSelectShape,
                 input.didSelectSize
             )
             .map { ($0, $1, $2, $3) }
@@ -76,7 +76,5 @@ public final class SatisfactionDetailViewModel: ViewModelType {
                 owner.coordinator?.coordinate(by: .dismissBottomSheet)
             })
             .disposed(by: disposeBag)
-
     }
-
 }

@@ -17,6 +17,7 @@ let project = Project.makeModule(
         .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.Core(.CoreNetworkService)).dependency,
         .Project.module(.Core(.CoreStorageService)).dependency,
+        .Project.module(.Shared(.SharedUseCase)).dependency,
         .Project.module(.Utils).dependency,
         .SPM.RxSwift.dependency
     ]

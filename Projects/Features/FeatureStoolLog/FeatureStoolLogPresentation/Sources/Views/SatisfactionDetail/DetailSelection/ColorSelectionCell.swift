@@ -46,7 +46,7 @@ final class ColorSelectionCell: UICollectionViewCell {
         }
     }
     
-    func configure(selectableColor: SelectableColor) {
+    func configure(selectableColor: StoolColor) {
         
         switch selectableColor {
         case .black:

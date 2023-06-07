@@ -26,6 +26,7 @@ public final class LoginViewModel: ViewModelType {
     
     public struct Output {
         let bannerImages = BehaviorRelay<[Data]>(value: [])
+        let showErrorMessage = PublishRelay<String>()
     }
     
     public let input = Input()
@@ -39,17 +40,42 @@ public final class LoginViewModel: ViewModelType {
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
         
-        // MARK: - Bind Input - nextButtonDidTap
-        input.didTapKakaoLoginButton
-            .bind(onNext: {
-                coordinator?.coordinate(by: .didTapKakaoLoginButton)
-            })
+        let fetchKakaoToken = input.didTapKakaoLoginButton
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                `self`.loginUseCase.fetchUserAuthInfo(for: .kakao)
+            }
+            .share()
+        
+        fetchKakaoToken
+            .compactMap { $0.element }
+            .compactMap { $0 }
+            .bind(onNext: { coordinator?.coordinate(by: .didTapKakaoLoginButton(userAuthInfo: $0)) })
             .disposed(by: disposeBag)
         
-        input.didTapAppleLoginButton
-            .bind(onNext: {
-                coordinator?.coordinate(by: .didTapAppleLoginButton)
-            })
+        fetchKakaoToken
+            .compactMap { $0.error }
+            .map { $0.localizedDescription }
+            .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
+        
+        let fetchAppleToken = input.didTapAppleLoginButton
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                `self`.loginUseCase.fetchUserAuthInfo(for: .apple)
+            }
+            .share()
+        
+        fetchAppleToken
+            .compactMap { $0.element }
+            .compactMap { $0 }
+            .bind(onNext: { coordinator?.coordinate(by: .didTapAppleLoginButton(userAuthInfo: $0))} )
+            .disposed(by: disposeBag)
+        
+        fetchAppleToken
+            .compactMap { $0.error }
+            .map { $0.localizedDescription }
+            .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
     }
 }

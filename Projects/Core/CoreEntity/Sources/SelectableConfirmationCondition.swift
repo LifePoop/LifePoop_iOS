@@ -32,18 +32,18 @@ public struct SelectableConfirmationCondition {
     
     public let descriptionText: String
     public let descriptionTextSize: DescriptionTextSize
-    public let detailTerms: String?
+    public let containsDetailView: Bool
     public let selectionType: SelectionType
     
     public init(
         descriptionText: String,
         descriptionTextSize: DescriptionTextSize,
-        detailTerms: String?,
+        containsDetailView: Bool,
         selectionType: SelectionType
     ) {
         self.descriptionText = descriptionText
         self.descriptionTextSize = descriptionTextSize
-        self.detailTerms = detailTerms
+        self.containsDetailView = containsDetailView
         self.selectionType = selectionType
     }
 }

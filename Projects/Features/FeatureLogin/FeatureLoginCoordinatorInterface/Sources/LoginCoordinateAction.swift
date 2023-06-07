@@ -13,6 +13,7 @@ import CoreEntity
 public enum LoginCoordinateAction {
     case shouldShowLaunchScreen
     case shouldShowLoginScene
+    case shouldShowDetailForm(title: String, detailText: String)
     case shouldPopCurrentScene
     case didTapAppleLoginButton(userAuthInfo: UserAuthInfoEntity)
     case didTapKakaoLoginButton(userAuthInfo: UserAuthInfoEntity)

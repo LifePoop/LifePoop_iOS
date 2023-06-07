@@ -15,10 +15,18 @@ import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
 import FeatureLoginUseCase
+import SharedDIContainer
+import SharedUseCase
+
 import Utils
 
 public final class NicknameViewModel: ViewModelType {
 
+    enum DetailViewType {
+        case termsOfService
+        case privacyPolicy
+    }
+    
     enum TextFieldStatus {
         case possible(text: String)
         case impossible(text: String)
@@ -32,6 +40,7 @@ public final class NicknameViewModel: ViewModelType {
         let didDeselectConfirmCondition = PublishRelay<SelectableConfirmationCondition>()
         let didSelectAllEssentialConditions = PublishRelay<Bool>()
         let didTapLeftBarbutton = PublishRelay<Void>()
+        let didTapDetailViewButton = PublishRelay<DetailViewType>()
         let viewDidLoad = PublishRelay<Void>()
     }
     
@@ -44,12 +53,12 @@ public final class NicknameViewModel: ViewModelType {
     
     public let input = Input()
     public let output = Output()
-    
+
+    @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
     @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
 
     private var selectedConditions: Set<SelectableConfirmationCondition> = [] {
         didSet {
-            // TODO: 바인딩 메소드로 이동시키고, 유효성 판단 여부는 UseCase로 이동시켜도 될 지 다시 확인해야 함
             input.didSelectAllEssentialConditions.accept(
                 essentialConditions.isSubset(of: selectedConditions)
             )
@@ -57,36 +66,35 @@ public final class NicknameViewModel: ViewModelType {
     }
     private var essentialConditions: Set<SelectableConfirmationCondition> = []
     
-    // TODO: Repository -> UseCase 순서로 거쳐오도록 수정해야 함
     private let conditionEntities: [SelectableConfirmationCondition] = [
         .init(
             descriptionText: "전체동의",
             descriptionTextSize: .large,
-            detailTerms: nil,
+            containsDetailView: false,
             selectionType: .selectAll
         ),
         .init(
             descriptionText: "만 14세 이상입니다.(필수)",
             descriptionTextSize: .normal,
-            detailTerms: "",
+            containsDetailView: false,
             selectionType: .essential
         ),
         .init(
             descriptionText: "서비스 이용 약관 (필수)",
             descriptionTextSize: .normal,
-            detailTerms: "",
+            containsDetailView: true,
             selectionType: .essential
         ),
         .init(
             descriptionText: "개인정보 수집 및 이용 (필수)",
             descriptionTextSize: .normal,
-            detailTerms: "",
+            containsDetailView: true,
             selectionType: .essential
         ),
         .init(
             descriptionText: "이벤트, 프로모션 알림 메일 수신 (선택)",
             descriptionTextSize: .normal,
-            detailTerms: nil,
+            containsDetailView: false,
             selectionType: .optional
         )
     ]
@@ -145,6 +153,30 @@ public final class NicknameViewModel: ViewModelType {
                 default:
                     owner.selectedConditions.remove(condition)
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        let fetchDetailFormFile = input.didTapDetailViewButton
+            .map { detailType in
+                switch detailType {
+                case .privacyPolicy:
+                    return DocumentType.privacyPolicy
+                case .termsOfService:
+                    return DocumentType.termsOfService
+                }
+            }
+            .withUnretained(self)
+            .flatMapLatest { `self`, documentType in
+                Observable.zip(
+                    Observable.just(documentType.title),
+                    self.bundleResourceUseCase.readText(from: documentType.textFile)
+                )
+            }
+            .share()
+        
+        fetchDetailFormFile
+            .bind(onNext: { title, detailText in
+                coordinator.coordinate(by: .shouldShowDetailForm(title: title, detailText: detailText))
             })
             .disposed(by: disposeBag)
         

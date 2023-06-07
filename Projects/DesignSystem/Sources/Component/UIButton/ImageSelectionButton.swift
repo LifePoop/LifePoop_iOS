@@ -32,3 +32,11 @@ public final class ImageSelectionButton: UIButton {
         self.isSelected = isSelected
     }
 }
+
+public extension Array where Element: ImageSelectionButton {
+    func selectButtonOnly(at targetIndex: Int) {
+        for (index, button) in enumerated() {
+            button.toggleSelection(isSelected: index == targetIndex)
+        }
+    }
+}

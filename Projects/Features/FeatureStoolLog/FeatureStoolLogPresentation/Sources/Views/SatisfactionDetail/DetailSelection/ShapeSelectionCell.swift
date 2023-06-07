@@ -1,5 +1,5 @@
 //
-//  StiffnessSelectionCell.swift
+//  ShapeSelectionCell.swift
 //  FeatureStoolLogPresentation
 //
 //  Created by 이준우 on 2023/05/06.
@@ -13,18 +13,18 @@ import SnapKit
 import CoreEntity
 import DesignSystem
 
-final class StiffnessSelectionCell: UICollectionViewCell {
+final class ShapeSelectionCell: UICollectionViewCell {
     
     private let titlelabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
         return label
     }()
-
+    
     private let imageView: UIImageView = UIImageView(image: ImageAsset.smileySadDeselected.original)
     
     private var selectedImage: UIImage?
-
+    
     private var deselectedImage: UIImage?
     
     override var isSelected: Bool {
@@ -32,7 +32,7 @@ final class StiffnessSelectionCell: UICollectionViewCell {
             imageView.image = isSelected ? selectedImage : deselectedImage
         }
     }
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubViews()
@@ -43,18 +43,18 @@ final class StiffnessSelectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(stiffnessSelection: SelectableStiffness) {
+    func configure(stoolShapeSelection: StoolShape) {
         
-        titlelabel.text = stiffnessSelection.description
+        titlelabel.text = stoolShapeSelection.description
         
-        switch stiffnessSelection {
+        switch stoolShapeSelection {
         case .soft:
             selectedImage = ImageAsset.smileyDeadSelected.image
             deselectedImage = ImageAsset.smileyDeadDeselected.image
-        case .normal:
+        case .good:
             selectedImage = ImageAsset.smileyHappySelected.image
             deselectedImage = ImageAsset.smileyHappyDeselected.image
-        case .stiffness:
+        case .hard:
             selectedImage = ImageAsset.smileySadSelected.image
             deselectedImage = ImageAsset.smileySadDeselected.image
         }

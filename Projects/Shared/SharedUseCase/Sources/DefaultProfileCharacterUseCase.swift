@@ -37,18 +37,18 @@ public final class DefaultProfileCharacterUseCase: ProfileCharacterUseCase {
     @discardableResult
     public func updateProfileCharacterColor(
         from existingCharacter: ProfileCharacter,
-        to newColor: SelectableColor
+        to newColor: StoolColor
     ) -> Completable {
-        let newCharacter = ProfileCharacter(color: newColor, stiffness: existingCharacter.stiffness)
+        let newCharacter = ProfileCharacter(color: newColor, shape: existingCharacter.shape)
         return updateProfileCharacter(to: newCharacter)
     }
     
     @discardableResult
-    public func updateProfileCharacterStiffness(
+    public func updateProfileCharacterShape(
         from existingCharacter: ProfileCharacter,
-        to newStiffness: SelectableStiffness
+        to newShape: StoolShape
     ) -> Completable {
-        let newCharacter = ProfileCharacter(color: existingCharacter.color, stiffness: newStiffness)
+        let newCharacter = ProfileCharacter(color: existingCharacter.color, shape: newShape)
         return updateProfileCharacter(to: newCharacter)
     }
 }

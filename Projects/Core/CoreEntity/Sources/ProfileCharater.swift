@@ -9,11 +9,11 @@
 import Foundation
 
 public struct ProfileCharacter: Codable {
-    public var color: SelectableColor
-    public var stiffness: SelectableStiffness
+    public var color: StoolColor
+    public var shape: StoolShape
     
-    public init(color: SelectableColor, stiffness: SelectableStiffness) {
+    public init(color: StoolColor, shape: StoolShape) {
         self.color = color
-        self.stiffness = stiffness
+        self.shape = shape
     }
 }

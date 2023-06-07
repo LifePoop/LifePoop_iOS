@@ -1,5 +1,5 @@
 //
-//  SelectableSize.swift
+//  StoolSize.swift
 //  CoreEntity
 //
 //  Created by 이준우 on 2023/05/07.
@@ -8,8 +8,7 @@
 
 import Foundation
 
-public enum SelectableSize: Int, CaseIterable {
-    
+public enum StoolSize: Int, CaseIterable {
     case small
     case medium
     case large

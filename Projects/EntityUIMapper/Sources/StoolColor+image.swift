@@ -1,5 +1,5 @@
 //
-//  SelectableColor+image.swift
+//  StoolColor+image.swift
 //  EntityUIMapper
 //
 //  Created by 김상혁 on 2023/06/05.
@@ -11,7 +11,7 @@ import UIKit
 import CoreEntity
 import DesignSystem
 
-public extension SelectableColor {
+public extension StoolColor {
     var selectedImage: UIImage {
         switch self {
         case .brown:

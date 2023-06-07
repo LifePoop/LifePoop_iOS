@@ -21,14 +21,15 @@ public final class ProfileEditViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
-        let profileCharacterColorDidSelect = PublishRelay<StoolColor>()
-        let profileCharacterShapeDidSelect = PublishRelay<StoolShape>()
+        let profileCharacterColorDidSelectAt = PublishRelay<Int>()
+        let profileCharacterShapeDidSelectAt = PublishRelay<Int>()
         let confirmButtonDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
         let selectProfileCharacterColor = PublishRelay<StoolColor>()
-        let selectProfileCharacterShape = PublishRelay<StoolShape>()
+        let selectProfileCharacterCharacter = PublishRelay<ProfileCharacter>()
+        let enableConfirmButton = BehaviorRelay<Bool>(value: false)
         let showErrorMessage = PublishRelay<String>()
     }
     
@@ -51,29 +52,42 @@ public final class ProfileEditViewModel: ViewModelType {
         
         input.viewDidLoad
             .withLatestFrom(state.profileCharacter)
-            .compactMap { $0?.shape }
-            .bind(to: output.selectProfileCharacterShape)
-            .disposed(by: disposeBag)
-        
-        input.viewDidLoad
-            .withLatestFrom(state.profileCharacter)
             .compactMap { $0?.color }
             .bind(to: output.selectProfileCharacterColor)
             .disposed(by: disposeBag)
         
-        let latestCharacterAttributes = Observable
-            .combineLatest(
-                input.profileCharacterColorDidSelect,
-                input.profileCharacterShapeDidSelect
-            )
-            .share()
+        input.viewDidLoad
+            .withLatestFrom(state.profileCharacter)
+            .compactMap { $0 }
+            .bind(to: output.selectProfileCharacterCharacter)
+            .disposed(by: disposeBag)
         
-        input.confirmButtonDidTap
-            .withLatestFrom(latestCharacterAttributes)
-            .map { (color, shape) -> ProfileCharacter in
-                ProfileCharacter(color: color, shape: shape)
+        input.profileCharacterColorDidSelectAt
+            .compactMap { StoolColor(rawValue: $0) }
+            .withLatestFrom(state.profileCharacter.compactMap { $0 }) {
+                return (newColor: $0, shape: $1.shape)
             }
+            .map { ProfileCharacter(color: $0, shape: $1)  }
             .bind(to: state.profileCharacter)
+            .disposed(by: disposeBag)
+        
+        input.profileCharacterShapeDidSelectAt
+            .compactMap { StoolShape(rawValue: $0) }
+            .withLatestFrom(state.profileCharacter.compactMap { $0 }) {
+                return (color: $1.color, newShape: $0)
+            }
+            .map { ProfileCharacter(color: $0, shape: $1)  }
+            .bind(to: state.profileCharacter)
+            .disposed(by: disposeBag)
+        
+        state.profileCharacter
+            .compactMap { $0?.color }
+            .bind(to: output.selectProfileCharacterColor)
+            .disposed(by: disposeBag)
+        
+        state.profileCharacter
+            .compactMap { $0 }
+            .bind(to: output.selectProfileCharacterCharacter)
             .disposed(by: disposeBag)
         
         state.profileCharacter

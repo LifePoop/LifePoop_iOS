@@ -18,14 +18,12 @@ import Utils
 
 public final class ProfileEditViewController: LifePoopViewController, ViewType {
     
-    private lazy var titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "캐릭터를 설정해주세요"
         label.font = .systemFont(ofSize: 20, weight: .bold)
         return label
     }()
-    
-    // TODO: Selection View 구현 - FeatureSatisfaction과 중복되는 컴포넌트 Design System으로 분리
     
     private let colorTitleLabel: UILabel = {
         let label = UILabel()
@@ -43,15 +41,29 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
         return label
     }()
     
-    private lazy var selectionStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [colorTitleLabel, shapeTitleLabel])
-        stackView.axis = .vertical
+    private let colorSelectionButtons = StoolColor.allCases.map {
+        ImageSelectionButton(selectedImage: $0.selectedImage, deselectedImage: $0.deselectedImage, index: $0.index)
+    }
+    
+    private lazy var colorSelectionStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: colorSelectionButtons)
+        stackView.axis = .horizontal
         stackView.distribution = .equalSpacing
         return stackView
     }()
     
+    private let shapeSelectionButtons = StoolShape.allCases.map {
+        ImageSelectionButton(deselectedImage: $0.deselectedImage, index: $0.index)
+    }
     
-    private lazy var confirmButton: LifePoopButton = {
+    private lazy var shapeSelectionStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: shapeSelectionButtons)
+        stackView.axis = .horizontal
+        stackView.distribution = .equalSpacing
+        return stackView
+    }()
+    
+    private let confirmButton: LifePoopButton = {
         let button = LifePoopButton(title: "설정 완료")
         button.isEnabled = false
         return button
@@ -68,25 +80,50 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
         rx.viewDidLoad
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)
+        
+        Observable.merge(colorSelectionButtons.map { button in
+            button.rx.tap.map { button.index }
+        })
+        .bind(to: input.profileCharacterColorDidSelectAt)
+        .disposed(by: disposeBag)
+        
+        Observable.merge(shapeSelectionButtons.map { button in
+            button.rx.tap.map { button.index }
+        })
+        .bind(to: input.profileCharacterShapeDidSelectAt)
+        .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: ProfileEditViewModel) {
         let output = viewModel.output
         
+        output.selectProfileCharacterColor
+            .asSignal()
+            .map { $0.index }
+            .emit(onNext: colorSelectionButtons.selectButtonOnly(at:))
+            .disposed(by: disposeBag)
+        
+        output.selectProfileCharacterCharacter
+            .asSignal()
+            .map { (index: $0.shape.index, image: $0.image) }
+            .do { [weak self] in
+                let (index, image) = $0
+                self?.shapeSelectionButtons[index].setSelectedImage(image)
+            }
+            .map { $0.index }
+            .emit(onNext: shapeSelectionButtons.selectButtonOnly(at:))
+            .disposed(by: disposeBag)
     }
     
     // MARK: - UI Setup
-    
-    public override func configureUI() {
-        super.configureUI()
-        
-    }
     
     public override func layoutUI() {
         super.layoutUI()
         view.addSubview(titleLabel)
         view.addSubview(colorTitleLabel)
+        view.addSubview(colorSelectionStackView)
         view.addSubview(shapeTitleLabel)
+        view.addSubview(shapeSelectionStackView)
         view.addSubview(confirmButton)
         
         titleLabel.snp.makeConstraints { make in
@@ -99,9 +136,21 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
         }
         
+        colorSelectionStackView.snp.makeConstraints { make in
+            make.leading.equalTo(colorTitleLabel.snp.trailing).offset(35)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-46)
+            make.centerY.equalTo(colorTitleLabel)
+        }
+        
         shapeTitleLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
+        }
+        
+        shapeSelectionStackView.snp.makeConstraints { make in
+            make.leading.equalTo(shapeTitleLabel.snp.trailing).offset(49.5)
+            make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-60.5)
+            make.centerY.equalTo(shapeTitleLabel)
         }
         
         confirmButton.snp.makeConstraints { make in

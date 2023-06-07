@@ -46,9 +46,6 @@ public final class LoginViewController: UIViewController, ViewType {
         label.text = "나의 변을 기록하고"
         return label
     }()
-    private let mainLogoImageView = UIImageView(image: ImageAsset.logoLarge.image)
-    
-    private let mainCharacterImageView = UIImageView(image: ImageAsset.characterLarge.image)
     
     private let kakaoTalkLoginButon = LoginButton(
         title: "카카오로 계속하기",
@@ -67,17 +64,10 @@ public final class LoginViewController: UIViewController, ViewType {
     public var viewModel: LoginViewModel?
     private var disposeBag = DisposeBag()
 
-    // TODO: 서버에서 이미지 데이터 내려주기 전까지 임시로 Image Asset에 있는 로고 이미지 사용하도록 처리
-    private let temporaryBannerImages = [
-        ImageAsset.characterLarge.image.pngData(),
-        ImageAsset.characterLarge.image.pngData(),
-        ImageAsset.characterLarge.image.pngData()
-    ]
-    
-    private let temporarySubLabelTexts = [
-        "나의 변을 기록하고",
-        "서로의 변을 응원하고",
-        "배변일지를 공유받자!"
+    private let bannerImages = [
+        ImageAsset.bannerFirst.image.pngData(),
+        ImageAsset.bannerSecond.image.pngData(),
+        ImageAsset.bannerThird.image.pngData()
     ]
     
     public override func viewDidLoad() {
@@ -85,7 +75,7 @@ public final class LoginViewController: UIViewController, ViewType {
         configureUI()
         layoutUI()
         
-        viewModel?.output.bannerImages.accept(temporaryBannerImages.compactMap { $0 })
+        viewModel?.output.bannerImages.accept(bannerImages.compactMap { $0 })
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -110,6 +100,28 @@ public final class LoginViewController: UIViewController, ViewType {
         appleLoginButton.rx.tap
             .bind(to: input.didTapAppleLoginButton)
             .disposed(by: disposeBag)
+        
+        let pageControlIndex = bannerCollectionView.rx.didScroll
+            .withUnretained(self)
+            .filter { `self`, _ in
+                self.bannerCollectionView.bounds.width > 0
+            }
+            .withUnretained(self)
+            .map { `self`, _ in
+                let width = self.bannerCollectionView.bounds.size.width
+                let xValue = self.bannerCollectionView.contentOffset.x + (width/2.0)
+                let newPage = Int(xValue/width)
+                return newPage
+            }
+            .share()
+        
+        pageControlIndex
+            .bind(to: pageControl.rx.currentPage)
+            .disposed(by: disposeBag)
+        
+        pageControlIndex
+            .bind(to: input.didChangeBannerImageIndex)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: LoginViewModel) {
@@ -124,12 +136,14 @@ public final class LoginViewController: UIViewController, ViewType {
             .bind(to: bannerCollectionView.rx.items(
                 cellIdentifier: BannerImageCell.identifier,
                 cellType: BannerImageCell.self)
-            ) { index, imageData, cell in
+            ) { _, imageData, cell in
                 
                 cell.configure(imageData: imageData)
-                // TODO: 셀 면적 확인하기 위한 임시처리
-                cell.contentView.backgroundColor = index % 2 == 1 ? .systemGray4 : .systemCyan
             }
+            .disposed(by: disposeBag)
+        
+        output.subLabelText
+            .bind(to: subLabel.rx.text)
             .disposed(by: disposeBag)
         
         output.showErrorMessage
@@ -164,8 +178,7 @@ private extension LoginViewController {
         bannerCollectionView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(frameHeight*0.07)
             make.centerX.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(frameWidth*0.09)
-            make.height.equalTo(bannerCollectionView.snp.width).multipliedBy(1.28)
+            make.width.height.equalTo(frameWidth*0.8)
         }
 
         subLabel.snp.makeConstraints { make in
@@ -200,20 +213,5 @@ extension LoginViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         return collectionView.bounds.size
-    }
-}
-
-extension LoginViewController: UIScrollViewDelegate {
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView.bounds.width > 0 else { return }
-        
-        let width = scrollView.bounds.size.width
-        let x = scrollView.contentOffset.x + (width / 2.0)
-        
-        let newPage = Int(x / width)
-        if pageControl.currentPage != newPage {
-            pageControl.currentPage = newPage
-            subLabel.text = temporarySubLabelTexts[newPage]
-        }
     }
 }

@@ -22,10 +22,12 @@ public final class LoginViewModel: ViewModelType {
     public struct Input {
         let didTapKakaoLoginButton = PublishRelay<Void>()
         let didTapAppleLoginButton = PublishRelay<Void>()
+        let didChangeBannerImageIndex = PublishRelay<Int>()
     }
     
     public struct Output {
         let bannerImages = BehaviorRelay<[Data]>(value: [])
+        let subLabelText = BehaviorRelay<String>(value: "나의 변을 기록하고")
         let showErrorMessage = PublishRelay<String>()
     }
     
@@ -69,13 +71,29 @@ public final class LoginViewModel: ViewModelType {
         fetchAppleToken
             .compactMap { $0.element }
             .compactMap { $0 }
-            .bind(onNext: { coordinator?.coordinate(by: .didTapAppleLoginButton(userAuthInfo: $0))} )
+            .bind {
+                coordinator?.coordinate(
+                    by: .didTapAppleLoginButton(userAuthInfo: $0)
+                )
+            }
             .disposed(by: disposeBag)
         
         fetchAppleToken
             .compactMap { $0.error }
             .map { $0.localizedDescription }
             .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
+   
+        input.didChangeBannerImageIndex
+            .compactMap {
+                switch $0 {
+                case 0: return "나의 변을 기록하고"
+                case 1: return "서로의 변을 응원하고"
+                case 2: return "배변일지를 공유받자!"
+                default: return nil
+                }
+            }
+            .bind(to: output.subLabelText)
             .disposed(by: disposeBag)
     }
 }

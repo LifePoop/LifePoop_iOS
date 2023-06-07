@@ -14,6 +14,7 @@ let project = Project.makeModule(
     packages: [],
     dependencies: [
         .Project.module(.DesignSystem).dependency,
+        .Project.module(.Logger).dependency,
         .Project.module(.Features(.Login, .Presentation)).dependency,
         .Project.module(.Features(.Login, .CoordinatorInterface)).dependency,
         .Project.module(.Utils).dependency,

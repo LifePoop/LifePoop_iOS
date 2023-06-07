@@ -15,15 +15,11 @@ import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
 import FeatureLoginUseCase
+import SharedDIContainer
+import SharedUseCase
 import Utils
 
 public final class NicknameViewModel: ViewModelType {
-
-    enum TextFieldStatus {
-        case possible(text: String)
-        case impossible(text: String)
-        case none(text: String)
-    }
 
     public struct Input {
         let didTapNextButton = PublishRelay<Void>()
@@ -36,7 +32,9 @@ public final class NicknameViewModel: ViewModelType {
     }
     
     public struct Output {
-        let textFieldStatus = BehaviorRelay<TextFieldStatus>(value: .none(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다."))
+        let textFieldStatus = BehaviorRelay<NicknameInputStatus.Status>(value:
+                .none(description: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
+        )
         let selectableConditions = BehaviorRelay<[SelectableConfirmationCondition]>(value: [])
         let activateNextButton = BehaviorRelay<Bool>(value: false)
         let selectAllConditions = PublishRelay<Bool>()
@@ -45,6 +43,7 @@ public final class NicknameViewModel: ViewModelType {
     public let input = Input()
     public let output = Output()
     
+    @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
     @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
 
     private var selectedConditions: Set<SelectableConfirmationCondition> = [] {
@@ -159,20 +158,10 @@ public final class NicknameViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
 
-        // TODO: 텍스트 입력값 유효성 판단은 UseCase 내부로 이동해야 함
         let nicknameInputStatus = input.didEnterTextValue
-            .map { text -> (isPossible: Bool, status: TextFieldStatus) in
-                guard !text.isEmpty else { return (false, .none(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")) }
-
-                let hasAnyBlank = text.contains(where: { $0.isWhitespace })
-                let didExceedLimit = text.count < 2 || text.count > 5
-                let isPossible = !hasAnyBlank && !didExceedLimit
-                let status: TextFieldStatus =  isPossible ? .possible(text: "사용 가능한 닉네임이에요.") :
-                                               hasAnyBlank ? .impossible(text: "공백을 포함할 수 없어요.") :
-                                               didExceedLimit ? .impossible(text: "2~5글자 범위만 가능해요.") :
-                                                                .impossible(text: "사용 불가능한 닉네임이에요.")
-                
-                return (isPossible, status)
+            .withUnretained(self)
+            .flatMap { `self`, input in
+                self.nicknameUseCase.checkNicknameValidation(for: input)
             }
             .share()
         
@@ -183,7 +172,7 @@ public final class NicknameViewModel: ViewModelType {
         
         Observable
             .combineLatest(input.didSelectAllEssentialConditions, nicknameInputStatus)
-            .map { $0 && $1.isPossible }
+            .map { $0 && $1.isValid }
             .bind(to: output.activateNextButton)
             .disposed(by: disposeBag)
         

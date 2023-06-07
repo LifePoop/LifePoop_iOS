@@ -1,5 +1,5 @@
 //
-//  SelectableColor.swift
+//  StoolColor.swift
 //  CoreEntity
 //
 //  Created by 이준우 on 2023/05/07.
@@ -8,8 +8,7 @@
 
 import Foundation
 
-public enum SelectableColor: Int, Codable, CaseIterable {
-
+public enum StoolColor: Int, Codable, CaseIterable {
     case brown
     case black
     case pink

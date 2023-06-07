@@ -11,28 +11,28 @@ import UIKit
 import CoreEntity
 import DesignSystem
 
-public extension ProfileCharacter { // FIXME: Rename: stifness -> type / case stiffness -> case hard
+public extension ProfileCharacter {
     var image: UIImage {
-        switch (stiffness, color) {
-        case (.normal, .black):
+        switch (shape, color) {
+        case (.good, .black):
             return ImageAsset.profileGoodBlack.original
-        case (.normal, .pink):
+        case (.good, .pink):
             return ImageAsset.profileGoodRed.original
-        case (.normal, .brown):
+        case (.good, .brown):
             return ImageAsset.profileGoodBrown.original
-        case (.normal, .green):
+        case (.good, .green):
             return ImageAsset.profileGoodGreen.original
-        case (.normal, .yellow):
+        case (.good, .yellow):
             return ImageAsset.profileGoodYellow.original
-        case (.stiffness, .black):
+        case (.hard, .black):
             return ImageAsset.profileHardBlack.original
-        case (.stiffness, .brown):
+        case (.hard, .brown):
             return ImageAsset.profileHardBrown.original
-        case (.stiffness, .green):
+        case (.hard, .green):
             return ImageAsset.profileHardGreen.original
-        case (.stiffness, .pink):
+        case (.hard, .pink):
             return ImageAsset.profileHardRed.original
-        case (.stiffness, .yellow):
+        case (.hard, .yellow):
             return ImageAsset.profileHardYellow.original
         case (.soft, .black):
             return ImageAsset.profileSoftBlack.original

@@ -21,14 +21,14 @@ public final class ProfileEditViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
-        let profileCharacterColorDidSelect = PublishRelay<SelectableColor>()
-        let profileCharacterStiffnessDidSelect = PublishRelay<SelectableStiffness>()
+        let profileCharacterColorDidSelect = PublishRelay<StoolColor>()
+        let profileCharacterShapeDidSelect = PublishRelay<StoolShape>()
         let confirmButtonDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
-        let selectProfileCharacterColor = PublishRelay<SelectableColor>()
-        let selectProfileCharacterStiffness = PublishRelay<SelectableStiffness>()
+        let selectProfileCharacterColor = PublishRelay<StoolColor>()
+        let selectProfileCharacterShape = PublishRelay<StoolShape>()
         let showErrorMessage = PublishRelay<String>()
     }
     
@@ -51,8 +51,8 @@ public final class ProfileEditViewModel: ViewModelType {
         
         input.viewDidLoad
             .withLatestFrom(state.profileCharacter)
-            .compactMap { $0?.stiffness }
-            .bind(to: output.selectProfileCharacterStiffness)
+            .compactMap { $0?.shape }
+            .bind(to: output.selectProfileCharacterShape)
             .disposed(by: disposeBag)
         
         input.viewDidLoad
@@ -64,14 +64,14 @@ public final class ProfileEditViewModel: ViewModelType {
         let latestCharacterAttributes = Observable
             .combineLatest(
                 input.profileCharacterColorDidSelect,
-                input.profileCharacterStiffnessDidSelect
+                input.profileCharacterShapeDidSelect
             )
             .share()
         
         input.confirmButtonDidTap
             .withLatestFrom(latestCharacterAttributes)
-            .map { (color, stiffness) -> ProfileCharacter in
-                ProfileCharacter(color: color, stiffness: stiffness)
+            .map { (color, shape) -> ProfileCharacter in
+                ProfileCharacter(color: color, shape: shape)
             }
             .bind(to: state.profileCharacter)
             .disposed(by: disposeBag)

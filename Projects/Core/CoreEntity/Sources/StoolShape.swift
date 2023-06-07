@@ -1,5 +1,5 @@
 //
-//  SelectableStiffness.swift
+//  StoolShape.swift
 //  CoreEntity
 //
 //  Created by 이준우 on 2023/05/07.
@@ -8,19 +8,18 @@
 
 import Foundation
 
-public enum SelectableStiffness: Int, Codable, CaseIterable { // FIXME: 네이밍 수정
-    
+public enum StoolShape: Int, Codable, CaseIterable {
     case soft
-    case normal
-    case stiffness
+    case good
+    case hard
     
     public var description: String {
         switch self {
         case .soft:
             return "무름"
-        case .normal:
+        case .good:
             return "적당"
-        case .stiffness:
+        case .hard:
             return "딱딱"
         }
     }

@@ -89,7 +89,7 @@ public final class ProfileViewModel: ViewModelType {
         
         state.profileCharacter
             .filter { $0 == nil }
-            .map { _ in ProfileCharacter(color: .brown, stiffness: .normal) }
+            .map { _ in ProfileCharacter(color: .brown, shape: .good) }
             
         
         state.userNickname

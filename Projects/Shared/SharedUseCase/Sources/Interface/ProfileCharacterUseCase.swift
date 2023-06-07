@@ -17,10 +17,10 @@ public protocol ProfileCharacterUseCase {
     func updateProfileCharacter(to newProfileCharacter: ProfileCharacter) -> Completable
     func updateProfileCharacterColor(
         from existingCharacter: ProfileCharacter,
-        to newColor: SelectableColor
+        to newColor: StoolColor
     ) -> Completable
-    func updateProfileCharacterStiffness(
+    func updateProfileCharacterShape(
         from existingCharacter: ProfileCharacter,
-        to newStiffness: SelectableStiffness
+        to newShape: StoolShape
     ) -> Completable
 }

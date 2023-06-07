@@ -43,7 +43,6 @@ public final class LoginViewController: UIViewController, ViewType {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         label.textColor = ColorAsset.pooBlack.color
-        label.text = "나의 변을 기록하고"
         return label
     }()
     

@@ -10,6 +10,8 @@ import ProjectDescription
 public enum Modules {
     case App
     case DesignSystem
+    case DesignSystemReactive
+    case EntityUIMapper
     case Logger
     case Utils
     case Shared(SharedModuleType)
@@ -22,6 +24,10 @@ public enum Modules {
             return "App"
         case .DesignSystem:
             return "DesignSystem"
+        case .DesignSystemReactive:
+            return "DesignSystemReactive"
+        case .EntityUIMapper:
+            return "EntityUIMapper"
         case .Logger:
             return "Logger"
         case .Utils:
@@ -37,7 +43,7 @@ public enum Modules {
     
     public var path: String {
         switch self {
-        case .App, .DesignSystem, .Logger, .Utils:
+        case .App, .DesignSystem, .DesignSystemReactive, .EntityUIMapper, .Logger, .Utils:
             return "Projects/\(name)"
         case .Shared:
             return "Projects/Shared/\(name)"

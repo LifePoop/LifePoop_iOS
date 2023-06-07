@@ -1,5 +1,5 @@
 //
-//  LifePoopTextView.swift
+//  FeedbackTextViewContainerView.swift
 //  DesignSystem
 //
 //  Created by 김상혁 on 2023/05/24.
@@ -10,9 +10,7 @@ import UIKit
 
 import SnapKit
 
-public final class FeedbackTextView: UIControl {
-    
-    private let containerView = UIView()
+public final class FeedbackTextViewContainerView: UIView {
     
     private lazy var toolbar: UIToolbar = {
         let toolbar = UIToolbar(frame: CGRect(x: .zero, y: .zero, width: UIScreen.main.bounds.width, height: 44))
@@ -83,28 +81,14 @@ public final class FeedbackTextView: UIControl {
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private func setPlaceholder() {
-        textView.textColor = placeholderTextColor
-        textView.text = placeholder
-    }
-    
-    @objc private func tapDoneBarButton() {
-        textView.resignFirstResponder()
-    }
 }
 
 // MARK: - UI Layout
 
-private extension FeedbackTextView {
+private extension FeedbackTextViewContainerView {
     func layoutUI() {
-        addSubview(containerView)
-        containerView.addSubview(textView)
-        containerView.addSubview(textCountLabel)
-        
-        containerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        addSubview(textView)
+        addSubview(textCountLabel)
         
         textView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
@@ -118,9 +102,22 @@ private extension FeedbackTextView {
     }
 }
 
+// MARK: - Supporting Methods
+
+private extension FeedbackTextViewContainerView {
+    private func setPlaceholder() {
+        textView.textColor = placeholderTextColor
+        textView.text = placeholder
+    }
+    
+    @objc private func tapDoneBarButton() {
+        textView.resignFirstResponder()
+    }
+}
+
 // MARK: - TextField Delegate Methods
 
-extension FeedbackTextView: UITextViewDelegate {
+extension FeedbackTextViewContainerView: UITextViewDelegate {
     public func textViewDidBeginEditing(_ textView: UITextView) {
         if isPlaceholderVisible {
             textView.text = ""

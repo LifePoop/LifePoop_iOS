@@ -6,7 +6,10 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
+import OSLog
 import UIKit
+
+import Logger
 
 open class LifePoopViewController: UIViewController {
     
@@ -23,4 +26,8 @@ open class LifePoopViewController: UIViewController {
     }
     
     open func layoutUI() { }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
+    }
 }

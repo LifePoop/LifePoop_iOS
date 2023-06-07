@@ -58,7 +58,7 @@ public final class FeedbackViewController: LifePoopViewController, ViewType {
         return label
     }()
     
-    private let suggestionTextView = FeedbackTextView(
+    private let suggestionTextView = FeedbackTextViewContainerView(
         placeholder: "제안하고 싶은 내용을 입력해주세요.",
         maximumTextCount: 200
     )

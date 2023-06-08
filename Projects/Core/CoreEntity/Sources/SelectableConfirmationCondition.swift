@@ -17,7 +17,7 @@ public struct SelectableConfirmationCondition {
         public var value: CGFloat {
             switch self {
             case .large:
-                return 18
+                return 20
             case .normal:
                 return 14
             }

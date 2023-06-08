@@ -15,23 +15,14 @@ import DesignSystem
 
 final class ConditionSelectionCell: UICollectionViewCell {
     
-    private let selectedCheckBoxImage = ImageAsset.checkboxSelected.image
-    private let deselectedCheckBoxImage = ImageAsset.checkboxDeselected.image
-
-    private lazy var checkBoxImageView = UIImageView(image: deselectedCheckBoxImage)
-    
-    private let descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.text = "버튼에 대한 설명"
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textColor = ColorAsset.gray800.color
-        return label
+    private let conditionSelectionView: ConditionSelectionView = {
+        let view = ConditionSelectionView()
+        return view
     }()
     
-    override var isSelected: Bool {
+    var isChecked: Bool = false {
         didSet {
-            let image = isSelected ? selectedCheckBoxImage : deselectedCheckBoxImage
-            checkBoxImageView.image = image
+            conditionSelectionView.isChecked = isChecked
         }
     }
     
@@ -44,42 +35,17 @@ final class ConditionSelectionCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: Ignore every touch events except for the location inside of checkBoxImageView
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let checkBoxFrame = checkBoxImageView.convert(checkBoxImageView.frame, to: self)
-        guard checkBoxFrame.contains(point) else { return nil }
-        
-        return self
-    }
 
     private func addSubViews() {
+        contentView.addSubview(conditionSelectionView)
         
-        contentView.addSubview(checkBoxImageView)
-        contentView.addSubview(descriptionLabel)
-        
-        checkBoxImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.top.equalToSuperview()
-        }
-        
-        descriptionLabel.snp.makeConstraints { make in
-            make.leading.equalTo(checkBoxImageView.snp.trailing).offset(12)
-            make.centerY.equalTo(checkBoxImageView.snp.centerY)
+        conditionSelectionView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
         }
     }
     
     func configure(with condition: SelectableConfirmationCondition) {
-        
-        descriptionLabel.text = condition.descriptionText
-        
-        switch condition.descriptionTextSize {
-        case .normal:
-            descriptionLabel.font = UIFont.systemFont(ofSize: condition.descriptionTextSize.value)
-            descriptionLabel.textColor = ColorAsset.gray800.color
-        case .large:
-            descriptionLabel.font = UIFont.systemFont(ofSize: condition.descriptionTextSize.value, weight: .bold)
-            descriptionLabel.textColor = ColorAsset.pooBlack.color
-        }
+        conditionSelectionView.configure(with: condition)
     }
 }

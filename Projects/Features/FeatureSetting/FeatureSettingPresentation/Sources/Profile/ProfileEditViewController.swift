@@ -63,12 +63,6 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
         return stackView
     }()
     
-    private let confirmButton: LifePoopButton = {
-        let button = LifePoopButton(title: "설정 완료")
-        button.isEnabled = false
-        return button
-    }()
-    
     public var viewModel: ProfileEditViewModel?
     private let disposeBag = DisposeBag()
     
@@ -124,15 +118,14 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
         view.addSubview(colorSelectionStackView)
         view.addSubview(shapeTitleLabel)
         view.addSubview(shapeSelectionStackView)
-        view.addSubview(confirmButton)
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(12)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(-6)
             make.centerX.equalToSuperview()
         }
         
         colorTitleLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview().multipliedBy(0.54)
+            make.centerY.equalToSuperview().multipliedBy(0.56)
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
         }
         
@@ -143,7 +136,7 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
         }
         
         shapeTitleLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
+            make.centerY.equalToSuperview().multipliedBy(1.24)
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
         }
         
@@ -151,11 +144,6 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
             make.leading.equalTo(shapeTitleLabel.snp.trailing).offset(49.5)
             make.trailing.equalTo(view.safeAreaLayoutGuide).offset(-60.5)
             make.centerY.equalTo(shapeTitleLabel)
-        }
-        
-        confirmButton.snp.makeConstraints { make in
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
     }
 }

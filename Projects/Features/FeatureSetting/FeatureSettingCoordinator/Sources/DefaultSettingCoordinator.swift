@@ -87,7 +87,7 @@ private extension DefaultSettingCoordinator {
         let viewController = ProfileEditViewController()
         let viewModel = ProfileEditViewModel(coordinator: self, profileCharacter: profileCharacter)
         viewController.bind(viewModel: viewModel)
-        presentBottomSheetController(contentViewController: viewController, heightRatio: 0.415)
+        presentBottomSheetController(contentViewController: viewController, heightRatio: 0.33)
     }
     
     func presentFeedVisibilityViewController(with feedVisibility: BehaviorRelay<FeedVisibility?>) {

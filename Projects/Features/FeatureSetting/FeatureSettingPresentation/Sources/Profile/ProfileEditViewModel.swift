@@ -23,7 +23,6 @@ public final class ProfileEditViewModel: ViewModelType {
         let viewDidLoad = PublishRelay<Void>()
         let profileCharacterColorDidSelectAt = PublishRelay<Int>()
         let profileCharacterShapeDidSelectAt = PublishRelay<Int>()
-        let confirmButtonDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
@@ -88,17 +87,6 @@ public final class ProfileEditViewModel: ViewModelType {
         state.profileCharacter
             .compactMap { $0 }
             .bind(to: output.selectProfileCharacterCharacter)
-            .disposed(by: disposeBag)
-        
-        state.profileCharacter
-            .compactMap { $0 }
-            .withUnretained(self)
-            .flatMapCompletableMaterialized { `self`, profileCharacter in
-                self.profileCharacterUseCase.updateProfileCharacter(to: profileCharacter)
-            }
-            .compactMap { $0.error }
-            .toastMeessageMap(to: .setting(.failToChangeProfileCharacter))
-            .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
     }
 }

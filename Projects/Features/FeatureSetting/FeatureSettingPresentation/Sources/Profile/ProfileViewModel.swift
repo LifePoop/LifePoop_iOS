@@ -22,13 +22,14 @@ public final class ProfileViewModel: ViewModelType {
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
         let nicknameDidChange = PublishRelay<String>()
-        let nicknameChangeConfirmDidTap = PublishRelay<Void>()
         let profileCharacterEditDidTap = PublishRelay<Void>()
+        let changeConfirmDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
         let setProfileCharater = PublishRelay<ProfileCharacter>()
         let setUserNickname = PublishRelay<String>()
+        let enableChangeConfirmButton = PublishRelay<Bool>()
         let showErrorMessage = PublishRelay<String>()
     }
     
@@ -85,7 +86,7 @@ public final class ProfileViewModel: ViewModelType {
             .bind(to: output.setUserNickname)
             .disposed(by: disposeBag)
         
-        input.nicknameChangeConfirmDidTap
+        input.changeConfirmDidTap
             .withLatestFrom(input.nicknameDidChange)
             .bind(to: state.userNickname)
             .disposed(by: disposeBag)
@@ -118,6 +119,18 @@ public final class ProfileViewModel: ViewModelType {
         state.profileCharacter
             .compactMap { $0 }
             .bind(to: output.setProfileCharater)
+            .disposed(by: disposeBag)
+        
+        // FIXME: input.changeConfirmDidTap로 바인딩하기
+        state.profileCharacter
+            .compactMap { $0 }
+            .withUnretained(self)
+            .flatMapCompletableMaterialized { `self`, profileCharacter in
+                self.profileCharacterUseCase.updateProfileCharacter(to: profileCharacter)
+            }
+            .compactMap { $0.error }
+            .toastMeessageMap(to: .setting(.failToChangeProfileCharacter))
+            .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
     }
     

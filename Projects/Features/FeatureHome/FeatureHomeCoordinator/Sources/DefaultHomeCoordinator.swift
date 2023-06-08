@@ -6,12 +6,12 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
-
 import UIKit
 
 import DesignSystem
 import FeatureHomeCoordinatorInterface
 import FeatureHomePresentation
+import FeatureReportCoordinator
 import FeatureSettingCoordinator
 import FeatureSettingCoordinatorInterface
 import FeatureStoolLogCoordinator
@@ -47,6 +47,8 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
             startStoolLogCoordinatorFlow()
         case .settingButtonDidTap:
             startSettingCoordinatorFlow()
+        case .reportButtonDidTap:
+            startReportCoordinatorFlow()
         }
     }
 }
@@ -82,6 +84,13 @@ private extension DefaultHomeCoordinator {
         )
         settingCoordinator.start()
     }
+    
+    func startReportCoordinatorFlow() {
+        let reportCoordinator = DefaultReportCoordinator(
+            navigationController: navigationController
+        )
+        reportCoordinator.start()
+    }
 }
 
 // MARK: - Supporting Methods
@@ -91,7 +100,7 @@ private extension DefaultHomeCoordinator {
     func presentBottomSheetController(contentViewController: UIViewController) -> BottomSheetController {
         let parentViewController = navigationController
         let bottomSheetController =  BottomSheetController(
-            bottomSheetHeight: navigationController.view.bounds.height*0.5
+            bottomSheetHeight: navigationController.view.bounds.height * 0.5
         )
         
         bottomSheetController.setBottomSheet(contentViewController: contentViewController)

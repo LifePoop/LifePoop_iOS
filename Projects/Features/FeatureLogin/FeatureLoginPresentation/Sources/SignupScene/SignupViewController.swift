@@ -1,5 +1,5 @@
 //
-//  NicknameViewController.swift
+//  SignupViewController.swift
 //  FeatureLoginPresentation
 //
 //  Created by 이준우 on 2023/05/17.
@@ -17,7 +17,7 @@ import DesignSystem
 import DesignSystemReactive
 import Utils
 
-public final class NicknameViewController: LifePoopViewController, ViewType {
+public final class SignupViewController: LifePoopViewController, ViewType {
     
     private let leftBarButton: UIBarButtonItem = UIBarButtonItem(image: ImageAsset.expandLeft.original)
 
@@ -98,7 +98,7 @@ public final class NicknameViewController: LifePoopViewController, ViewType {
     
     private let nextButton = LifePoopButton(title: "다음")
     
-    public var viewModel: NicknameViewModel?
+    public var viewModel: SignupViewModel?
     private var disposeBag = DisposeBag()
 
     public override func viewDidLoad() {
@@ -113,8 +113,12 @@ public final class NicknameViewController: LifePoopViewController, ViewType {
         nicknameTextField.becomeFirstResponder()
     }
     
-    public func bindInput(to viewModel: NicknameViewModel) {
+    public func bindInput(to viewModel: SignupViewModel) {
         let input = viewModel.input
+        
+        rx.viewDidLoad
+            .bind(to: input.viewDidLoad)
+            .disposed(by: disposeBag)
         
         nextButton.rx.tap
             .bind(to: input.didTapNextButton)
@@ -125,23 +129,36 @@ public final class NicknameViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
         
         conditionSelectionCollectionView.rx.modelSelected(SelectableConfirmationCondition.self)
-            .bind(to: input.didSelectConfirmCondition)
+            .bind(onNext: { coniditon in
+                switch coniditon.selectionType {
+                case .selectAll:
+                    input.didTapSelectAllCondition.accept(true)
+                default:
+                    input.didSelectConfirmCondition.accept(coniditon)
+                }
+            })
             .disposed(by: disposeBag)
+
+//            .bind(to: input.didSelectConfirmCondition)
+//            .disposed(by: disposeBag)
         
         conditionSelectionCollectionView.rx.modelDeselected(SelectableConfirmationCondition.self)
-            .bind(to: input.didDeselectConfirmCondition)
+            .bind(onNext: { coniditon in
+                switch coniditon.selectionType {
+                case .selectAll:
+                    input.didTapSelectAllCondition.accept(false)
+                default:
+                    input.didDeselectConfirmCondition.accept(coniditon)
+                }
+            })
             .disposed(by: disposeBag)
         
         leftBarButton.rx.tap
             .bind(to: input.didTapLeftBarbutton)
             .disposed(by: disposeBag)
-        
-        rx.viewDidLoad
-            .bind(to: input.viewDidLoad)
-            .disposed(by: disposeBag)
     }
     
-    public func bindOutput(from viewModel: NicknameViewModel) {
+    public func bindOutput(from viewModel: SignupViewModel) {
         let output = viewModel.output
         
         output.textFieldStatus
@@ -158,17 +175,40 @@ public final class NicknameViewController: LifePoopViewController, ViewType {
             .bind(to: nicknameTextField.rx.status)
             .disposed(by: disposeBag)
         
+        output.selectableGenderConditions
+            .bind(to: genderSelectionCollectionView.rx.items(
+                cellIdentifier: GenderSelectionCell.identifier,
+                cellType: GenderSelectionCell.self)
+            ) { _, gender, cell in
+                
+                cell.configure(with: gender)
+            }
+            .disposed(by: disposeBag)
+        
         output.activateNextButton
             .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        output.selectAllCondition
+            .bind(onNext: { [weak self] in
+                self?.selectAllConditionView.configure(with: $0)
+            })
             .disposed(by: disposeBag)
         
         output.selectableConditions
             .bind(to: conditionSelectionCollectionView.rx.items(
                 cellIdentifier: ConditionSelectionCell.identifier,
                 cellType: ConditionSelectionCell.self)
-            ) { _, selectableCondition, cell in
+            ) { [weak self] index, selectableCondition, cell in
+                guard let self = self else { return }
                 
                 cell.configure(with: selectableCondition)
+                
+                output.shouldCheckCondition
+                    .filter { $0 == index }
+                    .map { _ in !cell.isChecked }
+                    .bind(to: cell.rx.isChecked)
+                    .disposed(by: self.disposeBag)
             }
             .disposed(by: disposeBag)
         

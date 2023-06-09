@@ -8,9 +8,12 @@
 
 import Foundation
 
+import CoreEntity
+
 import RxSwift
 
 public protocol NicknameUseCase {
     var nickname: Observable<String?> { get }
     func updateNickname(to newNickname: String) -> Completable
+    func checkNicknameValidation(for input: String) -> Observable<NicknameInputStatus>
 }

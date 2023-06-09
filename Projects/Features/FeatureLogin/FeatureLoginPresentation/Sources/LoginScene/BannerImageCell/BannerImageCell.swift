@@ -34,8 +34,7 @@ final class BannerImageCell: UICollectionViewCell {
         
         contentView.addSubview(bannerImageView)
         bannerImageView.snp.makeConstraints { make in
-            make.height.equalTo(225)
-            make.width.equalTo(153)
+            make.width.height.equalToSuperview()
             make.center.equalToSuperview()
         }
     }

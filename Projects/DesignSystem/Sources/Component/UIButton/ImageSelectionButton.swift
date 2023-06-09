@@ -8,7 +8,7 @@
 
 import UIKit
 
-public final class ImageSelectionButton: UIButton {
+public final class ImageSelectionButton: UIButton, IndexSelectable {
     
     public let index: Int
     
@@ -26,17 +26,5 @@ public final class ImageSelectionButton: UIButton {
     
     public func setSelectedImage(_ image: UIImage) {
         setImage(image, for: .selected)
-    }
-    
-    public func toggleSelection(isSelected: Bool) {
-        self.isSelected = isSelected
-    }
-}
-
-public extension Array where Element: ImageSelectionButton {
-    func selectButtonOnly(at targetIndex: Int) {
-        for (index, button) in enumerated() {
-            button.toggleSelection(isSelected: index == targetIndex)
-        }
     }
 }

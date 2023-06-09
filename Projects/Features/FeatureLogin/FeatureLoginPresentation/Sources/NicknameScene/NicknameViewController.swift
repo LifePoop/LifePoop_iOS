@@ -14,6 +14,7 @@ import SnapKit
 
 import CoreEntity
 import DesignSystem
+import EntityUIMapper
 import Utils
 
 public final class NicknameViewController: UIViewController, ViewType {
@@ -95,16 +96,7 @@ public final class NicknameViewController: UIViewController, ViewType {
         let output = viewModel.output
         
         output.textFieldStatus
-            .map {
-                switch $0 {
-                case .none(let text):
-                    return ConditionalTextField.TextFieldStatus.none(text: text)
-                case .possible(let text):
-                    return ConditionalTextField.TextFieldStatus.possible(text: text)
-                case .impossible(let text):
-                    return ConditionalTextField.TextFieldStatus.impossible(text: text)
-                }
-            }
+            .map { $0.conditionalTextFieldStatus }
             .bind(to: nicknameTextField.rx.status)
             .disposed(by: disposeBag)
         

@@ -30,7 +30,7 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
     
     public func updateNickname(to newNickname: String) -> Completable {
         return userDefaultsRepository
-            .updateValue(for: .isAutoLoginActivated, with: newNickname)
+            .updateValue(for: .userNickname, with: newNickname)
             .logErrorIfDetected(category: .userDefaults)
     }
     
@@ -42,11 +42,11 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
             isEmpty(input: input)
         )
         .map {
-            let isValid =  !($0 || $1 || $2 || $3)
+            let isValid = !($0 || $1 || $2 || $3)
             let isEmpty = $3
-            let status: NicknameInputStatus.Status = isEmpty  ? .none(description: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
-                                                     :isValid ? .possible(description: "사용 가능한 닉네임이에요")
-                                                              : .impossible(description: "사용 불가능한 닉네임이에요")
+            let status: NicknameInputStatus.Status = isEmpty  ? .default
+                                                     :isValid ? .possible
+                                                              : .impossible
             return NicknameInputStatus(isValid: isValid, status: status)
         }
     }

@@ -11,9 +11,20 @@ import Foundation
 public struct NicknameInputStatus {
     
     public enum Status {
-        case possible(description: String)
-        case impossible(description: String)
-        case none(description: String)
+        case `default`
+        case possible
+        case impossible
+        
+        public var descriptionText: String {
+            switch self {
+            case .`default`:
+                return "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다."
+            case .possible:
+                return "사용 가능한 닉네임이에요"
+            case .impossible:
+                return "사용 불가능한 닉네임이에요"
+            }
+        }
     }
     
     public let isValid: Bool

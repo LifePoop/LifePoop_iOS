@@ -40,7 +40,6 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         let textField = ConditionalTextField()
         textField.title = "닉네임을 설정해주세요"
         textField.placeholder = "닉네임 입력하기"
-        textField.status = .none(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
         return textField
     }()
     

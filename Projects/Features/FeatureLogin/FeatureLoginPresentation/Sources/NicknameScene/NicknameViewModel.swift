@@ -45,9 +45,7 @@ public final class NicknameViewModel: ViewModelType {
     }
     
     public struct Output {
-        let textFieldStatus = BehaviorRelay<NicknameInputStatus.Status>(value:
-                .none(description: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
-        )
+        let textFieldStatus = BehaviorRelay<NicknameInputStatus.Status>(value: .default)
         let selectableConditions = BehaviorRelay<[SelectableConfirmationCondition]>(value: [])
         let activateNextButton = BehaviorRelay<Bool>(value: false)
         let selectAllConditions = PublishRelay<Bool>()

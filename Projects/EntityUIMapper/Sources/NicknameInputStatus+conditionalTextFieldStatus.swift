@@ -14,12 +14,12 @@ import DesignSystem
 public extension NicknameInputStatus.Status {
     var conditionalTextFieldStatus: ConditionalTextField.TextFieldStatus {
         switch self {
-        case .none(let text):
-            return ConditionalTextField.TextFieldStatus.none(text: text)
-        case .possible(let text):
-            return ConditionalTextField.TextFieldStatus.possible(text: text)
-        case .impossible(let text):
-            return ConditionalTextField.TextFieldStatus.impossible(text: text)
+        case .`default`:
+            return ConditionalTextField.TextFieldStatus.`default`(text: descriptionText)
+        case .possible:
+            return ConditionalTextField.TextFieldStatus.possible(text: descriptionText)
+        case .impossible:
+            return ConditionalTextField.TextFieldStatus.impossible(text: descriptionText)
         }
     }
 }

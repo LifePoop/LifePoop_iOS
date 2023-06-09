@@ -22,15 +22,23 @@ public final class LoginViewModel: ViewModelType {
     public struct Input {
         let didTapKakaoLoginButton = PublishRelay<Void>()
         let didTapAppleLoginButton = PublishRelay<Void>()
+        let didChangeBannerImageIndex = BehaviorRelay<Int>(value: 0)
     }
     
     public struct Output {
         let bannerImages = BehaviorRelay<[Data]>(value: [])
+        let subLabelText = BehaviorRelay<String>(value: "")
         let showErrorMessage = PublishRelay<String>()
     }
     
     public let input = Input()
     public let output = Output()
+    
+    private let subLabelTexts = [
+        "나의 변을 기록하고",
+        "서로의 변을 응원하고",
+        "배변일지를 공유받자!"
+    ]
     
     @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
     
@@ -69,13 +77,28 @@ public final class LoginViewModel: ViewModelType {
         fetchAppleToken
             .compactMap { $0.element }
             .compactMap { $0 }
-            .bind(onNext: { coordinator?.coordinate(by: .didTapAppleLoginButton(userAuthInfo: $0))} )
+            .bind {
+                coordinator?.coordinate(
+                    by: .didTapAppleLoginButton(userAuthInfo: $0)
+                )
+            }
             .disposed(by: disposeBag)
         
         fetchAppleToken
             .compactMap { $0.error }
             .map { $0.localizedDescription }
             .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
+   
+        input.didChangeBannerImageIndex
+            .withUnretained(self)
+            .filter { `self`, index in
+                index < self.subLabelTexts.count
+            }
+            .map { `self`, index in
+                self.subLabelTexts[index]
+            }
+            .bind(to: output.subLabelText)
             .disposed(by: disposeBag)
     }
 }

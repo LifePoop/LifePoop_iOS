@@ -165,6 +165,27 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
         
   
+        output.selectableConditions
+            .bind(to: conditionSelectionCollectionView.rx.items(
+                cellIdentifier: ConditionSelectionCell.identifier,
+                cellType: ConditionSelectionCell.self)
+            ) { index, selectableCondition, cell in
+                
+                cell.configure(with: selectableCondition)
+                cell.detailViewButton.rx.tap
+                    .bind(onNext: { _ in
+                        switch index {
+                        case 2:
+                            viewModel.input.didTapDetailViewButton.accept(.termsOfService)
+                        case 3:
+                            viewModel.input.didTapDetailViewButton.accept(.privacyPolicy)
+                        default:
+                            return
+                        }
+                    })
+                    .disposed(by: self.disposeBag)
+            }
+            .disposed(by: disposeBag)
         
         output.selectAllConditions
             .withUnretained(self)
@@ -203,20 +224,9 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        disableScrollingIfNeeded()
-    }
-    
-    // TODO: contentSize 다시 도출해서 정확한 연산으로 변경
-    private func disableScrollingIfNeeded() {
-        let enableScrolling = view.frame.height <= 670
-        scrollView.isScrollEnabled = enableScrolling
-    }
-    
-    public override func layoutUI() {
-        super.layoutUI()
-        
-        let frameWidth = view.safeAreaLayoutGuide.layoutFrame.width
-        let frameHeight = view.safeAreaLayoutGuide.layoutFrame.height
+private extension NicknameViewController {
+    func layoutUI() {
+        let frameWidth = view.frame.width
 
         view.addSubview(scrollView)
         scrollView.addSubview(containerView)

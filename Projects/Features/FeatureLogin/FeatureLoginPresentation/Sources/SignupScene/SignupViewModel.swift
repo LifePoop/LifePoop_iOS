@@ -17,9 +17,27 @@ import FeatureLoginDIContainer
 import FeatureLoginUseCase
 import SharedDIContainer
 import SharedUseCase
+<<<<<<< HEAD:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/SignupScene/SignupViewModel.swift
 import Utils
 
 public final class SignupViewModel: ViewModelType {
+=======
+
+import Utils
+
+public final class NicknameViewModel: ViewModelType {
+
+    enum DetailViewType {
+        case termsOfService
+        case privacyPolicy
+    }
+    
+    enum TextFieldStatus {
+        case possible(text: String)
+        case impossible(text: String)
+        case none(text: String)
+    }
+>>>>>>> develop:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/NicknameScene/NicknameViewModel.swift
 
     public struct Input {
         let didTapNextButton = PublishRelay<Void>()
@@ -28,6 +46,7 @@ public final class SignupViewModel: ViewModelType {
         let didSelectConfirmCondition = PublishRelay<SelectableConfirmationCondition>()
         let didDeselectConfirmCondition = PublishRelay<SelectableConfirmationCondition>()
         let didTapLeftBarbutton = PublishRelay<Void>()
+        let didTapDetailViewButton = PublishRelay<DetailViewType>()
         let viewDidLoad = PublishRelay<Void>()
     }
     
@@ -35,6 +54,7 @@ public final class SignupViewModel: ViewModelType {
         let textFieldStatus = BehaviorRelay<NicknameInputStatus.Status>(value:
                 .none(description: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
         )
+<<<<<<< HEAD:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/SignupScene/SignupViewModel.swift
         let shouldCheckCondition = PublishRelay<Int>()
         let selectAllCondition = Observable.just(SelectableConfirmationCondition(
             descriptionText: "전체동의",
@@ -43,6 +63,8 @@ public final class SignupViewModel: ViewModelType {
             selectionType: .selectAll
         ))
         let selectableGenderConditions = BehaviorRelay<[String]>(value: [])
+=======
+>>>>>>> develop:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/NicknameScene/NicknameViewModel.swift
         let selectableConditions = BehaviorRelay<[SelectableConfirmationCondition]>(value: [])
         let activateNextButton = BehaviorRelay<Bool>(value: false)
         let selectAllConditions = PublishRelay<Bool>()
@@ -59,8 +81,56 @@ public final class SignupViewModel: ViewModelType {
     private let state = State()
     
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
+<<<<<<< HEAD:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/SignupScene/SignupViewModel.swift
     @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
     @Inject(LoginDIContainer.shared) private var signupUseCase: SignupUseCase
+=======
+
+    @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
+    @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
+
+    private var selectedConditions: Set<SelectableConfirmationCondition> = [] {
+        didSet {
+            input.didSelectAllEssentialConditions.accept(
+                essentialConditions.isSubset(of: selectedConditions)
+            )
+        }
+    }
+    private var essentialConditions: Set<SelectableConfirmationCondition> = []
+    
+    private let conditionEntities: [SelectableConfirmationCondition] = [
+        .init(
+            descriptionText: "전체동의",
+            descriptionTextSize: .large,
+            containsDetailView: false,
+            selectionType: .selectAll
+        ),
+        .init(
+            descriptionText: "만 14세 이상입니다.(필수)",
+            descriptionTextSize: .normal,
+            containsDetailView: false,
+            selectionType: .essential
+        ),
+        .init(
+            descriptionText: "서비스 이용 약관 (필수)",
+            descriptionTextSize: .normal,
+            containsDetailView: true,
+            selectionType: .essential
+        ),
+        .init(
+            descriptionText: "개인정보 수집 및 이용 (필수)",
+            descriptionTextSize: .normal,
+            containsDetailView: true,
+            selectionType: .essential
+        ),
+        .init(
+            descriptionText: "이벤트, 프로모션 알림 메일 수신 (선택)",
+            descriptionTextSize: .normal,
+            containsDetailView: false,
+            selectionType: .optional
+        )
+    ]
+>>>>>>> develop:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/NicknameScene/NicknameViewModel.swift
 
     private weak var coordinator: LoginCoordinator?
     private let authInfo: UserAuthInfoEntity
@@ -162,6 +232,30 @@ public final class SignupViewModel: ViewModelType {
             .disposed(by: disposeBag)
 
         
+        let fetchDetailFormFile = input.didTapDetailViewButton
+            .map { detailType in
+                switch detailType {
+                case .privacyPolicy:
+                    return DocumentType.privacyPolicy
+                case .termsOfService:
+                    return DocumentType.termsOfService
+                }
+            }
+            .withUnretained(self)
+            .flatMapLatest { `self`, documentType in
+                Observable.zip(
+                    Observable.just(documentType.title),
+                    self.bundleResourceUseCase.readText(from: documentType.textFile)
+                )
+            }
+            .share()
+        
+        fetchDetailFormFile
+            .bind(onNext: { title, detailText in
+                coordinator.coordinate(by: .shouldShowDetailForm(title: title, detailText: detailText))
+            })
+            .disposed(by: disposeBag)
+        
         output.selectAllConditions
             .withLatestFrom(output.selectableConditions) {
                 ($0, Set($1.filter { $0.selectionType != .selectAll }))
@@ -195,7 +289,11 @@ public final class SignupViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         Observable
+<<<<<<< HEAD:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/SignupScene/SignupViewModel.swift
             .combineLatest(state.didSelectAllEssentialConditions, nicknameInputStatus)
+=======
+            .combineLatest(input.didSelectAllEssentialConditions, nicknameInputStatus)
+>>>>>>> develop:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/NicknameScene/NicknameViewModel.swift
             .map { $0 && $1.isValid }
             .bind(to: output.activateNextButton)
             .disposed(by: disposeBag)

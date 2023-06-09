@@ -71,10 +71,11 @@ private extension DefaultNicknameUseCase {
     }
     
     func constainsAnyInvalidCharacters(input text: String) -> Observable<Bool> {
-        let validCharacterSet = CharacterSet(
-            charactersIn: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ가-힣"
-        )
-        let inputCharacterSet = CharacterSet(charactersIn: text)
-        return Observable.just(!validCharacterSet.isSuperset(of: inputCharacterSet))
+        let pattern = "^[가-힣a-zA-Z0-9]{2,5}$"
+        let regex = try? NSRegularExpression(pattern: pattern)
+        let range = NSRange(location: 0, length: text.utf16.count)
+        
+        let isInvalid = regex?.firstMatch(in: text, options: [], range: range) == nil
+        return Observable.just(isInvalid)
     }
 }

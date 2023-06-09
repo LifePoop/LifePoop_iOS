@@ -25,7 +25,6 @@ public struct SelectableConfirmationCondition {
     }
 
     public enum SelectionType {
-        case selectAll
         case essential
         case optional
     }

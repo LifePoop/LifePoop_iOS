@@ -128,31 +128,6 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .bind(to: input.didEnterTextValue)
             .disposed(by: disposeBag)
         
-        conditionSelectionCollectionView.rx.modelSelected(SelectableConfirmationCondition.self)
-            .bind(onNext: { coniditon in
-                switch coniditon.selectionType {
-                case .selectAll:
-                    input.didTapSelectAllCondition.accept(true)
-                default:
-                    input.didSelectConfirmCondition.accept(coniditon)
-                }
-            })
-            .disposed(by: disposeBag)
-
-//            .bind(to: input.didSelectConfirmCondition)
-//            .disposed(by: disposeBag)
-        
-        conditionSelectionCollectionView.rx.modelDeselected(SelectableConfirmationCondition.self)
-            .bind(onNext: { coniditon in
-                switch coniditon.selectionType {
-                case .selectAll:
-                    input.didTapSelectAllCondition.accept(false)
-                default:
-                    input.didDeselectConfirmCondition.accept(coniditon)
-                }
-            })
-            .disposed(by: disposeBag)
-        
         leftBarButton.rx.tap
             .bind(to: input.didTapLeftBarbutton)
             .disposed(by: disposeBag)
@@ -189,28 +164,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        output.selectAllCondition
-            .bind(onNext: { [weak self] in
-                self?.selectAllConditionView.configure(with: $0)
-            })
-            .disposed(by: disposeBag)
-        
-        output.selectableConditions
-            .bind(to: conditionSelectionCollectionView.rx.items(
-                cellIdentifier: ConditionSelectionCell.identifier,
-                cellType: ConditionSelectionCell.self)
-            ) { [weak self] index, selectableCondition, cell in
-                guard let self = self else { return }
-                
-                cell.configure(with: selectableCondition)
-                
-                output.shouldCheckCondition
-                    .filter { $0 == index }
-                    .map { _ in !cell.isChecked }
-                    .bind(to: cell.rx.isChecked)
-                    .disposed(by: self.disposeBag)
-            }
-            .disposed(by: disposeBag)
+  
         
         output.selectAllConditions
             .withUnretained(self)

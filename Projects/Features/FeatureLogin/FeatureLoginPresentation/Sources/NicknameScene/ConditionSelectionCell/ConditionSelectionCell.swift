@@ -17,7 +17,7 @@ final class ConditionSelectionCell: UICollectionViewCell {
     
     private let selectedCheckBoxImage = ImageAsset.checkboxSelected.image
     private let deselectedCheckBoxImage = ImageAsset.checkboxDeselected.image
-
+    
     private lazy var checkBoxImageView = UIImageView(image: deselectedCheckBoxImage)
     
     private let descriptionLabel: UILabel = {
@@ -26,6 +26,14 @@ final class ConditionSelectionCell: UICollectionViewCell {
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = ColorAsset.gray800.color
         return label
+    }()
+    
+    let detailViewButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("보기", for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+        button.setTitleColor(ColorAsset.primary.color, for: .normal)
+        return button
     }()
     
     override var isSelected: Bool {
@@ -45,18 +53,28 @@ final class ConditionSelectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: Ignore every touch events except for the location inside of checkBoxImageView
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let checkBoxFrame = checkBoxImageView.convert(checkBoxImageView.frame, to: self)
-        guard checkBoxFrame.contains(point) else { return nil }
+        let checkBoxFrame = checkBoxImageView.convert(checkBoxImageView.bounds, to: self)
+        let detailViewButtonFrame = detailViewButton.convert(detailViewButton.bounds, to: self)
         
-        return self
+        let isCheckBoxTouched = checkBoxFrame.contains(point)
+        let isDetailViewButtonTouched = detailViewButtonFrame.contains(point)
+        
+        switch (isCheckBoxTouched, isDetailViewButtonTouched) {
+        case (true, _):
+            return checkBoxImageView
+        case (_, true):
+            return detailViewButton
+        default:
+            return nil
+        }
     }
 
     private func addSubViews() {
         
         contentView.addSubview(checkBoxImageView)
         contentView.addSubview(descriptionLabel)
+        contentView.addSubview(detailViewButton)
         
         checkBoxImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview()
@@ -67,11 +85,17 @@ final class ConditionSelectionCell: UICollectionViewCell {
             make.leading.equalTo(checkBoxImageView.snp.trailing).offset(12)
             make.centerY.equalTo(checkBoxImageView.snp.centerY)
         }
+        
+        detailViewButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview()
+            make.centerY.equalTo(checkBoxImageView.snp.centerY)
+        }
     }
     
     func configure(with condition: SelectableConfirmationCondition) {
         
         descriptionLabel.text = condition.descriptionText
+        detailViewButton.isHidden = !condition.containsDetailView
         
         switch condition.descriptionTextSize {
         case .normal:

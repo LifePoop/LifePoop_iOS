@@ -116,9 +116,22 @@ public final class NicknameViewController: UIViewController, ViewType {
             .bind(to: conditionSelectionCollectionView.rx.items(
                 cellIdentifier: ConditionSelectionCell.identifier,
                 cellType: ConditionSelectionCell.self)
-            ) { _, selectableCondition, cell in
+            ) { [weak self] index, selectableCondition, cell in
+                guard let self = self else { return }
                 
                 cell.configure(with: selectableCondition)
+                cell.detailViewButton.rx.tap
+                    .bind(onNext: { _ in
+                        switch index {
+                        case 2:
+                            viewModel.input.didTapDetailViewButton.accept(.termsOfService)
+                        case 3:
+                            viewModel.input.didTapDetailViewButton.accept(.privacyPolicy)
+                        default:
+                            return
+                        }
+                    })
+                    .disposed(by: self.disposeBag)
             }
             .disposed(by: disposeBag)
         
@@ -161,7 +174,6 @@ private extension NicknameViewController {
 
 private extension NicknameViewController {
     func layoutUI() {
-        let frameHeight = view.frame.height
         let frameWidth = view.frame.width
 
         view.addSubview(nicknameTextField)

@@ -70,6 +70,10 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         nicknameTextField.rx.textChanged
             .bind(to: input.nicknameDidChange)
             .disposed(by: disposeBag)
+        
+        editConfirmButton.rx.tap
+            .bind(to: input.editConfirmDidTap)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: ProfileViewModel) {
@@ -82,6 +86,15 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         
         output.setUserNickname
             .bind(to: nicknameTextField.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.changeTextFieldStatus
+            .map { $0.conditionalTextFieldStatus }
+            .bind(to: nicknameTextField.rx.status)
+            .disposed(by: disposeBag)
+        
+        output.enableEditConfirmButton
+            .bind(to: editConfirmButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
     
@@ -116,7 +129,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(28)
-            make.leading.trailing.equalToSuperview().inset(24)
+            make.leading.equalToSuperview().inset(24)
         }
         
         profileImageEditView.snp.makeConstraints { make in
@@ -126,7 +139,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         }
         
         nicknameTextField.snp.makeConstraints { make in
-            make.top.equalTo(profileImageEditView.snp.bottom).offset(55)
+            make.top.equalTo(profileImageEditView.snp.bottom).offset(32)
             make.leading.trailing.equalToSuperview().inset(24)
             make.height.equalTo(120)
         }

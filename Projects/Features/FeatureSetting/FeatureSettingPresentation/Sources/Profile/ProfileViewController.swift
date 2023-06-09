@@ -67,7 +67,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)
         
-        nicknameTextField.rx.text
+        nicknameTextField.rx.textChanged
             .bind(to: input.nicknameDidChange)
             .disposed(by: disposeBag)
     }

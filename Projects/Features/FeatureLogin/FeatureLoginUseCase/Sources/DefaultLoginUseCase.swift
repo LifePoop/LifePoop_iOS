@@ -16,7 +16,7 @@ import SharedUseCase
 import Utils
 
 public final class DefaultLoginUseCase: LoginUseCase {
-    
+
     @Inject(LoginDIContainer.shared) private var loginRepository: LoginRepository
     @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository

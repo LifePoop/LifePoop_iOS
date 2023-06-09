@@ -9,6 +9,7 @@
 import UIKit
 
 import CoreEntity
+import DesignSystem
 import FeatureLoginCoordinatorInterface
 import FeatureLoginPresentation
 import Utils
@@ -42,6 +43,8 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
                 self.showLaunchScreenViewController()
             case .shouldShowLoginScene:
                 self.showLoginViewController()
+            case .shouldShowDetailForm(let title, let detailText):
+                self.showDocumentViewController(title: title, detailText: detailText)
             case .didTapKakaoLoginButton(let authInfo):
                 self.showNicknameViewController(with: authInfo)
             case .didTapAppleLoginButton(let authInfo):
@@ -77,6 +80,11 @@ private extension DefaultLoginCoordinator {
         let viewController = NicknameViewController()
         let viewModel = NicknameViewModel(coordinator: self, authInfo: authInfo)
         viewController.bind(viewModel: viewModel)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    func showDocumentViewController(title: String, detailText: String) {
+        let viewController = DocumentViewController(title: title, text: detailText)
         navigationController.pushViewController(viewController, animated: true)
     }
     

@@ -18,11 +18,10 @@ import DesignSystemReactive
 import Utils
 
 public final class SignupViewController: LifePoopViewController, ViewType {
-    
-    private let leftBarButton: UIBarButtonItem = UIBarButtonItem(image: ImageAsset.expandLeft.original)
-
+        
     private let scrollView = UIScrollView()
     
+    private var containerViewHeightConstraint: Constraint?
     private let containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
@@ -109,9 +108,11 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     
     private let nextButton = LifePoopButton(title: "다음")
     
+    private var sumOfVerticalMargins: CGFloat = .zero
+    
     public var viewModel: SignupViewModel?
     private var disposeBag = DisposeBag()
-
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -122,6 +123,33 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         super.viewDidAppear(animated)
         
         nicknameTextField.becomeFirstResponder()
+    }
+    
+    func configureHandlingTouchEvent() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func handleTapGesture(_ gesture: UITapGestureRecognizer) {
+        view.endEditing(true) // Hide the keyboard
+    }
+    
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        let safeAreaHeight = view.safeAreaLayoutGuide.layoutFrame.height
+        let nextButtonHeight = nextButton.frame.height
+        let subViewsHeight = containerView.subviews.reduce(0) { $0 + $1.bounds.height }
+        let totalContentsHeight = subViewsHeight + sumOfVerticalMargins + nextButtonHeight
+        let properContentsHeight = totalContentsHeight * 1.05
+        
+        let enableScrollView = safeAreaHeight <= properContentsHeight
+        if enableScrollView {
+            containerViewHeightConstraint?.update(offset: properContentsHeight)
+        }
+        
+        scrollView.isScrollEnabled = enableScrollView
     }
     
     public func bindInput(to viewModel: SignupViewModel) {
@@ -175,14 +203,18 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .bind(to: nicknameTextField.rx.status)
             .disposed(by: disposeBag)
         
-        output.selectableGenderConditions
-            .bind(to: genderSelectionCollectionView.rx.items(
-                cellIdentifier: GenderSelectionCell.identifier,
-                cellType: GenderSelectionCell.self)
-            ) { _, gender, cell in
-                
-                cell.configure(with: gender)
+        output.birthdayTextFieldStatus
+            .map {
+                switch $0 {
+                case .none(let text):
+                    return ConditionalTextField.TextFieldStatus.none(text: text)
+                case .possible(let text):
+                    return ConditionalTextField.TextFieldStatus.possible(text: text)
+                case .impossible(let text):
+                    return ConditionalTextField.TextFieldStatus.impossible(text: text)
+                }
             }
+            .bind(to: birthdayTextField.rx.status)
             .disposed(by: disposeBag)
         
         output.activateNextButton
@@ -243,37 +275,51 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.width.equalTo(frameWidth)
-            make.height.equalTo(frameHeight+15)
+            containerViewHeightConstraint = make.height.equalTo(frameHeight).constraint
         }
         
         nicknameTextField.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(23)
+            make.top.equalToSuperview().offset(28)
+            sumOfVerticalMargins += 28
             make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
         }
         
         birthdayTextField.snp.makeConstraints { make in
-            make.top.equalTo(nicknameTextField.snp.bottom).offset(23)
+            make.top.equalTo(nicknameTextField.snp.bottom).offset(30)
+            sumOfVerticalMargins += 30
             make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
         }
         
         genderSelectTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(birthdayTextField.snp.bottom).offset(13)
+            make.top.equalTo(birthdayTextField.snp.bottom).offset(32)
+            sumOfVerticalMargins += 32
+            
             make.leading.equalToSuperview().inset(frameWidth*0.06)
         }
         
-        genderSelectionCollectionView.snp.makeConstraints { make in
+        genderSelectionStackView.snp.makeConstraints { make in
             make.top.equalTo(genderSelectTitleLabel.snp.bottom).offset(13)
+            sumOfVerticalMargins += 13
             make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
             make.height.equalTo(50)
         }
         
+        genderSelectionStackView.arrangedSubviews.forEach {
+            $0.snp.makeConstraints { make in
+                make.width.equalToSuperview().multipliedBy(1/3.2)
+                make.height.equalToSuperview()
+            }
+        }
+        
         selectAllConditionView.snp.makeConstraints { make in
-            make.top.equalTo(genderSelectionCollectionView.snp.bottom).offset(23)
+            make.top.equalTo(genderSelectionStackView.snp.bottom).offset(38)
+            sumOfVerticalMargins += 38
             make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
         }
         
         conditionSelectionCollectionView.snp.makeConstraints { make in
             make.top.equalTo(selectAllConditionView.snp.bottom).offset(10)
+            sumOfVerticalMargins += 10
             make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
             make.height.equalTo(173)
         }

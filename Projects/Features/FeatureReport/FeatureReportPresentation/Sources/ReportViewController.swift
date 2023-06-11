@@ -13,6 +13,7 @@ import RxSwift
 import SnapKit
 
 import DesignSystem
+import DesignSystemReactive
 import Utils
 
 public final class ReportViewController: LifePoopViewController, ViewType {

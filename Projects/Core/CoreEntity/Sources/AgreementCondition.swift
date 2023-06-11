@@ -37,8 +37,13 @@ public struct AgreementCondition {
     public init(
         descriptionText: String,
         descriptionTextSize: DescriptionTextSize,
+<<<<<<< HEAD:Projects/Core/CoreEntity/Sources/AgreementCondition.swift
         containsDetailView: Bool = false,
         selectionType: SelectionType = .optional
+=======
+        containsDetailView: Bool,
+        selectionType: SelectionType
+>>>>>>> 58-FeatureReport:Projects/Core/CoreEntity/Sources/SelectableConfirmationCondition.swift
     ) {
         self.descriptionText = descriptionText
         self.descriptionTextSize = descriptionTextSize

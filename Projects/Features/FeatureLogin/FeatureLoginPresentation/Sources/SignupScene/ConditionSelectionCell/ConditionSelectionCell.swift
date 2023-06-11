@@ -89,6 +89,7 @@ final class ConditionSelectionCell: UICollectionViewCell {
             .disposed(by: disposeBag)
         
         conditionSelectionView.rx.check
+            .map { _ in Void() }
             .bind(to: viewModel.input.didTapCheckBox)
             .disposed(by: disposeBag)
     }

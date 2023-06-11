@@ -13,8 +13,8 @@ import RxSwift
 
 extension Reactive where Base: ConditionSelectionView {
     
-    var check: ControlEvent<Void> {
-        let source = base.rx.controlEvent(.valueChanged).map { Void() }
+    var check: ControlEvent<Bool> {
+        let source = base.rx.controlEvent(.valueChanged).map { base.isChecked }
         return ControlEvent(events: source)
     }
 }

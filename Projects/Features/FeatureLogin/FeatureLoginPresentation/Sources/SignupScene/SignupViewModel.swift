@@ -129,19 +129,21 @@ public final class SignupViewModel: ViewModelType {
             }
             .share()
   
+        birthdayInputStatus
+            .map { $0.status }
+            .bind(to: output.birthdayTextFieldStatus)
             .disposed(by: disposeBag)
-        
-        input.didTapNextButton
-            .throttle(.seconds(3), latest: false, scheduler: MainScheduler.instance)
-            .withLatestFrom(input.didEnterTextValue)
-            .withUnretained(self)
-            .flatMapLatestCompletableMaterialized { `self`, nickname in
-                let userInfo = UserInfoEntity(nickname: nickname, authInfo: self.authInfo)
-                return self.loginUseCase.saveUserInfo(userInfo)
+            
+        input.didTapSelectAllCondition
+            .withLatestFrom(output.conditionSelectionCellViewModels) {
+                (isSelected: !$0, cellViewModels: $1)
             }
-            .filter { $0.isCompleted }
-            .bind(onNext: { _ in
-                coordinator.coordinate(by: .shouldFinishLoginFlow)
+            .bind(onNext: { [weak self] isSelected, cellViewModels in
+                self?.output.shouldSelectAllConditions.accept(isSelected)
+                
+                cellViewModels.forEach {
+                    $0.output.shouldSelectCheckBox.accept(isSelected)
+                }
             })
             .disposed(by: disposeBag)
         
@@ -163,17 +165,22 @@ public final class SignupViewModel: ViewModelType {
                 output.shouldSelectGender,
                 state.selectedConditions
             )
+            .map { SignupInfo(nickname: $0, birthday: $1, gender: $2, conditions: $3) }
+            .share()
         
         signupInfo
-            .filter { $0.selectionType != .selectAll }
-            .withLatestFrom(state.selectedConditions) { ($0, $1) }
-            .flatMap { [weak self] in
-                guard let self = self else { return Observable.just($1) }
-                return self.signupUseCase.insertNewCondition($0, to: $1)
+            .withUnretained(self)
+            .flatMap { `self`, signupInfo in
+                Observable.combineLatest(
+                    self.signupUseCase.isNicknameInputValid(signupInfo.nickname).map { $0.isValid },
+                    self.signupUseCase.isBirthdayInputValid(signupInfo.birthday).map { $0.isValid },
+                    self.signupUseCase.isAllEsssentialConditionsSelected(signupInfo.conditions)
+                )
             }
-            .bind(to: state.selectedConditions)
+            .map { $0 && $1 && $2 }
+            .bind(to: output.activateNextButton)
             .disposed(by: disposeBag)
-
+        
         input.didTapNextButton
             .throttle(.seconds(3), latest: false, scheduler: MainScheduler.instance)
             .withLatestFrom(signupInfo)

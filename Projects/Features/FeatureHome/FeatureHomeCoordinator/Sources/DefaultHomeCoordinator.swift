@@ -11,7 +11,7 @@ import UIKit
 import DesignSystem
 import FeatureHomeCoordinatorInterface
 import FeatureHomePresentation
-import FeatureReportCoordinator
+//import FeatureReportCoordinator
 import FeatureSettingCoordinator
 import FeatureSettingCoordinatorInterface
 import FeatureStoolLogCoordinator

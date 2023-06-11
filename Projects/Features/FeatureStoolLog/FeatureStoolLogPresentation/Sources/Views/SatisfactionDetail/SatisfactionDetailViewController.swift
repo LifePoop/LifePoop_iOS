@@ -40,7 +40,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
     private let sizeTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = ColorAsset.black.color
-        label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.text = "크기"
         return label
     }()
@@ -266,7 +266,7 @@ private extension SatisfactionDetailViewController {
         
         view.addSubview(sizeTitleLabel)
         sizeTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(39)
+            make.leading.equalToSuperview().offset(29)
             make.top.equalTo(stoolShapeTitleLabel.snp.bottom).offset(viewHeight*0.167)
         }
         

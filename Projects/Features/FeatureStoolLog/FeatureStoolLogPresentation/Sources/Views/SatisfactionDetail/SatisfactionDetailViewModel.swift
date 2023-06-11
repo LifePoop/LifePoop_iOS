@@ -13,6 +13,7 @@ import RxSwift
 
 import CoreEntity
 import FeatureStoolLogCoordinatorInterface
+import Logger
 import Utils
 
 public final class SatisfactionDetailViewModel: ViewModelType {
@@ -92,7 +93,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             .withLatestFrom(selectedStatus)
             .withUnretained(self)
             .bind(onNext: { owner, selectedStatus in
-                print("선택된 값 확인 : \(selectedStatus)")
+                Logger.log(message: "선택된 값 확인 : \(selectedStatus)", category: .default, type: .debug)
                 owner.coordinator?.coordinate(by: .dismissBottomSheet)
             })
             .disposed(by: disposeBag)

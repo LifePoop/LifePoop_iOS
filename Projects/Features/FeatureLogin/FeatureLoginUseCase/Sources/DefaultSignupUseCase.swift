@@ -23,10 +23,10 @@ public final class DefaultSignupUseCase: SignupUseCase {
 
     public init() { }
     
-    private var essentialConditions: Set<SelectableConfirmationCondition> = []
+    private var essentialConditions: Set<AgreementCondition> = []
     
     // TODO: Repository로 이동
-    private let conditionEntities: [SelectableConfirmationCondition] = [
+    private let conditionEntities: [AgreementCondition] = [
         .init(
             descriptionText: "만 14세 이상입니다.(필수)",
             descriptionTextSize: .normal,
@@ -53,7 +53,7 @@ public final class DefaultSignupUseCase: SignupUseCase {
         )
     ]
     
-    public func fetchSelectableConditions() -> Observable<[SelectableConfirmationCondition]> {
+    public func fetchSelectableConditions() -> Observable<[AgreementCondition]> {
         Observable.just(conditionEntities)
             .do(onNext: { [weak self] conditions in
                 let essentialConditions = conditions.filter { $0.selectionType == .essential }
@@ -62,7 +62,7 @@ public final class DefaultSignupUseCase: SignupUseCase {
     }
     
     public func isAllEsssentialConditionsSelected(
-        _ selectedConditions: Set<SelectableConfirmationCondition>
+        _ selectedConditions: Set<AgreementCondition>
     ) -> Observable<Bool> {
         Observable.just(essentialConditions.isSubset(of: selectedConditions))
     }

@@ -12,8 +12,8 @@ import CoreEntity
 
 public protocol SignupUseCase {
     
-    func fetchSelectableConditions() -> Observable<[SelectableConfirmationCondition]>
+    func fetchSelectableConditions() -> Observable<[AgreementCondition]>
     func isNicknameInputValid(_ input: String) -> Observable<NicknameInputStatus>
     func isBirthdayInputValid(_ input: String) -> Observable<NicknameInputStatus>
-    func isAllEsssentialConditionsSelected(_ selectedConditions: Set<SelectableConfirmationCondition>) -> Observable<Bool>
+    func isAllEsssentialConditionsSelected(_ selectedConditions: Set<AgreementCondition>) -> Observable<Bool>
 }

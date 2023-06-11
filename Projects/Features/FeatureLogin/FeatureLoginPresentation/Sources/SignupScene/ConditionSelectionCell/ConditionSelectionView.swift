@@ -8,6 +8,8 @@
 
 import UIKit
 
+import RxCocoa
+import RxSwift
 import SnapKit
 
 import CoreEntity
@@ -18,11 +20,18 @@ final class ConditionSelectionView: UIControl {
     private let selectedCheckBoxImage = ImageAsset.checkboxSelected.image
     private let deselectedCheckBoxImage = ImageAsset.checkboxDeselected.image
     
-    private lazy var checkBoxImageView = UIImageView(image: deselectedCheckBoxImage)
+    private lazy var checkBoxImageView: UIImageView = {
+        let imageView = UIImageView(image: deselectedCheckBoxImage)
+        imageView.isUserInteractionEnabled = true
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
+        imageView.addGestureRecognizer(tapGestureRecognizer)
+
+        return imageView
+    }()
     
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "버튼에 대한 설명"
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = ColorAsset.gray800.color
         label.sizeToFit()
@@ -31,19 +40,17 @@ final class ConditionSelectionView: UIControl {
     
     var isChecked: Bool = false {
         didSet {
-            let image = isSelected ? selectedCheckBoxImage : deselectedCheckBoxImage
+            let image = isChecked ? selectedCheckBoxImage : deselectedCheckBoxImage
             checkBoxImageView.image = image
         }
     }
-
-    let detailViewButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("보기", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        button.setTitleColor(ColorAsset.primary.color, for: .normal)
-        return button
-    }()
     
+    var descriptionText: String = "" {
+        didSet {
+            descriptionLabel.text = descriptionText
+        }
+    }
+
     override var intrinsicContentSize: CGSize {
         let targetHeight = max(descriptionLabel.bounds.height, checkBoxImageView.bounds.height)
         
@@ -60,33 +67,19 @@ final class ConditionSelectionView: UIControl {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc private func handleTapGesture(_ sender: UITapGestureRecognizer) {
+        sendActions(for: .valueChanged)
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         invalidateIntrinsicContentSize()
-    }
-    
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let checkBoxFrame = checkBoxImageView.convert(checkBoxImageView.bounds, to: self)
-        let detailViewButtonFrame = detailViewButton.convert(detailViewButton.bounds, to: self)
-        
-        let isCheckBoxTouched = checkBoxFrame.contains(point)
-        let isDetailViewButtonTouched = detailViewButtonFrame.contains(point)
-        
-        switch (isCheckBoxTouched, isDetailViewButtonTouched) {
-        case (true, _):
-            return checkBoxImageView
-        case (_, true):
-            return detailViewButton
-        default:
-            return nil
-        }
     }
     
     private func addSubViews() {
         
         addSubview(checkBoxImageView)
         addSubview(descriptionLabel)
-        addSubview(detailViewButton)
                 
         checkBoxImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview()
@@ -97,17 +90,11 @@ final class ConditionSelectionView: UIControl {
             make.leading.equalTo(checkBoxImageView.snp.trailing).offset(16)
             make.centerY.equalToSuperview()
         }
-        
-        detailViewButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview()
-            make.centerY.equalTo(checkBoxImageView.snp.centerY)
-        }
     }
     
-    func configure(with condition: SelectableConfirmationCondition) {
+    func configure(with condition: AgreementCondition) {
         
         descriptionLabel.text = condition.descriptionText
-        detailViewButton.isHidden = !condition.containsDetailView
         
         switch condition.descriptionTextSize {
         case .normal:

@@ -17,15 +17,13 @@ import FeatureLoginDIContainer
 import FeatureLoginUseCase
 import SharedDIContainer
 import SharedUseCase
-<<<<<<< HEAD:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/SignupScene/SignupViewModel.swift
 import Utils
+
+public struct SignupInfo {
+    
+    let nickname: String
 
 public final class SignupViewModel: ViewModelType {
-=======
-
-import Utils
-
-public final class NicknameViewModel: ViewModelType {
 
     enum DetailViewType {
         case termsOfService
@@ -43,94 +41,41 @@ public final class NicknameViewModel: ViewModelType {
         let didTapNextButton = PublishRelay<Void>()
         let didEnterTextValue = PublishRelay<String>()
         let didTapSelectAllCondition = PublishRelay<Bool>()
-        let didSelectConfirmCondition = PublishRelay<SelectableConfirmationCondition>()
-        let didDeselectConfirmCondition = PublishRelay<SelectableConfirmationCondition>()
+        let didSelectConfirmCondition = PublishRelay<AgreementCondition>()
+        let didDeselectConfirmCondition = PublishRelay<AgreementCondition>()
         let didTapLeftBarbutton = PublishRelay<Void>()
         let didTapDetailViewButton = PublishRelay<DetailViewType>()
         let viewDidLoad = PublishRelay<Void>()
     }
     
     public struct Output {
-        let textFieldStatus = BehaviorRelay<NicknameInputStatus.Status>(value:
+        let conditionSelectionCellViewModels = BehaviorRelay<[ConditionSelectionCellViewModel]>(value: [])
+        let nicknameTextFieldStatus = BehaviorRelay<NicknameInputStatus.Status>(value:
                 .none(description: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
         )
-<<<<<<< HEAD:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/SignupScene/SignupViewModel.swift
+        let birthdayTextFieldStatus = BehaviorRelay<NicknameInputStatus.Status>(value: .none(description: ""))
         let shouldCheckCondition = PublishRelay<Int>()
-        let selectAllCondition = Observable.just(SelectableConfirmationCondition(
+        let selectAllOptionConfig = Observable.just(AgreementCondition(
             descriptionText: "전체동의",
-            descriptionTextSize: .large,
-            detailTerms: nil,
-            selectionType: .selectAll
+            descriptionTextSize: .large
         ))
-        let selectableGenderConditions = BehaviorRelay<[String]>(value: [])
-=======
->>>>>>> develop:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/NicknameScene/NicknameViewModel.swift
-        let selectableConditions = BehaviorRelay<[SelectableConfirmationCondition]>(value: [])
+        let shouldSelectGender = PublishRelay<GenderType>()
+        let shouldShowDetailView = PublishRelay<DocumentType>()
+        let shouldSelectAllConditions = PublishRelay<Bool>()
         let activateNextButton = BehaviorRelay<Bool>(value: false)
-        let selectAllConditions = PublishRelay<Bool>()
     }
     
     public struct State {
-        let selectedConditions = BehaviorRelay<Set<SelectableConfirmationCondition>>(value: [])
-        let essentialConditions = BehaviorRelay<Set<SelectableConfirmationCondition>>(value: [])
-        let didSelectAllEssentialConditions = PublishRelay<Bool>()
+        let selectedConditions = BehaviorRelay<Set<AgreementCondition>>(value: [])
     }
     
     public let input = Input()
     public let output = Output()
     private let state = State()
     
-    @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
-<<<<<<< HEAD:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/SignupScene/SignupViewModel.swift
     @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
     @Inject(LoginDIContainer.shared) private var signupUseCase: SignupUseCase
-=======
-
     @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
-    @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
-
-    private var selectedConditions: Set<SelectableConfirmationCondition> = [] {
-        didSet {
-            input.didSelectAllEssentialConditions.accept(
-                essentialConditions.isSubset(of: selectedConditions)
-            )
-        }
-    }
-    private var essentialConditions: Set<SelectableConfirmationCondition> = []
-    
-    private let conditionEntities: [SelectableConfirmationCondition] = [
-        .init(
-            descriptionText: "전체동의",
-            descriptionTextSize: .large,
-            containsDetailView: false,
-            selectionType: .selectAll
-        ),
-        .init(
-            descriptionText: "만 14세 이상입니다.(필수)",
-            descriptionTextSize: .normal,
-            containsDetailView: false,
-            selectionType: .essential
-        ),
-        .init(
-            descriptionText: "서비스 이용 약관 (필수)",
-            descriptionTextSize: .normal,
-            containsDetailView: true,
-            selectionType: .essential
-        ),
-        .init(
-            descriptionText: "개인정보 수집 및 이용 (필수)",
-            descriptionTextSize: .normal,
-            containsDetailView: true,
-            selectionType: .essential
-        ),
-        .init(
-            descriptionText: "이벤트, 프로모션 알림 메일 수신 (선택)",
-            descriptionTextSize: .normal,
-            containsDetailView: false,
-            selectionType: .optional
-        )
-    ]
->>>>>>> develop:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/NicknameScene/NicknameViewModel.swift
 
     private weak var coordinator: LoginCoordinator?
     private let authInfo: UserAuthInfoEntity
@@ -155,13 +100,18 @@ public final class NicknameViewModel: ViewModelType {
             .flatMapLatest { `self`, _ in self.signupUseCase.fetchAllSelectableConditions() }
             .share()
         
-        conditions
-            .map { Set($0.filter { $0.selectionType == .essential }) }
-            .bind(to: state.essentialConditions)
+        nicknameInputStatus
+            .map { $0.status }
+            .bind(to: output.nicknameTextFieldStatus)
             .disposed(by: disposeBag)
         
-        conditions
-            .bind(to: output.selectableConditions)
+        let birthdayInputStatus = input.didEnterBirthday
+            .withUnretained(self)
+            .flatMap { `self`, input in
+                self.signupUseCase.isBirthdayInputValid(input)
+            }
+            .share()
+  
             .disposed(by: disposeBag)
         
         input.didTapNextButton
@@ -184,15 +134,15 @@ public final class NicknameViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        let didSelectCondition = input.didSelectConfirmCondition.share()
+        let signupInfo = Observable
+            .combineLatest(
+                input.didEnterNickname,
+                input.didEnterBirthday,
+                output.shouldSelectGender,
+                state.selectedConditions
+            )
         
-        didSelectCondition
-            .filter { $0.selectionType == .selectAll }
-            .map { _ in true }
-            .bind(to: output.selectAllConditions)
-            .disposed(by: disposeBag)
-        
-        didSelectCondition
+        signupInfo
             .filter { $0.selectionType != .selectAll }
             .withLatestFrom(state.selectedConditions) { ($0, $1) }
             .flatMap { [weak self] in
@@ -202,43 +152,32 @@ public final class NicknameViewModel: ViewModelType {
             .bind(to: state.selectedConditions)
             .disposed(by: disposeBag)
 
-        let didDeselectCondition = input.didDeselectConfirmCondition.share()
-        
-        didDeselectCondition
-            .filter { $0.selectionType == .selectAll }
-            .map { _ in false }
-            .bind(to: output.selectAllConditions)
-            .disposed(by: disposeBag)
-
-        didDeselectCondition
-            .filter { $0.selectionType != .selectAll }
-            .withLatestFrom(state.selectedConditions) { ($0, $1) }
-            .flatMap { [weak self] in
-                guard let self = self else { return Observable.just($1) }
-                return self.signupUseCase.removeExistingCondition($0, from: $1)
+        input.didTapNextButton
+            .throttle(.seconds(3), latest: false, scheduler: MainScheduler.instance)
+            .withLatestFrom(signupInfo)
+            .withUnretained(self)
+            .flatMapLatestCompletableMaterialized { `self`, signupInfo in
+                let userInfo = UserInfoEntity(nickname: signupInfo.nickname, authInfo: self.authInfo)
+                return self.loginUseCase.saveUserInfo(userInfo)
             }
-            .bind(to: state.selectedConditions)
+            .filter { $0.isCompleted }
+            .bind(onNext: { _ in
+                coordinator.coordinate(by: .shouldFinishLoginFlow)
+            })
             .disposed(by: disposeBag)
+    }
+    
+    private func bindCellViewModelToParent(
+        _ cellViewModel: ConditionSelectionCellViewModel,
+        with disposeBag: DisposeBag
+    ) {
         
-        Observable
-            .merge(didSelectCondition, didDeselectCondition)
-            .filter { $0.selectionType != .selectAll }
-            .withLatestFrom(state.selectedConditions) { ($0, $1) }
-            .flatMap { [weak self] in
-                guard let self = self else { return Observable.just($1) }
-                return self.signupUseCase.insertNewCondition($0, to: $1)
-            }
-            .bind(to: state.selectedConditions)
-            .disposed(by: disposeBag)
-
-        
-        let fetchDetailFormFile = input.didTapDetailViewButton
-            .map { detailType in
-                switch detailType {
-                case .privacyPolicy:
-                    return DocumentType.privacyPolicy
-                case .termsOfService:
-                    return DocumentType.termsOfService
+        cellViewModel.input.didTapDetailButton
+            .compactMap { index -> DocumentType? in
+                switch index {
+                case 1: return .termsOfService
+                case 2: return .privacyPolicy
+                default: return nil
                 }
             }
             .withUnretained(self)
@@ -248,54 +187,43 @@ public final class NicknameViewModel: ViewModelType {
                     self.bundleResourceUseCase.readText(from: documentType.textFile)
                 )
             }
-            .share()
-        
-        fetchDetailFormFile
-            .bind(onNext: { title, detailText in
-                coordinator.coordinate(by: .shouldShowDetailForm(title: title, detailText: detailText))
+            .bind(onNext: { [weak self] title, detailText in
+                let coordinator = self?.coordinator
+                coordinator?.coordinate(by: .shouldShowDetailForm(title: title, detailText: detailText))
             })
             .disposed(by: disposeBag)
+
+        cellViewModel.input.didTapCheckBox
+            .withLatestFrom(cellViewModel.output.shouldSelectCheckBox)
+            .map { !$0 }
+            .bind(to: cellViewModel.output.shouldSelectCheckBox)
+            .disposed(by: self.disposeBag)
         
-        output.selectAllConditions
-            .withLatestFrom(output.selectableConditions) {
-                ($0, Set($1.filter { $0.selectionType != .selectAll }))
+        let selectedConditions = cellViewModel.output.shouldSelectCheckBox
+            .withLatestFrom(state.selectedConditions) { ($0, $1)}
+            .map { shouldSelect, selectedConditions in
+                let condition = cellViewModel.entity
+                var selectedConditions = selectedConditions
+                
+                if shouldSelect {
+                    selectedConditions.insert(condition)
+                } else {
+                    selectedConditions.remove(condition)
+                }
+                
+                return selectedConditions
             }
-            .map { $0 ? $1 : [] }
+            .share()
+        
+        selectedConditions
             .bind(to: state.selectedConditions)
             .disposed(by: disposeBag)
         
-        state.selectedConditions
-            .withLatestFrom(state.essentialConditions) { ($0, $1) }
-            .flatMap { [weak self] in
-                guard let self = self else { return Observable.just(false) }
-                return self.signupUseCase.isAllConditionSatisfied(
-                    selectedConditions: $0,
-                    essentialConditions: $1
-                )
-            }
-            .bind(to: state.didSelectAllEssentialConditions)
-            .disposed(by: disposeBag)
-
-        let nicknameInputStatus = input.didEnterTextValue
-            .withUnretained(self)
-            .flatMap { `self`, input in
-                self.nicknameUseCase.checkNicknameValidation(for: input)
-            }
-            .share()
-        
-        nicknameInputStatus
-            .map { $0.status }
-            .bind(to: output.textFieldStatus)
-            .disposed(by: disposeBag)
-        
-        Observable
-<<<<<<< HEAD:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/SignupScene/SignupViewModel.swift
-            .combineLatest(state.didSelectAllEssentialConditions, nicknameInputStatus)
-=======
-            .combineLatest(input.didSelectAllEssentialConditions, nicknameInputStatus)
->>>>>>> develop:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/NicknameScene/NicknameViewModel.swift
-            .map { $0 && $1.isValid }
-            .bind(to: output.activateNextButton)
+        selectedConditions
+            .bind(onNext: { [weak self] selectedConditions in
+                let isEveryConditionsSelected = selectedConditions.count == 4
+                self?.output.shouldSelectAllConditions.accept(isEveryConditionsSelected)
+            })
             .disposed(by: disposeBag)
     }
 }

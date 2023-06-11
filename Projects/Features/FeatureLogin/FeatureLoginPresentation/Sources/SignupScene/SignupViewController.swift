@@ -164,30 +164,20 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-  
-        output.selectableConditions
+        output.conditionSelectionCellViewModels
             .bind(to: conditionSelectionCollectionView.rx.items(
                 cellIdentifier: ConditionSelectionCell.identifier,
                 cellType: ConditionSelectionCell.self)
-            ) { index, selectableCondition, cell in
+            ) { index, cellViewModel, cell in
                 
-                cell.configure(with: selectableCondition)
-                cell.detailViewButton.rx.tap
-                    .bind(onNext: { _ in
-                        switch index {
-                        case 2:
-                            viewModel.input.didTapDetailViewButton.accept(.termsOfService)
-                        case 3:
-                            viewModel.input.didTapDetailViewButton.accept(.privacyPolicy)
-                        default:
-                            return
-                        }
-                    })
-                    .disposed(by: self.disposeBag)
+                cell.bind(to: cellViewModel, withIndexOf: index)
             }
             .disposed(by: disposeBag)
         
-        output.selectAllConditions
+        output.shouldSelectAllConditions
+            .bind(to: selectAllConditionView.rx.isChecked)
+            .disposed(by: disposeBag)
+        
             .withUnretained(self)
             .bind(onNext: { owner, isSelected in
                 if isSelected {

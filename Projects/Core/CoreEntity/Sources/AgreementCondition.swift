@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SelectableConfirmationCondition {
+public struct AgreementCondition {
     
     public enum DescriptionTextSize {
         case large
@@ -37,8 +37,8 @@ public struct SelectableConfirmationCondition {
     public init(
         descriptionText: String,
         descriptionTextSize: DescriptionTextSize,
-        containsDetailView: Bool,
-        selectionType: SelectionType
+        containsDetailView: Bool = false,
+        selectionType: SelectionType = .optional
     ) {
         self.descriptionText = descriptionText
         self.descriptionTextSize = descriptionTextSize
@@ -47,4 +47,4 @@ public struct SelectableConfirmationCondition {
     }
 }
 
-extension SelectableConfirmationCondition: Hashable { }
+extension AgreementCondition: Hashable { }

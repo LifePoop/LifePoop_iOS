@@ -130,13 +130,14 @@ final public class ConditionalTextField: UIControl {
         }
         
         separatorView.snp.makeConstraints { make in
-            make.top.equalTo(textField.snp.bottom).offset(10)
+            make.top.equalTo(textField.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview()
         }
         
         subLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
-            make.top.equalTo(separatorView.snp.bottom).offset(15)
+            make.top.equalTo(separatorView.snp.bottom).offset(8)
+            make.height.equalTo(16)
         }
     }
 }

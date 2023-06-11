@@ -22,6 +22,10 @@ import Utils
 public struct SignupInfo {
     
     let nickname: String
+    let birthday: String
+    let gender: GenderType?
+    let conditions: Set<AgreementCondition>
+}
 
 public final class SignupViewModel: ViewModelType {
 
@@ -35,14 +39,15 @@ public final class SignupViewModel: ViewModelType {
         case impossible(text: String)
         case none(text: String)
     }
->>>>>>> develop:Projects/Features/FeatureLogin/FeatureLoginPresentation/Sources/NicknameScene/NicknameViewModel.swift
-
+    
     public struct Input {
         let didTapNextButton = PublishRelay<Void>()
-        let didEnterTextValue = PublishRelay<String>()
+        let didEnterNickname = PublishRelay<String>()
+        let didEnterBirthday = PublishRelay<String>()
         let didTapSelectAllCondition = PublishRelay<Bool>()
         let didSelectConfirmCondition = PublishRelay<AgreementCondition>()
         let didDeselectConfirmCondition = PublishRelay<AgreementCondition>()
+        let didTapGenderButton = PublishRelay<Int>()
         let didTapLeftBarbutton = PublishRelay<Void>()
         let didTapDetailViewButton = PublishRelay<DetailViewType>()
         let viewDidLoad = PublishRelay<Void>()
@@ -91,13 +96,25 @@ public final class SignupViewModel: ViewModelType {
         guard let coordinator = self.coordinator else { return }
         
         input.viewDidLoad
-            .map { ["여성", "남성", "기타"] }
-            .bind(to: output.selectableGenderConditions)
+            .withUnretained(self)
+            .flatMap { `self`, _ in self.signupUseCase.fetchSelectableConditions() }
+            .withUnretained(self)
+            .map { `self`, entities in
+                entities.map {
+                    let cellViewModel = ConditionSelectionCellViewModel(entity: $0)
+                    self.bindCellViewModelToParent(cellViewModel, with: self.disposeBag)
+                    
+                    return cellViewModel
+                }
+            }
+            .bind(to: output.conditionSelectionCellViewModels)
             .disposed(by: disposeBag)
         
-        let conditions = input.viewDidLoad
+        let nicknameInputStatus = input.didEnterNickname
             .withUnretained(self)
-            .flatMapLatest { `self`, _ in self.signupUseCase.fetchAllSelectableConditions() }
+            .flatMap { `self`, input in
+                self.signupUseCase.isNicknameInputValid(input)
+            }
             .share()
         
         nicknameInputStatus
@@ -128,6 +145,11 @@ public final class SignupViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
+        input.didTapGenderButton
+            .map { GenderType.allCases[$0] }
+            .bind(to: output.shouldSelectGender)
+            .disposed(by: disposeBag)
+
         input.didTapLeftBarbutton
             .bind(onNext: { _ in
                 coordinator.coordinate(by: .shouldPopCurrentScene)

@@ -53,21 +53,32 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         return label
     }()
     
-    private let genderSelectionCollectionViewDelegate = GenderSelectionCollectionViewDelegate()
-    private lazy var genderSelectionCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 7
-
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(
-            GenderSelectionCell.self,
-            forCellWithReuseIdentifier: GenderSelectionCell.identifier
+    private let genderSelectionBackgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }()
+    
+    private let genderSelectionButtons: [TextSelectionButton] = GenderType.allCases.map {
+        TextSelectionButton(
+            index: $0.index,
+            title: $0.description,
+            backgroundColor: .init(
+                selected: ColorAsset.primary.color,
+                deselected: ColorAsset.gray300.color
+            ),
+            titleColor: .init(
+                selected: ColorAsset.white.color,
+                deselected: ColorAsset.gray800.color
+            )
         )
-        collectionView.delegate = genderSelectionCollectionViewDelegate
-        collectionView.isScrollEnabled = false
-        collectionView.allowsMultipleSelection = false
-        return collectionView
+    }
+    
+    private lazy var genderSelectionStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: genderSelectionButtons)
+        stackView.axis = .horizontal
+        stackView.distribution = .equalSpacing
+        return stackView
     }()
     
     private let selectAllConditionView: ConditionSelectionView = ConditionSelectionView()
@@ -77,7 +88,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = .zero
-
+        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(
             ConditionSelectionCell.self,
@@ -125,18 +136,32 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
         
         nicknameTextField.rx.text
-            .bind(to: input.didEnterTextValue)
+            .skip(1)
+            .bind(to: input.didEnterNickname)
             .disposed(by: disposeBag)
         
-        leftBarButton.rx.tap
-            .bind(to: input.didTapLeftBarbutton)
+        birthdayTextField.rx.text
+            .skip(1)
+            .bind(to: input.didEnterBirthday)
             .disposed(by: disposeBag)
+        
+        selectAllConditionView.rx.check
+            .bind(to: input.didTapSelectAllCondition)
+            .disposed(by: disposeBag)
+        
+        Observable.merge(
+            genderSelectionButtons.map { button in
+                button.rx.tap.map { button.index }
+            }
+        )
+        .bind(to: input.didTapGenderButton)
+        .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: SignupViewModel) {
         let output = viewModel.output
         
-        output.textFieldStatus
+        output.nicknameTextFieldStatus
             .map {
                 switch $0 {
                 case .none(let text):
@@ -178,52 +203,35 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .bind(to: selectAllConditionView.rx.isChecked)
             .disposed(by: disposeBag)
         
+        output.shouldSelectGender
+            .map { $0.index }
             .withUnretained(self)
-            .bind(onNext: { owner, isSelected in
-                if isSelected {
-                    owner.conditionSelectionCollectionView.selectAllItems()
-                } else {
-                    owner.conditionSelectionCollectionView.deselectAllItems()
+            .bind(onNext: { `self`, targetIndex in
+                self.genderSelectionButtons.forEach {
+                    let isSelected = targetIndex == $0.index
+                    $0.rx.isSelected.onNext(isSelected)
                 }
             })
             .disposed(by: disposeBag)
-    }
-    
-    // MARK: - UI Configuration
-
-    public override func configureUI() {
-        super.configureUI()
         
-        navigationController?.setNavigationBarHidden(false, animated: false)
-        navigationItem.leftBarButtonItem = leftBarButton
-        view.backgroundColor = .systemBackground
+        output.selectAllOptionConfig
+            .withUnretained(self)
+            .bind(onNext: { `self`, entity in
+                self.selectAllConditionView.configure(with: entity)
+            })
+            .disposed(by: disposeBag)
     }
-    
-    func configureHandlingTouchEvent() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
-        tapGesture.cancelsTouchesInView = false
-        view.addGestureRecognizer(tapGesture)
-    }
-    
-    @objc private func handleTapGesture(_ gesture: UITapGestureRecognizer) {
-         view.endEditing(true) // Hide the keyboard
-     }
-    
-    // MARK: - UI Layout
-    
-    public override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
-private extension NicknameViewController {
-    func layoutUI() {
-        let frameWidth = view.frame.width
-
+        
+    public override func layoutUI() {
+        let frameWidth = view.safeAreaLayoutGuide.layoutFrame.width
+        let frameHeight = view.safeAreaLayoutGuide.layoutFrame.height
+        
         view.addSubview(scrollView)
         scrollView.addSubview(containerView)
         containerView.addSubview(nicknameTextField)
         containerView.addSubview(birthdayTextField)
         containerView.addSubview(genderSelectTitleLabel)
-        containerView.addSubview(genderSelectionCollectionView)
+        containerView.addSubview(genderSelectionStackView)
         containerView.addSubview(selectAllConditionView)
         containerView.addSubview(conditionSelectionCollectionView)
         view.addSubview(nextButton)
@@ -273,25 +281,7 @@ private extension NicknameViewController {
         nextButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-12)
-        }
-    }
-}
-
-extension UICollectionView {
-    
-    func selectAllItems() {
-        let indexPathsForVisibleItems = self.indexPathsForVisibleItems
-        for indexPath in indexPathsForVisibleItems {
-            self.selectItem(
-                at: indexPath, animated: false, scrollPosition: .centeredHorizontally
-            )
-        }
-    }
-    
-    func deselectAllItems() {
-        let indexPaths = self.indexPathsForSelectedItems ?? []
-        for indexPath in indexPaths {
-            self.deselectItem(at: indexPath, animated: false)
+            sumOfVerticalMargins += 12
         }
     }
 }

@@ -24,7 +24,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
     private let colorTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = ColorAsset.black.color
-        label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.text = "색깔"
         return label
     }()
@@ -45,14 +45,15 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
         return label
     }()
     
+    private let colorSelectCollectionViewDelegate = SelectCollectionViewDelegate()
     private lazy var colorSelectCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 27
-        layout.itemSize = .init(width: 24, height: 24)
+        layout.minimumLineSpacing = 23
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(ColorSelectionCell.self, forCellWithReuseIdentifier: ColorSelectionCell.identifier)
+        collectionView.delegate = colorSelectCollectionViewDelegate
         collectionView.isScrollEnabled = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
@@ -160,7 +161,6 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
             .disposed(by: disposeBag)
         
         output.selectableColors
-            .observe(on: MainScheduler.asyncInstance)
             .bind(to: colorSelectCollectionView.rx.items(
                 cellIdentifier: ColorSelectionCell.identifier,
                 cellType: ColorSelectionCell.self)
@@ -203,14 +203,15 @@ private extension SatisfactionDetailViewController {
     }
     
     func addSubViews() {
+        
+        let viewHeight = view.frame.height
+        
         view.addSubview(completeButton)
         completeButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalToSuperview().inset(46)
             make.height.equalTo(54)
         }
-        
-        let viewHeight = view.frame.height
         
         view.addSubview(stoolShapeTitleLabel)
         stoolShapeTitleLabel.snp.makeConstraints { make in
@@ -225,10 +226,10 @@ private extension SatisfactionDetailViewController {
             make.trailing.equalToSuperview().inset(79)
             make.height.equalTo(58)
         }
-        
+
         view.addSubview(colorTitleLabel)
         colorTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(39)
+            make.leading.equalToSuperview().offset(29)
             make.bottom.equalTo(stoolShapeTitleLabel.snp.top).offset(-viewHeight*0.167)
         }
         
@@ -236,8 +237,8 @@ private extension SatisfactionDetailViewController {
         colorSelectCollectionView.snp.makeConstraints { make in
             make.centerY.equalTo(colorTitleLabel.snp.centerY)
             make.leading.equalTo(colorTitleLabel.snp.trailing).offset(29)
-            make.trailing.equalToSuperview().inset(55)
-            make.height.equalTo(24)
+            make.trailing.equalToSuperview().inset(44)
+            make.height.equalTo(30)
         }
         
         view.addSubview(sizeTitleLabel)

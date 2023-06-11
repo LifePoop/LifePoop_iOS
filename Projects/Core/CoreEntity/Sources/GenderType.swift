@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum GenderType: CaseIterable, CustomStringConvertible {
+public enum GenderType: Int, CaseIterable, CustomStringConvertible {
     
     case male
     case female
@@ -21,4 +21,6 @@ public enum GenderType: CaseIterable, CustomStringConvertible {
         case .etc: return "기타"
         }
     }
+    
+    public var index: Int { rawValue }
 }

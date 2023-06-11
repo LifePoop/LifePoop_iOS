@@ -6,6 +6,8 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
+import Foundation
+
 import RxRelay
 import RxSwift
 
@@ -27,7 +29,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
     public struct Output {
         let titleText = BehaviorRelay<String>(value: "왜 만족했나요?")
         let selectableColors = Observable.of(StoolColor.allCases)
-        let selectableShapes = Observable.of(StoolShape.allCases)
+        let selectableShapes = BehaviorRelay<[ColoredStoolShape]>(value: [])
         let selectableSizes = Observable.of(StoolSize.allCases)
     }
     
@@ -51,11 +53,29 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             .bind(to: output.titleText)
             .disposed(by: disposeBag)
         
+        Observable.of(StoolShape.allCases)
+            .map { $0.map { ColoredStoolShape(shape: $0, color: .brown) } }
+            .bind(to: output.selectableShapes)
+            .disposed(by: disposeBag)
+        
         input.didTapLeftBarbutton
             .withUnretained(self)
             .bind(onNext: { owner, _ in
                 owner.coordinator?.coordinate(by: .goBack)
             })
+            .disposed(by: disposeBag)
+        
+        input.didSelectColor
+            .withLatestFrom(input.didSelectShape) {
+                (selectedColor: $0, selectedShape: $1)
+            }
+            .map { selectedColor, selectedShape in
+                StoolShape.allCases.map {
+                    let isSelected = selectedShape == $0
+                    return ColoredStoolShape(shape: $0, color: selectedColor, isSelected: isSelected)
+                }
+            }
+            .bind(to: output.selectableShapes)
             .disposed(by: disposeBag)
         
         let selectedStatus = Observable

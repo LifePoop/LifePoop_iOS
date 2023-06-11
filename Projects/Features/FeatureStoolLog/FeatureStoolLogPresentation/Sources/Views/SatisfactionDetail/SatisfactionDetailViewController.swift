@@ -32,7 +32,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
     private let stoolShapeTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = ColorAsset.black.color
-        label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.text = "모양"
         return label
     }()
@@ -61,17 +61,18 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
         return collectionView
     }()
     
+    private let shapeSelectCollectionViewDelegate = SelectCollectionViewDelegate()
     private lazy var stoolShapeSelectCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 39
-        layout.itemSize = .init(width: 34, height: 58)
+        layout.minimumLineSpacing = 6
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(
             ShapeSelectionCell.self,
             forCellWithReuseIdentifier: ShapeSelectionCell.identifier
         )
+        collectionView.delegate = shapeSelectCollectionViewDelegate
         collectionView.isScrollEnabled = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
@@ -137,12 +138,29 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
             .bind(to: input.didSelectColor)
             .disposed(by: disposeBag)
         
-        stoolShapeSelectCollectionView.rx.modelSelected(StoolShape.self)
+        stoolShapeSelectCollectionView.rx.modelSelected(ColoredStoolShape.self)
+            .map { $0.shape }
             .bind(to: input.didSelectShape)
             .disposed(by: disposeBag)
         
         sizeSelectionCollectionView.rx.modelSelected(StoolSize.self)
             .bind(to: input.didSelectSize)
+            .disposed(by: disposeBag)
+        
+        rx.viewDidAppear
+            .map { IndexPath(item: 0, section: 0) }
+            .withUnretained(self)
+            .bind(onNext: { `self`, indexPath in
+                let collectionViews = [
+                    self.colorSelectCollectionView,
+                    self.stoolShapeSelectCollectionView,
+                    self.sizeSelectionCollectionView
+                ]
+                
+                collectionViews.forEach {
+                    $0.selectItemManually(indexPath: indexPath)
+                }
+            })
             .disposed(by: disposeBag)
     }
     
@@ -170,17 +188,22 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
             .disposed(by: disposeBag)
         
         output.selectableShapes
-            .observe(on: MainScheduler.asyncInstance)
             .bind(to: stoolShapeSelectCollectionView.rx.items(
                 cellIdentifier: ShapeSelectionCell.identifier,
                 cellType: ShapeSelectionCell.self)
-            ) { _, shape, cell in
-                cell.configure(stoolShapeSelection: shape)
+            ) { [weak self] index, entity, cell in
+                cell.configure(stoolShapeSelection: entity.shape, colorOf: entity.color)
+                
+                guard entity.isSelected,
+                      let collectionView = self?.stoolShapeSelectCollectionView
+                else { return }
+                
+                let indexPath = IndexPath(item: index, section: 0)
+                collectionView.selectItemManually(indexPath: indexPath)
             }
             .disposed(by: disposeBag)
         
         output.selectableSizes
-            .observe(on: MainScheduler.asyncInstance)
             .bind(to: sizeSelectionCollectionView.rx.items(
                 cellIdentifier: SizeSelectionCell.identifier,
                 cellType: SizeSelectionCell.self)
@@ -215,16 +238,16 @@ private extension SatisfactionDetailViewController {
         
         view.addSubview(stoolShapeTitleLabel)
         stoolShapeTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(39)
+            make.leading.equalToSuperview().offset(29)
             make.top.equalToSuperview().offset(viewHeight*0.38)
         }
         
         view.addSubview(stoolShapeSelectCollectionView)
         stoolShapeSelectCollectionView.snp.makeConstraints { make in
-            make.leading.equalTo(stoolShapeTitleLabel.snp.trailing).offset(52)
+            make.leading.equalTo(stoolShapeTitleLabel.snp.trailing).offset(15)
             make.centerY.equalTo(stoolShapeTitleLabel.snp.centerY)
-            make.trailing.equalToSuperview().inset(79)
-            make.height.equalTo(58)
+            make.trailing.equalToSuperview().inset(27)
+            make.height.equalTo(34)
         }
 
         view.addSubview(colorTitleLabel)
@@ -254,5 +277,18 @@ private extension SatisfactionDetailViewController {
             make.trailing.equalToSuperview().inset(79)
             make.height.equalTo(52)
         }
+    }
+}
+
+extension UICollectionView {
+    
+    func selectItemManually(indexPath: IndexPath) {
+        selectItem(
+            at: indexPath, animated: false,
+            scrollPosition: .centeredHorizontally
+        )
+        
+        cellForItem(at: indexPath)?.isSelected = true
+        delegate?.collectionView?(self, didSelectItemAt: indexPath)
     }
 }

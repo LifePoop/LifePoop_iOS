@@ -1,5 +1,5 @@
 //
-//  ReportTotalBowelMovementsView.swift
+//  ReportTotalStoolCountView.swift
 //  FeatureReportPresentation
 //
 //  Created by 김상혁 on 2023/06/08.
@@ -15,7 +15,7 @@ import SnapKit
 import DesignSystem
 import Utils
 
-public final class ReportTotalBowelMovementsView: UIView {
+public final class ReportTotalStoolCountView: UIView {
     
     private lazy var countDescriptionLabel: UILabel = {
         let label = UILabel()

@@ -43,7 +43,7 @@ public final class StoolCountBarView: UIView {
         self.countLabelMaxWidth = countLabel.intrinsicContentSize.width
         super.init(frame: .zero)
         layoutUI()
-        increaseCountWithAnimation(for: countLabel, count: count)
+        countLabel.startCountingAnimation(count: count, suffix: "번")
     }
     
     @available(*, unavailable)
@@ -79,23 +79,5 @@ private extension StoolCountBarView {
             }
             self.layoutIfNeeded()
         }
-    }
-    
-    func increaseCountWithAnimation(for label: UILabel, count: Int) {
-        let interval = animatingDuration / Double(count)
-        let step = max(1, count / 1000)
-        
-        var currentCount = 0
-        timer = DispatchSource.makeTimerSource(queue: .main)
-        timer?.schedule(deadline: .now(), repeating: .milliseconds(Int(interval * 1000)))
-        timer?.setEventHandler(handler: { [weak self] in
-            currentCount += step
-            label.text = "\(min(currentCount, count))번"
-            if currentCount >= count {
-                self?.timer?.cancel()
-                self?.timer = nil
-            }
-        })
-        timer?.resume()
     }
 }

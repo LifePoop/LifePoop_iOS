@@ -12,39 +12,38 @@ import SnapKit
 
 public final class StoolCountBarView: UIView {
     
-    private lazy var barView: UIView = {
+    private let barView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 6
-        view.snp.makeConstraints { make in
-            make.height.equalTo(34)
-        }
         return view
     }()
     
-    private lazy var countLabel: UILabel = {
+    private let countLabel: UILabel = {
         let label = UILabel()
-        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        label.font = .systemFont(ofSize: 18, weight: .bold)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
         return label
     }()
     
-    private lazy var barStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [barView, countLabel])
-        stackView.axis = .horizontal
-        stackView.distribution = .fill
-        stackView.alignment = .fill
-        stackView.spacing = 10
-        return stackView
-    }()
-    
+    private let animatingDuration: CGFloat = 0.75
+    private let barViewCountLabelOffset: CGFloat = 10
     private let barWidthPercentage: CGFloat
+    private let countLabelMaxWidth: CGFloat
+    
+    private var timer: DispatchSourceTimer?
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        expandBarViewWithAnimation()
+    }
     
     public init(color: UIColor, barWidthPercentage: CGFloat, count: Int) {
-        self.barWidthPercentage = barWidthPercentage
-        super.init(frame: .zero)
         barView.backgroundColor = color
         countLabel.text = "\(count)번"
+        self.barWidthPercentage = barWidthPercentage
+        self.countLabelMaxWidth = countLabel.intrinsicContentSize.width
+        super.init(frame: .zero)
         layoutUI()
+        increaseCountWithAnimation(for: countLabel, count: count)
     }
     
     @available(*, unavailable)
@@ -53,14 +52,50 @@ public final class StoolCountBarView: UIView {
     }
     
     private func layoutUI() {
-        addSubview(barStackView)
+        addSubview(barView)
+        addSubview(countLabel)
         
-//        barStackView.snp.makeConstraints { make in
-//            make.edges.equalToSuperview()
-//        }
-        barStackView.snp.makeConstraints { make in
+        barView.snp.makeConstraints { make in
             make.top.bottom.leading.equalToSuperview()
-            make.width.equalToSuperview().multipliedBy(barWidthPercentage)
+            make.height.equalTo(34)
+            make.width.equalTo(0)
+            make.trailing.equalTo(countLabel.snp.leading).offset(-barViewCountLabelOffset)
         }
+        
+        countLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+        }
+    }
+}
+
+// MARK: - Animating Methods
+
+private extension StoolCountBarView {
+    func expandBarViewWithAnimation() {
+        UIView.animate(withDuration: animatingDuration) {
+            self.barView.snp.updateConstraints { make in
+                let availableWidthSpace = self.frame.width - self.countLabelMaxWidth - self.barViewCountLabelOffset
+                make.width.equalTo(availableWidthSpace * self.barWidthPercentage)
+            }
+            self.layoutIfNeeded()
+        }
+    }
+    
+    func increaseCountWithAnimation(for label: UILabel, count: Int) {
+        let interval = animatingDuration / Double(count)
+        let step = max(1, count / 1000)
+        
+        var currentCount = 0
+        timer = DispatchSource.makeTimerSource(queue: .main)
+        timer?.schedule(deadline: .now(), repeating: .milliseconds(Int(interval * 1000)))
+        timer?.setEventHandler(handler: { [weak self] in
+            currentCount += step
+            label.text = "\(min(currentCount, count))번"
+            if currentCount >= count {
+                self?.timer?.cancel()
+                self?.timer = nil
+            }
+        })
+        timer?.resume()
     }
 }

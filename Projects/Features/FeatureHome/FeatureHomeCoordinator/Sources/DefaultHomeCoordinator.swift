@@ -11,7 +11,7 @@ import UIKit
 import DesignSystem
 import FeatureHomeCoordinatorInterface
 import FeatureHomePresentation
-//import FeatureReportCoordinator
+import FeatureReportCoordinator
 import FeatureSettingCoordinator
 import FeatureSettingCoordinatorInterface
 import FeatureStoolLogCoordinator
@@ -100,11 +100,11 @@ private extension DefaultHomeCoordinator {
     func presentBottomSheetController(contentViewController: UIViewController) -> BottomSheetController {
         let parentViewController = navigationController
         let bottomSheetController =  BottomSheetController(
-            bottomSheetHeight: navigationController.view.bounds.height * 0.5
+            bottomSheetHeight: 420
         )
         
         bottomSheetController.setBottomSheet(contentViewController: contentViewController)
-        bottomSheetController.showBottomSheet(toParent: navigationController)
+        bottomSheetController.showBottomSheet(toParent: parentViewController)
 
         return bottomSheetController
     }

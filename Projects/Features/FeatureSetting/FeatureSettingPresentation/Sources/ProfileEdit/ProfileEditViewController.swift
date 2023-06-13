@@ -1,5 +1,5 @@
 //
-//  ProfileViewController.swift
+//  ProfileEditViewController.swift
 //  FeatureSettingPresentation
 //
 //  Created by 김상혁 on 2023/05/21.
@@ -17,7 +17,7 @@ import DesignSystemReactive
 import EntityUIMapper
 import Utils
 
-public final class ProfileViewController: LifePoopViewController, ViewType {
+public final class ProfileEditViewController: LifePoopViewController, ViewType {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -51,7 +51,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
     
     private let toastMessageLabel = ToastLabel()
     
-    public var viewModel: ProfileViewModel?
+    public var viewModel: ProfileEditViewModel?
     private let disposeBag = DisposeBag()
     
     public override func viewDidLoad() {
@@ -62,7 +62,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
     
     // MARK: - ViewModel Binding
     
-    public func bindInput(to viewModel: ProfileViewModel) {
+    public func bindInput(to viewModel: ProfileEditViewModel) {
         let input = viewModel.input
         
         rx.viewDidLoad
@@ -78,7 +78,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
     }
     
-    public func bindOutput(from viewModel: ProfileViewModel) {
+    public func bindOutput(from viewModel: ProfileEditViewModel) {
         let output = viewModel.output
         
         output.setProfileCharater
@@ -177,7 +177,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
 
 // MARK: - Add Tap Gesture
 
-private extension ProfileViewController {
+private extension ProfileEditViewController {
     func addTapGestures() {
         addProfileImageEditViewTapGesture()
         addViewTapGesture()
@@ -211,7 +211,7 @@ private extension ProfileViewController {
 
 // MARK: - Keyboard Notification Methods
 
-private extension ProfileViewController {
+private extension ProfileEditViewController {
     func addNotificationCenterKeyboardObserver() {
         NotificationCenter.default.addObserver(
             self,

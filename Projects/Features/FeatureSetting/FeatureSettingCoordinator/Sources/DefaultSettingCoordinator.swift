@@ -77,15 +77,15 @@ private extension DefaultSettingCoordinator {
     }
     
     func pushProfileInfoViewController(with userNickname: BehaviorRelay<String?>) {
-        let viewController = ProfileViewController()
-        let viewModel = ProfileViewModel(coordinator: self, userNickname: userNickname)
+        let viewController = ProfileEditViewController()
+        let viewModel = ProfileEditViewModel(coordinator: self, userNickname: userNickname)
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }
     
     func presentProfileEditViewController(with profileCharacter: BehaviorRelay<ProfileCharacter?>) {
-        let viewController = ProfileEditViewController()
-        let viewModel = ProfileEditViewModel(coordinator: self, profileCharacter: profileCharacter)
+        let viewController = ProfileCharacterEditViewController()
+        let viewModel = ProfileCharacterEditViewModel(coordinator: self, profileCharacter: profileCharacter)
         viewController.bind(viewModel: viewModel)
         presentBottomSheetController(contentViewController: viewController, heightRatio: 0.33)
     }

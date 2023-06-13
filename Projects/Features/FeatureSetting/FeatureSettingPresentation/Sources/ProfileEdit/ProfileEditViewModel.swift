@@ -1,5 +1,5 @@
 //
-//  ProfileViewModel.swift
+//  ProfileEditViewModel.swift
 //  FeatureSettingPresentation
 //
 //  Created by 김상혁 on 2023/05/21.
@@ -16,7 +16,7 @@ import FeatureSettingUseCase
 import Logger
 import Utils
 
-public final class ProfileViewModel: ViewModelType {
+public final class ProfileEditViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()

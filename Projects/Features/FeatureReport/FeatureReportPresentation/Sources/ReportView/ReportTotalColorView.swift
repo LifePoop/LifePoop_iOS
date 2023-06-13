@@ -12,12 +12,21 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+import CoreEntity
 import DesignSystem
 import Utils
 
 final class ReportTotalColorView: UIView {
     
-    private let barView = StoolCountBarView(color: ColorAsset.pooBrown.color, barWidthPercentage: 1, count: 5)
+    private var colorBars: [StoolCountBarView] = []
+    
+    private lazy var barViewStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.distribution = .equalSpacing
+        return stackView
+    }()
     
     init() {
         super.init(frame: .zero)
@@ -29,11 +38,35 @@ final class ReportTotalColorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func updateColorBars(with colorBarData: [(report: StoolColorReport, barWidthRatio: Double)]) {
+        clearColorBars()
+        colorBarData.forEach { report, barWidthRatio in
+            updateColorBar(color: report.color.color, count: report.count, barWidthRatio: barWidthRatio)
+        }
+    }
+    
     private func layoutUI() {
-        addSubview(barView)
+        addSubview(barViewStackView)
         
-        barView.snp.makeConstraints { make in
+        barViewStackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+}
+
+private extension ReportTotalColorView {
+    func updateColorBar(color: UIColor, count: Int, barWidthRatio: Double) {
+        let barView = StoolCountBarView(
+            color: color,
+            count: count,
+            barWidthRatio: barWidthRatio
+        )
+        barViewStackView.addArrangedSubview(barView)
+        colorBars.append(barView)
+    }
+    
+    func clearColorBars() {
+        colorBars.forEach { $0.removeFromSuperview() }
+        colorBars.removeAll()
     }
 }

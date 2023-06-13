@@ -18,6 +18,9 @@ import FeatureHomeUseCase
 import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
+import FeatureReportDIContainer
+import FeatureReportRepository
+import FeatureReportUseCase
 import FeatureSettingDIContainer
 import FeatureSettingRepository
 import FeatureSettingUseCase
@@ -85,6 +88,7 @@ private extension SceneDelegate {
         registerLoginDependencies()
         registerHomeDependencies()
         registerSettingDependencies()
+        registerReportDependencies()
     }
     
     func registerCoreDependencies() {
@@ -119,6 +123,10 @@ private extension SceneDelegate {
     
     func registerSettingDependencies() {
         SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
+    }
+    
+    func registerReportDependencies() {
+        ReportDIContainer.shared.register(service: ReportUseCase.self) { MockReportUseCase() }
     }
 }
 

@@ -49,6 +49,8 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         return button
     }()
     
+    private let toastMessageLabel = ToastLabel()
+    
     public var viewModel: ProfileViewModel?
     private let disposeBag = DisposeBag()
     
@@ -80,8 +82,9 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         let output = viewModel.output
         
         output.setProfileCharater
+            .asSignal()
             .map { $0.image }
-            .bind(onNext: profileImageEditView.setProfileImageView)
+            .emit(onNext: profileImageEditView.setProfileImageView)
             .disposed(by: disposeBag)
         
         output.setUserNickname
@@ -95,6 +98,21 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         
         output.enableEditConfirmButton
             .bind(to: editConfirmButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        output.showLodingIndicator
+            .asSignal()
+            .emit(onNext: editConfirmButton.showLoadingIndicator)
+            .disposed(by: disposeBag)
+        
+        output.hideLodingIndicator
+            .asSignal()
+            .emit(onNext: editConfirmButton.hideLoadingIndicator)
+            .disposed(by: disposeBag)
+        
+        output.showToastMessage
+            .asSignal()
+            .emit(onNext: toastMessageLabel.show(message:))
             .disposed(by: disposeBag)
     }
     
@@ -113,6 +131,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         scrollContentView.addSubview(profileImageEditView)
         scrollContentView.addSubview(nicknameTextField)
         view.addSubview(editConfirmButton)
+        view.addSubview(toastMessageLabel)
         
         scrollView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
@@ -147,6 +166,11 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         editConfirmButton.snp.makeConstraints { make in
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
+        
+        toastMessageLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(editConfirmButton.snp.top).offset(-16)
         }
     }
 }

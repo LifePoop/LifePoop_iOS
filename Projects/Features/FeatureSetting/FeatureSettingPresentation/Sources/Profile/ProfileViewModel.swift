@@ -13,8 +13,7 @@ import CoreEntity
 import FeatureSettingCoordinatorInterface
 import FeatureSettingDIContainer
 import FeatureSettingUseCase
-import SharedDIContainer
-import SharedUseCase
+import Logger
 import Utils
 
 public final class ProfileViewModel: ViewModelType {
@@ -32,6 +31,8 @@ public final class ProfileViewModel: ViewModelType {
         let setUserNickname = PublishRelay<String>()
         let changeTextFieldStatus = PublishRelay<NicknameInputStatus.Status>()
         let enableEditConfirmButton = PublishRelay<Bool>()
+        let showLodingIndicator = PublishRelay<Void>()
+        let hideLodingIndicator = PublishRelay<Void>()
         let showToastMessage = PublishRelay<String>()
     }
     
@@ -49,8 +50,7 @@ public final class ProfileViewModel: ViewModelType {
     private weak var coordinator: SettingCoordinator?
     private let disposeBag = DisposeBag()
     
-    @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
-    @Inject(SharedDIContainer.shared) private var profileCharacterUseCase: ProfileCharacterUseCase
+    @Inject(SettingDIContainer.shared) private var profileEditUseCase: ProfileEditUseCase
     
     public init(coordinator: SettingCoordinator?, userNickname: BehaviorRelay<String?>) {
         self.coordinator = coordinator
@@ -61,7 +61,7 @@ public final class ProfileViewModel: ViewModelType {
         let userProfileCharacter = input.viewDidLoad
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
-                self.profileCharacterUseCase.profileCharacter
+                self.profileEditUseCase.profileCharacter
             }
             .share()
         
@@ -113,44 +113,75 @@ public final class ProfileViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
         
-        // TODO: Loding Indicator 로직 구현
-        
         input.editConfirmDidTap
-            .withLatestFrom(state.changedUserNickname)
+            .bind(to: output.showLodingIndicator)
+            .disposed(by: disposeBag)
+        
+        let latestChangedProfileAttributes = Observable.combineLatest(
+            state.changedProfileCharacter.compactMap { $0 },
+            state.changedUserNickname.compactMap { $0 }
+        ).share()
+        
+        let initialProfileAttributes = Observable.combineLatest(
+            state.profileCharacter.compactMap { $0 },
+            state.userNickname.compactMap { $0 }
+        ).share()
+        
+        let editRequestResult = input.editConfirmDidTap
+            .withLatestFrom(latestChangedProfileAttributes)
+            .withUnretained(self)
+            .flatMapCompletableMaterialized { `self`, attributes in
+                let (newProfileCharacter, newNickname) = attributes
+                return self.profileEditUseCase.updateProfileInfo(
+                    newProfileCharacter: newProfileCharacter,
+                    newNickname: newNickname
+                )
+            }
+            .share()
+        
+        editRequestResult
+            .filter { $0.isStopEvent }
+            .map { _ in }
+            .bind(to: output.hideLodingIndicator)
+            .disposed(by: disposeBag)
+        
+        editRequestResult
+            .filter { $0.isCompleted }
+            .toastMeessageMap(to: .setting(.userProfileChangeSucceeded))
+            .bind(to: output.showToastMessage)
+            .disposed(by: disposeBag)
+        
+        editRequestResult
+            .filter { $0.isCompleted }
+            .withLatestFrom(latestChangedProfileAttributes)
+            .map { $0.0 }
+            .bind(to: state.profileCharacter)
+            .disposed(by: disposeBag)
+        
+        editRequestResult
+            .filter { $0.isCompleted }
+            .withLatestFrom(latestChangedProfileAttributes)
+            .map { $0.1 }
             .bind(to: state.userNickname)
             .disposed(by: disposeBag)
         
-        let nicknameChangeResult = input.editConfirmDidTap
-            .withLatestFrom(state.changedUserNickname)
-            .compactMap { $0 }
-            .withUnretained(self)
-            .flatMapCompletableMaterialized { `self`, newNickname in
-                self.nicknameUseCase.updateNickname(to: newNickname)
-            }
-            .share()
-        
-        nicknameChangeResult
-            .compactMap { $0.error }
-            .toastMeessageMap(to: .setting(.failToChangeNickname))
-            .bind(to: output.showToastMessage)
+        editRequestResult
+            .filter { $0.isCompleted }
+            .map { _ in false }
+            .bind(to: output.enableEditConfirmButton)
             .disposed(by: disposeBag)
         
-        let profileCharacterChangeResult = input.editConfirmDidTap
-            .withLatestFrom(state.changedProfileCharacter)
-            .compactMap { $0 }
-            .withUnretained(self)
-            .flatMapCompletableMaterialized { `self`, profileCharacter in
-                self.profileCharacterUseCase.updateProfileCharacter(to: profileCharacter)
-            }
-            .share()
-        
-        profileCharacterChangeResult
-            .compactMap { $0.error }
-            .toastMeessageMap(to: .setting(.failToChangeProfileCharacter))
-            .bind(to: output.showToastMessage)
+        editRequestResult
+            .filter { $0.isCompleted }
+            .map { _ in .default }
+            .bind(to: output.changeTextFieldStatus)
             .disposed(by: disposeBag)
         
-        // TODO: Update Complete Action 구현
+        editRequestResult
+            .compactMap { $0.error }
+            .toastMeessageMap(to: .setting(.failToChangeUserProfile))
+            .bind(to: output.showToastMessage)
+            .disposed(by: disposeBag)
         
         // MARK: - Bind State
         
@@ -178,7 +209,7 @@ public final class ProfileViewModel: ViewModelType {
             .map { $0.changedNickname }
             .withUnretained(self)
             .flatMap { `self`, changedNickname in
-                self.nicknameUseCase.checkNicknameValidation(for: changedNickname)
+                self.profileEditUseCase.checkNicknameValidation(for: changedNickname)
             }
             .map { $0.status }
             .share()
@@ -190,29 +221,21 @@ public final class ProfileViewModel: ViewModelType {
         let isNicknameValid = nicknameValidation
             .startWith(.default)
             .map { $0 != .impossible }
+            .distinctUntilChanged()
             .share()
         
-        let isNicknameChanged = state.changedUserNickname
-            .withLatestFrom(state.userNickname.compactMap { $0 }) {
-                (changedNickname: $0, initialNickname: $1)
-            }
-            .map { $0.changedNickname != $0.initialNickname }
+        let isAttributeChanged = latestChangedProfileAttributes
+            .withLatestFrom(initialProfileAttributes) { (latest: $0, initial: $1) }
+            .map { $0.latest != $0.initial }
             .share()
         
-        let isProfileCharacterChanged = state.changedProfileCharacter
-            .withLatestFrom(state.profileCharacter.compactMap { $0 }) {
-                (changedProfileCharacter: $0, initialProfileCharacter: $1)
-            }
-            .map { $0.changedProfileCharacter != $0.initialProfileCharacter }
-            .share()
-        
-        Observable.combineLatest(isNicknameValid, isNicknameChanged, isProfileCharacterChanged)
-            .map { $0 && ($1 || $2) }
+        Observable.combineLatest(isNicknameValid, isAttributeChanged)
+            .map { $0 && $1 }
             .bind(to: output.enableEditConfirmButton)
             .disposed(by: disposeBag)
     }
     
     deinit {
-        print("\(self) \(#function)") // FIXME: Import Logger
+        Logger.logDeallocation(object: self)
     }
 }

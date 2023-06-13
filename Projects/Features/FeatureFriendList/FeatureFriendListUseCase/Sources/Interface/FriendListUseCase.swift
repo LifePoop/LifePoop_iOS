@@ -7,3 +7,12 @@
 //
 
 import Foundation
+
+import RxSwift
+
+import CoreEntity
+
+public protocol FriendListUseCase {
+    
+    func fetchFriendList() -> Observable<[FriendEntity]>
+}

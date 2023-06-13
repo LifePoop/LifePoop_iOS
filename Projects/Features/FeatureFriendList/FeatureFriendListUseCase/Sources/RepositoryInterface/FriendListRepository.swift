@@ -7,3 +7,13 @@
 //
 
 import Foundation
+
+import RxSwift
+
+import CoreEntity
+import Utils
+
+public protocol FriendListRepository: AnyObject {
+    
+    func fetchFriendList() -> Single<[FriendEntity]>
+}

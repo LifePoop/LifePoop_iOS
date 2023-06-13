@@ -7,3 +7,17 @@
 //
 
 import Foundation
+
+import RxSwift
+
+import CoreEntity
+import FeatureFriendListUseCase
+
+public final class DefaultFriendListRepository: NSObject, FriendListRepository {
+    
+    public override init() { }
+    
+    public func fetchFriendList() -> Single<[FriendEntity]> {
+        Single.just(FriendEntity.dummyData)
+    }
+}

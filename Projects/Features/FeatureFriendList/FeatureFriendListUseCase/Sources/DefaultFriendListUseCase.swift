@@ -7,3 +7,22 @@
 //
 
 import Foundation
+
+import RxSwift
+
+import CoreEntity
+import FeatureFriendListDIContainer
+import Utils
+
+public final class DefaultFriendListUseCase: FriendListUseCase {
+    
+    @Inject(FriendListDIContainer.shared) private var friendListRepository: FriendListRepository
+    
+    public init() { }
+    
+    public func fetchFriendList() -> Observable<[FriendEntity]> {
+        friendListRepository
+            .fetchFriendList()
+            .asObservable()
+    }
+}

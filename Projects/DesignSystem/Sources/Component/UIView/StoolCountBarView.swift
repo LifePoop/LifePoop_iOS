@@ -36,10 +36,10 @@ public final class StoolCountBarView: UIView {
         expandBarViewWithAnimation()
     }
     
-    public init(color: UIColor, barWidthPercentage: CGFloat, count: Int) {
+    public init(color: UIColor, count: Int, barWidthRatio: CGFloat) {
         barView.backgroundColor = color
         countLabel.text = "\(count)번"
-        self.barWidthPercentage = barWidthPercentage
+        self.barWidthPercentage = barWidthRatio
         self.countLabelMaxWidth = countLabel.intrinsicContentSize.width
         super.init(frame: .zero)
         layoutUI()

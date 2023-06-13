@@ -1,5 +1,5 @@
 //
-//  ProfileEditViewModel.swift
+//  ProfileCharacterEditViewModel.swift
 //  FeatureSettingPresentation
 //
 //  Created by 김상혁 on 2023/05/29.
@@ -17,7 +17,7 @@ import SharedDIContainer
 import SharedUseCase
 import Utils
 
-public final class ProfileEditViewModel: ViewModelType {
+public final class ProfileCharacterEditViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()

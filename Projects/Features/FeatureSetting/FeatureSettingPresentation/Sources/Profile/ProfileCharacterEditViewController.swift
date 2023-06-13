@@ -1,5 +1,5 @@
 //
-//  ProfileEditViewController.swift
+//  ProfileCharacterEditViewController.swift
 //  FeatureSettingPresentation
 //
 //  Created by 김상혁 on 2023/05/29.
@@ -16,7 +16,7 @@ import CoreEntity
 import DesignSystem
 import Utils
 
-public final class ProfileEditViewController: LifePoopViewController, ViewType {
+public final class ProfileCharacterEditViewController: LifePoopViewController, ViewType {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -63,12 +63,12 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
         return stackView
     }()
     
-    public var viewModel: ProfileEditViewModel?
+    public var viewModel: ProfileCharacterEditViewModel?
     private let disposeBag = DisposeBag()
     
     // MARK: - ViewModel Binding
     
-    public func bindInput(to viewModel: ProfileEditViewModel) {
+    public func bindInput(to viewModel: ProfileCharacterEditViewModel) {
         let input = viewModel.input
         
         rx.viewDidLoad
@@ -88,7 +88,7 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
         .disposed(by: disposeBag)
     }
     
-    public func bindOutput(from viewModel: ProfileEditViewModel) {
+    public func bindOutput(from viewModel: ProfileCharacterEditViewModel) {
         let output = viewModel.output
         
         output.selectProfileCharacterColor

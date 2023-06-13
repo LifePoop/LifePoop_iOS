@@ -107,7 +107,7 @@ public final class BottomSheet: UIControl {
         
         addSubview(contentBackgroundView)
         contentBackgroundView.snp.makeConstraints { make in
-            make.top.equalTo(topBar.snp.bottom).offset(23)
+            make.top.equalTo(topBar.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }

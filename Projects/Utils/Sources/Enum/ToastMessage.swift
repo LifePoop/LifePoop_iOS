@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum ToastMessage {
+public enum ToastMessage { // TODO: Category별 열거형 분리
     case failToFetchFriendList
     case failToFetchStoolLog
     case failToFetchAccessToken
@@ -27,6 +27,10 @@ public enum ToastMessage {
             return "이미지 데이터를 불러오는 데 실패했습니다."
         case .setting(let settingType):
             switch settingType {
+            case .userProfileChangeSucceeded:
+                return "프로필 정보가 수정되었습니다."
+            case .failToChangeUserProfile:
+                return "프로필 정보를 수정하는 데 실패했습니다."
             case .failToChangeNickname:
                 return "닉네임 변경을 적용하는 데 실패했습니다."
             case .failToChangeProfileCharacter:
@@ -42,6 +46,8 @@ public enum ToastMessage {
 
 public extension ToastMessage {
     enum SettingToastMessageType {
+        case userProfileChangeSucceeded
+        case failToChangeUserProfile
         case failToChangeNickname
         case failToChangeProfileCharacter
         case failToChangeFeedVisibility

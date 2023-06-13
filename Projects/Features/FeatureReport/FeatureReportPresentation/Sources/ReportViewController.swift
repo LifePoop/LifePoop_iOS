@@ -12,8 +12,10 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+import CoreEntity
 import DesignSystem
 import DesignSystemReactive
+import EntityUIMapper
 import Utils
 
 public final class ReportViewController: LifePoopViewController, ViewType {
@@ -21,47 +23,53 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let scrollView = UIScrollView()
     private let scrollContentView = UIView()
     
-    private lazy var totalBowelMovementsContainerView: ReportContainerView = {
-        let innerView = ReportTotalBowelMovementsView()
+    private let periodSegmentControl: LifePoopSegmentControl = {
+        let segmentControl = LifePoopSegmentControl(titles: ReportPeriod.texts)
+        segmentControl.selectSegment(at: 0)
+        return segmentControl
+    }()
+    
+    private let reportTotalStoolCountView = ReportTotalStoolCountView()
+    private lazy var totalStoolCountContainerView: ReportContainerView = {
         return ReportContainerView(
             title: "총 배변 횟수",
-            innerView: innerView,
+            innerView: reportTotalStoolCountView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 23, left: 16, bottom: 23, right: 16))
         )
     }()
     
+    private let reportTotalSatisfactionView = ReportTotalSatisfactionView()
     private lazy var totalSatisfactionContainerView: ReportContainerView = {
-        let innerView = ReportTotalSatisfactionView()
         return ReportContainerView(
             title: "만족도",
-            innerView: innerView,
+            innerView: reportTotalSatisfactionView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16))
         )
     }()
     
+    private let reportTotalColorView = ReportTotalColorView()
     private lazy var totalColorContainerView: ReportContainerView = {
-        let innerView = ReportTotalColorView()
         return ReportContainerView(
-            title: "색깔",
-            innerView: innerView,
+            title: "변의 색",
+            innerView: reportTotalColorView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16))
         )
     }()
     
+    private let reportTotalShapeView = ReportTotalShapeView()
     private lazy var totalShapeContainerView: ReportContainerView = {
-        let innerView = ReportTotalShapeView()
         return ReportContainerView(
-            title: "모양",
-            innerView: innerView,
+            title: "모양", // "변의 모양"
+            innerView: reportTotalShapeView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 16, left: 12.5, bottom: 16, right: 12.5))
         )
     }()
     
+    private let reportTotalSizeView = ReportTotalSizeView()
     private lazy var totalSizeContainerView: ReportContainerView = {
-        let innerView = ReportTotalSizeView()
         return ReportContainerView(
-            title: "크기",
-            innerView: innerView,
+            title: "크기", // "변의 크기"
+            innerView: reportTotalSizeView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 16, left: 13.5, bottom: 16, right: 13.5))
         )
     }()
@@ -80,11 +88,47 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     public func bindInput(to viewModel: ReportViewModel) {
         let input = viewModel.input
         
+        rx.viewDidLoad
+            .bind(to: input.viewDidLoad)
+            .disposed(by: disposeBag)
+        
+        periodSegmentControl.rx.selectedSegmentIndex
+            .bind(to: input.periodDidSelect)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: ReportViewModel) {
         let output = viewModel.output
         
+        output.updateTitle
+            .asSignal()
+            .emit(to: rx.title)
+            .disposed(by: disposeBag)
+        
+        output.updateUserNickname
+            .asSignal()
+            .emit(onNext: reportTotalStoolCountView.update(nickname:))
+            .disposed(by: disposeBag)
+        
+        output.totalStoolCount
+            .asSignal()
+            .emit(onNext: reportTotalStoolCountView.update(periodText:count:))
+            .disposed(by: disposeBag)
+        
+        output.totalSatisfaction
+            .asSignal()
+            .emit(onNext: reportTotalSatisfactionView.update(satisfactionCount:))
+            .disposed(by: disposeBag)
+        
+        output.totalDissatisfaction
+            .asSignal()
+            .emit(onNext: reportTotalSatisfactionView.update(dissatisfactionCount:))
+            .disposed(by: disposeBag)
+        
+        output.totalStoolColor
+            .asSignal()
+            .emit(onNext: reportTotalColorView.updateColorBars(with:))
+            .disposed(by: disposeBag)
     }
     
     // MARK: - UI Setup
@@ -98,14 +142,16 @@ public final class ReportViewController: LifePoopViewController, ViewType {
         super.layoutUI()
         view.addSubview(scrollView)
         scrollView.addSubview(scrollContentView)
-        scrollContentView.addSubview(totalBowelMovementsContainerView)
+        scrollContentView.addSubview(periodSegmentControl)
+        scrollContentView.addSubview(totalStoolCountContainerView)
         scrollContentView.addSubview(totalSatisfactionContainerView)
         scrollContentView.addSubview(totalColorContainerView)
         scrollContentView.addSubview(totalShapeContainerView)
         scrollContentView.addSubview(totalSizeContainerView)
         
         scrollView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
+            $0.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.bottom.equalToSuperview()
         }
         
         scrollView.contentLayoutGuide.snp.makeConstraints {
@@ -117,13 +163,19 @@ public final class ReportViewController: LifePoopViewController, ViewType {
             $0.edges.equalToSuperview()
         }
         
-        totalBowelMovementsContainerView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(30)
+        periodSegmentControl.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(15)
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.height.equalTo(42)
+        }
+        
+        totalStoolCountContainerView.snp.makeConstraints { make in
+            make.top.equalTo(periodSegmentControl.snp.bottom).offset(30)
             make.leading.trailing.equalToSuperview().inset(24)
         }
         
         totalSatisfactionContainerView.snp.makeConstraints { make in
-            make.top.equalTo(totalBowelMovementsContainerView.snp.bottom).offset(28)
+            make.top.equalTo(totalStoolCountContainerView.snp.bottom).offset(28)
             make.leading.trailing.equalToSuperview().inset(24)
         }
         

@@ -31,13 +31,11 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
     }
     
     public func coordinate(by coordinateAction: FriendListCoordinateAction) {
-        DispatchQueue.main.async { [weak self] in
-            switch coordinateAction {
-            case .shouldShowFirendList:
-                self?.showFriendListViewController()
-            case .shouldShowFriendInvitation:
-                self?.showFriendInvitationView()
-            }
+        switch coordinateAction {
+        case .shouldShowFirendList:
+            self.showFriendListViewController()
+        case .shouldShowFriendInvitation:
+            self.showFriendInvitationView()
         }
     }
 }

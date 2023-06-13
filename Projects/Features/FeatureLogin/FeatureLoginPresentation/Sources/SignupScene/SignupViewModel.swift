@@ -50,7 +50,6 @@ public final class SignupViewModel: ViewModelType {
         let didTapGenderButton = PublishRelay<Int>()
         let didTapLeftBarbutton = PublishRelay<Void>()
         let didTapDetailViewButton = PublishRelay<DetailViewType>()
-        let viewDidLoad = PublishRelay<Void>()
     }
     
     public struct Output {
@@ -95,9 +94,7 @@ public final class SignupViewModel: ViewModelType {
     private func bind() {
         guard let coordinator = self.coordinator else { return }
         
-        input.viewDidLoad
-            .withUnretained(self)
-            .flatMap { `self`, _ in self.signupUseCase.fetchSelectableConditions() }
+        signupUseCase.fetchSelectableConditions()
             .withUnretained(self)
             .map { `self`, entities in
                 entities.map {

@@ -52,12 +52,6 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         return label
     }()
     
-    private let genderSelectionBackgroundView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
-    }()
-    
     private let genderSelectionButtons: [TextSelectionButton] = GenderType.allCases.map {
         TextSelectionButton(
             index: $0.index,
@@ -113,12 +107,6 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     public var viewModel: SignupViewModel?
     private var disposeBag = DisposeBag()
     
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        configureHandlingTouchEvent()
-    }
-    
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -154,10 +142,6 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     
     public func bindInput(to viewModel: SignupViewModel) {
         let input = viewModel.input
-        
-        rx.viewDidLoad
-            .bind(to: input.viewDidLoad)
-            .disposed(by: disposeBag)
         
         nextButton.rx.tap
             .bind(to: input.didTapNextButton)
@@ -252,6 +236,13 @@ public final class SignupViewController: LifePoopViewController, ViewType {
                 self.selectAllConditionView.configure(with: entity)
             })
             .disposed(by: disposeBag)
+    }
+    
+    public override func configureUI() {
+        super.configureUI()
+
+        configureHandlingTouchEvent()
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
         
     public override func layoutUI() {

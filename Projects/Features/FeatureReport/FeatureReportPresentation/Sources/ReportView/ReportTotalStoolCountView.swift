@@ -15,7 +15,7 @@ import SnapKit
 import DesignSystem
 import Utils
 
-public final class ReportTotalStoolCountView: UIView {
+final class ReportTotalStoolCountView: UIView {
     
     private lazy var countDescriptionLabel: UILabel = {
         let label = UILabel()
@@ -23,13 +23,13 @@ public final class ReportTotalStoolCountView: UIView {
         return label
     }()
     
-    public init() {
+    init() {
         super.init(frame: .zero)
         layoutUI()
     }
     
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     

@@ -15,17 +15,17 @@ import SnapKit
 import DesignSystem
 import Utils
 
-public final class ReportTotalColorView: UIView {
+final class ReportTotalColorView: UIView {
     
     private let barView = StoolCountBarView(color: ColorAsset.pooBrown.color, barWidthPercentage: 1, count: 5)
     
-    public init() {
+    init() {
         super.init(frame: .zero)
         layoutUI()
     }
     
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     

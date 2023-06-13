@@ -57,6 +57,18 @@ final class ReportTotalSatisfactionView: UIView {
         return label
     }()
     
+    private var satisfactionCount: Int = 0 {
+        didSet {
+            satisfactionCountLabel.startCountingAnimation(count: satisfactionCount, suffix: "번")
+        }
+    }
+    
+    private var dissatisfactionCount: Int = 0 {
+        didSet {
+            dissatisfactionCountLabel.startCountingAnimation(count: dissatisfactionCount, suffix: "번")
+        }
+    }
+    
     init() {
         super.init(frame: .zero)
         layoutUI()
@@ -65,6 +77,14 @@ final class ReportTotalSatisfactionView: UIView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func update(satisfactionCount: Int) {
+        self.satisfactionCount = satisfactionCount
+    }
+    
+    func update(dissatisfactionCount: Int) {
+        self.dissatisfactionCount = dissatisfactionCount
     }
     
     private func layoutUI() {

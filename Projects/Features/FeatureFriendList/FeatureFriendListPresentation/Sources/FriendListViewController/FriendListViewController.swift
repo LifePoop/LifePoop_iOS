@@ -37,11 +37,21 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         return collectionView
     }()
     
+    private let emptyFriendListView: EmptyFriendListView = {
+        let emptyFriendListView = EmptyFriendListView()
+        emptyFriendListView.isHidden = true
+        return emptyFriendListView
+    }()
+    
     private var disposeBag = DisposeBag()
     public var viewModel: FriendListViewModel?
 
     public func bindInput(to viewModel: FriendListViewModel) {
         let input = viewModel.input
+        
+        rx.viewDidLoad
+            .bind(to: input.viewDidLoad)
+            .disposed(by: disposeBag)
         
         rightBarButtonItem.rx.tap
             .bind(to: input.didTapInvitationButton)
@@ -58,7 +68,19 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
             })
             .disposed(by: disposeBag)
         
-        output.friendList
+        output.shouldShowEmptyList
+            .withUnretained(self)
+            .bind(onNext: { `self`, _ in
+                self.friendListCollectionView.isHidden = true
+                self.emptyFriendListView.isHidden = false
+            })
+            .disposed(by: disposeBag)
+
+        output.shouldShowFriendList
+            .do(onNext: { [weak self] _ in
+                self?.emptyFriendListView.isHidden = true
+                self?.friendListCollectionView.isHidden = false
+            })
             .bind(to: friendListCollectionView.rx.items(
                 cellIdentifier: FriendListCollectionViewCell.identifier,
                 cellType: FriendListCollectionViewCell.self)
@@ -86,6 +108,11 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
             make.top.equalTo(view.safeAreaLayoutGuide).offset(30)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
+        }
+        
+        view.addSubview(emptyFriendListView)
+        emptyFriendListView.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
         }
     }
 }

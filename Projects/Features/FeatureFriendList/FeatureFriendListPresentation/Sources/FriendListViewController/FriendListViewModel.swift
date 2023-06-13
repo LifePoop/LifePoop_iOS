@@ -20,13 +20,15 @@ import Utils
 public final class FriendListViewModel: ViewModelType {
     
     public struct Input {
+        let viewDidLoad = PublishRelay<Void>()
         let didSelectFirend = PublishRelay<FriendEntity>()
         let didTapInvitationButton = PublishRelay<Void>()
     }
     
     public struct Output {
         let navigationTitle = Observable.of("친구 목록")
-        let friendList = BehaviorRelay<[FriendEntity]>(value: [])
+        let shouldShowFriendList = BehaviorRelay<[FriendEntity]>(value: [])
+        let shouldShowEmptyList = PublishRelay<Void>()
     }
     
     @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
@@ -50,9 +52,17 @@ public final class FriendListViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
         
-        friendListUseCase
-            .fetchFriendList()
-            .bind(to: output.friendList)
+        input.viewDidLoad
+            .withUnretained(self)
+            .flatMap { `self`, _ in self.friendListUseCase.fetchFriendList() }
+            .withUnretained(self)
+            .bind(onNext: { `self`, friendList in
+                if friendList.isEmpty {
+                    self.output.shouldShowEmptyList.accept(())
+                } else {
+                    self.output.shouldShowFriendList.accept(friendList)
+                }
+            })
             .disposed(by: disposeBag)
     }
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ProfileCharacter: Codable, Equatable {
+public struct ProfileCharacter: Codable, Hashable {
     public var color: StoolColor
     public var shape: StoolShape
     

@@ -14,8 +14,7 @@ import SnapKit
 import DesignSystem
 import Utils
 
-public final class LaunchScreenViewController: UIViewController, ViewType {
-    
+public final class LaunchScreenViewController: LifePoopViewController, ViewType {
     
     private let mainLogoImageView = UIImageView(image: ImageAsset.logoLarge.image)
     
@@ -24,12 +23,6 @@ public final class LaunchScreenViewController: UIViewController, ViewType {
     public var viewModel: LaunchScreenViewModel?
     
     private let disposeBag = DisposeBag()
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        configureUI()
-        layoutUI()
-    }
 
     public func bindInput(to viewModel: LaunchScreenViewModel) {
         let input = viewModel.input
@@ -41,20 +34,17 @@ public final class LaunchScreenViewController: UIViewController, ViewType {
     }
     
     public func bindOutput(from viewModel: LaunchScreenViewModel) { }
-}
-
-// MARK: - UI Configuration
-
-private extension LaunchScreenViewController {
-    func configureUI() {
+    
+    public override func configureUI() {
+        super.configureUI()
+        
         view.backgroundColor = .systemBackground
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
-}
-
-// MARK: - UI Layout
-
-private extension LaunchScreenViewController {
-    func layoutUI() {
+    
+    public override func layoutUI() {
+        super.layoutUI()
+        
         let frameHeight = view.frame.height
 
         view.addSubview(mainLogoImageView)

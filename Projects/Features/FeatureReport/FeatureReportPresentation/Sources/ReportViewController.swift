@@ -23,11 +23,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let scrollView = UIScrollView()
     private let scrollContentView = UIView()
     
-    private let periodSegmentControl: LifePoopSegmentControl = {
-        let segmentControl = LifePoopSegmentControl(titles: ReportPeriod.titles)
-        segmentControl.selectSegment(at: 0)
-        return segmentControl
-    }()
+    private let periodSegmentControl = LifePoopSegmentControl()
     
     private let reportTotalStoolCountView = ReportTotalStoolCountView()
     private lazy var totalStoolCountContainerView: ReportContainerView = {
@@ -99,6 +95,16 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     
     public func bindOutput(from viewModel: ReportViewModel) {
         let output = viewModel.output
+        
+        output.updatePeriodSegmentTitles
+            .asSignal()
+            .emit(onNext: periodSegmentControl.setTitles(_:))
+            .disposed(by: disposeBag)
+        
+        output.selectPeriodSegmentIndexAt
+            .asSignal()
+            .emit(to: periodSegmentControl.rx.selectedSegmentIndex)
+            .disposed(by: disposeBag)
         
         output.updateUserNickname
             .asSignal()

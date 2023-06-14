@@ -26,6 +26,8 @@ public final class ReportViewModel: ViewModelType {
     }
     
     public struct Output {
+        let updatePeriodSegmentTitles = PublishRelay<[String]>()
+        let selectPeriodSegmentIndexAt = PublishRelay<Int>()
         let updatePeriodDescription = PublishRelay<String>()
         let updateUserNickname = PublishRelay<String>()
         let totalStoolCount = PublishRelay<(periodText: String, count: Int)>()
@@ -48,6 +50,16 @@ public final class ReportViewModel: ViewModelType {
     
     public init(coordinator: ReportCoordinator?) {
         self.coordinator = coordinator
+        
+        input.viewDidLoad
+            .map { ReportPeriod.titles }
+            .bind(to: output.updatePeriodSegmentTitles)
+            .disposed(by: disposeBag)
+        
+        input.viewDidLoad
+            .map { .zero }
+            .bind(to: output.selectPeriodSegmentIndexAt)
+            .disposed(by: disposeBag)
         
         let fetchedUserNickname = input.viewDidLoad
             .withUnretained(self)

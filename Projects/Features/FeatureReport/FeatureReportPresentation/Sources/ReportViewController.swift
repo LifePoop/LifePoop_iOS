@@ -106,14 +106,9 @@ public final class ReportViewController: LifePoopViewController, ViewType {
             .emit(to: periodSegmentControl.rx.selectedSegmentIndex)
             .disposed(by: disposeBag)
         
-        output.updateUserNickname
+        output.updateStoolCountInfo
             .asSignal()
-            .emit(onNext: reportTotalStoolCountView.update(nickname:))
-            .disposed(by: disposeBag)
-        
-        output.totalStoolCount
-            .asSignal()
-            .emit(onNext: reportTotalStoolCountView.update(periodText:count:))
+            .emit(onNext: reportTotalStoolCountView.update(nickname:periodText:count:))
             .disposed(by: disposeBag)
         
         output.totalSatisfaction

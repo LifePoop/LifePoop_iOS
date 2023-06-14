@@ -29,8 +29,7 @@ public final class ReportViewModel: ViewModelType {
         let updatePeriodSegmentTitles = PublishRelay<[String]>()
         let selectPeriodSegmentIndexAt = PublishRelay<Int>()
         let updatePeriodDescription = PublishRelay<String>()
-        let updateUserNickname = PublishRelay<String>()
-        let totalStoolCount = PublishRelay<(periodText: String, count: Int)>()
+        let updateStoolCountInfo = PublishRelay<(nickname: String, periodText: String, count: Int)>()
         let totalSatisfaction = PublishRelay<Int>()
         let totalDissatisfaction = PublishRelay<Int>()
         let totalStoolColor = PublishRelay<[(report: StoolColorReport, barWidthRatio: Double)]>()
@@ -61,25 +60,19 @@ public final class ReportViewModel: ViewModelType {
             .bind(to: output.selectPeriodSegmentIndexAt)
             .disposed(by: disposeBag)
         
-        let fetchedUserNickname = input.viewDidLoad
-            .withUnretained(self)
-            .flatMapMaterialized { `self`, _ in
-                self.nicknameUseCase.nickname
-            }
-            .share()
-        
-        fetchedUserNickname
-            .compactMap { $0.element }
-            .compactMap { $0 }
-            .bind(to: output.updateUserNickname)
-            .disposed(by: disposeBag)
-        
         input.periodDidSelect
             .compactMap { $0 }
             .compactMap { ReportPeriod(rawValue: $0)?.description }
             .map { "최근 \($0) 내 배변일지" }
             .bind(to: output.updatePeriodDescription)
             .disposed(by: disposeBag)
+        
+        let fetchedUserNickname = input.viewDidLoad
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.nicknameUseCase.nickname
+            }
+            .share()
         
         let fetchedUserReport = input.periodDidSelect
             .compactMap { $0 }
@@ -90,10 +83,20 @@ public final class ReportViewModel: ViewModelType {
             }
             .share()
         
-        fetchedUserReport
+        let userNickname = fetchedUserNickname
+            .compactMap { $0.element }
+            .compactMap { $0 }
+            .share()
+        let stoolCountInfo = fetchedUserReport
             .compactMap { $0.element }
             .map { ($0.period.description, $0.totalStoolCount) }
-            .bind(to: output.totalStoolCount)
+            .share()
+        Observable.combineLatest(userNickname, stoolCountInfo)
+            .map { nickname, info in
+                let (periodText, count) = info
+                return (nickname: nickname, periodText: periodText, count: count)
+            }
+            .bind(to: output.updateStoolCountInfo)
             .disposed(by: disposeBag)
         
         fetchedUserReport

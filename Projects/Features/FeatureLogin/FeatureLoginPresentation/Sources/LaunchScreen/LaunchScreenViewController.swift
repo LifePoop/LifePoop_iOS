@@ -8,6 +8,7 @@
 
 import UIKit
 
+import Lottie
 import RxSwift
 import SnapKit
 
@@ -16,19 +17,28 @@ import Utils
 
 public final class LaunchScreenViewController: LifePoopViewController, ViewType {
     
-    private let mainLogoImageView = UIImageView(image: ImageAsset.logoLarge.image)
+    private let animationView: LottieAnimationView = {
+        let animationView = LottieAnimationView(name: "onboarding")
+        animationView.contentMode = .scaleAspectFit
+        return animationView
+    }()
     
-    private let mainCharacterImageView = UIImageView(image: ImageAsset.characterLarge.image)
-
     public var viewModel: LaunchScreenViewModel?
     
     private let disposeBag = DisposeBag()
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        animationView.play { [weak self] _ in
+            self?.viewModel?.input.didFinishAnimating.accept(())
+        }
+    }
 
     public func bindInput(to viewModel: LaunchScreenViewModel) {
         let input = viewModel.input
         
         rx.viewWillAppear
-            .debounce(.seconds(1), scheduler: MainScheduler.instance)
             .bind(to: input.viewWillAppear)
             .disposed(by: disposeBag)
     }
@@ -45,19 +55,10 @@ public final class LaunchScreenViewController: LifePoopViewController, ViewType 
     public override func layoutUI() {
         super.layoutUI()
         
-        let frameHeight = view.frame.height
-
-        view.addSubview(mainLogoImageView)
-        view.addSubview(mainCharacterImageView)
-        
-        mainLogoImageView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(frameHeight*0.22)
-        }
-        
-        mainCharacterImageView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(frameHeight*0.38)
+        view.addSubview(animationView)
+        animationView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.height.equalTo(250)
         }
     }
 }

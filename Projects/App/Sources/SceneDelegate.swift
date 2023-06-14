@@ -50,6 +50,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         initAppleAuthInfo(with: window)
         
         let rootNavigationController = UINavigationController()
+        rootNavigationController.view.backgroundColor = .systemBackground
         appCoordinator = DefaultAppCoordinator(navigationController: rootNavigationController)
         appCoordinator?.start()
         

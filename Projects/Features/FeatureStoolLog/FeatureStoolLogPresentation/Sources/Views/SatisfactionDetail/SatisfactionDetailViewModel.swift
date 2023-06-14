@@ -28,7 +28,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
     }
     
     public struct Output {
-        let titleText = BehaviorRelay<String>(value: "왜 만족했나요?")
+        let titleText = BehaviorRelay<String>(value: "")
         let selectableColors = Observable.of(StoolColor.allCases)
         let selectableShapes = BehaviorRelay<[ColoredStoolShape]>(value: [])
         let selectableSizes = Observable.of(StoolSize.allCases)
@@ -50,7 +50,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
     private func bindInputToOutput() {
         
         input.isSatisfied
-            .map { $0 ? "왜 만족했나요?" : "왜 불만족했나요?" }
+            .map { $0 ? "만족한 이유를 알려주세요!" : "불만족한 이유를 알려주세요!" }
             .bind(to: output.titleText)
             .disposed(by: disposeBag)
         

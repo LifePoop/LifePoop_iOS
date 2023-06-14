@@ -18,10 +18,8 @@ import DesignSystem
 import DesignSystemReactive
 import Utils
 
-public final class SatisfactionDetailViewController: UIViewController, ViewType {
-    
-    private let leftBarButton: UIBarButtonItem = UIBarButtonItem(image: ImageAsset.expandLeft.original)
-    
+public final class SatisfactionDetailViewController: LifePoopViewController, ViewType {
+        
     private let colorTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = ColorAsset.black.color
@@ -92,24 +90,14 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
     public var viewModel: SatisfactionDetailViewModel?
     private var disposeBag = DisposeBag()
     
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        navigationItem.leftBarButtonItem = leftBarButton
-    }
-    
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        configureUI()
+        addSubViews()
     }
     
     public func bindInput(to viewModel: SatisfactionDetailViewModel) {
         let input = viewModel.input
-        
-        leftBarButton.rx.tap
-            .bind(to: input.didTapLeftBarbutton)
-            .disposed(by: disposeBag)
-        
+                
         completeButton.rx.tap
             .bind(to: input.didTapCompleteButton)
             .disposed(by: disposeBag)
@@ -153,14 +141,7 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
         let output = viewModel.output
         
         output.titleText
-            .asDriver()
-            .drive(onNext: { [weak self] title in
-                let titleLabel = UILabel()
-                titleLabel.text = title
-                titleLabel.font = UIFont.systemFont(ofSize: 18)
-                titleLabel.textColor = ColorAsset.black.color
-                self?.navigationItem.titleView = titleLabel
-            })
+            .bind(to: navigationItem.rx.title)
             .disposed(by: disposeBag)
         
         output.selectableColors
@@ -192,19 +173,8 @@ public final class SatisfactionDetailViewController: UIViewController, ViewType 
 
 private extension SatisfactionDetailViewController {
     
-    func configureUI() {
-        setAttributes()
-        addSubViews()
-    }
-    
-    func setAttributes() {
-        view.backgroundColor = .systemBackground
-    }
-    
     func addSubViews() {
-        
-        let viewHeight = view.frame.height
-        
+    
         view.addSubview(completeButton)
         completeButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(24)

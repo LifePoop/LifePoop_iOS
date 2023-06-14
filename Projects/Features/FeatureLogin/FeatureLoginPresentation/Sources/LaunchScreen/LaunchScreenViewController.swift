@@ -45,13 +45,6 @@ public final class LaunchScreenViewController: LifePoopViewController, ViewType 
     
     public func bindOutput(from viewModel: LaunchScreenViewModel) { }
     
-    public override func configureUI() {
-        super.configureUI()
-        
-        view.backgroundColor = .systemBackground
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-    
     public override func layoutUI() {
         super.layoutUI()
         

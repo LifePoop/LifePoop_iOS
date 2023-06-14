@@ -21,8 +21,8 @@ public final class MockReportUseCase: ReportUseCase {
         let mockWeekStoolReport = StoolReport(
             period: .week,
             totalStoolCount: 17,
-            totalSatisfaction: 12,
-            totalDissatisfaction: 5,
+            totalSatisfaction: 17,
+            totalDissatisfaction: 0,
             totalStoolColor: [
                 StoolColorReport(color: .brown, count: 4),
                 StoolColorReport(color: .black, count: 6),
@@ -110,31 +110,31 @@ public final class MockReportUseCase: ReportUseCase {
 
         let mockYearStoolReport = StoolReport(
             period: .year,
-            totalStoolCount: 9600000000, // MARK: 임의의 매우 큰 수 입력
-            totalSatisfaction: 600,
-            totalDissatisfaction: 360,
+            totalStoolCount: 96000, // MARK: 임의의 매우 큰 수 입력
+            totalSatisfaction: 60000,
+            totalDissatisfaction: 36000,
             totalStoolColor: [
-                StoolColorReport(color: .brown, count: 480),
-                StoolColorReport(color: .black, count: 288),
-                StoolColorReport(color: .green, count: 180),
-                StoolColorReport(color: .pink, count: 4),
-                StoolColorReport(color: .yellow, count: 8)
+                StoolColorReport(color: .brown, count: 48000),
+                StoolColorReport(color: .black, count: 28800),
+                StoolColorReport(color: .green, count: 18000),
+                StoolColorReport(color: .pink, count: 400),
+                StoolColorReport(color: .yellow, count: 800)
             ],
             totalStoolShape: [
-                StoolShapeReport(shape: .soft, count: 384),
-                StoolShapeReport(shape: .good, count: 336),
-                StoolShapeReport(shape: .hard, count: 240)
+                StoolShapeReport(shape: .soft, count: 38400),
+                StoolShapeReport(shape: .good, count: 33600),
+                StoolShapeReport(shape: .hard, count: 24000)
             ],
             totalStoolSize: [
-                StoolSizeReport(shape: .soft, size: .small, count: 192),
-                StoolSizeReport(shape: .soft, size: .medium, count: 120),
-                StoolSizeReport(shape: .soft, size: .large, count: 72),
-                StoolSizeReport(shape: .good, size: .small, count: 168),
-                StoolSizeReport(shape: .good, size: .medium, count: 112),
-                StoolSizeReport(shape: .good, size: .large, count: 56),
-                StoolSizeReport(shape: .hard, size: .small, count: 120),
-                StoolSizeReport(shape: .hard, size: .medium, count: 96),
-                StoolSizeReport(shape: .hard, size: .large, count: 24)
+                StoolSizeReport(shape: .soft, size: .small, count: 19200),
+                StoolSizeReport(shape: .soft, size: .medium, count: 12000),
+                StoolSizeReport(shape: .soft, size: .large, count: 7200),
+                StoolSizeReport(shape: .good, size: .small, count: 16800),
+                StoolSizeReport(shape: .good, size: .medium, count: 11200),
+                StoolSizeReport(shape: .good, size: .large, count: 5600),
+                StoolSizeReport(shape: .hard, size: .small, count: 12000),
+                StoolSizeReport(shape: .hard, size: .medium, count: 9600),
+                StoolSizeReport(shape: .hard, size: .large, count: 2400)
             ]
         )
         

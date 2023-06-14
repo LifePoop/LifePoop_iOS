@@ -59,13 +59,17 @@ final class ReportTotalSatisfactionView: UIView {
     
     private var satisfactionCount: Int = 0 {
         didSet {
-            satisfactionCountLabel.startCountingAnimation(count: satisfactionCount, suffix: "번")
+            satisfactionCountLabel.startCountingAnimation(upTo: satisfactionCount) { [weak self] animatingCount in
+                self?.satisfactionCountLabel.text = "\(animatingCount)번"
+            }
         }
     }
     
     private var dissatisfactionCount: Int = 0 {
         didSet {
-            dissatisfactionCountLabel.startCountingAnimation(count: dissatisfactionCount, suffix: "번")
+            dissatisfactionCountLabel.startCountingAnimation(upTo: dissatisfactionCount) { [weak self] animatingCount in
+                self?.dissatisfactionCountLabel.text = "\(animatingCount)번"
+            }
         }
     }
     

@@ -25,22 +25,6 @@ final class ReportTotalStoolCountView: UIView {
         return label
     }()
     
-    private var nickname: String = "사용자" {
-        didSet {
-            updateCountDescription()
-        }
-    }
-    private var periodText: String = "" {
-        didSet {
-            updateCountDescription()
-        }
-    }
-    private var count: Int = 0 {
-        didSet {
-            updateCountDescription()
-        }
-    }
-    
     init() {
         super.init(frame: .zero)
         layoutUI()
@@ -51,30 +35,8 @@ final class ReportTotalStoolCountView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func update(nickname: String) {
-        self.nickname = nickname
-    }
-    
-    func update(periodText: String, count: Int) {
-        self.periodText = periodText
-        self.count = count
-    }
-    
-    private func updateCountDescription() {
-        let attributedString = NSMutableAttributedString(
-            string: "최근 \(periodText) 내 \(nickname)님은 ",
-            attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)]
-        )
-        
-        let countString = NSAttributedString(string: "\(count)번 ", attributes: [
-            NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20),
-            NSAttributedString.Key.foregroundColor: ColorAsset.primary.color
-        ])
-        
-        attributedString.append(countString)
-        attributedString.append(NSAttributedString(string: "변했어요"))
-        
-        countDescriptionLabel.attributedText = attributedString
+    func update(nickname: String, periodText: String, count: Int) {
+        animatingCountDescription(nickname: nickname, periodText: periodText, count: count)
     }
     
     private func layoutUI() {
@@ -84,4 +46,26 @@ final class ReportTotalStoolCountView: UIView {
             make.edges.equalToSuperview()
         }
     }
+}
+
+// MARK: - Animating Methods
+
+private extension ReportTotalStoolCountView {
+    func animatingCountDescription(nickname: String, periodText: String, count: Int) {
+        let prefixString = "최근 \(periodText) 내 \(nickname)님은 "
+        let suffixString = " 변했어요"
+        countDescriptionLabel.startCountingAnimation(upTo: count) { [weak self] currentCount in
+            let countString = "\(currentCount)번"
+            let fullString = "\(prefixString)\(countString)\(suffixString)"
+            self?.countDescriptionLabel.text = fullString
+            if let range = self?.countDescriptionLabel.rangeOfString(target: countString) {
+                self?.countDescriptionLabel.applyFontAndColor(
+                    font: .boldSystemFont(ofSize: 20),
+                    color: ColorAsset.primary.color,
+                    range: range
+                )
+            }
+        }
+    }
+    
 }

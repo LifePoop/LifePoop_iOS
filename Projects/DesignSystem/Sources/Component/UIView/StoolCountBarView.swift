@@ -39,11 +39,11 @@ public final class StoolCountBarView: UIView {
     public init(color: UIColor, count: Int, barWidthRatio: CGFloat) {
         barView.backgroundColor = color
         countLabel.text = "\(count)번"
-        self.barWidthPercentage = barWidthRatio
         self.countLabelMaxWidth = countLabel.intrinsicContentSize.width
+        self.barWidthPercentage = barWidthRatio
         super.init(frame: .zero)
         layoutUI()
-        countLabel.startCountingAnimation(count: count, suffix: "번")
+        startCountLabelAnimating(upTo: count)
     }
     
     @available(*, unavailable)
@@ -71,6 +71,12 @@ public final class StoolCountBarView: UIView {
 // MARK: - Animating Methods
 
 private extension StoolCountBarView {
+    func startCountLabelAnimating(upTo count: Int) {
+        countLabel.startCountingAnimation(upTo: count) { [weak self] animatingCount in
+            self?.countLabel.text = "\(animatingCount)번"
+        }
+    }
+    
     func expandBarViewWithAnimation() {
         UIView.animate(withDuration: animatingDuration) {
             self.barView.snp.updateConstraints { make in

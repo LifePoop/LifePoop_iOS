@@ -15,7 +15,20 @@ public enum ReportPeriod: Int, CaseIterable {
     case threeMonths
     case year
     
-    public var text: String {
+    public var title: String {
+        switch self {
+        case .week:
+            return "최근"
+        case .month:
+            return "1개월"
+        case .threeMonths:
+            return "3개월"
+        case .year:
+            return "1년"
+        }
+    }
+    
+    public var description: String {
         switch self {
         case .week:
             return "7일"
@@ -28,7 +41,7 @@ public enum ReportPeriod: Int, CaseIterable {
         }
     }
     
-    public static var texts: [String] {
-        return allCases.map { $0.text }
+    public static var titles: [String] {
+        return allCases.map { $0.title }
     }
 }

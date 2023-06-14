@@ -26,7 +26,7 @@ public final class ReportViewModel: ViewModelType {
     }
     
     public struct Output {
-        let updateTitle = PublishRelay<String>()
+        let updatePeriodDescription = PublishRelay<String>()
         let updateUserNickname = PublishRelay<String>()
         let totalStoolCount = PublishRelay<(periodText: String, count: Int)>()
         let totalSatisfaction = PublishRelay<Int>()
@@ -64,9 +64,9 @@ public final class ReportViewModel: ViewModelType {
         
         input.periodDidSelect
             .compactMap { $0 }
-            .compactMap { ReportPeriod(rawValue: $0)?.text }
+            .compactMap { ReportPeriod(rawValue: $0)?.description }
             .map { "최근 \($0) 내 배변일지" }
-            .bind(to: output.updateTitle)
+            .bind(to: output.updatePeriodDescription)
             .disposed(by: disposeBag)
         
         let fetchedUserReport = input.periodDidSelect
@@ -80,7 +80,7 @@ public final class ReportViewModel: ViewModelType {
         
         fetchedUserReport
             .compactMap { $0.element }
-            .map { ($0.period.text, $0.totalStoolCount) }
+            .map { ($0.period.description, $0.totalStoolCount) }
             .bind(to: output.totalStoolCount)
             .disposed(by: disposeBag)
         

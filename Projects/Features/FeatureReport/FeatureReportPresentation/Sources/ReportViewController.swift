@@ -24,7 +24,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let scrollContentView = UIView()
     
     private let periodSegmentControl: LifePoopSegmentControl = {
-        let segmentControl = LifePoopSegmentControl(titles: ReportPeriod.texts)
+        let segmentControl = LifePoopSegmentControl(titles: ReportPeriod.titles)
         segmentControl.selectSegment(at: 0)
         return segmentControl
     }()
@@ -50,7 +50,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let reportTotalColorView = ReportTotalColorView()
     private lazy var totalColorContainerView: ReportContainerView = {
         return ReportContainerView(
-            title: "변의 색",
+            title: "색깔",
             innerView: reportTotalColorView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16))
         )
@@ -59,7 +59,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let reportTotalShapeView = ReportTotalShapeView()
     private lazy var totalShapeContainerView: ReportContainerView = {
         return ReportContainerView(
-            title: "모양", // "변의 모양"
+            title: "모양",
             innerView: reportTotalShapeView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 16, left: 12.5, bottom: 16, right: 12.5))
         )
@@ -68,7 +68,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let reportTotalSizeView = ReportTotalSizeView()
     private lazy var totalSizeContainerView: ReportContainerView = {
         return ReportContainerView(
-            title: "크기", // "변의 크기"
+            title: "크기",
             innerView: reportTotalSizeView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 16, left: 13.5, bottom: 16, right: 13.5))
         )
@@ -100,11 +100,6 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: ReportViewModel) {
         let output = viewModel.output
         
-        output.updateTitle
-            .asSignal()
-            .emit(to: rx.title)
-            .disposed(by: disposeBag)
-        
         output.updateUserNickname
             .asSignal()
             .emit(onNext: reportTotalStoolCountView.update(nickname:))
@@ -135,7 +130,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     
     public override func configureUI() {
         super.configureUI()
-        
+        title = "변 기록 리포트"
     }
     
     public override func layoutUI() {

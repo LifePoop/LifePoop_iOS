@@ -70,7 +70,7 @@ public final class LaunchScreenViewModel: ViewModelType {
         }
         .bind(onNext: { hasToken in
             if hasToken {
-                coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                coordinator?.coordinate(by: .shouldSkipLoginFlow)
             } else {
                 coordinator?.coordinate(by: .shouldShowLoginScene)
             }

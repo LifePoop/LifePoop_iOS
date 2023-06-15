@@ -12,6 +12,7 @@ import CoreEntity
 
 public enum LoginCoordinateAction {
     case shouldShowLaunchScreen
+    case shouldSkipLoginFlow
     case shouldShowLoginScene
     case shouldShowDetailForm(title: String, detailText: String)
     case shouldPopCurrentScene

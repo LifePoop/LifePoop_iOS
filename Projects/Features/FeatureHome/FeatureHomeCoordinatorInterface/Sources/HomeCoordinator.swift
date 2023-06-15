@@ -12,4 +12,10 @@ import Utils
 
 public protocol HomeCoordinator: Coordinator {
     func coordinate(by coordinateAction: HomeCoordinateAction)
+    func start(animated: Bool)
+}
+
+extension HomeCoordinator {
+    
+    public func start() { }
 }

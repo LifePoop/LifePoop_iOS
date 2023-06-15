@@ -67,6 +67,7 @@ public enum FeatureModuleType: String, CaseIterable {
     case FriendList
     case StoolLog
     case Setting
+    case Report
     
     var layerModules: [FeatureLayerModuleType] {
         switch self {
@@ -77,6 +78,8 @@ public enum FeatureModuleType: String, CaseIterable {
         case .StoolLog:
             return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         case .Setting:
+            return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
+        case .Report:
             return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         case .FriendList:
             return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]

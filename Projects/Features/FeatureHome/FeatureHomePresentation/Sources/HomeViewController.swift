@@ -15,7 +15,7 @@ import SnapKit
 import DesignSystem
 import Utils
 
-public final class HomeViewController: UIViewController, ViewType {
+public final class HomeViewController: LifePoopViewController, ViewType {
     
     private let settingBarButtonItem = UIBarButtonItem(image: ImageAsset.iconSetting.original)
     private let reportBarButtonItem = UIBarButtonItem(image: ImageAsset.iconReport.original)
@@ -76,7 +76,7 @@ public final class HomeViewController: UIViewController, ViewType {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: StoolLogHeaderView.identifier
         )
-        collectionView.contentInset = .zero
+        collectionView.contentInset = UIEdgeInsets(top: .zero, left: .zero, bottom: 64, right: .zero)
         return collectionView
     }()
     
@@ -85,11 +85,7 @@ public final class HomeViewController: UIViewController, ViewType {
     public var viewModel: HomeViewModel?
     private let disposeBag = DisposeBag()
     
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        configureUI()
-        layoutUI()
-    }
+    // MARK: - ViewModel Binding
     
     public func bindInput(to viewModel: HomeViewModel) {
         let input = viewModel.input
@@ -105,7 +101,7 @@ public final class HomeViewController: UIViewController, ViewType {
         reportBarButtonItem.rx.tap
             .bind(to: input.reportButtonDidTap)
             .disposed(by: disposeBag)
-
+        
         stoolLogButton.rx.tap
             .bind(to: input.stoolLogButtonDidTap)
             .disposed(by: disposeBag)
@@ -124,22 +120,18 @@ public final class HomeViewController: UIViewController, ViewType {
             .drive(onNext: stoolLogCollectionViewDiffableDataSource.update)
             .disposed(by: disposeBag)
     }
-}
-
-// MARK: - UI Configuration
-
-private extension HomeViewController {
-    func configureUI() {
+    
+    // MARK: - UI Setup
+    
+    public override func configureUI() {
+        super.configureUI()
         view.backgroundColor = .systemBackground
         navigationItem.leftBarButtonItem = lifePoopLogoBarButtonItem
-        navigationItem.rightBarButtonItems = [reportBarButtonItem, settingBarButtonItem]
+        navigationItem.rightBarButtonItems = [settingBarButtonItem, reportBarButtonItem]
     }
-}
-
-// MARK: - UI Layout
-
-private extension HomeViewController {
-    func layoutUI() {
+    
+    public override func layoutUI() {
+        super.layoutUI()
         view.addSubview(collectionViewTopSeparatorView)
         view.addSubview(collectionViewBottonSeparatorView)
         view.addSubview(friendListCollectionView)

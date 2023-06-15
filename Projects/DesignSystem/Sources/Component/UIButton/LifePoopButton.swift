@@ -10,7 +10,11 @@ import UIKit
 
 public final class LifePoopButton: PaddingButton {
     
-    private let title: String
+    public var title: String {
+        didSet {
+            updateTitle()
+        }
+    }
     
     public override var isHighlighted: Bool {
         willSet {
@@ -49,6 +53,12 @@ public final class LifePoopButton: PaddingButton {
         clipsToBounds = true
         layer.cornerRadius = 12
         backgroundColor = ColorAsset.primary.color
+        
+        updateTitle()
+    }
+    
+    private func updateTitle() {
+        
         let attributedTitle = NSAttributedString(
             string: title,
             attributes: [

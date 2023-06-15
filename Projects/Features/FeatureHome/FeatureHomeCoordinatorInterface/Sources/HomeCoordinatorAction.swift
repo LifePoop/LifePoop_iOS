@@ -13,4 +13,5 @@ public enum HomeCoordinateAction {
     case flowDidFinish
     case stoolLogButtonDidTap
     case settingButtonDidTap
+    case reportButtonDidTap
 }

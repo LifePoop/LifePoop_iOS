@@ -16,7 +16,7 @@ import SnapKit
 import DesignSystem
 import Utils
 
-public final class SatisfactionSelectViewController: UIViewController, ViewType {
+public final class SatisfactionSelectViewController: LifePoopViewController, ViewType {
   
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -34,6 +34,7 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
         button.setImage(ImageAsset.goodDeselected.image, for: .normal)
         button.setImage(ImageAsset.goodSelected.image, for: .highlighted)
         button.setImage(ImageAsset.goodSelected.image, for: .selected)
+        button.imageView?.contentMode = .scaleAspectFit
         return button
     }()
     
@@ -41,7 +42,7 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
         let label = UILabel()
         label.textColor = ColorAsset.black.color
         label.text = "네, 만족해요"
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         label.sizeToFit()
         return label
     }()
@@ -51,6 +52,7 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
         button.setImage(ImageAsset.badDeselected.image, for: .normal)
         button.setImage(ImageAsset.badSelected.image, for: .highlighted)
         button.setImage(ImageAsset.badSelected.image, for: .selected)
+        button.imageView?.contentMode = .scaleAspectFit
         return button
     }()
     
@@ -58,7 +60,7 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
         let label = UILabel()
         label.textColor = ColorAsset.black.color
         label.text = "아니요, 불만족해요"
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         label.sizeToFit()
         return label
     }()
@@ -66,11 +68,6 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
     public var viewModel: SatisfactionSelectViewModel?
     private var disposeBag = DisposeBag()
     
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        configureUI()
-    }
     
     public func bindInput(to viewModel: SatisfactionSelectViewModel) {
         let input = viewModel.input
@@ -103,32 +100,29 @@ public final class SatisfactionSelectViewController: UIViewController, ViewType 
             })
             .disposed(by: disposeBag)        
     }
-}
-
-private extension SatisfactionSelectViewController {
     
-    func configureUI() {
-        setAttributes()
-        addSubViews()
+    public override func configureUI() {
+        super.configureUI()
+        
+        view.backgroundColor = UIColor.systemBackground
+        navigationItem.title = "잘 변했나요?"
     }
     
-    func addSubViews() {
-        view.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(10)
-        }
+    public override func layoutUI() {
+        super.layoutUI()
         
         view.addSubview(satisfactionButton)
         satisfactionButton.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.centerY).inset(64)
             make.leading.equalToSuperview().offset(82)
+            make.width.height.equalTo(62)
         }
         
         view.addSubview(disatisfactionButton)
         disatisfactionButton.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.centerY).inset(64)
             make.trailing.equalToSuperview().inset(82)
+            make.width.height.equalTo(62)
         }
         
         view.addSubview(satisfactionLabel)
@@ -144,7 +138,4 @@ private extension SatisfactionSelectViewController {
         }
     }
     
-    func setAttributes() {
-        view.backgroundColor = ColorAsset.white.color
-    }
 }

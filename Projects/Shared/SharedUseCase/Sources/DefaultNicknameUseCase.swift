@@ -44,7 +44,7 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
         .map {
             let isValid =  !($0 || $1 || $2 || $3)
             let isEmpty = $3
-            let status: NicknameInputStatus.Status = isEmpty  ? .none(description: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
+            let status: NicknameInputStatus.Status = isEmpty  ? .impossible(description: "닉네임을 입력해주세요")
                                                      :isValid ? .possible(description: "사용 가능한 닉네임이에요")
                                                               : .impossible(description: "사용 불가능한 닉네임이에요")
             return NicknameInputStatus(isValid: isValid, status: status)

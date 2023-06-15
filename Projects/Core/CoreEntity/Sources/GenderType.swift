@@ -20,7 +20,5 @@ public enum GenderType: Int, CaseIterable, CustomStringConvertible {
         case .female: return "여성"
         case .etc: return "기타"
         }
-    }
-    
-    public var index: Int { rawValue }
+    }    
 }

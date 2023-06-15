@@ -64,6 +64,7 @@ public enum SharedModuleType: String, CaseIterable {
 public enum FeatureModuleType: String, CaseIterable {
     case Login
     case Home
+    case FriendList
     case StoolLog
     case Setting
     case Report
@@ -79,6 +80,8 @@ public enum FeatureModuleType: String, CaseIterable {
         case .Setting:
             return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         case .Report:
+            return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
+        case .FriendList:
             return [.DIContainer, .Coordinator, .CoordinatorInterface, .Presentation, .UseCase, .Repository]
         }
     }

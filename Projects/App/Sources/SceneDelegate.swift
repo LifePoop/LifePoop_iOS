@@ -21,6 +21,9 @@ import FeatureLoginUseCase
 import FeatureSettingDIContainer
 import FeatureSettingRepository
 import FeatureSettingUseCase
+import FeatureFriendListDIContainer
+import FeatureFriendListRepository
+import FeatureFriendListUseCase
 import SharedDIContainer
 import SharedRepository
 import SharedUseCase
@@ -85,6 +88,7 @@ private extension SceneDelegate {
         registerLoginDependencies()
         registerHomeDependencies()
         registerSettingDependencies()
+        registerFriendListDependencies()
     }
     
     func registerCoreDependencies() {
@@ -120,6 +124,15 @@ private extension SceneDelegate {
     
     func registerSettingDependencies() {
         SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
+    }
+    
+    func registerFriendListDependencies() {
+        FriendListDIContainer.shared.register(service: FriendListUseCase.self) {
+            DefaultFriendListUseCase()
+        }
+        FriendListDIContainer.shared.register(service: FriendListRepository.self) {
+            DefaultFriendListRepository()
+        }
     }
 }
 

@@ -77,8 +77,8 @@ private extension DefaultLoginCoordinator {
     }
     
     func showNicknameViewController(with authInfo: UserAuthInfoEntity) {
-        let viewController = NicknameViewController()
-        let viewModel = NicknameViewModel(coordinator: self, authInfo: authInfo)
+        let viewController = SignupViewController()
+        let viewModel = SignupViewModel(coordinator: self, authInfo: authInfo)
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }

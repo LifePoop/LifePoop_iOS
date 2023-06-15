@@ -15,7 +15,7 @@ import SnapKit
 import DesignSystem
 import Utils
 
-public final class LoginViewController: UIViewController, ViewType {
+public final class LoginViewController: LifePoopViewController, ViewType {
     
     private let pageControl: UIPageControl = {
         let pageControl = UIPageControl()
@@ -63,35 +63,34 @@ public final class LoginViewController: UIViewController, ViewType {
     public var viewModel: LoginViewModel?
     private var disposeBag = DisposeBag()
 
-    private let bannerImages = [
-        ImageAsset.bannerFirst.image.pngData(),
-        ImageAsset.bannerSecond.image.pngData(),
-        ImageAsset.bannerThird.image.pngData()
-    ]
-    
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        configureUI()
-        layoutUI()
-        
-        viewModel?.output.bannerImages.accept(bannerImages.compactMap { $0 })
-    }
-    
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        navigationController?.setNavigationBarHidden(true, animated: false)
-    }
-    
-    public override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-    
     public func bindInput(to viewModel: LoginViewModel) {
         let input = viewModel.input
         
+        rx.viewDidLoad
+            .map {
+                [
+                    ImageAsset.bannerFirst.image.pngData(),
+                    ImageAsset.bannerSecond.image.pngData(),
+                    ImageAsset.bannerThird.image.pngData()
+                ].compactMap { $0 }
+            }
+            .bind(to: viewModel.output.bannerImages)
+            .disposed(by: disposeBag)
+        
+        rx.viewWillAppear
+            .withUnretained(self)
+            .bind { `self`, _ in
+                self.navigationController?.setNavigationBarHidden(true, animated: false)
+            }
+            .disposed(by: disposeBag)
+        
+        rx.viewDidDisappear
+            .withUnretained(self)
+            .bind { `self`, _ in
+                self.navigationController?.setNavigationBarHidden(false, animated: false)
+            }
+            .disposed(by: disposeBag)
+
         kakaoTalkLoginButon.rx.tap
             .bind(to: input.didTapKakaoLoginButton)
             .disposed(by: disposeBag)
@@ -151,20 +150,10 @@ public final class LoginViewController: UIViewController, ViewType {
             })
             .disposed(by: disposeBag)
     }
-}
-
-// MARK: - UI Configuration
-
-private extension LoginViewController {
-    func configureUI() {
-        view.backgroundColor = .systemBackground
-    }
-}
-
-// MARK: - UI Layout
-
-private extension LoginViewController {
-    func layoutUI() {
+    
+    public override func layoutUI() {
+        super.layoutUI()
+        
         let frameHeight = view.frame.height
         let frameWidth = view.frame.width
 

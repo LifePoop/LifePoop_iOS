@@ -113,6 +113,7 @@ private extension SceneDelegate {
     
     func registerLoginDependencies() {
         LoginDIContainer.shared.register(service: LoginUseCase.self) { DefaultLoginUseCase() }
+        LoginDIContainer.shared.register(service: SignupUseCase.self) { DefaultSignupUseCase() }
         LoginDIContainer.shared.register(service: LoginRepository.self) { DefaultLoginRepository() }
     }
     

@@ -16,10 +16,13 @@ import Utils
 
 final class ColorSelectionCell: UICollectionViewCell {
     
-    private let imageView: UIImageView = UIImageView(image: ImageAsset.colorBlackDeselected.original)
-
+    private let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
     private var selectedImage: UIImage?
-
     private var deselectedImage: UIImage?
         
     override var isSelected: Bool {
@@ -38,10 +41,17 @@ final class ColorSelectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let isImageViewTouched = imageView.point(inside: point, with: event)
+        return isImageViewTouched
+    }
+    
     private func addSubViews() {
         
         contentView.addSubview(imageView)
         imageView.snp.makeConstraints { make in
+            make.height.equalToSuperview()
+            make.width.equalTo(imageView.snp.height)
             make.center.equalToSuperview()
         }
     }

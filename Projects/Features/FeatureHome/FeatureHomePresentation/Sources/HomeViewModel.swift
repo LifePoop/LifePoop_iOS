@@ -91,5 +91,12 @@ public final class HomeViewModel: ViewModelType {
                 self.coordinator?.coordinate(by: .settingButtonDidTap)
             }
             .disposed(by: disposeBag)
+        
+        input.reportButtonDidTap
+            .withUnretained(self)
+            .bind { `self`, _ in
+                self.coordinator?.coordinate(by: .reportButtonDidTap)
+            }
+            .disposed(by: disposeBag)
     }
 }

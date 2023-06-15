@@ -62,7 +62,6 @@ public final class LaunchScreenViewModel: ViewModelType {
             input.didFinishAnimating,
             input.didFinishPreparation
         )
-        .debounce(.milliseconds(200), scheduler: MainScheduler.instance)
         .withUnretained(self)
         .flatMapLatest { `self`, _ in
             self.userInfoUseCase.userInfo

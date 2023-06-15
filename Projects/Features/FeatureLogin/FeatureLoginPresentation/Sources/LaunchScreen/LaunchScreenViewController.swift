@@ -20,6 +20,7 @@ public final class LaunchScreenViewController: LifePoopViewController, ViewType 
     private let animationView: LottieAnimationView = {
         let animationView = LottieAnimationView(name: "onboarding")
         animationView.contentMode = .scaleAspectFit
+        animationView.animationSpeed = 1.2
         return animationView
     }()
     

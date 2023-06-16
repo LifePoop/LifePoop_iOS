@@ -33,14 +33,14 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
         self.flowCompletionDelegate =  flowCompletionDelegate
     }
     
-    public func start() {
-        coordinate(by: .flowDidStart)
+    public func start(animated: Bool) {
+        coordinate(by: .flowDidStart(animated: animated))
     }
-    
+        
     public func coordinate(by coordinateAction: HomeCoordinateAction) {
         switch coordinateAction {
-        case .flowDidStart:
-            pushHomeViewController()
+        case .flowDidStart(let animated):
+            pushHomeViewController(animated: animated)
         case .flowDidFinish:
             flowCompletionDelegate?.finishFlow()
         case .stoolLogButtonDidTap:
@@ -56,11 +56,11 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
 // MARK: - Coordinating Methods
 
 private extension DefaultHomeCoordinator {
-    func pushHomeViewController() {
+    func pushHomeViewController(animated: Bool) {
         let viewController = HomeViewController()
         let viewModel = HomeViewModel(coordinator: self)
         viewController.bind(viewModel: viewModel)
-        navigationController.setViewControllers([viewController], animated: true)
+        navigationController.setViewControllers([viewController], animated: animated)
     }
     
     func startStoolLogCoordinatorFlow() {
@@ -100,11 +100,11 @@ private extension DefaultHomeCoordinator {
     func presentBottomSheetController(contentViewController: UIViewController) -> BottomSheetController {
         let parentViewController = navigationController
         let bottomSheetController =  BottomSheetController(
-            bottomSheetHeight: navigationController.view.bounds.height * 0.5
+            bottomSheetHeight: 420
         )
         
         bottomSheetController.setBottomSheet(contentViewController: contentViewController)
-        bottomSheetController.showBottomSheet(toParent: navigationController)
+        bottomSheetController.showBottomSheet(toParent: parentViewController)
 
         return bottomSheetController
     }

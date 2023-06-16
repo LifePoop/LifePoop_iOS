@@ -35,25 +35,23 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
     }
     
     public func coordinate(by coordinateAction: LoginCoordinateAction) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            switch coordinateAction {
-            case .shouldShowLaunchScreen:
-                self.showLaunchScreenViewController()
-            case .shouldShowLoginScene:
-                self.showLoginViewController()
-            case .shouldShowDetailForm(let title, let detailText):
-                self.showDocumentViewController(title: title, detailText: detailText)
-            case .didTapKakaoLoginButton(let authInfo):
-                self.showNicknameViewController(with: authInfo)
-            case .didTapAppleLoginButton(let authInfo):
-                self.showNicknameViewController(with: authInfo)
-            case .shouldFinishLoginFlow:
-                self.finishFlow()
-            case .shouldPopCurrentScene:
-                self.popCurrentViewController()
-            }
+        switch coordinateAction {
+        case .shouldShowLaunchScreen:
+            showLaunchScreenViewController()
+        case .shouldSkipLoginFlow:
+            skipFlow()
+        case .shouldShowLoginScene:
+            showLoginViewController()
+        case .shouldShowDetailForm(let title, let detailText):
+            showDocumentViewController(title: title, detailText: detailText)
+        case .didTapKakaoLoginButton(let authInfo):
+            showNicknameViewController(with: authInfo)
+        case .didTapAppleLoginButton(let authInfo):
+            showNicknameViewController(with: authInfo)
+        case .shouldFinishLoginFlow:
+            finishFlow()
+        case .shouldPopCurrentScene:
+            popCurrentViewController()
         }
     }
 }
@@ -77,8 +75,8 @@ private extension DefaultLoginCoordinator {
     }
     
     func showNicknameViewController(with authInfo: UserAuthInfoEntity) {
-        let viewController = NicknameViewController()
-        let viewModel = NicknameViewModel(coordinator: self, authInfo: authInfo)
+        let viewController = SignupViewController()
+        let viewModel = SignupViewModel(coordinator: self, authInfo: authInfo)
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }
@@ -88,8 +86,12 @@ private extension DefaultLoginCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
+    func skipFlow() {
+        flowCompletionDelegate?.skipLoginFlow()
+    }
+    
     func finishFlow() {
-        flowCompletionDelegate?.showNextFlow()
+        flowCompletionDelegate?.finishLoginFlow()
     }
     
     func popCurrentViewController() {

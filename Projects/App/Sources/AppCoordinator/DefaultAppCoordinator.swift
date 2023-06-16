@@ -33,7 +33,9 @@ public final class DefaultAppCoordinator: AppCoordinator {
         case .appDidStart:
             startLoginCoordinatorFlow()
         case .accessTokenDidfetch:
-            startHomeCoordinatorFlow()
+            startHomeCoordinatorFlow(animated: false)
+        case .authenticationProcessDidFinish:
+            startHomeCoordinatorFlow(animated: true)
         }
     }
 }
@@ -50,22 +52,27 @@ private extension DefaultAppCoordinator {
         loginCoordinator.start()
     }
     
-    func startHomeCoordinatorFlow() {
+    func startHomeCoordinatorFlow(animated: Bool) {
         let homeCoordinator = DefaultHomeCoordinator(
             navigationController: navigationController,
             flowCompletionDelegate: self
         )
         add(childCoordinator: homeCoordinator)
-        homeCoordinator.start()
+        homeCoordinator.start(animated: animated)
     }
 }
 
 // MARK: - CompletionDelegate
 
 extension DefaultAppCoordinator: LoginCoordinatorCompletionDelegate {
-    public func showNextFlow() {
+    public func skipLoginFlow() {
         remove(childCoordinator: .login)
         coordinate(by: .accessTokenDidfetch)
+    }
+    
+    public func finishLoginFlow() {
+        remove(childCoordinator: .login)
+        coordinate(by: .authenticationProcessDidFinish)
     }
 }
 

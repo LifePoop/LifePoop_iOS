@@ -14,7 +14,7 @@ import RxSwift
 import DesignSystem
 
 public extension Reactive where Base == ConditionalTextField {
-    var text: ControlProperty<String> {
+    var textChanged: ControlProperty<String> {
         base.rx.controlProperty(
             editingEvents: .valueChanged,
             getter: { $0.text ?? "" },

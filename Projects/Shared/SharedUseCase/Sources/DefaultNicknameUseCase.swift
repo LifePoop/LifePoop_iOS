@@ -34,7 +34,7 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
             .logErrorIfDetected(category: .userDefaults)
     }
     
-    public func checkNicknameValidation(for input: String) -> Observable<NicknameInputStatus> {
+    public func checkNicknameValidation(for input: String) -> Observable<NicknameTextInput> {
         Observable.zip(
             hasAnyBlank(input: input),
             didExceedLimit(input: input),
@@ -44,10 +44,17 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
         .map {
             let isValid =  !($0 || $1 || $2 || $3)
             let isEmpty = $3
-            let status: NicknameInputStatus.Status = isEmpty  ? .none(description: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
-                                                     :isValid ? .possible(description: "사용 가능한 닉네임이에요")
-                                                              : .impossible(description: "사용 불가능한 닉네임이에요")
-            return NicknameInputStatus(isValid: isValid, status: status)
+            
+            if isEmpty {
+                return NicknameTextInput(isValid: isValid, status: .defaultWarning)
+            }
+            
+            switch isValid {
+            case true:
+                return NicknameTextInput(isValid: isValid, status: .possible)
+            case false:
+                return NicknameTextInput(isValid: isValid, status: .impossible)
+            }
         }
     }
 }

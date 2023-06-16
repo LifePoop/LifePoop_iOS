@@ -12,6 +12,9 @@ import CoreDIContainer
 import CoreNetworkService
 import CoreStorageService
 
+import FeatureFriendListDIContainer
+import FeatureFriendListRepository
+import FeatureFriendListUseCase
 import FeatureHomeDIContainer
 import FeatureHomeRepository
 import FeatureHomeUseCase
@@ -50,6 +53,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         initAppleAuthInfo(with: window)
         
         let rootNavigationController = UINavigationController()
+        
         appCoordinator = DefaultAppCoordinator(navigationController: rootNavigationController)
         appCoordinator?.start()
         
@@ -89,6 +93,7 @@ private extension SceneDelegate {
         registerHomeDependencies()
         registerSettingDependencies()
         registerReportDependencies()
+        registerFriendListDependencies()
     }
     
     func registerCoreDependencies() {
@@ -113,6 +118,7 @@ private extension SceneDelegate {
     
     func registerLoginDependencies() {
         LoginDIContainer.shared.register(service: LoginUseCase.self) { DefaultLoginUseCase() }
+        LoginDIContainer.shared.register(service: SignupUseCase.self) { DefaultSignupUseCase() }
         LoginDIContainer.shared.register(service: LoginRepository.self) { DefaultLoginRepository() }
     }
     
@@ -123,6 +129,16 @@ private extension SceneDelegate {
     
     func registerSettingDependencies() {
         SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
+        SettingDIContainer.shared.register(service: ProfileEditUseCase.self) { MockProfileEditUseCase() }
+    }
+    
+    func registerFriendListDependencies() {
+        FriendListDIContainer.shared.register(service: FriendListUseCase.self) {
+            DefaultFriendListUseCase()
+        }
+        FriendListDIContainer.shared.register(service: FriendListRepository.self) {
+            DefaultFriendListRepository()
+        }
     }
     
     func registerReportDependencies() {

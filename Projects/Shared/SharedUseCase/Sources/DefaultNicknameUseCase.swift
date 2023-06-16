@@ -30,11 +30,11 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
     
     public func updateNickname(to newNickname: String) -> Completable {
         return userDefaultsRepository
-            .updateValue(for: .userNickname, with: newNickname)
+            .updateValue(for: .isAutoLoginActivated, with: newNickname)
             .logErrorIfDetected(category: .userDefaults)
     }
     
-    public func checkNicknameValidation(for input: String) -> Observable<NicknameInputStatus> {
+    public func checkNicknameValidation(for input: String) -> Observable<NicknameTextInput> {
         Observable.zip(
             hasAnyBlank(input: input),
             didExceedLimit(input: input),
@@ -42,12 +42,19 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
             isEmpty(input: input)
         )
         .map {
-            let isValid = !($0 || $1 || $2 || $3)
+            let isValid =  !($0 || $1 || $2 || $3)
             let isEmpty = $3
-            let status: NicknameInputStatus.Status = isEmpty  ? .default
-                                                     :isValid ? .possible
-                                                              : .impossible
-            return NicknameInputStatus(isValid: isValid, status: status)
+            
+            if isEmpty {
+                return NicknameTextInput(isValid: isValid, status: .defaultWarning)
+            }
+            
+            switch isValid {
+            case true:
+                return NicknameTextInput(isValid: isValid, status: .possible)
+            case false:
+                return NicknameTextInput(isValid: isValid, status: .impossible)
+            }
         }
     }
 }

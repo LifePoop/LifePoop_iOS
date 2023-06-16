@@ -9,8 +9,9 @@
 import Foundation
 
 public enum HomeCoordinateAction {
-    case flowDidStart
+    case flowDidStart(animated: Bool)
     case flowDidFinish
     case stoolLogButtonDidTap
     case settingButtonDidTap
+    case reportButtonDidTap
 }

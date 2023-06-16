@@ -28,7 +28,7 @@ enum MockError: LocalizedError {
 
 public protocol ProfileEditUseCase {
     func updateProfileInfo(newProfileCharacter: ProfileCharacter, newNickname: String) -> Completable
-    func checkNicknameValidation(for input: String) -> Observable<NicknameInputStatus>
+    func checkNicknameValidation(for input: String) -> Observable<NicknameTextInput>
     var profileCharacter: Observable<ProfileCharacter?> { get }
 }
 
@@ -43,7 +43,7 @@ public final class MockProfileEditUseCase: ProfileEditUseCase {
         return profileCharacterUseCase.profileCharacter
     }
     
-    public func checkNicknameValidation(for input: String) -> Observable<NicknameInputStatus> {
+    public func checkNicknameValidation(for input: String) -> Observable<NicknameTextInput> {
         return nicknameUseCase.checkNicknameValidation(for: input)
     }
     

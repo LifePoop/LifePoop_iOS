@@ -16,6 +16,8 @@ let project = Project.makeModule(
     ],
     dependencies: [
         .Project.module(.Core(.CoreEntity)).dependency,
+        .Project.module(.DesignSystemReactive).dependency,
+        .Project.module(.EntityUIMapper).dependency,
         .Project.module(.DesignSystem).dependency,
         .Project.module(.EntityUIMapper).dependency,
         .Project.module(.Logger).dependency,
@@ -24,6 +26,7 @@ let project = Project.makeModule(
         .Project.module(.Features(.Login, .DIContainer)).dependency,
         .Project.module(.Features(.Login, .CoordinatorInterface)).dependency,
         .SPM.SnapKit.dependency,
+        .SPM.Lottie.dependency,
         .SPM.RxSwift.dependency,
         .SPM.RxRelay.dependency,
         .SPM.RxCocoa.dependency

@@ -15,12 +15,7 @@ import DesignSystem
 
 public final class StoolLogCollectionViewCell: UICollectionViewCell {
     
-    private lazy var backgroundContainerView: UIView = {
-        let view = ShadowView()
-        view.layer.cornerRadius = 16
-        view.backgroundColor = .systemBackground
-        return view
-    }()
+    private let backgroundContainerView = ShadowView()
     
     private lazy var backgroundImageView: UIImageView = {
         let imageView = UIImageView(image: ImageAsset.logBackground.original)

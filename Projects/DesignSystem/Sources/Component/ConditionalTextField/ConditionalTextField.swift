@@ -16,6 +16,7 @@ final public class ConditionalTextField: UIControl {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         label.textColor = ColorAsset.pooBlack.color
+        label.sizeToFit()
         return label
     }()
     
@@ -24,6 +25,7 @@ final public class ConditionalTextField: UIControl {
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         textField.delegate = self
         textField.clearButtonMode = .whileEditing
+        textField.inputAccessoryView = toolbar
         return textField
     }()
     
@@ -37,7 +39,27 @@ final public class ConditionalTextField: UIControl {
         let label = UILabel()
         label.textColor = ColorAsset.gray800.color
         label.font = UIFont.systemFont(ofSize: 14)
+        label.sizeToFit()
         return label
+    }()
+    
+    private lazy var toolbar: UIToolbar = {
+        let toolbar = UIToolbar(frame: CGRect(x: .zero, y: .zero, width: UIScreen.main.bounds.width, height: 44))
+        toolbar.backgroundColor = .systemBackground
+        toolbar.sizeToFit()
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        toolbar.setItems([flexibleSpace, doneBarButtonItem], animated: true)
+        return toolbar
+    }()
+    
+    private lazy var doneBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem(
+            title: "완료",
+            style: .done,
+            target: nil,
+            action: #selector(tapDoneBarButton)
+        )
+        return barButtonItem
     }()
     
     public enum TextFieldStatus {
@@ -83,8 +105,17 @@ final public class ConditionalTextField: UIControl {
         }
     }
     
-    public init() {
+    public override var intrinsicContentSize: CGSize {
+        let sumOfSubViewsHeight = self.subviews.reduce(0) { $0 + $1.bounds.height }
+        let sumOfMargins: CGFloat = 42
+        let totalHeight = sumOfSubViewsHeight + sumOfMargins
+        
+        return CGSize(width: bounds.width, height: totalHeight)
+    }
+    
+    public init(keyboardType: UIKeyboardType = .default) {
         super.init(frame: .zero)
+        textField.keyboardType = keyboardType
         configureUI()
     }
     
@@ -93,8 +124,17 @@ final public class ConditionalTextField: UIControl {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        invalidateIntrinsicContentSize()
+    }
+    
     @objc private func textFieldDidChange(_ textField: UITextField) {
         text = textField.text
+    }
+    
+    @objc private func tapDoneBarButton() {
+        textField.resignFirstResponder()
     }
     
     private func configureUI() {
@@ -110,18 +150,19 @@ final public class ConditionalTextField: UIControl {
         }
         
         textField.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(32)
+            make.top.equalTo(titleLabel.snp.bottom).offset(16)
             make.leading.trailing.equalToSuperview()
         }
         
         separatorView.snp.makeConstraints { make in
-            make.top.equalTo(textField.snp.bottom).offset(10)
+            make.top.equalTo(textField.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview()
         }
         
         subLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
-            make.top.equalTo(separatorView.snp.bottom).offset(15)
+            make.top.equalTo(separatorView.snp.bottom).offset(8)
+            make.height.equalTo(16)
         }
     }
 }
@@ -140,6 +181,7 @@ extension ConditionalTextField: UITextFieldDelegate {
     
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        sendActions(for: .editingDidEndOnExit)
         return true
     }
 }

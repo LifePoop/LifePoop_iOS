@@ -92,7 +92,7 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
         
         output.changeTextFieldStatus
-            .map { $0.conditionalTextFieldStatus }
+            .map { $0.descriptionText }
             .bind(to: nicknameTextField.rx.status)
             .disposed(by: disposeBag)
         

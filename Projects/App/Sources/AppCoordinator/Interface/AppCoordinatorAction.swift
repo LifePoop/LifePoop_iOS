@@ -11,4 +11,5 @@ import Foundation
 public enum AppCoordinateAction {
     case appDidStart
     case accessTokenDidfetch
+    case authenticationProcessDidFinish
 }

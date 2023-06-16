@@ -23,6 +23,7 @@ public final class LaunchScreenViewModel: ViewModelType {
     public struct Input {
         let viewWillAppear = PublishRelay<Void>()
         let didFinishPreparation = PublishRelay<Void>()
+        let didFinishAnimating = PublishRelay<Void>()
     }
     
     public struct Output { }
@@ -57,19 +58,22 @@ public final class LaunchScreenViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        input.didFinishPreparation
-            .withUnretained(self)
-            .flatMapLatest { `self`, _ in
-                self.userInfoUseCase.userInfo
-                    .map { $0 != nil }
+        Observable.zip(
+            input.didFinishAnimating,
+            input.didFinishPreparation
+        )
+        .withUnretained(self)
+        .flatMapLatest { `self`, _ in
+            self.userInfoUseCase.userInfo
+                .map { $0 != nil }
+        }
+        .bind(onNext: { hasToken in
+            if hasToken {
+                coordinator?.coordinate(by: .shouldSkipLoginFlow)
+            } else {
+                coordinator?.coordinate(by: .shouldShowLoginScene)
             }
-            .bind(onNext: { hasToken in
-                if hasToken {
-                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
-                } else {
-                    coordinator?.coordinate(by: .shouldShowLoginScene)
-                }
-            })
-            .disposed(by: disposeBag)
+        })
+        .disposed(by: disposeBag)
     }
 }

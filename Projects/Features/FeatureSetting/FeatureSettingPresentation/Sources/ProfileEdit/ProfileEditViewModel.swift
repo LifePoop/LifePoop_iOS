@@ -29,7 +29,7 @@ public final class ProfileEditViewModel: ViewModelType {
     public struct Output {
         let setProfileCharater = PublishRelay<ProfileCharacter>()
         let setUserNickname = PublishRelay<String>()
-        let changeTextFieldStatus = PublishRelay<NicknameInputStatus.Status>()
+        let changeTextFieldStatus = PublishRelay<NicknameTextInput.Status>()
         let enableEditConfirmButton = PublishRelay<Bool>()
         let showLodingIndicator = PublishRelay<Void>()
         let hideLodingIndicator = PublishRelay<Void>()

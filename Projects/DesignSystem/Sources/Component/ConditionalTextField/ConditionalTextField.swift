@@ -25,6 +25,7 @@ final public class ConditionalTextField: UIControl {
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         textField.delegate = self
         textField.clearButtonMode = .whileEditing
+        textField.inputAccessoryView = toolbar
         return textField
     }()
     
@@ -40,6 +41,25 @@ final public class ConditionalTextField: UIControl {
         label.font = UIFont.systemFont(ofSize: 14)
         label.sizeToFit()
         return label
+    }()
+    
+    private lazy var toolbar: UIToolbar = {
+        let toolbar = UIToolbar(frame: CGRect(x: .zero, y: .zero, width: UIScreen.main.bounds.width, height: 44))
+        toolbar.backgroundColor = .systemBackground
+        toolbar.sizeToFit()
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        toolbar.setItems([flexibleSpace, doneBarButtonItem], animated: true)
+        return toolbar
+    }()
+    
+    private lazy var doneBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem(
+            title: "완료",
+            style: .done,
+            target: nil,
+            action: #selector(tapDoneBarButton)
+        )
+        return barButtonItem
     }()
     
     public enum TextFieldStatus {
@@ -93,8 +113,9 @@ final public class ConditionalTextField: UIControl {
         return CGSize(width: bounds.width, height: totalHeight)
     }
     
-    public init() {
+    public init(keyboardType: UIKeyboardType = .default) {
         super.init(frame: .zero)
+        textField.keyboardType = keyboardType
         configureUI()
     }
     
@@ -110,6 +131,10 @@ final public class ConditionalTextField: UIControl {
     
     @objc private func textFieldDidChange(_ textField: UITextField) {
         text = textField.text
+    }
+    
+    @objc private func tapDoneBarButton() {
+        textField.resignFirstResponder()
     }
     
     private func configureUI() {
@@ -156,6 +181,7 @@ extension ConditionalTextField: UITextFieldDelegate {
     
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        sendActions(for: .editingDidEndOnExit)
         return true
     }
 }

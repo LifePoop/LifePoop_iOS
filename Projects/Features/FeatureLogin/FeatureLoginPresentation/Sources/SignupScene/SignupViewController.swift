@@ -15,6 +15,7 @@ import SnapKit
 import CoreEntity
 import DesignSystem
 import DesignSystemReactive
+import EntityUIMapper
 import Utils
 
 public final class SignupViewController: LifePoopViewController, ViewType {
@@ -32,15 +33,13 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         let textField = ConditionalTextField()
         textField.title = "닉네임을 설정해주세요"
         textField.placeholder = "닉네임 입력하기"
-        textField.status = .none(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
         return textField
     }()
     
     private let birthdayTextField: ConditionalTextField = {
-        let textField = ConditionalTextField()
+        let textField = ConditionalTextField(keyboardType: .numberPad)
         textField.title = "생년월일을 입력해주세요"
         textField.placeholder = "예) 990101"
-        textField.status = .none(text: "")
         return textField
     }()
     
@@ -157,6 +156,13 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .bind(to: input.didEnterBirthday)
             .disposed(by: disposeBag)
         
+        nicknameTextField.rx.controlEvent(.editingDidEndOnExit)
+            .withUnretained(self)
+            .bind { `self`, _ in
+                self.birthdayTextField.becomeFirstResponder()
+            }
+            .disposed(by: disposeBag)
+        
         selectAllConditionView.rx.check
             .bind(to: input.didTapSelectAllCondition)
             .disposed(by: disposeBag)
@@ -174,30 +180,12 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         let output = viewModel.output
         
         output.nicknameTextFieldStatus
-            .map {
-                switch $0 {
-                case .none(let text):
-                    return ConditionalTextField.TextFieldStatus.none(text: text)
-                case .possible(let text):
-                    return ConditionalTextField.TextFieldStatus.possible(text: text)
-                case .impossible(let text):
-                    return ConditionalTextField.TextFieldStatus.impossible(text: text)
-                }
-            }
+            .map { $0.descriptionText }
             .bind(to: nicknameTextField.rx.status)
             .disposed(by: disposeBag)
         
         output.birthdayTextFieldStatus
-            .map {
-                switch $0 {
-                case .none(let text):
-                    return ConditionalTextField.TextFieldStatus.none(text: text)
-                case .possible(let text):
-                    return ConditionalTextField.TextFieldStatus.possible(text: text)
-                case .impossible(let text):
-                    return ConditionalTextField.TextFieldStatus.impossible(text: text)
-                }
-            }
+            .map { $0.descriptionText }
             .bind(to: birthdayTextField.rx.status)
             .disposed(by: disposeBag)
         

@@ -1,5 +1,5 @@
 //
-//  ProfileViewController.swift
+//  ProfileEditViewController.swift
 //  FeatureSettingPresentation
 //
 //  Created by 김상혁 on 2023/05/21.
@@ -17,7 +17,7 @@ import DesignSystemReactive
 import EntityUIMapper
 import Utils
 
-public final class ProfileViewController: LifePoopViewController, ViewType {
+public final class ProfileEditViewController: LifePoopViewController, ViewType {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -40,7 +40,6 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         let textField = ConditionalTextField()
         textField.title = "닉네임을 설정해주세요"
         textField.placeholder = "닉네임 입력하기"
-        textField.status = .none(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
         return textField
     }()
     
@@ -50,7 +49,9 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         return button
     }()
     
-    public var viewModel: ProfileViewModel?
+    private let toastMessageLabel = ToastLabel()
+    
+    public var viewModel: ProfileEditViewModel?
     private let disposeBag = DisposeBag()
     
     public override func viewDidLoad() {
@@ -61,28 +62,57 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
     
     // MARK: - ViewModel Binding
     
-    public func bindInput(to viewModel: ProfileViewModel) {
+    public func bindInput(to viewModel: ProfileEditViewModel) {
         let input = viewModel.input
         
         rx.viewDidLoad
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)
         
-        nicknameTextField.rx.text
+        nicknameTextField.rx.textChanged
             .bind(to: input.nicknameDidChange)
+            .disposed(by: disposeBag)
+        
+        editConfirmButton.rx.tap
+            .bind(to: input.editConfirmDidTap)
             .disposed(by: disposeBag)
     }
     
-    public func bindOutput(from viewModel: ProfileViewModel) {
+    public func bindOutput(from viewModel: ProfileEditViewModel) {
         let output = viewModel.output
         
         output.setProfileCharater
+            .asSignal()
             .map { $0.image }
-            .bind(onNext: profileImageEditView.setProfileImageView)
+            .emit(onNext: profileImageEditView.setProfileImageView)
             .disposed(by: disposeBag)
         
         output.setUserNickname
             .bind(to: nicknameTextField.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.changeTextFieldStatus
+            .map { $0.descriptionText }
+            .bind(to: nicknameTextField.rx.status)
+            .disposed(by: disposeBag)
+        
+        output.enableEditConfirmButton
+            .bind(to: editConfirmButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        output.showLodingIndicator
+            .asSignal()
+            .emit(onNext: editConfirmButton.showLoadingIndicator)
+            .disposed(by: disposeBag)
+        
+        output.hideLodingIndicator
+            .asSignal()
+            .emit(onNext: editConfirmButton.hideLoadingIndicator)
+            .disposed(by: disposeBag)
+        
+        output.showToastMessage
+            .asSignal()
+            .emit(onNext: toastMessageLabel.show(message:))
             .disposed(by: disposeBag)
     }
     
@@ -101,6 +131,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         scrollContentView.addSubview(profileImageEditView)
         scrollContentView.addSubview(nicknameTextField)
         view.addSubview(editConfirmButton)
+        view.addSubview(toastMessageLabel)
         
         scrollView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
@@ -117,7 +148,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(28)
-            make.leading.trailing.equalToSuperview().inset(24)
+            make.leading.equalToSuperview().inset(24)
         }
         
         profileImageEditView.snp.makeConstraints { make in
@@ -127,7 +158,7 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
         }
         
         nicknameTextField.snp.makeConstraints { make in
-            make.top.equalTo(profileImageEditView.snp.bottom).offset(55)
+            make.top.equalTo(profileImageEditView.snp.bottom).offset(32)
             make.leading.trailing.equalToSuperview().inset(24)
             make.height.equalTo(120)
         }
@@ -136,12 +167,17 @@ public final class ProfileViewController: LifePoopViewController, ViewType {
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
+        
+        toastMessageLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(editConfirmButton.snp.top).offset(-16)
+        }
     }
 }
 
 // MARK: - Add Tap Gesture
 
-private extension ProfileViewController {
+private extension ProfileEditViewController {
     func addTapGestures() {
         addProfileImageEditViewTapGesture()
         addViewTapGesture()
@@ -175,7 +211,7 @@ private extension ProfileViewController {
 
 // MARK: - Keyboard Notification Methods
 
-private extension ProfileViewController {
+private extension ProfileEditViewController {
     func addNotificationCenterKeyboardObserver() {
         NotificationCenter.default.addObserver(
             self,

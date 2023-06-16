@@ -15,7 +15,7 @@ public extension BirthdayTextInput.Status {
     var descriptionText: ConditionalTextField.TextFieldStatus {
         switch self {
         case .`default`:
-            return ConditionalTextField.TextFieldStatus.none(text: "생년월일 6자를 입력해주세요.")
+            return ConditionalTextField.TextFieldStatus.`default`(text: "생년월일 6자를 입력해주세요.")
         case .defaultWarning:
             return ConditionalTextField.TextFieldStatus.impossible(text: "생년월일 6자를 입력해주세요.")
         case .possible:

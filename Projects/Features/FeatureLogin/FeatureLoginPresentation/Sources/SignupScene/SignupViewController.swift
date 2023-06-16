@@ -146,12 +146,12 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .bind(to: input.didTapNextButton)
             .disposed(by: disposeBag)
         
-        nicknameTextField.rx.text
+        nicknameTextField.rx.textChanged
             .skip(1)
             .bind(to: input.didEnterNickname)
             .disposed(by: disposeBag)
         
-        birthdayTextField.rx.text
+        birthdayTextField.rx.textChanged
             .skip(1)
             .bind(to: input.didEnterBirthday)
             .disposed(by: disposeBag)

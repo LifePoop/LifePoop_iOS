@@ -15,7 +15,7 @@ public extension NicknameTextInput.Status {
     var descriptionText: ConditionalTextField.TextFieldStatus {
         switch self {
         case .`default`:
-            return ConditionalTextField.TextFieldStatus.none(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
+            return ConditionalTextField.TextFieldStatus.`default`(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
         case .defaultWarning:
             return ConditionalTextField.TextFieldStatus.impossible(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
         case .possible:

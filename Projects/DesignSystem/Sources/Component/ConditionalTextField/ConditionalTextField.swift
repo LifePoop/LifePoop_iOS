@@ -63,9 +63,9 @@ final public class ConditionalTextField: UIControl {
     }()
     
     public enum TextFieldStatus {
-        case possible(text: String)
+        case `default`(text: String)
         case impossible(text: String)
-        case none(text: String)
+        case possible(text: String)
     }
     
     public var status: TextFieldStatus? {
@@ -73,7 +73,7 @@ final public class ConditionalTextField: UIControl {
             guard let status = status else { return }
             
             switch status {
-            case .none(let text):
+            case .`default`(let text):
                 subLabel.textColor = ColorAsset.gray800.color
                 subLabel.text = text
             case .impossible(let text):

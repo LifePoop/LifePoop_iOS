@@ -37,7 +37,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     }()
     
     private let birthdayTextField: ConditionalTextField = {
-        let textField = ConditionalTextField()
+        let textField = ConditionalTextField(keyboardType: .numberPad)
         textField.title = "생년월일을 입력해주세요"
         textField.placeholder = "예) 990101"
         return textField
@@ -154,6 +154,13 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         birthdayTextField.rx.text
             .skip(1)
             .bind(to: input.didEnterBirthday)
+            .disposed(by: disposeBag)
+        
+        nicknameTextField.rx.controlEvent(.editingDidEndOnExit)
+            .withUnretained(self)
+            .bind { `self`, _ in
+                self.birthdayTextField.becomeFirstResponder()
+            }
             .disposed(by: disposeBag)
         
         selectAllConditionView.rx.check

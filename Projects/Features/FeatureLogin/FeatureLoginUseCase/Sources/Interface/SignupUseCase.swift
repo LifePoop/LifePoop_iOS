@@ -13,7 +13,7 @@ import CoreEntity
 public protocol SignupUseCase {
     
     func fetchSelectableConditions() -> Observable<[AgreementCondition]>
-    func isNicknameInputValid(_ input: String) -> Observable<NicknameInputStatus>
-    func isBirthdayInputValid(_ input: String) -> Observable<NicknameInputStatus>
+    func isNicknameInputValid(_ input: String) -> Observable<NicknameTextInput>
+    func isBirthdayInputValid(_ input: String) -> Observable<BirthdayTextInput>
     func isAllEsssentialConditionsSelected(_ selectedConditions: Set<AgreementCondition>) -> Observable<Bool>
 }

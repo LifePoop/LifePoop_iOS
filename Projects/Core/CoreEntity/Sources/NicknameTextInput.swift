@@ -1,5 +1,5 @@
 //
-//  NicknameInput.swift
+//  NicknameTextInput.swift
 //  CoreEntity
 //
 //  Created by Lee, Joon Woo on 2023/06/07.
@@ -8,12 +8,13 @@
 
 import Foundation
 
-public struct NicknameInputStatus {
+public struct NicknameTextInput {
     
     public enum Status {
-        case possible(description: String)
-        case impossible(description: String)
-        case none(description: String)
+        case possible
+        case defaultWarning
+        case impossible
+        case `default`
     }
     
     public let isValid: Bool

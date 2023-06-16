@@ -34,5 +34,6 @@ private extension ShadowView {
         layer.shadowOpacity = 0.15
         layer.shadowRadius = 16
         layer.masksToBounds = false
+        backgroundColor = .systemBackground
     }
 }

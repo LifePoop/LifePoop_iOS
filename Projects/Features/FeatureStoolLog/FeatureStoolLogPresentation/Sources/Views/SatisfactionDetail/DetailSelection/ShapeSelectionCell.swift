@@ -15,21 +15,20 @@ import DesignSystem
 
 final class ShapeSelectionCell: UICollectionViewCell {
     
-    private let titlelabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 12)
-        return label
+    private let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
     }()
     
-    private let imageView: UIImageView = UIImageView(image: ImageAsset.smileySadDeselected.original)
-    
     private var selectedImage: UIImage?
-    
     private var deselectedImage: UIImage?
+    
+    private var updatedSelectedImage: (() -> Void)?
     
     override var isSelected: Bool {
         didSet {
-            imageView.image = isSelected ? selectedImage : deselectedImage
+            updatedSelectedImage?()
         }
     }
     
@@ -43,36 +42,94 @@ final class ShapeSelectionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(stoolShapeSelection: StoolShape) {
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        let isImageViewTouched = imageView.point(inside: point, with: event)
+        return isImageViewTouched
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
         
-        titlelabel.text = stoolShapeSelection.description
-        
-        switch stoolShapeSelection {
-        case .soft:
-            selectedImage = ImageAsset.smileyDeadSelected.image
-            deselectedImage = ImageAsset.smileyDeadDeselected.image
-        case .good:
-            selectedImage = ImageAsset.smileyHappySelected.image
-            deselectedImage = ImageAsset.smileyHappyDeselected.image
-        case .hard:
-            selectedImage = ImageAsset.smileySadSelected.image
-            deselectedImage = ImageAsset.smileySadDeselected.image
+        updatedSelectedImage = nil
+    }
+    
+    func configure(stoolShapeSelection: StoolShape, colorOf color: StoolColor = .brown) {
+
+        updatedSelectedImage = { [weak self] in
+            guard let self = self else { return }
+            
+            switch stoolShapeSelection {
+            case .soft:
+                self.selectedImage = self.getSelectedSoftImage(for: color)
+                self.deselectedImage = ImageAsset.shapeSoftDeselected.original
+            case .good:
+                self.selectedImage = self.getSelectedGoodImage(for: color)
+                self.deselectedImage = ImageAsset.shapeGoodDeselected.original
+            case .hard:
+                self.selectedImage = self.getSelectedHardImage(for: color)
+                self.deselectedImage = ImageAsset.shapeHardDeselected.original
+            }
+            
+            self.imageView.image = self.isSelected ? self.selectedImage : self.deselectedImage
         }
-        imageView.image = deselectedImage
+        
+        updatedSelectedImage?()
     }
     
     private func addSubViews() {
         
         contentView.addSubview(imageView)
         imageView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview()
-        }
-        
-        contentView.addSubview(titlelabel)
-        titlelabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview()
+            make.top.bottom.leading.trailing.equalToSuperview()
         }
     }
+}
+
+private extension ShapeSelectionCell {
+    
+    func getSelectedSoftImage(for color: StoolColor) -> UIImage {
+       switch color {
+       case .brown:
+           return ImageAsset.shapeSoftSelectedBrown.original
+       case .black:
+           return ImageAsset.shapeSoftSelectedBlack.original
+       case .pink:
+           return ImageAsset.shapeSoftSelectedPink.original
+       case .green:
+           return ImageAsset.shapeSoftSelectedGreen.original
+       case .yellow:
+           return ImageAsset.shapeSoftSelectedYellow.original
+       }
+   }
+    
+    func getSelectedGoodImage(for color: StoolColor) -> UIImage {
+       switch color {
+       case .brown:
+           return ImageAsset.shapeGoodSelectedBrown.original
+       case .black:
+           return ImageAsset.shapeGoodSelectedBlack.original
+       case .pink:
+           return ImageAsset.shapeGoodSelectedPink.original
+       case .green:
+           return ImageAsset.shapeGoodSelectedGreen.original
+       case .yellow:
+           return ImageAsset.shapeGoodSelectedYellow.original
+       }
+   }
+
+    func getSelectedHardImage(for color: StoolColor) -> UIImage {
+       switch color {
+       case .brown:
+           return ImageAsset.shapeHardSelectedBrown.original
+       case .black:
+           return ImageAsset.shapeHardSelectedBlack.original
+       case .pink:
+           return ImageAsset.shapeHardSelectedPink.original
+       case .green:
+           return ImageAsset.shapeHardSelectedGreen.original
+       case .yellow:
+           return ImageAsset.shapeHardSelectedYellow.original
+       }
+   }
+
 }

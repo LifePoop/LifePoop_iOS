@@ -9,5 +9,6 @@
 import Foundation
 
 public protocol LoginCoordinatorCompletionDelegate: AnyObject {
-    func showNextFlow()
+    func skipLoginFlow()
+    func finishLoginFlow()
 }

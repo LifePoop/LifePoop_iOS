@@ -20,7 +20,7 @@ final class ReportTotalColorView: UIView {
     
     private var colorBars: [StoolCountBarView] = []
     
-    private lazy var barViewStackView: UIStackView = {
+    private let barViewStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 16

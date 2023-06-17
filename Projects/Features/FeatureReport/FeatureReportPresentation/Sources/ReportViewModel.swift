@@ -38,8 +38,14 @@ public final class ReportViewModel: ViewModelType {
         let showErrorMessage = PublishRelay<String>()
     }
     
+    public struct State {
+        let selectedPeriod = BehaviorRelay<ReportPeriod?>(value: nil)
+        let userStoolReportMap = BehaviorRelay<[ReportPeriod: StoolReport]>(value: [:])
+    }
+    
     public let input = Input()
     public let output = Output()
+    public let state = State()
     
     @Inject(ReportDIContainer.shared) private var reportUseCase: ReportUseCase
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
@@ -49,6 +55,8 @@ public final class ReportViewModel: ViewModelType {
     
     public init(coordinator: ReportCoordinator?) {
         self.coordinator = coordinator
+        
+        // MARK: - Bind Input
         
         input.viewDidLoad
             .map { ReportPeriod.titles }
@@ -60,13 +68,6 @@ public final class ReportViewModel: ViewModelType {
             .bind(to: output.selectPeriodSegmentIndexAt)
             .disposed(by: disposeBag)
         
-        input.periodDidSelect
-            .compactMap { $0 }
-            .compactMap { ReportPeriod(rawValue: $0)?.description }
-            .map { "최근 \($0) 내 배변일지" }
-            .bind(to: output.updatePeriodDescription)
-            .disposed(by: disposeBag)
-        
         let fetchedUserNickname = input.viewDidLoad
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
@@ -74,23 +75,57 @@ public final class ReportViewModel: ViewModelType {
             }
             .share()
         
-        let fetchedUserReport = input.periodDidSelect
-            .compactMap { $0 }
-            .compactMap { ReportPeriod(rawValue: $0) }
+        let fetchedUserStoolReports = input.viewDidLoad
             .withUnretained(self)
-            .flatMapMaterialized { `self`, period in
-                self.reportUseCase.fetchUserStoolReport(of: period)
+            .flatMapMaterialized { `self`, _ in
+                self.reportUseCase.fetchAllUserStoolReports()
             }
             .share()
+        
+        fetchedUserStoolReports
+            .compactMap { $0.element }
+            .map { reports in
+                reports.reduce(into: [ReportPeriod: StoolReport]()) { (result, report) in
+                    result[report.period] = report
+                }
+            }
+            .bind(to: state.userStoolReportMap)
+            .disposed(by: disposeBag)
+        
+        // TODO: 에러 처리 로직 구현
+        fetchedUserStoolReports
+            .compactMap { $0.error }
+        
+        // TODO: 서버 응답시간 고려하여 Indicator 등 구현
+        fetchedUserStoolReports
+            .filter { $0.isStopEvent }
+        
+        input.periodDidSelect
+            .compactMap { $0 }
+            .compactMap { ReportPeriod(rawValue: $0) }
+            .bind(to: state.selectedPeriod)
+            .disposed(by: disposeBag)
+        
+        // MARK: - Bind State
+        
+        let userStoolReport = Observable.combineLatest(
+            state.selectedPeriod.compactMap { $0 },
+            state.userStoolReportMap
+        )
+        .compactMap { selectedPeriod, userStoolReportMap in
+            userStoolReportMap[selectedPeriod]
+        }
+        .share()
         
         let userNickname = fetchedUserNickname
             .compactMap { $0.element }
             .compactMap { $0 }
             .share()
-        let stoolCountInfo = fetchedUserReport
-            .compactMap { $0.element }
+        
+        let stoolCountInfo = userStoolReport
             .map { ($0.period.description, $0.totalStoolCount) }
             .share()
+        
         Observable.combineLatest(userNickname, stoolCountInfo)
             .map { nickname, info in
                 let (periodText, count) = info
@@ -99,20 +134,17 @@ public final class ReportViewModel: ViewModelType {
             .bind(to: output.updateStoolCountInfo)
             .disposed(by: disposeBag)
         
-        fetchedUserReport
-            .compactMap { $0.element }
+        userStoolReport
             .map { $0.totalSatisfaction }
             .bind(to: output.totalSatisfaction)
             .disposed(by: disposeBag)
         
-        fetchedUserReport
-            .compactMap { $0.element }
+        userStoolReport
             .map { $0.totalDissatisfaction }
             .bind(to: output.totalDissatisfaction)
             .disposed(by: disposeBag)
         
-        fetchedUserReport
-            .compactMap { $0.element }
+        userStoolReport
             .map { $0.totalStoolColor.filter { $0.count > 0 } }
             .withUnretained(self)
             .map { `self`, reports in
@@ -125,16 +157,20 @@ public final class ReportViewModel: ViewModelType {
             .bind(to: output.totalStoolColor)
             .disposed(by: disposeBag)
         
-        fetchedUserReport
-            .compactMap { $0.element }
+        userStoolReport
             .map { $0.totalStoolShape }
             .bind(to: output.totalStoolShape)
             .disposed(by: disposeBag)
         
-        fetchedUserReport
-            .compactMap { $0.element }
+        userStoolReport
             .map { $0.totalStoolSize }
             .bind(to: output.totalStoolSize)
+            .disposed(by: disposeBag)
+        
+        state.selectedPeriod
+            .compactMap { $0?.description }
+            .map { "최근 \($0) 내 배변일지" }
+            .bind(to: output.updatePeriodDescription)
             .disposed(by: disposeBag)
     }
     

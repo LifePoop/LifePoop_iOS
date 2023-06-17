@@ -38,7 +38,7 @@ public class LifePoopSegmentControl: UIControl {
         return stackView
     }()
     
-    private let titles: [String]
+    private var titles: [String] = []
     private let deselectedTitleColor = ColorAsset.gray800.color
     private let selectedTitleColor = ColorAsset.white.color
     private let animatingDuration: Double = 0.3
@@ -49,16 +49,10 @@ public class LifePoopSegmentControl: UIControl {
         return titles.count
     }
     
-    public init(titles: [String]) {
+    public func setTitles(_ titles: [String]) {
         self.titles = titles
-        super.init(frame: .zero)
         configureUI(with: titles)
         layoutUI()
-    }
-    
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     public func selectSegment(at targetIndex: Int) {

@@ -15,7 +15,7 @@ import SnapKit
 import DesignSystem
 import Utils
 
-public final class ReportTotalSatisfactionView: UIView {
+final class ReportTotalSatisfactionView: UIView {
     
     private lazy var satisfactionThumbImageView: UIImageView = {
         let imageView = UIImageView(image: ImageAsset.thumbSatisfactionCircular.original)
@@ -57,14 +57,38 @@ public final class ReportTotalSatisfactionView: UIView {
         return label
     }()
     
-    public init() {
+    private var satisfactionCount: Int = 0 {
+        didSet {
+            satisfactionCountLabel.startCountingAnimation(upTo: satisfactionCount) { [weak self] animatingCount in
+                self?.satisfactionCountLabel.text = "\(animatingCount)번"
+            }
+        }
+    }
+    
+    private var dissatisfactionCount: Int = 0 {
+        didSet {
+            dissatisfactionCountLabel.startCountingAnimation(upTo: dissatisfactionCount) { [weak self] animatingCount in
+                self?.dissatisfactionCountLabel.text = "\(animatingCount)번"
+            }
+        }
+    }
+    
+    init() {
         super.init(frame: .zero)
         layoutUI()
     }
     
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func update(satisfactionCount: Int) {
+        self.satisfactionCount = satisfactionCount
+    }
+    
+    func update(dissatisfactionCount: Int) {
+        self.dissatisfactionCount = dissatisfactionCount
     }
     
     private func layoutUI() {

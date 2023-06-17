@@ -19,6 +19,7 @@ import Utils
 public final class SatisfactionDetailViewModel: ViewModelType {
     
     public struct Input {
+        let viewDidLoad = PublishRelay<Void>()
         let isSatisfied = BehaviorRelay<Bool>(value: true)
         let didTapLeftBarbutton = PublishRelay<Void>()
         let didTapCompleteButton = PublishRelay<Void>()
@@ -29,6 +30,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
     
     public struct Output {
         let titleText = BehaviorRelay<String>(value: "")
+        let sizeSelectionSegmentTitles = PublishRelay<[String]>()
         let selectableColors = Observable.of(StoolColor.allCases)
         let selectableShapes = BehaviorRelay<[ColoredStoolShape]>(value: [])
         let selectableSizes = Observable.of(StoolSize.allCases)
@@ -48,6 +50,11 @@ public final class SatisfactionDetailViewModel: ViewModelType {
     }
     
     private func bindInputToOutput() {
+        
+        input.viewDidLoad
+            .map { StoolSize.allCases.map { $0.description } }
+            .bind(to: output.sizeSelectionSegmentTitles)
+            .disposed(by: disposeBag)
         
         input.isSatisfied
             .map { $0 ? "만족한 이유를 알려주세요!" : "불만족한 이유를 알려주세요!" }

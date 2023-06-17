@@ -17,7 +17,6 @@ let project = Project.makeModule(
     dependencies: [
         .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.DesignSystemReactive).dependency,
-        .Project.module(.EntityUIMapper).dependency,
         .Project.module(.DesignSystem).dependency,
         .Project.module(.EntityUIMapper).dependency,
         .Project.module(.Logger).dependency,

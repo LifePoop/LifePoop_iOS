@@ -13,5 +13,5 @@ import RxSwift
 import CoreEntity
 
 public protocol ReportUseCase {
-    func fetchUserStoolReport(of period: ReportPeriod) -> Observable<StoolReport>
+    func fetchAllUserStoolReports() ->  Observable<[StoolReport]>
 }

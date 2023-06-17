@@ -142,7 +142,8 @@ private extension SceneDelegate {
     }
     
     func registerReportDependencies() {
-        ReportDIContainer.shared.register(service: ReportUseCase.self) { MockReportUseCase() }
+        ReportDIContainer.shared.register(service: ReportUseCase.self) { DefaultReportUseCase() }
+        ReportDIContainer.shared.register(service: ReportRepository.self) { MockReportRepository() }
     }
 }
 

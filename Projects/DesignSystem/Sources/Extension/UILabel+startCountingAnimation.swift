@@ -13,15 +13,16 @@ import Logger
 
 public extension UILabel {
     
-    /// Starts the counting animation for the label.
+    /// `UILabel`에 대해 카운팅 애니메이션을 시작합니다.
     /// - Parameters:
-    ///   - targetCount: The final count for the animation. Must be greater than or equal to 0.
-    ///   - duration: The duration of the animation in seconds. Must be greater than 0. Default is 0.5.
-    ///   - configureTextAction: A closure that is invoked on each animation step with the current count value.
+    ///   - targetCount: 애니메이션의 최종 카운트입니다. 0보다 크거나 같아야 합니다.
+    ///   - duration: 초 단위의 애니메이션 지속 시간입니다. 0보다 커야 합니다. 기본값은 0.5초입니다.
+    ///   - configureTextAction: 각 애니메이션 단계에서 현재 카운트 값으로 호출되는 클로저입니다.
+    ///                          해당 클로저에서 UILabel의 `text` 또는 `attributedText`를 변경하는 코드를 작성할 수 있습니다.
     ///
     /// - Important:
-    ///   - The `targetCount` parameter must be equal to or greater than 0.
-    ///   - The `duration` parameter must be greater than 0.
+    ///   - `targetCount` 매개변수는 반드시 0보다 크거나 같아야 합니다.
+    ///   - `duration` 매개변수는 반드시 0보다 커야 합니다.
     func startCountingAnimation(
         upTo targetCount: Int,
         duration: Double = 0.5,

@@ -1,5 +1,5 @@
 //
-//  MSMutableAttributedString+appendSpacing.swift
+//  NSMutableAttributedString+appendSpacing.swift
 //  Utils
 //
 //  Created by Lee, Joon Woo on 2023/06/18.

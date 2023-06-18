@@ -8,40 +8,45 @@
 
 import UIKit
 
+import SnapKit
+
 public final class LifePoopButton: PaddingButton {
     
-    public var title: String {
-        didSet {
-            updateTitle()
-        }
+    private var loadingIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.isHidden = true
+        return activityIndicator
+    }()
+    
+    private let title: String
+    private var attributedTitle: NSAttributedString {
+        NSAttributedString(
+            string: title,
+            attributes: [
+                .foregroundColor: UIColor.systemBackground,
+                .font: UIFont.systemFont(ofSize: 16, weight: .bold)
+            ]
+        )
     }
     
     public override var isHighlighted: Bool {
-        willSet {
-            switch newValue {
-            case true:
-                backgroundColor = ColorAsset.disabledBlue.color
-            case false:
-                backgroundColor = ColorAsset.primary.color
-            }
+        didSet {
+            updateBackgroundColor()
         }
     }
     
     public override var isEnabled: Bool {
-        willSet {
-            switch newValue {
-            case true:
-                backgroundColor = ColorAsset.primary.color
-            case false:
-                backgroundColor = ColorAsset.disabledBlue.color
-            }
+        didSet {
+            updateBackgroundColor()
         }
     }
     
     public init(title: String) {
         self.title = title
         super.init(padding: Padding.custom(UIEdgeInsets(top: 17.5, left: .zero, bottom: 17.5, right: .zero)))
-        configure()
+        configureUI()
+        layoutUI()
     }
     
     @available(*, unavailable)
@@ -49,25 +54,44 @@ public final class LifePoopButton: PaddingButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func configure() {
+    private func configureUI() {
         clipsToBounds = true
         layer.cornerRadius = 12
-        backgroundColor = ColorAsset.primary.color
-        
-        updateTitle()
-    }
-    
-    private func updateTitle() {
-        
-        let attributedTitle = NSAttributedString(
-            string: title,
-            attributes: [
-                .foregroundColor: UIColor.systemBackground,
-                .font: UIFont.systemFont(ofSize: 16, weight: .bold)
-            ]
-        )
+        updateBackgroundColor()
         setAttributedTitle(attributedTitle, for: .normal)
         setTitleColor(.systemBackground, for: .normal)
         setTitleColor(.systemBackground, for: .disabled)
+    }
+    
+    private func layoutUI() {
+        addSubview(loadingIndicator)
+        
+        loadingIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+    }
+    
+    private func updateBackgroundColor() {
+        if isEnabled {
+            backgroundColor = isHighlighted ? ColorAsset.disabledBlue.color : ColorAsset.primary.color
+        } else {
+            backgroundColor = ColorAsset.disabledBlue.color
+        }
+    }
+}
+
+// MARK: - Public Methods
+
+public extension LifePoopButton {
+    func showLoadingIndicator() {
+        isEnabled = false
+        setAttributedTitle(nil, for: .normal)
+        loadingIndicator.startAnimating()
+    }
+    
+    func hideLoadingIndicator() {
+        isEnabled = true
+        setAttributedTitle(attributedTitle, for: .normal)
+        loadingIndicator.stopAnimating()
     }
 }

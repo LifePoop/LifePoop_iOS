@@ -18,9 +18,9 @@ import SharedUseCase
 import Utils
 
 public final class DefaultSignupUseCase: SignupUseCase {
-
+    
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
-
+    
     public init() { }
     
     private var essentialConditions: Set<AgreementCondition> = []
@@ -67,27 +67,51 @@ public final class DefaultSignupUseCase: SignupUseCase {
         Observable.just(essentialConditions.isSubset(of: selectedConditions))
     }
     
-    public func isNicknameInputValid(_ input: String) -> Observable<NicknameInputStatus> {
+    public func isNicknameInputValid(_ input: String) -> Observable<NicknameTextInput> {
         nicknameUseCase.checkNicknameValidation(for: input)
     }
     
-    public func isBirthdayInputValid(_ input: String) -> Observable<NicknameInputStatus> {
-   
+    public func isBirthdayInputValid(_ input: String) -> Observable<BirthdayTextInput> {
         let isEmpty = input.isEmpty
         let isValid = getBirthdayInputValidation(input)
-        let status: NicknameInputStatus.Status = isEmpty ? .impossible(description: "생년월일을 입력해주세요") :
-                                                 isValid ? .possible(description: "") :
-                                                           .impossible(description: "생년월일을 입력해주세요")
         
-        return Observable.just(.init(isValid: isValid, status: status))
+        if isEmpty {
+            return Observable.just(.init(isValid: isValid, status: .defaultWarning))
+        }
+        switch isValid {
+        case true:
+            return Observable.just(.init(isValid: isValid, status: .possible))
+        case false:
+            return Observable.just(.init(isValid: isValid, status: .impossible))
+        }
+    }
+    
+    private func isLeapYear(_ year: Int) -> Bool {
+        return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
     }
     
     private func getBirthdayInputValidation(_ input: String) -> Bool {
         guard input.count == 6 else { return false }
-            
+        
         let numbersSet = CharacterSet.decimalDigits
         let inputCharacterSet = CharacterSet(charactersIn: input)
+        guard inputCharacterSet.isSubset(of: numbersSet) else { return false }
         
-        return inputCharacterSet.isSubset(of: numbersSet)
+        guard let year = Int(input.prefix(2)),
+              let month = Int(input.dropFirst(2).prefix(2)),
+              let day = Int(input.suffix(2)) else { return false }
+        
+        let isLeap = isLeapYear(year + 2000)
+        
+        switch month {
+        case 1, 3, 5, 7, 8, 10, 12:
+            return day >= 1 && day <= 31
+        case 4, 6, 9, 11:
+            return day >= 1 && day <= 30
+        case 2:
+            return day >= 1 && day <= (isLeap ? 29 : 28)
+        default:
+            return false
+        }
     }
 }

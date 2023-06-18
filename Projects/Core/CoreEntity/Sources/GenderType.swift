@@ -10,14 +10,14 @@ import Foundation
 
 public enum GenderType: Int, CaseIterable, CustomStringConvertible {
     
-    case male
     case female
+    case male
     case etc
     
     public var description: String {
         switch self {
-        case .male: return "남성"
         case .female: return "여성"
+        case .male: return "남성"
         case .etc: return "기타"
         }
     }    

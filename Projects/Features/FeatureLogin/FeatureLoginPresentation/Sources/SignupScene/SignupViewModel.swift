@@ -54,10 +54,8 @@ public final class SignupViewModel: ViewModelType {
     
     public struct Output {
         let conditionSelectionCellViewModels = BehaviorRelay<[ConditionSelectionCellViewModel]>(value: [])
-        let nicknameTextFieldStatus = BehaviorRelay<NicknameInputStatus.Status>(value:
-                .none(description: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
-        )
-        let birthdayTextFieldStatus = BehaviorRelay<NicknameInputStatus.Status>(value: .none(description: ""))
+        let nicknameTextFieldStatus = BehaviorRelay<NicknameTextInput.Status>(value: .`default`)
+        let birthdayTextFieldStatus = BehaviorRelay<BirthdayTextInput.Status>(value: .`default`)
         let shouldCheckCondition = PublishRelay<Int>()
         let selectAllOptionConfig = Observable.just(AgreementCondition(
             descriptionText: "전체동의",

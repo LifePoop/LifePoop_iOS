@@ -1,24 +1,24 @@
 //
 //  InvitationType.swift
-//  FeatureFriendListPresentation
+//  CoreEntity
 //
-//  Created by Lee, Joon Woo on 2023/06/13.
+//  Created by Lee, Joon Woo on 2023/06/16.
 //  Copyright © 2023 Lifepoo. All rights reserved.
 //
 
 import Foundation
 
-enum InvitationType: CustomStringConvertible, CaseIterable {
+public enum InvitationType: CustomStringConvertible, CaseIterable {
     
     case sharingInvitationCode
     case enteringInvitationCode
     
-    var description: String {
+    public var description: String {
         switch self {
         case .sharingInvitationCode:
             return "초대 코드 공유하기"
         case .enteringInvitationCode:
-            return "친구 추가 코드 입력하기"
+            return "초대 코드 입력하기"
         }
     }
 }

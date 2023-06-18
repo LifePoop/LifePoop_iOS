@@ -17,5 +17,5 @@ public enum FriendListCoordinateAction {
     case shouldShowFirendList
     case shouldShowFriendInvitation(toastMessageStream: PublishRelay<String>)
     case shouldShowInvitationCodePopup(type: InvitationType, toastMessageStream: PublishRelay<String>)
-    case shouldDismissInvitationCodePopup(shouldPrintToast: Bool)
+    case shouldDismissInvitationCodePopup
 }

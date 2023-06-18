@@ -43,7 +43,7 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
             showFriendInvitationView(with: toastMessageStream)
         case .shouldShowInvitationCodePopup(let invitationType, let toastMessageStream):
             showInvitationCodePopup(invitationType: invitationType, toastMessageStream: toastMessageStream)
-        case .shouldDismissInvitationCodePopup(_):
+        case .shouldDismissInvitationCodePopup():
             dismissViewController()
         }
     }

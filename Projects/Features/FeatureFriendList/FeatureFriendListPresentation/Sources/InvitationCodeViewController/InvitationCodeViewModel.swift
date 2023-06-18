@@ -61,7 +61,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         )
         .bind(onNext: { [weak self] _ in
             self?.output.shouldDismissAlertView.accept(())
-            coordinator?.coordinate(by: .shouldDismissInvitationCodePopup(shouldPrintToast: false))
+            coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
         })
         .disposed(by: disposeBag)
         
@@ -74,7 +74,7 @@ public final class InvitationCodeViewModel: ViewModelType {
             .withLatestFrom(input.didEnterInvitationCode)
             .bind(onNext: { invitationCode in
                 Logger.log(message: "초대코드 입력 확인 : \(invitationCode)", category: .default, type: .debug)
-                coordinator?.coordinate(by: .shouldDismissInvitationCodePopup(shouldPrintToast: true))
+                coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
             })
             .disposed(by: disposeBag)
     }

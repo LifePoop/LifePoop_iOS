@@ -39,7 +39,6 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
             .disposed(by: disposeBag)
         
         alertView.rx.text
-            .debug()
             .bind(to: input.didEnterInvitationCode)
             .disposed(by: disposeBag)
     }

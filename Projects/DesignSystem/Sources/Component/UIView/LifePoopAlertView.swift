@@ -10,9 +10,9 @@ import UIKit
 
 import SnapKit
 
-public final class LifePoopAlertView: UIView {
+public class LifePoopAlertView: UIControl {
     
-    private lazy var backgroundView: UIView = {
+    private let backgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         view.alpha = .zero
@@ -28,7 +28,7 @@ public final class LifePoopAlertView: UIView {
         return label
     }()
     
-    private lazy var descriptionLabel: UILabel = {
+    private (set)lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = type.subTitle
         label.textAlignment = .center
@@ -62,7 +62,7 @@ public final class LifePoopAlertView: UIView {
         return button
     }()
     
-    private lazy var buttonStackView: UIStackView = {
+    private (set)lazy var buttonStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [cancelButton, confirmButton])
         stackView.axis = .horizontal
         stackView.spacing = 10
@@ -80,7 +80,7 @@ public final class LifePoopAlertView: UIView {
     }
     
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     

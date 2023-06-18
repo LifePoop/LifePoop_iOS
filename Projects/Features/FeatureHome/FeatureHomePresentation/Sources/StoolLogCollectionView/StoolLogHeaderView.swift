@@ -14,12 +14,12 @@ import DesignSystem
 
 public final class StoolLogHeaderView: UICollectionReusableView {
     
-    private lazy var todayStoolLogLabel: UILabel = {
+    private let todayStoolLogLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         label.numberOfLines = .zero
         label.lineBreakMode = .byWordWrapping
-        label.text = "2022년 11월 19일의 변기록이에요"
+        label.text = "2022년 11월 19일의 변 기록이에요"
         return label
     }()
     
@@ -44,7 +44,7 @@ private extension StoolLogHeaderView {
         addSubview(cheeringButtonView)
         
         todayStoolLogLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+            make.top.equalToSuperview().offset(20)
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().offset(-16)
         }

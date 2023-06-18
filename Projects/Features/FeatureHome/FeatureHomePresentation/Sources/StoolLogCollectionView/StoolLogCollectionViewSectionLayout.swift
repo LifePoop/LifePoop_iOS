@@ -14,7 +14,7 @@ public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionPro
     private lazy var headerLayoutSize: NSCollectionLayoutSize = {
         let headerLayoutSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .absolute(122)
+            heightDimension: .absolute(142)
         )
         return headerLayoutSize
     }()

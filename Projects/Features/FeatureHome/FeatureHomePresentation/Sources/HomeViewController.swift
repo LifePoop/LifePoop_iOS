@@ -157,7 +157,7 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         }
         
         stoolLogCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(collectionViewBottonSeparatorView.snp.bottom).offset(20)
+            make.top.equalTo(collectionViewBottonSeparatorView.snp.bottom)
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             make.bottom.equalToSuperview()
         }

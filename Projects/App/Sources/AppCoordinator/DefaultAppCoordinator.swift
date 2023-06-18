@@ -46,16 +46,12 @@ public final class DefaultAppCoordinator: AppCoordinator {
 
 private extension DefaultAppCoordinator {
     func startLoginCoordinatorFlow() {
-//        let loginCoordinator = DefaultLoginCoordinator(
-//            navigationController: navigationController,
-//            flowCompletionDelegate: self
-//        )
-//        add(childCoordinator: loginCoordinator)
-//        loginCoordinator.start()
-        
-        let friendListCoordinator = DefaultFriendListCoordinator(navigationController: navigationController)
-        add(childCoordinator: friendListCoordinator)
-        friendListCoordinator.start()
+        let loginCoordinator = DefaultLoginCoordinator(
+            navigationController: navigationController,
+            flowCompletionDelegate: self
+        )
+        add(childCoordinator: loginCoordinator)
+        loginCoordinator.start()
     }
     
     func startHomeCoordinatorFlow(animated: Bool) {

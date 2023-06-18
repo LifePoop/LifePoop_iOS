@@ -29,6 +29,7 @@ public final class FriendListViewModel: ViewModelType {
         let navigationTitle = Observable.of("친구 목록")
         let shouldShowFriendList = BehaviorRelay<[FriendEntity]>(value: [])
         let shouldShowEmptyList = PublishRelay<Void>()
+        let shouldShowToastMessge = PublishRelay<String>()
     }
     
     @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
@@ -47,8 +48,11 @@ public final class FriendListViewModel: ViewModelType {
     private func bind(coordinator: FriendListCoordinator?) {
         
         input.didTapInvitationButton
-            .bind { _ in
-                coordinator?.coordinate(by: .shouldShowFriendInvitation)
+            .withUnretained(self)
+            .bind { `self`, _ in
+                coordinator?.coordinate(
+                    by: .shouldShowFriendInvitation(toastMessageStream: self.output.shouldShowToastMessge)
+                )
             }
             .disposed(by: disposeBag)
         

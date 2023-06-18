@@ -116,25 +116,6 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
             .map { StoolSize.allCases[$0] }
             .bind(to: input.didSelectSize)
             .disposed(by: disposeBag)
-        
-        // 임시로 viewDidAppear 이후로 디폴트로 첫번째 항목 선택 처리
-        // TODO: 살짝 선택이 지연되게 보이기 때문에 viewDidAppear 이전에 미리 선택하도록 수정해야 함
-        rx.viewDidAppear
-            .map { IndexPath(item: 0, section: 0) }
-            .withUnretained(self)
-            .bind(onNext: { `self`, indexPath in
-                let collectionViews = [
-                    self.colorSelectCollectionView,
-                    self.stoolShapeSelectCollectionView
-                ]
-                
-                collectionViews.forEach {
-                    $0.selectItemManually(indexPath: indexPath)
-                }
-                
-                self.sizeSelectionSegmentControl.selectSegment(at: 0)
-            })
-            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: SatisfactionDetailViewModel) {
@@ -167,10 +148,14 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
                 guard entity.isSelected,
                       let collectionView = self?.stoolShapeSelectCollectionView
                 else { return }
-                
+
                 let indexPath = IndexPath(item: index, section: 0)
                 collectionView.selectItemManually(indexPath: indexPath)
             }
+            .disposed(by: disposeBag)
+        
+        output.enableCompleButton
+            .bind(to: completeButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
 }

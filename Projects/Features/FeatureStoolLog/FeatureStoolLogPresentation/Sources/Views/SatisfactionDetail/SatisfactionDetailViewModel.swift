@@ -23,9 +23,9 @@ public final class SatisfactionDetailViewModel: ViewModelType {
         let isSatisfied = BehaviorRelay<Bool>(value: true)
         let didTapLeftBarbutton = PublishRelay<Void>()
         let didTapCompleteButton = PublishRelay<Void>()
-        let didSelectColor = PublishRelay<StoolColor>()
-        let didSelectShape = PublishRelay<StoolShape>()
-        let didSelectSize = PublishRelay<StoolSize>()
+        let didSelectColor = BehaviorRelay<StoolColor?>(value: nil)
+        let didSelectShape = BehaviorRelay<StoolShape?>(value: nil)
+        let didSelectSize = BehaviorRelay<StoolSize?>(value: nil)
     }
     
     public struct Output {
@@ -34,6 +34,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
         let selectableColors = Observable.of(StoolColor.allCases)
         let selectableShapes = BehaviorRelay<[ColoredStoolShape]>(value: [])
         let selectableSizes = Observable.of(StoolSize.allCases)
+        let enableCompleButton = BehaviorRelay<Bool>(value: false)
     }
     
     public let input = Input()
@@ -62,7 +63,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         Observable.of(StoolShape.allCases)
-            .map { $0.map { ColoredStoolShape(shape: $0, color: .brown) } }
+            .map { $0.map { ColoredStoolShape(shape: $0, color: nil) } }
             .bind(to: output.selectableShapes)
             .disposed(by: disposeBag)
         
@@ -95,6 +96,11 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             )
             .map { ($0, $1, $2, $3) }
             .share()
+        
+        selectedStatus
+            .map { $1 != nil && $2 != nil && $3 != nil }
+            .bind(to: output.enableCompleButton)
+            .disposed(by: disposeBag)
         
         input.didTapCompleteButton
             .withLatestFrom(selectedStatus)

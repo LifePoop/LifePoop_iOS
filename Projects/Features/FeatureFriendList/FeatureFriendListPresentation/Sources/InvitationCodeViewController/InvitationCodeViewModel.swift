@@ -20,12 +20,32 @@ import Utils
 
 public final class InvitationCodeViewModel: ViewModelType {
     
+    enum SharingResult: CustomStringConvertible {
+        case success(activity: Activity)
+        case failure(error: Error?)
+        
+        enum Activity {
+            case sharing
+            case copying
+        }
+        
+        var description: String {
+            switch self {
+            case .success(let activity):
+                return activity == .copying ? "초대 코드 복사 완료" :
+                                              "초대 코드 공유 완료"
+            case .failure(_):
+                return "초대 코드 공유 실패"
+            }
+        }
+    }
+    
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
         let didEnterInvitationCode = PublishRelay<String>()
         let didTapConfirmButton = PublishRelay<Void>()
         let didTapCancelButton = PublishRelay<Void>()
-        let didCloseSharingPopup = PublishRelay<Void>()
+        let didCloseSharingPopup = PublishRelay<SharingResult>()
     }
     
     public struct Output {
@@ -40,7 +60,11 @@ public final class InvitationCodeViewModel: ViewModelType {
     
     private var disposeBag = DisposeBag()
     
-    public init(coordinator: FriendListCoordinator?, invitationType: InvitationType, toastMessageStream: PublishRelay<String>) {
+    public init(
+        coordinator: FriendListCoordinator?,
+        invitationType: InvitationType,
+        toastMessageStream: PublishRelay<String>
+    ) {
         
         input.viewDidLoad
             .map { invitationType }
@@ -57,7 +81,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         
         Observable.merge(
             input.didTapCancelButton.asObservable(),
-            input.didCloseSharingPopup.asObservable()
+            input.didCloseSharingPopup.map { _ in Void() }.asObservable()
         )
         .bind(onNext: { [weak self] _ in
             self?.output.shouldDismissAlertView.accept(())
@@ -66,7 +90,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         .disposed(by: disposeBag)
         
         input.didCloseSharingPopup
-            .map { "초대코드 공유 완료" }
+            .map { $0.description }
             .bind(to: toastMessageStream)
             .disposed(by: disposeBag)
         

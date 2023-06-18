@@ -86,13 +86,21 @@ private extension InvitationCodeViewController {
             .addToReadingList,
             .airDrop,
             .openInIBooks,
-            .print,
-            .saveToCameraRoll
+            .saveToCameraRoll,
+            .markupAsPDF
         ]
-        activityViewController.completionWithItemsHandler = { [weak self] _, _, _, _ in
-            // 토스트메시지 출력
-            self?.viewModel?.input.didCloseSharingPopup.accept(())
-        }
+        activityViewController.completionWithItemsHandler = { [weak self] activity, success, items, error in
+            guard success else {
+                self?.viewModel?.input.didCloseSharingPopup.accept(.failure(error: error))
+                return
+            }
+    
+            if activity == .copyToPasteboard {
+                self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity:.copying))
+            } else {
+                self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity:.sharing))
+            }
+    }
         
         self.present(activityViewController, animated: true)
     }

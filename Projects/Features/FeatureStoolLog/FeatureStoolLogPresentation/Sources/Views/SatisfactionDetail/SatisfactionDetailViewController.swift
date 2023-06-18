@@ -79,11 +79,7 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
         return collectionView
     }()
     
-    private lazy var sizeSelectionSegmentControl: LifePoopSegmentControl = {
-        let titles = StoolSize.allCases.map { $0.description }
-        let segmentControl = LifePoopSegmentControl(titles: titles)
-        return segmentControl
-    }()
+    private let sizeSelectionSegmentControl = LifePoopSegmentControl()
     
     private let completeButton = LifePoopButton(title: "완료")
     
@@ -97,7 +93,11 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
     
     public func bindInput(to viewModel: SatisfactionDetailViewModel) {
         let input = viewModel.input
-                
+        
+        rx.viewDidLoad
+            .bind(to: input.viewDidLoad)
+            .disposed(by: disposeBag)
+        
         completeButton.rx.tap
             .bind(to: input.didTapCompleteButton)
             .disposed(by: disposeBag)
@@ -142,6 +142,10 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
         
         output.titleText
             .bind(to: navigationItem.rx.title)
+            .disposed(by: disposeBag)
+        
+        output.sizeSelectionSegmentTitles
+            .bind(onNext: sizeSelectionSegmentControl.setTitles(_:))
             .disposed(by: disposeBag)
         
         output.selectableColors

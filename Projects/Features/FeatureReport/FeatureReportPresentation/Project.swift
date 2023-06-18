@@ -23,6 +23,8 @@ let project = Project.makeModule(
         .Project.module(.Utils).dependency,
         .Project.module(.Features(.Report, .UseCase)).dependency,
         .Project.module(.Features(.Report, .DIContainer)).dependency,
+        .Project.module(.Shared(.SharedUseCase)).dependency,
+        .Project.module(.Shared(.SharedDIContainer)).dependency,
         .Project.module(.Features(.Report, .CoordinatorInterface)).dependency,
         .SPM.SnapKit.dependency,
         .SPM.RxSwift.dependency,

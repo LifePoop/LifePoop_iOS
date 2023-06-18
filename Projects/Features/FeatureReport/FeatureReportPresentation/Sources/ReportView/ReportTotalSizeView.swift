@@ -15,7 +15,7 @@ import SnapKit
 import DesignSystem
 import Utils
 
-public final class ReportTotalSizeView: UIView {
+final class ReportTotalSizeView: UIView {
     
     private lazy var tableImageView: UIImageView = {
         let imageView = UIImageView(image: ImageAsset.reportSizeTable.original)
@@ -62,13 +62,13 @@ public final class ReportTotalSizeView: UIView {
         return label
     }()
     
-    public init() {
+    init() {
         super.init(frame: .zero)
         layoutUI()
     }
     
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     

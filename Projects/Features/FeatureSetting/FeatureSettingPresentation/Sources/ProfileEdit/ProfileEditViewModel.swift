@@ -219,7 +219,7 @@ public final class ProfileEditViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         let isNicknameValid = nicknameValidation
-            .startWith(.default)
+            .startWith(.possible)
             .map { $0 == .possible }
             .distinctUntilChanged()
             .share()

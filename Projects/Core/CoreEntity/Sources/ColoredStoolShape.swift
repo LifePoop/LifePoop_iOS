@@ -11,10 +11,10 @@ import Foundation
 public struct ColoredStoolShape {
     
     public let shape: StoolShape
-    public let color: StoolColor
+    public let color: StoolColor?
     public let isSelected: Bool
     
-    public init(shape: StoolShape, color: StoolColor, isSelected: Bool = false) {
+    public init(shape: StoolShape, color: StoolColor?, isSelected: Bool = false) {
         self.shape = shape
         self.color = color
         self.isSelected = isSelected

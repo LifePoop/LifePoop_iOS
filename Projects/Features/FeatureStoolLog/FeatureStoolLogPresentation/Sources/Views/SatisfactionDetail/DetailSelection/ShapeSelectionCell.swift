@@ -53,7 +53,7 @@ final class ShapeSelectionCell: UICollectionViewCell {
         updatedSelectedImage = nil
     }
     
-    func configure(stoolShapeSelection: StoolShape, colorOf color: StoolColor = .brown) {
+    func configure(stoolShapeSelection: StoolShape, colorOf color: StoolColor?) {
 
         updatedSelectedImage = { [weak self] in
             guard let self = self else { return }
@@ -87,7 +87,7 @@ final class ShapeSelectionCell: UICollectionViewCell {
 
 private extension ShapeSelectionCell {
     
-    func getSelectedSoftImage(for color: StoolColor) -> UIImage {
+    func getSelectedSoftImage(for color: StoolColor?) -> UIImage {
        switch color {
        case .brown:
            return ImageAsset.shapeSoftSelectedBrown.original
@@ -99,10 +99,12 @@ private extension ShapeSelectionCell {
            return ImageAsset.shapeSoftSelectedGreen.original
        case .yellow:
            return ImageAsset.shapeSoftSelectedYellow.original
+       case .none:
+           return ImageAsset.shapeSoftSelectedDefault.original
        }
    }
     
-    func getSelectedGoodImage(for color: StoolColor) -> UIImage {
+    func getSelectedGoodImage(for color: StoolColor?) -> UIImage {
        switch color {
        case .brown:
            return ImageAsset.shapeGoodSelectedBrown.original
@@ -114,10 +116,12 @@ private extension ShapeSelectionCell {
            return ImageAsset.shapeGoodSelectedGreen.original
        case .yellow:
            return ImageAsset.shapeGoodSelectedYellow.original
+       case .none:
+           return ImageAsset.shapeGoodSelectedDefault.original
        }
    }
 
-    func getSelectedHardImage(for color: StoolColor) -> UIImage {
+    func getSelectedHardImage(for color: StoolColor?) -> UIImage {
        switch color {
        case .brown:
            return ImageAsset.shapeHardSelectedBrown.original
@@ -129,6 +133,8 @@ private extension ShapeSelectionCell {
            return ImageAsset.shapeHardSelectedGreen.original
        case .yellow:
            return ImageAsset.shapeHardSelectedYellow.original
+       case .none:
+           return ImageAsset.shapeHardSelectedDefault.original
        }
    }
 

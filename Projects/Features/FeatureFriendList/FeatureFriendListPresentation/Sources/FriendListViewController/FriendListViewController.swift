@@ -129,8 +129,8 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         
         view.addSubview(friendListCollectionView)
         friendListCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(30)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
         }
         

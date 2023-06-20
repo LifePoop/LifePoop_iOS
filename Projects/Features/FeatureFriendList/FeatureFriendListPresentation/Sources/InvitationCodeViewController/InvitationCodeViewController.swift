@@ -30,6 +30,17 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)
         
+        rx.viewDidLoad
+            .withUnretained(self)
+            .bind(onNext: { `self`, _ in
+                NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(self.keyboardWillShow(_:)),
+                    name: UIResponder.keyboardWillShowNotification, object: nil
+                )
+            })
+            .disposed(by: disposeBag)
+        
         alertView.cancelButton.rx.tap
             .bind(to: input.didTapCancelButton)
             .disposed(by: disposeBag)
@@ -89,19 +100,40 @@ private extension InvitationCodeViewController {
             .saveToCameraRoll,
             .markupAsPDF
         ]
-        activityViewController.completionWithItemsHandler = { [weak self] activity, success, items, error in
+        
+        activityViewController.completionWithItemsHandler = { [weak self] activity, success, _, error in
             guard success else {
                 self?.viewModel?.input.didCloseSharingPopup.accept(.failure(error: error))
                 return
             }
     
             if activity == .copyToPasteboard {
-                self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity:.copying))
+                self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity: .copying))
             } else {
-                self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity:.sharing))
+                self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity: .sharing))
             }
     }
         
         self.present(activityViewController, animated: true)
+    }
+}
+
+private extension InvitationCodeViewController {
+    
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard
+            let keyboardView = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        else { return }
+        
+        let keyboardRect = keyboardView.cgRectValue
+
+        let keyboardMinY = keyboardRect.minY
+        let alertViewMaxY = alertView.frame.maxY
+        let marginOfError: CGFloat = 20
+        let alertViewNeedsToGoUp = keyboardMinY <= alertViewMaxY + marginOfError
+        
+        if alertViewNeedsToGoUp {
+            alertView.moveUp(to: 30)
+        }
     }
 }

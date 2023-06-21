@@ -12,27 +12,27 @@ import SnapKit
 
 import CoreEntity
 import DesignSystem
+import EntityUIMapper
 
 public final class StoolLogCollectionViewCell: UICollectionViewCell {
     
-    private let backgroundContainerView = ShadowView()
+    private let containerView = ShadowView()
     
-    private lazy var backgroundImageView: UIImageView = {
+    private let backgroundImageView: UIImageView = {
         let imageView = UIImageView(image: ImageAsset.logBackground.original)
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleToFill
         return imageView
     }()
     
-    private lazy var dateLabel: UILabel = {
+    private let timeDescriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "오후 11:58"
         label.font = UIFont.systemFont(ofSize: 14, weight: .bold)
         label.textColor = ColorAsset.gray800.color
         return label
     }()
     
-    private lazy var stoolCharactorImageView: UIImageView = {
-        let imageView = UIImageView(image: ImageAsset.stoolSoftYellow.original)
+    private let stoolCharactorImageView: UIImageView = {
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -50,7 +50,8 @@ public final class StoolLogCollectionViewCell: UICollectionViewCell {
 
 public extension StoolLogCollectionViewCell {
     func configure(with stoolLogEntity: StoolLogEntity) {
-        
+        timeDescriptionLabel.text = stoolLogEntity.date
+        stoolCharactorImageView.image = stoolLogEntity.stoolImage
     }
 }
 
@@ -58,26 +59,30 @@ public extension StoolLogCollectionViewCell {
 
 private extension StoolLogCollectionViewCell {
     func layoutUI() {
-        contentView.addSubview(backgroundContainerView)
-        backgroundContainerView.addSubview(backgroundImageView)
-        backgroundImageView.addSubview(dateLabel)
+        contentView.addSubview(containerView)
+        containerView.addSubview(backgroundImageView)
+        backgroundImageView.addSubview(timeDescriptionLabel)
         backgroundImageView.addSubview(stoolCharactorImageView)
         
-        backgroundContainerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
+        containerView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         backgroundImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
+            make.edges.equalToSuperview().inset(6)
         }
         
-        dateLabel.snp.makeConstraints { make in
-            make.top.trailing.equalToSuperview().inset(16)
+        timeDescriptionLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(26)
+            make.trailing.equalToSuperview().inset(26)
         }
         
         stoolCharactorImageView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().offset(-16)
+            make.width.equalTo(backgroundImageView).multipliedBy(0.7)
+            make.height.equalTo(backgroundImageView).multipliedBy(0.27)
+            make.centerX.equalToSuperview().multipliedBy(0.9)
+            make.centerY.equalToSuperview().multipliedBy(1.125)
         }
     }
 }

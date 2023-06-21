@@ -27,24 +27,23 @@ public final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDif
     
     public init(collectionView: UICollectionView) {
         super.init(collectionView: collectionView, cellProvider: cellProvider)
-        configureSupplementaryViewProvider()
     }
     
-    private func configureSupplementaryViewProvider() {
+    func bindStoolLogHeaderView(with viewModel: StoolLogHeaderViewModel) {
         supplementaryViewProvider = { collectionView, kind, indexPath in
             guard let headerView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
                 withReuseIdentifier: StoolLogHeaderView.identifier,
                 for: indexPath
             ) as? StoolLogHeaderView else { return UICollectionReusableView() }
-            
+            headerView.bind(viewModel: viewModel)
             return headerView
         }
     }
     
     // MARK: - DiffableDataSource Methods
     
-    public func update(with stoolLogEntities: [StoolLogEntity]) {
+    func update(with stoolLogEntities: [StoolLogEntity]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.log])
         snapshot.appendItems(stoolLogEntities)

@@ -34,20 +34,15 @@ public final class FriendInvitationViewModel: ViewModelType {
     
     private var disposeBag = DisposeBag()
     
-    public init() {
-        bind()
+    public init(coordinator: FriendListCoordinator?, toastMessageStream: PublishRelay<String>) {
+        bind(coordinator: coordinator, toastMessageStream: toastMessageStream)
     }
     
-    private func bind() {
+    private func bind(coordinator: FriendListCoordinator?, toastMessageStream: PublishRelay<String>) {
         
         input.didSelectInvitationType
             .bind(onNext: { invitationType in
-                switch invitationType {
-                case .sharingInvitationCode:
-                    Logger.log(message: "초대코드 공유하기", category: .default, type: .default)
-                case .enteringInvitationCode:
-                    Logger.log(message: "친구 추가 코드 입력하기", category: .default, type: .default)
-                }
+                coordinator?.coordinate(by: .shouldShowInvitationCodePopup(type: invitationType, toastMessageStream: toastMessageStream))
             })
             .disposed(by: disposeBag)
     }

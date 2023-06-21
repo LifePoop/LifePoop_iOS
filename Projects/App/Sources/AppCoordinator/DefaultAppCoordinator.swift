@@ -8,6 +8,8 @@
 
 import UIKit
 
+import FeatureFriendListCoordinator
+import FeatureFriendListCoordinatorInterface
 import FeatureHomeCoordinator
 import FeatureHomeCoordinatorInterface
 import FeatureLoginCoordinator

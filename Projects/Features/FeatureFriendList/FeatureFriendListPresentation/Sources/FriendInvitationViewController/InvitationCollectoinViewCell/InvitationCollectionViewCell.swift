@@ -12,6 +12,7 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+import CoreEntity
 import DesignSystem
 import Utils
 
@@ -38,6 +39,13 @@ final class InvitationCollectionViewCell: UICollectionViewCell {
     
     func configure(with invitationType: InvitationType) {
         titleLabel.text = invitationType.description
+        
+        switch invitationType {
+        case .sharingInvitationCode:
+            iconImage.image = ImageAsset.invitationClip.original
+        case .enteringInvitationCode:
+            iconImage.image = ImageAsset.iconInvitationCode.original
+        }
     }
     
     private func addSubViews() {

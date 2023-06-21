@@ -43,6 +43,14 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         return emptyFriendListView
     }()
     
+    private let toastLabel: ToastLabel = {
+        let label = ToastLabel()
+        label.backgroundColor = ColorAsset.gray900.color
+        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        label.textColor = ColorAsset.white.color
+        return label
+    }()
+    
     private var disposeBag = DisposeBag()
     public var viewModel: FriendListViewModel?
 
@@ -89,6 +97,22 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
                 cell.configure(with: friend)
             }
             .disposed(by: disposeBag)
+        
+        output.shouldShowToastMessge
+            .map { message in
+                let fullString = NSMutableAttributedString()
+                
+                let imageAttachment = NSTextAttachment()
+                imageAttachment.image = UIImage(systemName: "checkmark.circle.fill")?
+                                            .withTintColor(ColorAsset.white.color)
+                fullString.append(NSAttributedString(attachment: imageAttachment))
+            
+                fullString.appendSpacing(withPointOf: 12)
+                fullString.append(NSAttributedString(string: message))
+                return fullString
+            }
+            .bind(onNext: toastLabel.show(message:))
+            .disposed(by: disposeBag)
     }
     
     public override func configureUI() {
@@ -105,14 +129,21 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         
         view.addSubview(friendListCollectionView)
         friendListCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(30)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
         }
         
         view.addSubview(emptyFriendListView)
         emptyFriendListView.snp.makeConstraints { make in
             make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        view.addSubview(toastLabel)
+        toastLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.height.equalTo(52)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(32)
         }
     }
 }

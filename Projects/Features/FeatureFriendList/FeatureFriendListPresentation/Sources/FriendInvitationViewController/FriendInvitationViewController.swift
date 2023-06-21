@@ -1,5 +1,5 @@
 //
-//  FriendInvitatinoViewController.swift
+//  FriendInvitationViewController.swift
 //  FeatureFriendListPresentation
 //
 //  Created by Lee, Joon Woo on 2023/06/13.
@@ -12,6 +12,7 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+import CoreEntity
 import DesignSystem
 import Utils
 

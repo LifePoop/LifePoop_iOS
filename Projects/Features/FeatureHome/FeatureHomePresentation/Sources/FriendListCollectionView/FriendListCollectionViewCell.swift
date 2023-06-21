@@ -12,12 +12,17 @@ import SnapKit
 
 import CoreEntity
 import DesignSystem
+import EntityUIMapper
 
 public final class FriendListCollectionViewCell: UICollectionViewCell {
     
-    private let profileImageView = ProfileImageView()
+    private let profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
     
-    private lazy var nameLabel: UILabel = {
+    private let nameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .center
@@ -37,7 +42,7 @@ public final class FriendListCollectionViewCell: UICollectionViewCell {
 
 public extension FriendListCollectionViewCell {
     func configure(with friendEntity: FriendEntity) {
-        profileImageView.setImage(by: friendEntity.isActivated)
+        profileImageView.image = friendEntity.feedImage
         nameLabel.text = friendEntity.name
     }
 }

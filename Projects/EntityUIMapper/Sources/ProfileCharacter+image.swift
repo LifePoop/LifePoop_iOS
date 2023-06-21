@@ -11,43 +11,6 @@ import UIKit
 import CoreEntity
 import DesignSystem
 
-public extension StoolLogEntity {
-    var stoolImage: UIImage {
-        switch (shape, color) {
-        case (.good, .black):
-            return ImageAsset.stoolLargeGoodBlack.original
-        case (.good, .pink):
-            return ImageAsset.stoolLargeGoodPink.original
-        case (.good, .brown):
-            return ImageAsset.stoolLargeGoodBrown.original
-        case (.good, .green):
-            return ImageAsset.stoolLargeGoodGreen.original
-        case (.good, .yellow):
-            return ImageAsset.stoolLargeGoodYellow.original
-        case (.hard, .black):
-            return ImageAsset.stoolLargeHardBlack.original
-        case (.hard, .brown):
-            return ImageAsset.stoolLargeHardBrown.original
-        case (.hard, .green):
-            return ImageAsset.stoolLargeHardGreen.original
-        case (.hard, .pink):
-            return ImageAsset.stoolLargeHardPink.original
-        case (.hard, .yellow):
-            return ImageAsset.stoolLargeHardYellow.original
-        case (.soft, .black):
-            return ImageAsset.stoolLargeSoftBlack.original
-        case (.soft, .brown):
-            return ImageAsset.stoolLargeSoftBrown.original
-        case (.soft, .green):
-            return ImageAsset.stoolLargeSoftGreen.original
-        case (.soft, .pink):
-            return ImageAsset.stoolLargeSoftPink.original
-        case (.soft, .yellow):
-            return ImageAsset.stoolLargeSoftYellow.original
-        }
-    }
-}
-
 public extension ProfileCharacter {
     var image: UIImage {
         switch (shape, color) {
@@ -81,6 +44,41 @@ public extension ProfileCharacter {
             return ImageAsset.profileSoftRed.original
         case (.soft, .yellow):
             return ImageAsset.profileSoftYellow.original
+        }
+    }
+    
+    var highlightedImage: UIImage {
+        switch (shape, color) {
+        case (.good, .black):
+            return ImageAsset.profileGoodBlackHighlighted.original
+        case (.good, .pink):
+            return ImageAsset.profileGoodRedHighlighted.original
+        case (.good, .brown):
+            return ImageAsset.profileGoodBrownHighlighted.original
+        case (.good, .green):
+            return ImageAsset.profileGoodGreenHighlighted.original
+        case (.good, .yellow):
+            return ImageAsset.profileGoodYellowHighlighted.original
+        case (.hard, .black):
+            return ImageAsset.profileHardBlackHighlighted.original
+        case (.hard, .brown):
+            return ImageAsset.profileHardBrownHighlighted.original
+        case (.hard, .green):
+            return ImageAsset.profileHardGreenHighlighted.original
+        case (.hard, .pink):
+            return ImageAsset.profileHardRedHighlighted.original
+        case (.hard, .yellow):
+            return ImageAsset.profileHardYellowHighlighted.original
+        case (.soft, .black):
+            return ImageAsset.profileSoftBlackHighlighted.original
+        case (.soft, .brown):
+            return ImageAsset.profileSoftBrownHighlighted.original
+        case (.soft, .green):
+            return ImageAsset.profileSoftGreenHighlighted.original
+        case (.soft, .pink):
+            return ImageAsset.profileSoftRedHighlighted.original
+        case (.soft, .yellow):
+            return ImageAsset.profileSoftYellowHighlighted.original
         }
     }
 }

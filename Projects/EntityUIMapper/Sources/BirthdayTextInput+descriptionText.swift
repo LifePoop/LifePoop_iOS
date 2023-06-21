@@ -19,9 +19,9 @@ public extension BirthdayTextInput.Status {
         case .defaultWarning:
             return ConditionalTextField.TextFieldStatus.impossible(text: "생년월일 6자를 입력해주세요.")
         case .possible:
-            return ConditionalTextField.TextFieldStatus.possible(text: "유효한 생년월일 형식입니다.")
+            return ConditionalTextField.TextFieldStatus.possible(text: "올바른 생년월일이에요.")
         case .impossible:
-            return ConditionalTextField.TextFieldStatus.impossible(text: "유효하지 않은 생년월일 형식입니다.")
+            return ConditionalTextField.TextFieldStatus.impossible(text: "올바른 생년월일을 입력해주세요.")
         }
     }
 }

@@ -82,7 +82,7 @@ private extension StoolLogCollectionViewCell {
             make.width.equalTo(backgroundImageView).multipliedBy(0.7)
             make.height.equalTo(backgroundImageView).multipliedBy(0.27)
             make.centerX.equalToSuperview().multipliedBy(0.9)
-            make.centerY.equalToSuperview().multipliedBy(1.125)
+            make.centerY.equalToSuperview().multipliedBy(1.14)
         }
     }
 }

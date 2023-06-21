@@ -11,6 +11,7 @@ import Foundation
 public enum HomeCoordinateAction {
     case flowDidStart(animated: Bool)
     case flowDidFinish
+    case cheeringButtonDidTap
     case stoolLogButtonDidTap
     case settingButtonDidTap
     case reportButtonDidTap

@@ -12,21 +12,21 @@ import SnapKit
 
 public final class CheeringButtonView: ShadowView {
     
-    private lazy var imageView: UIImageView = {
+    private let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = ImageAsset.logFriends.original
+        imageView.image = ImageAsset.cheeringFriends.original
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
-    private lazy var titleLabel: UILabel = {
+    public let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "이길동님 외 12명이 응원하고 있어요!"
+        label.adjustsFontSizeToFitWidth = true
         label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         return label
     }()
     
-    private lazy var subtitleLabel: UILabel = {
+    private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "친구들 응원하러 가기"
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
@@ -34,7 +34,7 @@ public final class CheeringButtonView: ShadowView {
         return label
     }()
     
-    private lazy var expandRightImageView: UIImageView = {
+    private let expandRightImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = ImageAsset.expandRight.original
         imageView.contentMode = .scaleAspectFit
@@ -49,6 +49,8 @@ public final class CheeringButtonView: ShadowView {
         return stackView
     }()
     
+    public let containerButton = UIButton()
+    
     public override init() {
         super.init()
         configureUI()
@@ -58,6 +60,10 @@ public final class CheeringButtonView: ShadowView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    public func configureLabel(text: String) {
+        titleLabel.text = text
     }
 }
 
@@ -76,6 +82,7 @@ private extension CheeringButtonView {
         addSubview(imageView)
         addSubview(titleStackView)
         addSubview(expandRightImageView)
+        addSubview(containerButton)
         
         imageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(10)
@@ -87,11 +94,16 @@ private extension CheeringButtonView {
         titleStackView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalTo(imageView.snp.trailing).offset(4)
+            make.trailing.equalToSuperview().inset(10)
         }
         
         expandRightImageView.snp.makeConstraints { make in
             make.centerY.equalTo(subtitleLabel)
             make.leading.equalTo(subtitleLabel.snp.trailing)
+        }
+        
+        containerButton.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 }

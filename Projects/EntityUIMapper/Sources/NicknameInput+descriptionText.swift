@@ -15,13 +15,13 @@ public extension NicknameTextInput.Status {
     var descriptionText: ConditionalTextField.TextFieldStatus {
         switch self {
         case .`default`:
-            return ConditionalTextField.TextFieldStatus.`default`(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
+            return ConditionalTextField.TextFieldStatus.`default`(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있어요.")
         case .defaultWarning:
-            return ConditionalTextField.TextFieldStatus.impossible(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있습니다.")
+            return ConditionalTextField.TextFieldStatus.impossible(text: "2~5자로 한글, 영문, 숫자를 사용할 수 있어요.")
         case .possible:
-            return ConditionalTextField.TextFieldStatus.possible(text: "사용 가능한 닉네임입니다.")
+            return ConditionalTextField.TextFieldStatus.possible(text: "사용 가능한 닉네임이에요.")
         case .impossible:
-            return ConditionalTextField.TextFieldStatus.impossible(text: "사용 불가능한 닉네임입니다.")
+            return ConditionalTextField.TextFieldStatus.impossible(text: "사용 불가능한 닉네임이에요.")
         }
     }
 }

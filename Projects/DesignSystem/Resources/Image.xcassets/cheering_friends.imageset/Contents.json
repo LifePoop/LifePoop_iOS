@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "log_friends.png",
+      "filename" : "cheering_friends.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "log_friends@2x.png",
+      "filename" : "cheering_friends@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "log_friends@3x.png",
+      "filename" : "cheering_friends@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

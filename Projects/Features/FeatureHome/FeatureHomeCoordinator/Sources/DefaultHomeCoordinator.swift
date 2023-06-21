@@ -9,6 +9,8 @@
 import UIKit
 
 import DesignSystem
+import FeatureFriendListCoordinator
+import FeatureFriendListCoordinatorInterface
 import FeatureHomeCoordinatorInterface
 import FeatureHomePresentation
 import FeatureReportCoordinator
@@ -43,6 +45,8 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
             pushHomeViewController(animated: animated)
         case .flowDidFinish:
             flowCompletionDelegate?.finishFlow()
+        case .cheeringButtonDidTap:
+            startFriendListCoordinatorFlow()
         case .stoolLogButtonDidTap:
             startStoolLogCoordinatorFlow()
         case .settingButtonDidTap:
@@ -90,6 +94,12 @@ private extension DefaultHomeCoordinator {
             navigationController: navigationController
         )
         reportCoordinator.start()
+    }
+    
+    func startFriendListCoordinatorFlow() {
+        let friendListCoordinator = DefaultFriendListCoordinator(navigationController: navigationController)
+        add(childCoordinator: friendListCoordinator)
+        friendListCoordinator.start()
     }
 }
 

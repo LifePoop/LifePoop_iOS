@@ -12,6 +12,7 @@ import SnapKit
 
 import CoreEntity
 import DesignSystem
+import EntityUIMapper
 import Utils
 
 final class FriendListCollectionViewCell: UICollectionViewCell {
@@ -67,44 +68,7 @@ final class FriendListCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(with friend: FriendEntity) {
-        
         nicknameLabel.text = friend.name
-        profileImageView.image = getProfileImage(with: friend.profile)
-    }
-    
-    private func getProfileImage(with profile: ProfileCharacter) -> UIImage {
-        
-        switch (profile.color, profile.shape) {
-        case (StoolColor.yellow, StoolShape.soft):
-            return ImageAsset.profileSoftYellow.original
-        case (StoolColor.pink, StoolShape.soft):
-            return ImageAsset.profileSoftRed.original
-        case (StoolColor.black, StoolShape.soft):
-            return ImageAsset.profileSoftBlack.original
-        case (StoolColor.brown, StoolShape.soft):
-            return ImageAsset.profileSoftBrown.original
-        case (StoolColor.green, StoolShape.soft):
-            return ImageAsset.profileSoftGreen.original
-        case (StoolColor.yellow, StoolShape.hard):
-            return ImageAsset.profileHardYellow.original
-        case (StoolColor.pink, StoolShape.hard):
-            return ImageAsset.profileHardRed.original
-        case (StoolColor.black, StoolShape.hard):
-            return ImageAsset.profileHardBlack.original
-        case (StoolColor.brown, StoolShape.hard):
-            return ImageAsset.profileHardBrown.original
-        case (StoolColor.green, StoolShape.hard):
-            return ImageAsset.profileHardGreen.original
-        case (StoolColor.yellow, StoolShape.good):
-            return ImageAsset.profileGoodYellow.original
-        case (StoolColor.pink, StoolShape.good):
-            return ImageAsset.profileGoodRed.original
-        case (StoolColor.black, StoolShape.good):
-            return ImageAsset.profileGoodBlack.original
-        case (StoolColor.brown, StoolShape.good):
-            return ImageAsset.profileGoodBrown.original
-        case (StoolColor.green, StoolShape.good):
-            return ImageAsset.profileGoodGreen.original
-        }
+        profileImageView.image = friend.profile.image
     }
 }

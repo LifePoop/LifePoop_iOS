@@ -19,19 +19,28 @@ public final class HomeViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
+        let viewDidRefresh = PublishRelay<Void>() // TODO: 로직 구현 필요
         let settingButtonDidTap = PublishRelay<Void>()
         let reportButtonDidTap = PublishRelay<Void>()
         let stoolLogButtonDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
+        let updateFriends = PublishRelay<[FriendEntity]>()
+        let updateStoolLogs = PublishRelay<[StoolLogEntity]>()
+        let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
+        let showErrorMessage = PublishRelay<String>()
+    }
+    
+    public struct State {
         let friends = BehaviorRelay<[FriendEntity]>(value: [])
         let stoolLogs = BehaviorRelay<[StoolLogEntity]>(value: [])
-        let showErrorMessage = PublishRelay<String>()
+        let headerViewModel = BehaviorRelay<StoolLogHeaderViewModel?>(value: nil)
     }
     
     public let input = Input()
     public let output = Output()
+    public let state = State()
     
     @Inject(HomeDIContainer.shared) private var homeUseCase: HomeUseCase
     
@@ -41,13 +50,7 @@ public final class HomeViewModel: ViewModelType {
     public init(coordinator: HomeCoordinator?) {
         self.coordinator = coordinator
         
-        // MARK: - Bind Input - stoolLogButtonDidTap
-        input.stoolLogButtonDidTap
-            .withUnretained(self)
-            .bind(onNext: { owner, _ in
-                owner.coordinator?.coordinate(by: .stoolLogButtonDidTap)
-            })
-            .disposed(by: disposeBag)
+        // MARK: - Bind Input
         
         let fetchedFriends = input.viewDidLoad
             .withUnretained(self)
@@ -58,7 +61,7 @@ public final class HomeViewModel: ViewModelType {
         
         fetchedFriends
             .compactMap { $0.element }
-            .bind(to: output.friends)
+            .bind(to: state.friends)
             .disposed(by: disposeBag)
         
         fetchedFriends
@@ -76,13 +79,28 @@ public final class HomeViewModel: ViewModelType {
         
         stoolLogs
             .compactMap { $0.element }
-            .bind(to: output.stoolLogs)
+            .bind(to: state.stoolLogs)
             .disposed(by: disposeBag)
         
         stoolLogs
             .compactMap { $0.error }
             .toastMeessageMap(to: .failToFetchStoolLog)
             .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
+        
+        input.viewDidLoad
+            .map { StoolLogHeaderViewModel(coordinator: coordinator) }
+            .do { [weak self] in
+                self?.bind(stoolLogHeaderViewModel: $0)
+            }
+            .bind(to: state.headerViewModel)
+            .disposed(by: disposeBag)
+        
+        input.stoolLogButtonDidTap
+            .withUnretained(self)
+            .bind(onNext: { owner, _ in
+                owner.coordinator?.coordinate(by: .stoolLogButtonDidTap)
+            })
             .disposed(by: disposeBag)
         
         input.settingButtonDidTap
@@ -97,6 +115,27 @@ public final class HomeViewModel: ViewModelType {
             .bind { `self`, _ in
                 self.coordinator?.coordinate(by: .reportButtonDidTap)
             }
+            .disposed(by: disposeBag)
+        
+        state.friends
+            .bind(to: output.updateFriends)
+            .disposed(by: disposeBag)
+        
+        state.stoolLogs
+            .bind(to: output.updateStoolLogs)
+            .disposed(by: disposeBag)
+        
+        state.headerViewModel
+            .compactMap { $0 }
+            .bind(to: output.bindStoolLogHeaderViewModel)
+            .disposed(by: disposeBag)
+    }
+}
+
+private extension HomeViewModel {
+    func bind(stoolLogHeaderViewModel: StoolLogHeaderViewModel) {
+        input.viewDidRefresh
+            .bind(to: stoolLogHeaderViewModel.input.viewDidRefresh)
             .disposed(by: disposeBag)
     }
 }

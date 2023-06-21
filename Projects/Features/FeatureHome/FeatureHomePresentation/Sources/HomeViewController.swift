@@ -50,6 +50,7 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         return collectionView
     }()
     
+    private let stoolLogRefreshControl = UIRefreshControl()
     private lazy var stoolLogCollectionViewDiffableDataSource = StoolLogCollectionViewDiffableDataSource(
         collectionView: stoolLogCollectionView
     )
@@ -76,7 +77,8 @@ public final class HomeViewController: LifePoopViewController, ViewType {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: StoolLogHeaderView.identifier
         )
-        collectionView.contentInset = UIEdgeInsets(top: .zero, left: .zero, bottom: 64, right: .zero)
+        collectionView.contentInset = UIEdgeInsets(top: .zero, left: .zero, bottom: 80, right: .zero)
+        collectionView.refreshControl = stoolLogRefreshControl
         return collectionView
     }()
     
@@ -110,14 +112,19 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: HomeViewModel) {
         let output = viewModel.output
         
-        output.friends
-            .asDriver()
-            .drive(onNext: friendListCollectionViewDiffableDataSource.update)
+        output.updateFriends
+            .asSignal()
+            .emit(onNext: friendListCollectionViewDiffableDataSource.update)
             .disposed(by: disposeBag)
         
-        output.stoolLogs
-            .asDriver()
-            .drive(onNext: stoolLogCollectionViewDiffableDataSource.update)
+        output.updateStoolLogs
+            .asSignal()
+            .emit(onNext: stoolLogCollectionViewDiffableDataSource.update)
+            .disposed(by: disposeBag)
+        
+        output.bindStoolLogHeaderViewModel
+            .asSignal()
+            .emit(onNext: stoolLogCollectionViewDiffableDataSource.bindStoolLogHeaderView)
             .disposed(by: disposeBag)
     }
     
@@ -157,7 +164,7 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         }
         
         stoolLogCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(collectionViewBottonSeparatorView.snp.bottom).offset(20)
+            make.top.equalTo(collectionViewBottonSeparatorView.snp.bottom)
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             make.bottom.equalToSuperview()
         }

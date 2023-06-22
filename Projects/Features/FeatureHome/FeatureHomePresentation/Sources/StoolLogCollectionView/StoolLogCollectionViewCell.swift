@@ -16,7 +16,12 @@ import EntityUIMapper
 
 public final class StoolLogCollectionViewCell: UICollectionViewCell {
     
-    private let containerView = ShadowView()
+    private let containerView: ShadowView = {
+        let shadowView = ShadowView()
+        shadowView.layer.borderWidth = 1
+        shadowView.layer.borderColor = ColorAsset.gray300.color.cgColor
+        return shadowView
+    }()
     
     private let backgroundImageView: UIImageView = {
         let imageView = UIImageView(image: ImageAsset.logBackground.original)
@@ -65,8 +70,7 @@ private extension StoolLogCollectionViewCell {
         backgroundImageView.addSubview(stoolCharactorImageView)
         
         containerView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(24)
+            make.edges.equalToSuperview()
         }
         
         backgroundImageView.snp.makeConstraints { make in

@@ -44,7 +44,7 @@ public final class CheeringButtonView: ShadowView {
     private lazy var titleStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         stackView.axis = .vertical
-        stackView.spacing = 3
+        stackView.spacing = 6
         stackView.alignment = .leading
         return stackView
     }()
@@ -72,6 +72,8 @@ public final class CheeringButtonView: ShadowView {
 private extension CheeringButtonView {
     func configureUI() {
         backgroundColor = .systemBackground
+        layer.borderWidth = 1
+        layer.borderColor = ColorAsset.gray300.color.cgColor
     }
 }
 
@@ -84,8 +86,12 @@ private extension CheeringButtonView {
         addSubview(expandRightImageView)
         addSubview(containerButton)
         
+        snp.makeConstraints { make in
+            make.height.equalTo(80)
+        }
+        
         imageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().offset(20)
             make.centerY.equalTo(titleLabel)
             make.width.equalTo(42)
             make.height.equalTo(24)
@@ -93,8 +99,8 @@ private extension CheeringButtonView {
         
         titleStackView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.leading.equalTo(imageView.snp.trailing).offset(4)
-            make.trailing.equalToSuperview().inset(10)
+            make.leading.equalTo(imageView.snp.trailing).offset(12)
+            make.trailing.equalToSuperview().inset(20)
         }
         
         expandRightImageView.snp.makeConstraints { make in

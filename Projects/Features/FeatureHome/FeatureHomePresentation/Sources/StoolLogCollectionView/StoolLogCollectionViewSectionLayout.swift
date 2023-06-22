@@ -14,7 +14,7 @@ public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionPro
     private lazy var headerLayoutSize: NSCollectionLayoutSize = {
         let headerLayoutSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .absolute(142)
+            heightDimension: .absolute(262)
         )
         return headerLayoutSize
     }()
@@ -46,13 +46,21 @@ public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionPro
             layoutSize: layoutSize,
             subitems: [layoutItem]
         )
+        layoutGroup.contentInsets = NSDirectionalEdgeInsets(
+            top: 24,
+            leading: 24,
+            bottom: 24,
+            trailing: 24
+        )
         return layoutGroup
     }()
     
     public lazy var layoutSection: NSCollectionLayoutSection = {
         let sectionLayout = NSCollectionLayoutSection(group: layoutGroup)
-        sectionLayout.interGroupSpacing = 16
-        let contentHeaderOffset: CGFloat = 16
+        let contentHeaderOffset: CGFloat = 16 - layoutGroup.contentInsets.top
+        let interGroupSpacing: CGFloat = 16 - (layoutGroup.contentInsets.top + layoutGroup.contentInsets.bottom)
+        
+        sectionLayout.interGroupSpacing = interGroupSpacing
         sectionLayout.contentInsets = NSDirectionalEdgeInsets(
             top: contentHeaderOffset,
             leading: .zero,

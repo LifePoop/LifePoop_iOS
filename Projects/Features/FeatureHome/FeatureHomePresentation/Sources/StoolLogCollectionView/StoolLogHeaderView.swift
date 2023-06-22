@@ -18,6 +18,35 @@ import Utils
 
 public final class StoolLogHeaderView: UICollectionReusableView, ViewType {
     
+    private let collectionViewTopSeparatorView = SeparatorView()
+    private let collectionViewBottonSeparatorView = SeparatorView()
+    
+    private lazy var friendListCollectionViewDiffableDataSource = FriendListCollectionViewDiffableDataSource(
+        collectionView: friendListCollectionView
+    )
+    private let friendListCollectionViewSectionLayout = FriendListCollectionViewSectionLayout()
+    private lazy var friendListCollectionViewLayout: UICollectionViewCompositionalLayout = {
+        let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        let compositionalLayout = UICollectionViewCompositionalLayout(
+            sectionProvider: friendListCollectionViewSectionLayout.sectionProvider,
+            configuration: configuration
+        )
+        return compositionalLayout
+    }()
+    private lazy var friendListCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: friendListCollectionViewLayout
+        )
+        collectionView.register(
+            FriendListCollectionViewCell.self,
+            forCellWithReuseIdentifier: FriendListCollectionViewCell.identifier
+        )
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.bounces = false
+        return collectionView
+    }()
+    
     private let todayStoolLogLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
@@ -61,6 +90,11 @@ public final class StoolLogHeaderView: UICollectionReusableView, ViewType {
     public func bindOutput(from viewModel: StoolLogHeaderViewModel) {
         let output = viewModel.output
         
+        output.updateFriends
+            .asSignal()
+            .emit(onNext: friendListCollectionViewDiffableDataSource.update)
+            .disposed(by: disposeBag)
+        
         output.setDateDescription
             .bind(to: todayStoolLogLabel.rx.text)
             .disposed(by: disposeBag)
@@ -75,18 +109,38 @@ public final class StoolLogHeaderView: UICollectionReusableView, ViewType {
 
 private extension StoolLogHeaderView {
     func layoutUI() {
+        addSubview(collectionViewTopSeparatorView)
+        addSubview(collectionViewBottonSeparatorView)
+        addSubview(friendListCollectionView)
         addSubview(todayStoolLogLabel)
         addSubview(cheeringButtonView)
         
+        collectionViewTopSeparatorView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(16)
+            make.leading.equalToSuperview().offset(24)
+            make.trailing.equalToSuperview()
+        }
+        
+        collectionViewBottonSeparatorView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(24)
+            make.trailing.equalToSuperview()
+            make.top.equalTo(friendListCollectionView.snp.bottom)
+        }
+        
+        friendListCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(collectionViewTopSeparatorView.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(102)
+        }
+        
         todayStoolLogLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
+            make.top.equalTo(collectionViewBottonSeparatorView.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview().inset(24)
         }
         
         cheeringButtonView.snp.makeConstraints { make in
             make.top.equalTo(todayStoolLogLabel.snp.bottom).offset(18)
             make.leading.trailing.equalToSuperview().inset(24)
-            make.height.equalTo(80)
         }
     }
 }

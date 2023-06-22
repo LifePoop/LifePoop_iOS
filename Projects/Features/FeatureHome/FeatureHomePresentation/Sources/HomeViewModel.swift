@@ -26,7 +26,6 @@ public final class HomeViewModel: ViewModelType {
     }
     
     public struct Output {
-        let updateFriends = PublishRelay<[FriendEntity]>()
         let updateStoolLogs = PublishRelay<[StoolLogEntity]>()
         let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
         let showErrorMessage = PublishRelay<String>()
@@ -117,10 +116,6 @@ public final class HomeViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
         
-        state.friends
-            .bind(to: output.updateFriends)
-            .disposed(by: disposeBag)
-        
         state.stoolLogs
             .bind(to: output.updateStoolLogs)
             .disposed(by: disposeBag)
@@ -136,6 +131,10 @@ private extension HomeViewModel {
     func bind(stoolLogHeaderViewModel: StoolLogHeaderViewModel) {
         input.viewDidRefresh
             .bind(to: stoolLogHeaderViewModel.input.viewDidRefresh)
+            .disposed(by: disposeBag)
+        
+        state.friends
+            .bind(to: stoolLogHeaderViewModel.state.friends)
             .disposed(by: disposeBag)
     }
 }

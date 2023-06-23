@@ -24,6 +24,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     }
     
     public struct Output {
+        let toggleFriendListCollectionView = PublishRelay<Bool>()
         let updateFriends = PublishRelay<[FriendEntity]>()
         let setDateDescription = PublishRelay<String>()
         let setFriendsCheeringDescription = PublishRelay<String>()
@@ -66,12 +67,23 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .bind(to: output.setFriendsCheeringDescription)
             .disposed(by: disposeBag)
         
+        viewDidLoadOrRefresh
+            .withLatestFrom(state.friends)
+            .map { $0.isEmpty }
+            .bind(to: output.toggleFriendListCollectionView)
+            .disposed(by: disposeBag)
+        
         input.cheeringButtonDidTap
             .bind { coordinator?.coordinate(by: .cheeringButtonDidTap) }
             .disposed(by: disposeBag)
         
         state.friends
             .bind(to: output.updateFriends)
+            .disposed(by: disposeBag)
+        
+        state.friends
+            .map { $0.isEmpty }
+            .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)
     }
 }

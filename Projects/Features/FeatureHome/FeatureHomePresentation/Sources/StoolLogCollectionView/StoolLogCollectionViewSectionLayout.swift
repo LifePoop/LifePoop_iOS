@@ -11,10 +11,13 @@ import UIKit
 import DesignSystem
 
 public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionProvidable {
+    
+    public var headerLayoutHeight: CGFloat = .zero
+    
     private lazy var headerLayoutSize: NSCollectionLayoutSize = {
         let headerLayoutSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .absolute(262)
+            heightDimension: .absolute(headerLayoutHeight)
         )
         return headerLayoutSize
     }()
@@ -57,7 +60,7 @@ public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionPro
     
     public lazy var layoutSection: NSCollectionLayoutSection = {
         let sectionLayout = NSCollectionLayoutSection(group: layoutGroup)
-        let contentHeaderOffset: CGFloat = 16 - layoutGroup.contentInsets.top
+        let contentHeaderOffset: CGFloat = 16
         let interGroupSpacing: CGFloat = 16 - (layoutGroup.contentInsets.top + layoutGroup.contentInsets.bottom)
         
         sectionLayout.interGroupSpacing = interGroupSpacing
@@ -70,4 +73,12 @@ public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionPro
         sectionLayout.boundarySupplementaryItems = [headerItem]
         return sectionLayout
     }()
+}
+
+extension StoolLogCollectionViewSectionLayout {
+    func setHeaderLayoutHeight(by isStoolLogEmpty: Bool) {
+        let heightWithoutCheeringButtonView: CGFloat = 166
+        let heightWithCheeringButtonView: CGFloat = 246
+        headerLayoutHeight = isStoolLogEmpty ? heightWithoutCheeringButtonView : heightWithCheeringButtonView
+    }
 }

@@ -16,7 +16,7 @@ import DesignSystem
 import DesignSystemReactive
 import Utils
 
-public final class StoolLogHeaderView: UICollectionReusableView, ViewType {
+final class StoolLogHeaderView: UICollectionReusableView, ViewType {
     
     private let collectionViewTopSeparatorView = SeparatorView()
     private let collectionViewBottonSeparatorView = SeparatorView()
@@ -54,12 +54,18 @@ public final class StoolLogHeaderView: UICollectionReusableView, ViewType {
         return label
     }()
     
+    private let inviteFriendView: InviteFriendView = {
+        let view = InviteFriendView()
+        view.isHidden = true
+        return view
+    }()
+    
     private let cheeringButtonView = CheeringButtonView()
     
-    public var viewModel: StoolLogHeaderViewModel?
+    var viewModel: StoolLogHeaderViewModel?
     private var disposeBag = DisposeBag()
     
-    public override init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         layoutUI()
     }
@@ -69,14 +75,14 @@ public final class StoolLogHeaderView: UICollectionReusableView, ViewType {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public override func prepareForReuse() {
+    override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
     }
     
     // MARK: - ViewModel Binding
     
-    public func bindInput(to viewModel: StoolLogHeaderViewModel) {
+    func bindInput(to viewModel: StoolLogHeaderViewModel) {
         let input = viewModel.input
         
         input.viewDidLoad.accept(())
@@ -86,8 +92,16 @@ public final class StoolLogHeaderView: UICollectionReusableView, ViewType {
             .disposed(by: disposeBag)
     }
     
-    public func bindOutput(from viewModel: StoolLogHeaderViewModel) {
+    func bindOutput(from viewModel: StoolLogHeaderViewModel) {
         let output = viewModel.output
+        
+        output.toggleFriendListCollectionView
+            .asSignal()
+            .withUnretained(self)
+            .emit { `self`, isHidden in
+                self.toggleFriendListCollectionView(isHidden: isHidden)
+            }
+            .disposed(by: disposeBag)
         
         output.updateFriends
             .asSignal()
@@ -112,6 +126,7 @@ private extension StoolLogHeaderView {
         addSubview(collectionViewBottonSeparatorView)
         addSubview(friendListCollectionView)
         addSubview(todayStoolLogLabel)
+        addSubview(inviteFriendView)
         addSubview(cheeringButtonView)
         
         collectionViewTopSeparatorView.snp.makeConstraints { make in
@@ -123,11 +138,11 @@ private extension StoolLogHeaderView {
         collectionViewBottonSeparatorView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(24)
             make.trailing.equalToSuperview()
-            make.top.equalTo(friendListCollectionView.snp.bottom)
         }
         
         friendListCollectionView.snp.makeConstraints { make in
             make.top.equalTo(collectionViewTopSeparatorView.snp.bottom)
+            make.bottom.equalTo(collectionViewBottonSeparatorView.snp.top)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(102)
         }
@@ -141,5 +156,20 @@ private extension StoolLogHeaderView {
             make.top.equalTo(todayStoolLogLabel.snp.bottom).offset(18)
             make.leading.trailing.equalToSuperview().inset(24)
         }
+            
+        inviteFriendView.snp.makeConstraints { make in
+            make.top.equalTo(collectionViewTopSeparatorView.snp.bottom)
+            make.bottom.equalTo(collectionViewBottonSeparatorView.snp.top)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(102)
+        }
+    }
+}
+
+private extension StoolLogHeaderView {
+    func toggleFriendListCollectionView(isHidden: Bool) {
+        friendListCollectionView.isHidden = isHidden
+        cheeringButtonView.isHidden = isHidden
+        inviteFriendView.isHidden = !isHidden
     }
 }

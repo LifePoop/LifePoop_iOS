@@ -87,6 +87,11 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: HomeViewModel) {
         let output = viewModel.output
         
+        output.isFriendEmpty
+            .asSignal()
+            .emit(onNext: stoolLogCollectionViewSectionLayout.setHeaderLayoutHeight)
+            .disposed(by: disposeBag)
+        
         output.updateStoolLogs
             .asSignal()
             .emit(onNext: stoolLogCollectionViewDiffableDataSource.update)

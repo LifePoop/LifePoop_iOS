@@ -27,6 +27,7 @@ public final class HomeViewModel: ViewModelType {
     
     public struct Output {
         let updateStoolLogs = PublishRelay<[StoolLogItem]>()
+        let isFriendEmpty = PublishRelay<Bool>()
         let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
         let showErrorMessage = PublishRelay<String>()
     }
@@ -114,6 +115,11 @@ public final class HomeViewModel: ViewModelType {
             .bind { `self`, _ in
                 self.coordinator?.coordinate(by: .reportButtonDidTap)
             }
+            .disposed(by: disposeBag)
+        
+        state.friends
+            .map { $0.isEmpty }
+            .bind(to: output.isFriendEmpty)
             .disposed(by: disposeBag)
         
         state.stoolLogs

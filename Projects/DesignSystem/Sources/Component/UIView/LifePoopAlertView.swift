@@ -98,6 +98,16 @@ public class LifePoopAlertView: UIControl {
         fadeOut(completion: removeViews)
     }
     
+    public func dismiss(_ completion: (() -> Void)? = nil) {
+        let removeViews: (Bool) -> Void = { _ in
+            self.backgroundView.removeFromSuperview()
+            self.removeFromSuperview()
+            completion?()
+        }
+        
+        fadeOut(completion: removeViews)
+    }
+    
     public func moveUp(to value: CGFloat) {
         frame.origin.y -= value
         UIView.animate(withDuration: 0.3) { self.layoutIfNeeded() }

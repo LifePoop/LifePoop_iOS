@@ -58,7 +58,7 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
         let output = viewModel.output
         
         output.shouldDismissAlertView
-            .bind(onNext: alertView.dismiss)
+            .bind(onNext: dismissEnteringCodePopup)
             .disposed(by: disposeBag)
         
         output.shouldShowInvitationCodePopup
@@ -85,6 +85,12 @@ private extension InvitationCodeViewController {
     func showEnteringCodePopup() {
         alertView.show(in: view)
         alertView.becomeFirstResponder()
+    }
+    
+    func dismissEnteringCodePopup() {
+        alertView.dismiss { [weak self] in
+            self?.viewModel?.input.didCloseInvitationCodePopup.accept(())
+        }
     }
     
     func showSharingPopup() {

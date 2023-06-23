@@ -29,6 +29,7 @@ public final class HomeViewModel: ViewModelType {
         let shouldStartRefreshIndicatorAnimation = PublishRelay<Bool>()
         let updateStoolLogs = PublishRelay<[StoolLogItem]>()
         let isFriendEmpty = PublishRelay<Bool>()
+        let shouldLayoutCheeringButton = PublishRelay<Bool>()
         let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
         let showErrorMessage = PublishRelay<String>()
     }
@@ -134,18 +135,25 @@ public final class HomeViewModel: ViewModelType {
         
         state.friends
             .map { $0.isEmpty }
+            .distinctUntilChanged()
             .bind(to: output.isFriendEmpty)
             .disposed(by: disposeBag)
         
-        state.stoolLogs
-            .filter { !$0.isEmpty }
-            .map { $0.map { StoolLogItem(itemState: .stoolLog($0)) } }
-            .bind(to: output.updateStoolLogs)
+        state.friends
+            .map { !$0.isEmpty }
+            .distinctUntilChanged()
+            .bind(to: output.shouldLayoutCheeringButton)
             .disposed(by: disposeBag)
         
         state.stoolLogs
             .filter { $0.isEmpty }
             .map { _ in [StoolLogItem(itemState: .empty)] }
+            .bind(to: output.updateStoolLogs)
+            .disposed(by: disposeBag)
+        
+        state.stoolLogs
+            .filter { !$0.isEmpty }
+            .map { $0.map { StoolLogItem(itemState: .stoolLog($0)) } }
             .bind(to: output.updateStoolLogs)
             .disposed(by: disposeBag)
         

@@ -10,17 +10,33 @@ import UIKit
 
 import DesignSystem
 
-public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionProvidable {
+final class StoolLogCollectionViewSectionLayout: CollectionViewSectionProvidable {
     
-    public var headerLayoutHeight: CGFloat = .zero
+    private enum HeaderType {
+        case includeCheeringButtonView
+        case excludeCheeringButtonView
+        
+        var height: CGFloat {
+            switch self {
+            case .includeCheeringButtonView:
+                return 246
+            case .excludeCheeringButtonView:
+                return 166
+            }
+        }
+    }
     
-    private lazy var headerLayoutSize: NSCollectionLayoutSize = {
+    private let headerLayoutSize: NSCollectionLayoutSize
+    
+    init(shouldLayoutCheeringButton: Bool = false) {
+        let headerType: HeaderType = shouldLayoutCheeringButton ?
+            .includeCheeringButtonView : .excludeCheeringButtonView
         let headerLayoutSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .absolute(headerLayoutHeight)
+            heightDimension: .absolute(headerType.height)
         )
-        return headerLayoutSize
-    }()
+        self.headerLayoutSize = headerLayoutSize
+    }
     
     private lazy var headerItem: NSCollectionLayoutBoundarySupplementaryItem = {
         let headerItem = NSCollectionLayoutBoundarySupplementaryItem(
@@ -73,12 +89,4 @@ public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionPro
         sectionLayout.boundarySupplementaryItems = [headerItem]
         return sectionLayout
     }()
-}
-
-extension StoolLogCollectionViewSectionLayout {
-    func setHeaderLayoutHeight(by isStoolLogEmpty: Bool) {
-        let heightWithoutCheeringButtonView: CGFloat = 166
-        let heightWithCheeringButtonView: CGFloat = 246
-        headerLayoutHeight = isStoolLogEmpty ? heightWithoutCheeringButtonView : heightWithCheeringButtonView
-    }
 }

@@ -26,7 +26,7 @@ public final class HomeViewModel: ViewModelType {
     }
     
     public struct Output {
-        let updateStoolLogs = PublishRelay<[StoolLogEntity]>()
+        let updateStoolLogs = PublishRelay<[StoolLogItem]>()
         let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
         let showErrorMessage = PublishRelay<String>()
     }
@@ -117,6 +117,14 @@ public final class HomeViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         state.stoolLogs
+            .filter { !$0.isEmpty }
+            .map { $0.map { StoolLogItem(itemState: .stoolLog($0)) } }
+            .bind(to: output.updateStoolLogs)
+            .disposed(by: disposeBag)
+        
+        state.stoolLogs
+            .filter { $0.isEmpty }
+            .map { _ in [StoolLogItem(itemState: .empty)] }
             .bind(to: output.updateStoolLogs)
             .disposed(by: disposeBag)
         

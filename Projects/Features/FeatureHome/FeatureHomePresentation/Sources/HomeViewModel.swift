@@ -98,8 +98,8 @@ public final class HomeViewModel: ViewModelType {
         
         input.stoolLogButtonDidTap
             .withUnretained(self)
-            .bind(onNext: { owner, _ in
-                owner.coordinator?.coordinate(by: .stoolLogButtonDidTap)
+            .bind(onNext: { `self`, _ in
+                `self`.coordinator?.coordinate(by: .stoolLogButtonDidTap(stoolLogsRelay: self.state.stoolLogs))
             })
             .disposed(by: disposeBag)
         

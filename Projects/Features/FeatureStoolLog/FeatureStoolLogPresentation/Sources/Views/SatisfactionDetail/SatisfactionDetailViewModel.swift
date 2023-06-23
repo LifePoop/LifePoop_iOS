@@ -35,16 +35,27 @@ public final class SatisfactionDetailViewModel: ViewModelType {
         let selectableShapes = BehaviorRelay<[ColoredStoolShape]>(value: [])
         let selectableSizes = Observable.of(StoolSize.allCases)
         let enableCompleButton = BehaviorRelay<Bool>(value: false)
+    
+    public struct State {
+        let stoolLogs: BehaviorRelay<[StoolLogEntity]>
     }
     
     public let input = Input()
     public let output = Output()
+    public let state: State
+    
     
     private weak var coordinator: StoolLogCoordinator?
     private var disposeBag = DisposeBag()
     
-    public init(coordinator: StoolLogCoordinator?, isSatisfied: Bool) {
+    public init(
+        coordinator: StoolLogCoordinator?,
+        isSatisfied: Bool,
+        stoolLogs: BehaviorRelay<[StoolLogEntity]>
+    ) {
         self.coordinator = coordinator
+        self.state = State(stoolLogs: stoolLogs)
+        
         bindInputToOutput()
         
         input.isSatisfied.accept(isSatisfied)

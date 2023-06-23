@@ -45,7 +45,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         let didEnterInvitationCode = PublishRelay<String>()
         let didTapConfirmButton = PublishRelay<Void>()
         let didTapCancelButton = PublishRelay<Void>()
-        let didCloseSharingPopup = PublishRelay<SharingResult>()
+        let didCloseSharingPopup = PublishRelay<SharingResult?>()
     }
     
     public struct Output {
@@ -79,21 +79,24 @@ public final class InvitationCodeViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        Observable.merge(
-            input.didTapCancelButton.asObservable(),
-            input.didCloseSharingPopup.map { _ in Void() }.asObservable()
-        )
-        .bind(onNext: { [weak self] _ in
-            self?.output.shouldDismissAlertView.accept(())
-            coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
-        })
-        .disposed(by: disposeBag)
+        input.didCloseSharingPopup
+            .map { _ in Void() }
+            .bind(onNext: { _ in
+                coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
+            })
+            .disposed(by: disposeBag)
         
         input.didCloseSharingPopup
-            .map { $0.description }
+            .compactMap { $0?.description }
             .bind(to: toastMessageStream)
             .disposed(by: disposeBag)
         
+        input.didTapCancelButton
+            .bind(onNext: { _ in
+                coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
+            })
+            .disposed(by: disposeBag)
+
         input.didTapConfirmButton
             .withLatestFrom(input.didEnterInvitationCode)
             .bind(onNext: { invitationCode in

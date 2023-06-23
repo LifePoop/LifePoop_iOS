@@ -102,19 +102,30 @@ private extension InvitationCodeViewController {
         ]
         
         activityViewController.completionWithItemsHandler = { [weak self] activity, success, _, error in
-            guard success else {
+            if let error = error {
                 self?.viewModel?.input.didCloseSharingPopup.accept(.failure(error: error))
                 return
             }
-    
+            
+            // MARK: 사용자가 동작을 취소한 경우에는 success = fail, presentedViewController != nil 인 상태
+            guard success else {
+                self?.dismissViewControllerIfNeeded()
+                return
+            }
             if activity == .copyToPasteboard {
                 self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity: .copying))
             } else {
                 self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity: .sharing))
             }
-    }
+        }
         
-        self.present(activityViewController, animated: true)
+        present(activityViewController, animated: true)
+    }
+    
+    func dismissViewControllerIfNeeded() {
+        if presentedViewController != nil { return }
+        
+        viewModel?.input.didCloseSharingPopup.accept(nil)
     }
 }
 

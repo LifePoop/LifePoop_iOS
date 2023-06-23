@@ -106,12 +106,6 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     public var viewModel: SignupViewModel?
     private var disposeBag = DisposeBag()
     
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        nicknameTextField.becomeFirstResponder()
-    }
-    
     func configureHandlingTouchEvent() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
         tapGesture.cancelsTouchesInView = false
@@ -141,6 +135,13 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     
     public func bindInput(to viewModel: SignupViewModel) {
         let input = viewModel.input
+        
+        rx.viewDidLoad
+            .withUnretained(self)
+            .bind { `self`, _ in
+                self.nicknameTextField.becomeFirstResponder()
+            }
+            .disposed(by: disposeBag)
         
         nextButton.rx.tap
             .bind(to: input.didTapNextButton)

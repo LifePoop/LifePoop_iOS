@@ -8,6 +8,10 @@
 
 import UIKit
 
+import RxSwift
+import RxRelay
+
+import CoreEntity
 import DesignSystem
 import FeatureStoolLogCoordinatorInterface
 import FeatureStoolLogPresentation
@@ -20,9 +24,20 @@ public final class DefaultStoolLogCoordinator: StoolLogCoordinator {
     public var navigationController: UINavigationController
     public var type: Utils.CoordinatorType = .stoolLog
     
-    public init(navigationController: UINavigationController, parentCoordinator: Coordinator?) {
+    struct SharedState {
+        let stoolLogsRelay: BehaviorRelay<[StoolLogEntity]>
+    }
+    
+    private let sharedState: SharedState
+    
+    public init(
+        navigationController: UINavigationController,
+        parentCoordinator: Coordinator?,
+        stoolLogsRelay: BehaviorRelay<[StoolLogEntity]>
+    ) {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
+        self.sharedState = SharedState(stoolLogsRelay: stoolLogsRelay)
     }
         
     public func start() {
@@ -31,21 +46,26 @@ public final class DefaultStoolLogCoordinator: StoolLogCoordinator {
     
     public func coordinate(by coordinateAction: StoolLogCoordinateAction) {
         DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
             switch coordinateAction {
             case .bottomSheetDidShow:
-                self?.pushViewController(
+                self.pushViewController(
                     SatisfactionSelectViewController(),
                     with: SatisfactionSelectViewModel(coordinaotr: self)
                 )
             case .didSelectSatisfaction(let isSatisfied):
-                self?.pushViewController(
+                self.pushViewController(
                     SatisfactionDetailViewController(),
-                    with: SatisfactionDetailViewModel(coordinator: self, isSatisfied: isSatisfied)
+                    with: SatisfactionDetailViewModel(
+                        coordinator: self,
+                        isSatisfied: isSatisfied,
+                        stoolLogs: self.sharedState.stoolLogsRelay
+                    )
                 )
             case .goBack:
-                self?.popViewController()
+                self.popViewController()
             case .dismissBottomSheet:
-                self?.dismissBottomSheet()
+                self.dismissBottomSheet()
             }
         }
     }

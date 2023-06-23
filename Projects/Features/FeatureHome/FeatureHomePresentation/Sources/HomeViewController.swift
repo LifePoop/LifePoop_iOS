@@ -21,35 +21,6 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     private let reportBarButtonItem = UIBarButtonItem(image: ImageAsset.iconReport.original)
     private let lifePoopLogoBarButtonItem = UIBarButtonItem(image: ImageAsset.logoSmall.original)
     
-    private let collectionViewTopSeparatorView = SeparatorView()
-    private let collectionViewBottonSeparatorView = SeparatorView()
-    
-    private lazy var friendListCollectionViewDiffableDataSource = FriendListCollectionViewDiffableDataSource(
-        collectionView: friendListCollectionView
-    )
-    private let friendListCollectionViewSectionLayout = FriendListCollectionViewSectionLayout()
-    private lazy var friendListCollectionViewLayout: UICollectionViewCompositionalLayout = {
-        let configuration = UICollectionViewCompositionalLayoutConfiguration()
-        let compositionalLayout = UICollectionViewCompositionalLayout(
-            sectionProvider: friendListCollectionViewSectionLayout.sectionProvider,
-            configuration: configuration
-        )
-        return compositionalLayout
-    }()
-    private lazy var friendListCollectionView: UICollectionView = {
-        let collectionView = UICollectionView(
-            frame: .zero,
-            collectionViewLayout: friendListCollectionViewLayout
-        )
-        collectionView.register(
-            FriendListCollectionViewCell.self,
-            forCellWithReuseIdentifier: FriendListCollectionViewCell.identifier
-        )
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.bounces = false
-        return collectionView
-    }()
-    
     private let stoolLogRefreshControl = UIRefreshControl()
     private lazy var stoolLogCollectionViewDiffableDataSource = StoolLogCollectionViewDiffableDataSource(
         collectionView: stoolLogCollectionView
@@ -96,6 +67,11 @@ public final class HomeViewController: LifePoopViewController, ViewType {
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)
         
+        stoolLogRefreshControl.rx.controlEvent(.valueChanged)
+            .delay(.milliseconds(1000), scheduler: MainScheduler.asyncInstance) // FIXME: 서버 UseCase 연결 후 삭제
+            .bind(to: input.viewDidRefresh)
+            .disposed(by: disposeBag)
+        
         settingBarButtonItem.rx.tap
             .bind(to: input.settingButtonDidTap)
             .disposed(by: disposeBag)
@@ -112,9 +88,16 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: HomeViewModel) {
         let output = viewModel.output
         
-        output.updateFriends
+        output.shouldStartRefreshIndicatorAnimation
+            .bind(to: stoolLogRefreshControl.rx.isRefreshing)
+            .disposed(by: disposeBag)
+        
+        output.shouldLayoutCheeringButton
             .asSignal()
-            .emit(onNext: friendListCollectionViewDiffableDataSource.update)
+            .withUnretained(self)
+            .emit { `self`, shouldLayoutCheeringButton in
+                self.updateStoolLogCollectionViewLayout(shouldLayoutCheeringButton: shouldLayoutCheeringButton)
+            }
             .disposed(by: disposeBag)
         
         output.updateStoolLogs
@@ -139,32 +122,11 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     
     public override func layoutUI() {
         super.layoutUI()
-        view.addSubview(collectionViewTopSeparatorView)
-        view.addSubview(collectionViewBottonSeparatorView)
-        view.addSubview(friendListCollectionView)
         view.addSubview(stoolLogCollectionView)
         view.addSubview(stoolLogButton)
         
-        collectionViewTopSeparatorView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview()
-            make.bottom.equalTo(friendListCollectionView.snp.top)
-        }
-        
-        collectionViewBottonSeparatorView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview()
-            make.top.equalTo(friendListCollectionView.snp.bottom)
-        }
-        
-        friendListCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(102)
-        }
-        
         stoolLogCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(collectionViewBottonSeparatorView.snp.bottom)
+            make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             make.bottom.equalToSuperview()
         }
@@ -173,5 +135,18 @@ public final class HomeViewController: LifePoopViewController, ViewType {
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-12)
         }
+    }
+}
+
+private extension HomeViewController {
+    func updateStoolLogCollectionViewLayout(shouldLayoutCheeringButton: Bool) {
+        let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        let sectionLayout = StoolLogCollectionViewSectionLayout(shouldLayoutCheeringButton: shouldLayoutCheeringButton)
+        let compositionalLayout = UICollectionViewCompositionalLayout(
+            sectionProvider: sectionLayout.sectionProvider,
+            configuration: configuration
+        )
+        self.stoolLogCollectionView.collectionViewLayout = compositionalLayout
+        self.stoolLogCollectionView.contentOffset = .zero
     }
 }

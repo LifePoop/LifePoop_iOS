@@ -14,12 +14,17 @@ import CoreEntity
 import DesignSystem
 import EntityUIMapper
 
-public final class StoolLogCollectionViewCell: UICollectionViewCell {
+final class StoolLogCollectionViewCell: UICollectionViewCell {
     
-    private let containerView = ShadowView()
+    private let containerView: ShadowView = {
+        let shadowView = ShadowView()
+        shadowView.layer.borderWidth = 1
+        shadowView.layer.borderColor = ColorAsset.gray300.color.cgColor
+        return shadowView
+    }()
     
     private let backgroundImageView: UIImageView = {
-        let imageView = UIImageView(image: ImageAsset.logBackground.original)
+        let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
         return imageView
     }()
@@ -48,10 +53,18 @@ public final class StoolLogCollectionViewCell: UICollectionViewCell {
     }
 }
 
-public extension StoolLogCollectionViewCell {
-    func configure(with stoolLogEntity: StoolLogEntity) {
-        timeDescriptionLabel.text = stoolLogEntity.date
-        stoolCharactorImageView.image = stoolLogEntity.stoolImage
+// MARK: - Supporting Methods
+
+extension StoolLogCollectionViewCell {
+    func configure(with stoolLogItem: StoolLogItem) {
+        switch stoolLogItem.itemState {
+        case .stoolLog(let stoolLogEntity):
+            timeDescriptionLabel.text = stoolLogEntity.date
+            stoolCharactorImageView.image = stoolLogEntity.stoolImage
+            backgroundImageView.image = ImageAsset.logBackground.original
+        case .empty:
+            backgroundImageView.image = ImageAsset.logEmpty.original
+        }
     }
 }
 
@@ -65,8 +78,7 @@ private extension StoolLogCollectionViewCell {
         backgroundImageView.addSubview(stoolCharactorImageView)
         
         containerView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(24)
+            make.edges.equalToSuperview()
         }
         
         backgroundImageView.snp.makeConstraints { make in

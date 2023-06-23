@@ -13,11 +13,14 @@ let project = Project.makeModule(
     product: .staticFramework,
     packages: [],
     dependencies: [
+        .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.DesignSystem).dependency,
         .Project.module(.Logger).dependency,
         .Project.module(.Features(.StoolLog, .Presentation)).dependency,
         .Project.module(.Features(.StoolLog, .CoordinatorInterface)).dependency,
         .Project.module(.Utils).dependency,
+        .SPM.RxSwift.dependency,
+        .SPM.RxRelay.dependency
     ],
     hasTests: false
 )

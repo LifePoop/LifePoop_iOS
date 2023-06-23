@@ -10,22 +10,22 @@ import UIKit
 
 import CoreEntity
 
-public final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<StoolLogListSection, StoolLogEntity> {
+final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<StoolLogListSection, StoolLogItem> {
     
-    private typealias Snapshot = NSDiffableDataSourceSnapshot<StoolLogListSection, StoolLogEntity>
+    private typealias Snapshot = NSDiffableDataSourceSnapshot<StoolLogListSection, StoolLogItem>
     
     private let cellProvider = { (collectionView: UICollectionView,
                                   indexPath: IndexPath,
-                                  stoolLogEntity: StoolLogEntity) -> UICollectionViewCell in
+                                  stoolLogItem: StoolLogItem) -> UICollectionViewCell in
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: StoolLogCollectionViewCell.identifier,
             for: indexPath
         ) as? StoolLogCollectionViewCell else { return UICollectionViewCell() }
-        cell.configure(with: stoolLogEntity)
+        cell.configure(with: stoolLogItem)
         return cell
     }
     
-    public init(collectionView: UICollectionView) {
+    init(collectionView: UICollectionView) {
         super.init(collectionView: collectionView, cellProvider: cellProvider)
     }
     
@@ -43,7 +43,7 @@ public final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDif
     
     // MARK: - DiffableDataSource Methods
     
-    func update(with stoolLogEntities: [StoolLogEntity]) {
+    func update(with stoolLogEntities: [StoolLogItem]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.log])
         snapshot.appendItems(stoolLogEntities)

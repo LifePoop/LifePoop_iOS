@@ -10,14 +10,33 @@ import UIKit
 
 import DesignSystem
 
-public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionProvidable {
-    private lazy var headerLayoutSize: NSCollectionLayoutSize = {
+final class StoolLogCollectionViewSectionLayout: CollectionViewSectionProvidable {
+    
+    private enum HeaderType {
+        case includeCheeringButtonView
+        case excludeCheeringButtonView
+        
+        var height: CGFloat {
+            switch self {
+            case .includeCheeringButtonView:
+                return 246
+            case .excludeCheeringButtonView:
+                return 166
+            }
+        }
+    }
+    
+    private let headerLayoutSize: NSCollectionLayoutSize
+    
+    init(shouldLayoutCheeringButton: Bool = false) {
+        let headerType: HeaderType = shouldLayoutCheeringButton ?
+            .includeCheeringButtonView : .excludeCheeringButtonView
         let headerLayoutSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
-            heightDimension: .absolute(142)
+            heightDimension: .absolute(headerType.height)
         )
-        return headerLayoutSize
-    }()
+        self.headerLayoutSize = headerLayoutSize
+    }
     
     private lazy var headerItem: NSCollectionLayoutBoundarySupplementaryItem = {
         let headerItem = NSCollectionLayoutBoundarySupplementaryItem(
@@ -46,13 +65,21 @@ public final class StoolLogCollectionViewSectionLayout: CollectionViewSectionPro
             layoutSize: layoutSize,
             subitems: [layoutItem]
         )
+        layoutGroup.contentInsets = NSDirectionalEdgeInsets(
+            top: 24,
+            leading: 24,
+            bottom: 24,
+            trailing: 24
+        )
         return layoutGroup
     }()
     
     public lazy var layoutSection: NSCollectionLayoutSection = {
         let sectionLayout = NSCollectionLayoutSection(group: layoutGroup)
-        sectionLayout.interGroupSpacing = 16
         let contentHeaderOffset: CGFloat = 16
+        let interGroupSpacing: CGFloat = 16 - (layoutGroup.contentInsets.top + layoutGroup.contentInsets.bottom)
+        
+        sectionLayout.interGroupSpacing = interGroupSpacing
         sectionLayout.contentInsets = NSDirectionalEdgeInsets(
             top: contentHeaderOffset,
             leading: .zero,

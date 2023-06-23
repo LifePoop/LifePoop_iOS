@@ -8,6 +8,10 @@
 
 import UIKit
 
+import RxRelay
+import RxSwift
+
+import CoreEntity
 import DesignSystem
 import FeatureFriendListCoordinator
 import FeatureFriendListCoordinatorInterface
@@ -47,8 +51,8 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
             flowCompletionDelegate?.finishFlow()
         case .cheeringButtonDidTap:
             startFriendListCoordinatorFlow()
-        case .stoolLogButtonDidTap:
-            startStoolLogCoordinatorFlow()
+        case .stoolLogButtonDidTap(let stoolLogsRelay):
+            startStoolLogCoordinatorFlow(stoolLogsRelay: stoolLogsRelay)
         case .settingButtonDidTap:
             startSettingCoordinatorFlow()
         case .reportButtonDidTap:
@@ -67,10 +71,11 @@ private extension DefaultHomeCoordinator {
         navigationController.setViewControllers([viewController], animated: animated)
     }
     
-    func startStoolLogCoordinatorFlow() {
+    func startStoolLogCoordinatorFlow(stoolLogsRelay: BehaviorRelay<[StoolLogEntity]>) {
         let stoolLogCoordinator = DefaultStoolLogCoordinator(
             navigationController: UINavigationController(),
-            parentCoordinator: self
+            parentCoordinator: self,
+            stoolLogsRelay: stoolLogsRelay
         )
         add(childCoordinator: stoolLogCoordinator)
 

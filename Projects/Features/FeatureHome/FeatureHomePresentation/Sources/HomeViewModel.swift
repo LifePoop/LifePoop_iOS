@@ -26,8 +26,10 @@ public final class HomeViewModel: ViewModelType {
     }
     
     public struct Output {
-        let updateFriends = PublishRelay<[FriendEntity]>()
-        let updateStoolLogs = PublishRelay<[StoolLogEntity]>()
+        let shouldStartRefreshIndicatorAnimation = PublishRelay<Bool>()
+        let updateStoolLogs = PublishRelay<[StoolLogItem]>()
+        let isFriendEmpty = PublishRelay<Bool>()
+        let shouldLayoutCheeringButton = PublishRelay<Bool>()
         let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
         let showErrorMessage = PublishRelay<String>()
     }
@@ -52,7 +54,13 @@ public final class HomeViewModel: ViewModelType {
         
         // MARK: - Bind Input
         
-        let fetchedFriends = input.viewDidLoad
+        let viewDidLoadOrRefresh = Observable.merge(
+            input.viewDidLoad.asObservable(),
+            input.viewDidRefresh.asObservable()
+        )
+        .share()
+        
+        let fetchedFriends = viewDidLoadOrRefresh
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
                 self.homeUseCase.fetchFriendList()
@@ -70,23 +78,31 @@ public final class HomeViewModel: ViewModelType {
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
         
-        let stoolLogs = input.viewDidLoad
+        let fetchedStoolLogs = viewDidLoadOrRefresh
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
                 self.homeUseCase.fetchStoolLogs()
             }
             .share()
         
-        stoolLogs
+        fetchedStoolLogs
             .compactMap { $0.element }
             .bind(to: state.stoolLogs)
             .disposed(by: disposeBag)
         
-        stoolLogs
+        fetchedStoolLogs
             .compactMap { $0.error }
             .toastMeessageMap(to: .failToFetchStoolLog)
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
+        
+        Observable.merge(
+            fetchedFriends.filter { $0.isStopEvent }.map { _ in },
+            fetchedStoolLogs.filter { $0.isStopEvent }.map { _ in }
+        )
+        .map { _ in false }
+        .bind(to: output.shouldStartRefreshIndicatorAnimation)
+        .disposed(by: disposeBag)
         
         input.viewDidLoad
             .map { StoolLogHeaderViewModel(coordinator: coordinator) }
@@ -98,8 +114,8 @@ public final class HomeViewModel: ViewModelType {
         
         input.stoolLogButtonDidTap
             .withUnretained(self)
-            .bind(onNext: { owner, _ in
-                owner.coordinator?.coordinate(by: .stoolLogButtonDidTap)
+            .bind(onNext: { `self`, _ in
+                `self`.coordinator?.coordinate(by: .stoolLogButtonDidTap(stoolLogsRelay: self.state.stoolLogs))
             })
             .disposed(by: disposeBag)
         
@@ -118,10 +134,26 @@ public final class HomeViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         state.friends
-            .bind(to: output.updateFriends)
+            .map { $0.isEmpty }
+            .distinctUntilChanged()
+            .bind(to: output.isFriendEmpty)
+            .disposed(by: disposeBag)
+        
+        state.friends
+            .map { !$0.isEmpty }
+            .distinctUntilChanged()
+            .bind(to: output.shouldLayoutCheeringButton)
             .disposed(by: disposeBag)
         
         state.stoolLogs
+            .filter { $0.isEmpty }
+            .map { _ in [StoolLogItem(itemState: .empty)] }
+            .bind(to: output.updateStoolLogs)
+            .disposed(by: disposeBag)
+        
+        state.stoolLogs
+            .filter { !$0.isEmpty }
+            .map { $0.map { StoolLogItem(itemState: .stoolLog($0)) } }
             .bind(to: output.updateStoolLogs)
             .disposed(by: disposeBag)
         
@@ -136,6 +168,10 @@ private extension HomeViewModel {
     func bind(stoolLogHeaderViewModel: StoolLogHeaderViewModel) {
         input.viewDidRefresh
             .bind(to: stoolLogHeaderViewModel.input.viewDidRefresh)
+            .disposed(by: disposeBag)
+        
+        state.friends
+            .bind(to: stoolLogHeaderViewModel.state.friends)
             .disposed(by: disposeBag)
     }
 }

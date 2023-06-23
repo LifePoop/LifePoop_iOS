@@ -54,9 +54,11 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
         return label
     }()
     
-    private let inviteFriendView: InviteFriendView = {
+    private let inviteFriendViewTapGesture = UITapGestureRecognizer()
+    private lazy var inviteFriendView: InviteFriendView = {
         let view = InviteFriendView()
         view.isHidden = true
+        view.addGestureRecognizer(inviteFriendViewTapGesture)
         return view
     }()
     
@@ -89,6 +91,11 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
         
         cheeringButtonView.rx.tap
             .bind(to: input.cheeringButtonDidTap)
+            .disposed(by: disposeBag)
+        
+        inviteFriendViewTapGesture.rx.event
+            .map { _ in }
+            .bind(to: input.inviteFriendButtonDidTap)
             .disposed(by: disposeBag)
     }
     

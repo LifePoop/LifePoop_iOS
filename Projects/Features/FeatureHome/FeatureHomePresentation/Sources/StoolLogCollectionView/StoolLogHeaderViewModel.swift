@@ -20,6 +20,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     public struct Input {
         let viewDidRefresh = PublishRelay<Void>()
         let viewDidLoad = PublishRelay<Void>()
+        let inviteFriendButtonDidTap = PublishRelay<Void>()
         let cheeringButtonDidTap = PublishRelay<Void>()
     }
     
@@ -73,9 +74,12 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)
         
-        input.cheeringButtonDidTap
-            .bind { coordinator?.coordinate(by: .cheeringButtonDidTap) }
-            .disposed(by: disposeBag)
+        Observable.merge(
+            input.inviteFriendButtonDidTap.asObservable(),
+            input.cheeringButtonDidTap.asObservable()
+        )
+        .bind { coordinator?.coordinate(by: .cheeringButtonDidTap) }
+        .disposed(by: disposeBag)
         
         state.friends
             .bind(to: output.updateFriends)

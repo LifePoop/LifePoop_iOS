@@ -34,7 +34,7 @@ public final class InvitationCodeViewModel: ViewModelType {
             case .success(let activity):
                 return activity == .copying ? "초대 코드 복사 완료" :
                                               "초대 코드 공유 완료"
-            case .failure(_):
+            case .failure:
                 return "초대 코드 공유 실패"
             }
         }
@@ -45,7 +45,8 @@ public final class InvitationCodeViewModel: ViewModelType {
         let didEnterInvitationCode = PublishRelay<String>()
         let didTapConfirmButton = PublishRelay<Void>()
         let didTapCancelButton = PublishRelay<Void>()
-        let didCloseSharingPopup = PublishRelay<SharingResult>()
+        let didCloseSharingPopup = PublishRelay<SharingResult?>()
+        let didCloseInvitationCodePopup = PublishRelay<Void>()
     }
     
     public struct Output {
@@ -79,25 +80,33 @@ public final class InvitationCodeViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        Observable.merge(
-            input.didTapCancelButton.asObservable(),
-            input.didCloseSharingPopup.map { _ in Void() }.asObservable()
-        )
-        .bind(onNext: { [weak self] _ in
-            self?.output.shouldDismissAlertView.accept(())
-            coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
-        })
-        .disposed(by: disposeBag)
+        input.didCloseSharingPopup
+            .map { _ in Void() }
+            .bind(onNext: { _ in
+                coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
+            })
+            .disposed(by: disposeBag)
         
         input.didCloseSharingPopup
-            .map { $0.description }
+            .compactMap { $0?.description }
             .bind(to: toastMessageStream)
             .disposed(by: disposeBag)
         
+        input.didTapCancelButton
+            .bind(to: output.shouldDismissAlertView)
+            .disposed(by: disposeBag)
+
         input.didTapConfirmButton
             .withLatestFrom(input.didEnterInvitationCode)
-            .bind(onNext: { invitationCode in
+            .do(onNext: { invitationCode in
                 Logger.log(message: "초대코드 입력 확인 : \(invitationCode)", category: .default, type: .debug)
+            })
+            .map { _ in Void() }
+            .bind(to: output.shouldDismissAlertView)
+            .disposed(by: disposeBag)
+
+        input.didCloseInvitationCodePopup
+            .bind(onNext: { _ in
                 coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
             })
             .disposed(by: disposeBag)

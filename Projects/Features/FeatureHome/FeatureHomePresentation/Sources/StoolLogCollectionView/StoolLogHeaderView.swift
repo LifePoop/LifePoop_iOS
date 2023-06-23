@@ -50,8 +50,7 @@ public final class StoolLogHeaderView: UICollectionReusableView, ViewType {
     private let todayStoolLogLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        label.numberOfLines = .zero
-        label.lineBreakMode = .byWordWrapping
+        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     

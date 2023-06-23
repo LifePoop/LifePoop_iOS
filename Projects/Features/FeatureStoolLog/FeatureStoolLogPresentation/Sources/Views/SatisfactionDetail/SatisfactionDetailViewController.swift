@@ -83,6 +83,8 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
     
     private let completeButton = LifePoopButton(title: "완료")
     
+    private let toastMessageLabel = ToastLabel()
+    
     public var viewModel: SatisfactionDetailViewModel?
     private var disposeBag = DisposeBag()
     
@@ -157,6 +159,21 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
         output.enableCompleButton
             .bind(to: completeButton.rx.isEnabled)
             .disposed(by: disposeBag)
+        
+        output.showLodingIndicator
+            .asSignal()
+            .emit(onNext: completeButton.showLoadingIndicator)
+            .disposed(by: disposeBag)
+        
+        output.hideLodingIndicator
+            .asSignal()
+            .emit(onNext: completeButton.hideLoadingIndicator)
+            .disposed(by: disposeBag)
+        
+        output.showToastMessage
+            .asSignal()
+            .emit(onNext: toastMessageLabel.show(message:))
+            .disposed(by: disposeBag)
     }
 }
 
@@ -212,6 +229,12 @@ private extension SatisfactionDetailViewController {
             make.leading.equalTo(sizeTitleLabel.snp.trailing).offset(27)
             make.trailing.equalToSuperview().inset(39)
             make.height.equalTo(44)
+        }
+        
+        view.addSubview(toastMessageLabel)
+        toastMessageLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(completeButton.snp.top).offset(-16)
         }
     }
 }

@@ -13,6 +13,8 @@ import RxSwift
 
 import CoreEntity
 import FeatureStoolLogCoordinatorInterface
+import FeatureStoolLogDIContainer
+import FeatureStoolLogUseCase
 import Logger
 import Utils
 
@@ -34,7 +36,11 @@ public final class SatisfactionDetailViewModel: ViewModelType {
         let selectableColors = Observable.of(StoolColor.allCases)
         let selectableShapes = BehaviorRelay<[ColoredStoolShape]>(value: [])
         let selectableSizes = Observable.of(StoolSize.allCases)
+        let showLodingIndicator = PublishRelay<Void>()
+        let hideLodingIndicator = PublishRelay<Void>()
         let enableCompleButton = BehaviorRelay<Bool>(value: false)
+        let showToastMessage = PublishRelay<String>()
+    }
     
     public struct State {
         let stoolLogs: BehaviorRelay<[StoolLogEntity]>
@@ -44,6 +50,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
     public let output = Output()
     public let state: State
     
+    @Inject(StoolLogDIContainer.shared) private var stoolLogUseCase: StoolLogUseCase
     
     private weak var coordinator: StoolLogCoordinator?
     private var disposeBag = DisposeBag()
@@ -101,25 +108,73 @@ public final class SatisfactionDetailViewModel: ViewModelType {
         let selectedStatus = Observable
             .combineLatest(
                 input.isSatisfied,
-                input.didSelectColor,
-                input.didSelectShape,
-                input.didSelectSize
+                input.didSelectColor.compactMap { $0 },
+                input.didSelectShape.compactMap { $0 },
+                input.didSelectSize.compactMap { $0 }
             )
             .map { ($0, $1, $2, $3) }
             .share()
         
         selectedStatus
-            .map { $1 != nil && $2 != nil && $3 != nil }
+            .map { _ in true }
             .bind(to: output.enableCompleButton)
             .disposed(by: disposeBag)
         
         input.didTapCompleteButton
+            .bind(to: output.showLodingIndicator)
+            .disposed(by: disposeBag)
+        
+        let newStoolLog = input.didTapCompleteButton
             .withLatestFrom(selectedStatus)
+            .map { (isSatisfied, color, shape, size) -> StoolLogEntity in
+                return StoolLogEntity(
+                    id: 0, // FIXME: User Identifier로 변경
+                    date: Date().localizedTimeString,
+                    isSatisfied: isSatisfied,
+                    color: color,
+                    shape: shape,
+                    size: size
+                )
+            }
+            .share()
+        
+        let stoolLogPostResult = newStoolLog
             .withUnretained(self)
-            .bind(onNext: { owner, selectedStatus in
-                Logger.log(message: "선택된 값 확인 : \(selectedStatus)", category: .default, type: .debug)
-                owner.coordinator?.coordinate(by: .dismissBottomSheet)
-            })
+            .flatMapCompletableMaterialized { `self`, newStoolLog in
+                self.stoolLogUseCase.post(stoolLog: newStoolLog)
+            }
+            .share()
+        
+        stoolLogPostResult
+            .filter { $0.isStopEvent }
+            .map { _ in }
+            .bind(to: output.hideLodingIndicator)
+            .disposed(by: disposeBag)
+        
+        stoolLogPostResult
+            .compactMap { $0.error }
+            .toastMeessageMap(to: .stoolLog(.failToLog))
+            .bind(to: output.showToastMessage)
+            .disposed(by: disposeBag)
+        
+        stoolLogPostResult
+            .filter { $0.isCompleted }
+            .withLatestFrom(newStoolLog)
+            .withLatestFrom(state.stoolLogs) { ($0, $1) }
+            .map { (newStoolLog, existingStoolLogs) -> [StoolLogEntity] in
+                var newStoolLogs = existingStoolLogs
+                newStoolLogs.append(newStoolLog)
+                return newStoolLogs
+            }
+            .bind(to: state.stoolLogs)
+            .disposed(by: disposeBag)
+        
+        stoolLogPostResult
+            .filter { $0.isCompleted }
+            .withUnretained(self)
+            .bind { `self`, _ in
+                self.coordinator?.coordinate(by: .dismissBottomSheet)
+            }
             .disposed(by: disposeBag)
     }
 }

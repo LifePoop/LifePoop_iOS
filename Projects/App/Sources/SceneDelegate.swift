@@ -27,6 +27,9 @@ import FeatureReportUseCase
 import FeatureSettingDIContainer
 import FeatureSettingRepository
 import FeatureSettingUseCase
+import FeatureStoolLogDIContainer
+import FeatureStoolLogRepository
+import FeatureStoolLogUseCase
 import SharedDIContainer
 import SharedRepository
 import SharedUseCase
@@ -94,6 +97,7 @@ private extension SceneDelegate {
         registerSettingDependencies()
         registerReportDependencies()
         registerFriendListDependencies()
+        registerStoolLogDependencies()
     }
     
     func registerCoreDependencies() {
@@ -144,6 +148,11 @@ private extension SceneDelegate {
     func registerReportDependencies() {
         ReportDIContainer.shared.register(service: ReportUseCase.self) { DefaultReportUseCase() }
         ReportDIContainer.shared.register(service: ReportRepository.self) { MockReportRepository() }
+    }
+    
+    func registerStoolLogDependencies() {
+        StoolLogDIContainer.shared.register(service: StoolLogUseCase.self) { DefaultStoolLogUseCase() }
+        StoolLogDIContainer.shared.register(service: StoolLogRepository.self) { MockStoolLogRepository() }
     }
 }
 

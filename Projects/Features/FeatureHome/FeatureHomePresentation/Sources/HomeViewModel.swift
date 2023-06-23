@@ -26,6 +26,7 @@ public final class HomeViewModel: ViewModelType {
     }
     
     public struct Output {
+        let shouldStartRefreshIndicatorAnimation = PublishRelay<Bool>()
         let updateStoolLogs = PublishRelay<[StoolLogItem]>()
         let isFriendEmpty = PublishRelay<Bool>()
         let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
@@ -52,7 +53,13 @@ public final class HomeViewModel: ViewModelType {
         
         // MARK: - Bind Input
         
-        let fetchedFriends = input.viewDidLoad
+        let viewDidLoadOrRefresh = Observable.merge(
+            input.viewDidLoad.asObservable(),
+            input.viewDidRefresh.asObservable()
+        )
+        .share()
+        
+        let fetchedFriends = viewDidLoadOrRefresh
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
                 self.homeUseCase.fetchFriendList()
@@ -70,23 +77,31 @@ public final class HomeViewModel: ViewModelType {
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
         
-        let stoolLogs = input.viewDidLoad
+        let fetchedStoolLogs = viewDidLoadOrRefresh
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
                 self.homeUseCase.fetchStoolLogs()
             }
             .share()
         
-        stoolLogs
+        fetchedStoolLogs
             .compactMap { $0.element }
             .bind(to: state.stoolLogs)
             .disposed(by: disposeBag)
         
-        stoolLogs
+        fetchedStoolLogs
             .compactMap { $0.error }
             .toastMeessageMap(to: .failToFetchStoolLog)
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
+        
+        Observable.merge(
+            fetchedFriends.filter { $0.isStopEvent }.map { _ in },
+            fetchedStoolLogs.filter { $0.isStopEvent }.map { _ in }
+        )
+        .map { _ in false }
+        .bind(to: output.shouldStartRefreshIndicatorAnimation)
+        .disposed(by: disposeBag)
         
         input.viewDidLoad
             .map { StoolLogHeaderViewModel(coordinator: coordinator) }

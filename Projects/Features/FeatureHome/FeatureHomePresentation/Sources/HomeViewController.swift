@@ -66,10 +66,11 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         rx.viewDidLoad
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)
-//
-//        stoolLogRefreshControl.rx.controlEvent(.valueChanged)
-//            .bind(to: input.viewDidRefresh)
-//            .disposed(by: disposeBag)
+        
+        stoolLogRefreshControl.rx.controlEvent(.valueChanged)
+            .delay(.milliseconds(1000), scheduler: MainScheduler.asyncInstance) // FIXME: 서버 UseCase 연결 후 삭제
+            .bind(to: input.viewDidRefresh)
+            .disposed(by: disposeBag)
         
         settingBarButtonItem.rx.tap
             .bind(to: input.settingButtonDidTap)
@@ -87,7 +88,10 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: HomeViewModel) {
         let output = viewModel.output
         
-        output.isFriendEmpty
+        output.sholdStartRefreshIndicatorAnimation
+            .bind(to: stoolLogRefreshControl.rx.isRefreshing)
+            .disposed(by: disposeBag)
+        
             .asSignal()
             .emit(onNext: stoolLogCollectionViewSectionLayout.setHeaderLayoutHeight)
             .disposed(by: disposeBag)

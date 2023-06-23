@@ -88,7 +88,7 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: HomeViewModel) {
         let output = viewModel.output
         
-        output.sholdStartRefreshIndicatorAnimation
+        output.shouldStartRefreshIndicatorAnimation
             .bind(to: stoolLogRefreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
         

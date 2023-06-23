@@ -13,6 +13,7 @@ public enum ToastMessage { // TODO: Category별 열거형 분리
     case failToFetchStoolLog
     case failToFetchAccessToken
     case failToFetchImageData
+    case stoolLog(StoolLogToastMessageType)
     case setting(SettingToastMessageType)
     
     public var localized: String { // TODO: Localizing
@@ -25,6 +26,13 @@ public enum ToastMessage { // TODO: Category별 열거형 분리
             return "사용자 인증 토큰을 불러오는 데 실패했습니다."
         case .failToFetchImageData:
             return "이미지 데이터를 불러오는 데 실패했습니다."
+        case .stoolLog(let stoolLogType):
+            switch stoolLogType {
+            case .LogSucceded:
+                return "새로운 변 기록이 등록되었습니다."
+            case .failToLog:
+                return "변 기록을 등록하는 데 실패했습니다."
+            }
         case .setting(let settingType):
             switch settingType {
             case .userProfileChangeSucceeded:
@@ -52,5 +60,12 @@ public extension ToastMessage {
         case failToChangeProfileCharacter
         case failToChangeFeedVisibility
         case failToChangeIsAutoLogin
+    }
+}
+    
+public extension ToastMessage {
+    enum StoolLogToastMessageType {
+        case LogSucceded
+        case failToLog
     }
 }

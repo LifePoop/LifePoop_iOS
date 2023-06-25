@@ -1,0 +1,127 @@
+/*
+  Localizable.strings
+  App
+
+  Created by 김상혁 on 2023/06/24.
+  Copyright © 2023 Lifepoo. All rights reserved.
+*/
+
+/* 공용 */
+"color" = "색깔";
+"shape" = "모양";
+"size" = "크기";
+"large" = "대";
+"medium" = "중";
+"small" = "소";
+"done" = "완료";
+"cancel" = "취소";
+"me" = "나";
+"inviteFriendsAndEncourageBowelMovements" = "친구를 초대하고,\n변 활동을 응원해보세요!";
+
+
+/* 온보딩 */
+"logYourStools" = "나의 변을 기록하고";
+"cheerForEachOthersPoops" = "서로의 변을 응원하고";
+"shareYourBowelMovements" = "배변일지를 공유받자!";
+"continueWithKakao" = "카카오로 계속하기";
+"continueWithApple" = "Apple로 계속하기";
+
+
+/* 사용자 정보 설정 */
+"pleaseSetNickname" = "닉네임을 설정해주세요";
+"nicknamePlaceholder" = "닉네임 입력하기";
+"guideToAvailableNicknameFormats" = "2~5자로 한글, 영문, 숫자를 사용할 수 있어요.";
+"availableNickname." = "사용 가능한 닉네임이에요.";
+"unavailableNickname" = "사용 불가능한 닉네임이에요.";
+
+"pleaseEnterYourDateOfBirth" = "생년월일을 입력해주세요";
+"DateOfBirthPlaceholder" = "예) 990101";
+"guideToValidDateOfBirthFormat" = "생년월일 6자를 입력해주세요.";
+"validDateOfBirth." = "올바른 생년월일이에요.";
+"invalidDataOfBirth" = "올바른 생년월일을 입력해주세요.";
+
+"pleaseSelectYourGender" = "성별을 선택해주세요";
+"female" = "여성";
+"male" = "남성";
+"etc" = "기타";
+
+"agreeToAllTerms" = "약관 모두 동의하기";
+"overFourteenYearsOld" = "만 14세 이상입니다. (필수)";
+"termsOfService" = "서비스 이용 약관 (필수)";
+"collectionAndUseOfPersonalInformation" = "개인정보 수집 및 이용 (필수)";
+"receiveEventAndPromotionNotifications" = "이벤트, 프로모션 알림 메일 수신 (선택)";
+"see" = "보기";
+
+
+/* 홈 */
+"stoolDiaryFor" = "%@의 변 기록이에요";
+"friendsAreCheeringMe" = "%@님 외 %d명이 응원하고 있어요!";
+"noOneCheeredForMe" = "내 변을 응원한 사람이 없어요";
+"goCheeringFriends" = "친구들 응원하러 가기";
+"logStoolDiary" = "변 기록하기";
+"wereYouSatisfied" = "잘 변했나요?";
+"whyAreYouSatisfied" = "만족한 이유를 알려주세요!";
+"whyAreYouDissatisfied" = "불만족한 이유를 알려주세요!";
+
+
+/* 친구 목록 */
+"friendsList" = "친구 목록";
+"sendInvitation" = "초대장 보내기";
+"shareInvitationCode" = "초대 코드 공유하기";
+"enterInvitationCode" = "초대 코드 입력하기";
+"enterInvitationCodeYouReceivedFromYourFriend" = "친구에게 받은 초대 코드를 입력해주세요";
+"doneEntering" = "입력 완료";
+
+
+/* 리포트 */
+"stoolLogReport" = "변 기록 리포트";
+"recent" = "최근";
+"oneMonth" = "1개월";
+"threeMonths" = "3개월";
+"oneYear" = "1년";
+"totalBowelMovementsCount" = "총 배변 횟수";
+"totalBowelMovementsCountDescription" = "최근 %@ 내 %@님은 %d번 변했어요";
+"satisfaction" = "만족도";
+"satisfactionCount" = "%d번 만족";
+"dissatisfactionCount" = "%d번 불만족";
+"count" = "%d번";
+"tenThousandCountPlus" = "99999번+";
+"thousandCountPlus" = "9999번+";
+"wateryCount" = "물렁 %d번";
+"smoothCount" = "매끈 %d번";
+"hardCount" = "딱딱 %d번";
+
+
+/* 스토리 */
+"bowelMovementCountOfFriend" = "%@님이 %d번 변했어요";
+"cheeringWithBoost" = "힘주기로 응원해보세요!";
+"boost" = "힘주기";
+"doneBoost" = "힘주기 완료";
+
+
+/* 설정 */
+"aboutMe" = "내 정보";
+"loginInfo" = "로그인 정보";
+"profileInfo" = "프로필 정보";
+"setUpStoryVisibility" = "스토리 공개범위 설정";
+"privateStory" = "나만 보기";
+"publicStory" = "전체 공개";
+"setUpAutomaticSignIn" = "자동 로그인 사용";
+"customerSupport" = "고객 지원";
+"versionInfo" = "버전 정보";
+"termsOfService" = "서비스 이용 약관";
+"privacyPolicy" = "개인정보 처리 방침";
+"sendUsFeedback" = "의견 보내기";
+"signOut" = "로그아웃";
+"withdraw" = "탈퇴하기";
+"confirmSignOut" = "로그아웃하기";
+"logOutWarningTitle" = "라이푸 서비스를\n로그아웃 하시겠어요?";
+"withdrawWarningTitle" = "라이푸 서비스를\n진짜 탈퇴하시겠어요?";
+"logOutWarningDescription" = "로그인 후 다시 나의 변 기록을 불러올 수 있어요 💩";
+"withdrawWarningDescription" = "지금 탈퇴하면, 나의 변 기록이 전부 사라져요 🥲";
+
+
+/* 설정 - 프로필 정보 수정 */
+"setUpProfile" = "프로필을 설정해주세요";
+"setUpCharacter" = "캐릭터를 설정해주세요";
+"doneModification" = "수정 완료";

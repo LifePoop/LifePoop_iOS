@@ -67,7 +67,7 @@ public final class ProfileEditViewModel: ViewModelType {
         
         userProfileCharacter
             .compactMap { $0.error }
-            .toastMeessageMap(to: .setting(.failToChangeProfileCharacter))
+            .toastMessageMap(to: .setting(.changeProfileCharacterFail))
             .bind(to: output.showToastMessage)
             .disposed(by: disposeBag)
         
@@ -130,7 +130,7 @@ public final class ProfileEditViewModel: ViewModelType {
         
         editRequestResult
             .filter { $0.isCompleted }
-            .toastMeessageMap(to: .setting(.userProfileChangeSucceeded))
+            .toastMessageMap(to: .setting(.changeUserProfileSuccess))
             .bind(to: output.showToastMessage)
             .disposed(by: disposeBag)
         
@@ -162,7 +162,7 @@ public final class ProfileEditViewModel: ViewModelType {
         
         editRequestResult
             .compactMap { $0.error }
-            .toastMeessageMap(to: .setting(.failToChangeUserProfile))
+            .toastMessageMap(to: .setting(.changeUserProfileFail))
             .bind(to: output.showToastMessage)
             .disposed(by: disposeBag)
         

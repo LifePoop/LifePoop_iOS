@@ -15,9 +15,9 @@ public enum DocumentType {
     public var title: String {
         switch self {
         case .privacyPolicy:
-            return "개인정보 처리 방침"
+            return LocalizableString.privacyPolicy
         case .termsOfService:
-            return "서비스 이용 약관"
+            return LocalizableString.termsOfService
         }
     }
     

@@ -8,7 +8,9 @@
 
 import Foundation
 
+import Utils
+
 public struct ProfileSettingModel: SettingModel {
-    public let description: String = "프로필 정보"
+    public let description: String = LocalizableString.profileInfo
     public let type: SettingType = .profile
 }

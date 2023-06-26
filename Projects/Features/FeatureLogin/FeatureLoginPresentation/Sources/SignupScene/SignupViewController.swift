@@ -31,21 +31,21 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     
     private let nicknameTextField: ConditionalTextField = {
         let textField = ConditionalTextField()
-        textField.title = "닉네임을 설정해주세요"
-        textField.placeholder = "닉네임 입력하기"
+        textField.title = LocalizableString.pleaseSetNickname
+        textField.placeholder = LocalizableString.nicknamePlaceholder
         return textField
     }()
     
     private let birthdayTextField: ConditionalTextField = {
         let textField = ConditionalTextField(keyboardType: .numberPad)
-        textField.title = "생년월일을 입력해주세요"
-        textField.placeholder = "예) 990101"
+        textField.title = LocalizableString.pleaseEnterYourDateOfBirth
+        textField.placeholder = LocalizableString.dateOfBirthPlaceholder
         return textField
     }()
     
     private let genderSelectTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "성별을 선택해주세요"
+        label.text = LocalizableString.pleaseSelectYourGender
         label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         label.textColor = ColorAsset.pooBlack.color
         return label
@@ -99,7 +99,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         return collectionView
     }()
     
-    private let nextButton = LifePoopButton(title: "다음")
+    private let nextButton = LifePoopButton(title: LocalizableString.next)
     
     private var sumOfVerticalMargins: CGFloat = .zero
     

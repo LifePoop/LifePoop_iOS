@@ -20,7 +20,7 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "캐릭터를 설정해주세요"
+        label.text = LocalizableString.setUpCharacter
         label.font = .systemFont(ofSize: 20, weight: .bold)
         return label
     }()
@@ -29,7 +29,7 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
         let label = UILabel()
         label.textColor = ColorAsset.black.color
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "색깔"
+        label.text = LocalizableString.color
         return label
     }()
     
@@ -37,7 +37,7 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
         let label = UILabel()
         label.textColor = ColorAsset.black.color
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "모양"
+        label.text = LocalizableString.shape
         return label
     }()
     

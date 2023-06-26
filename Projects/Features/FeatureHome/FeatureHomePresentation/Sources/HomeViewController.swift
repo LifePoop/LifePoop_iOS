@@ -53,7 +53,7 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         return collectionView
     }()
     
-    private let stoolLogButton = LifePoopButton(title: "변 기록하기")
+    private let stoolLogButton = LifePoopButton(title: LocalizableString.logStoolDiary)
     
     public var viewModel: HomeViewModel?
     private let disposeBag = DisposeBag()

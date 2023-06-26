@@ -8,6 +8,8 @@
 
 import Foundation
 
+import Utils
+
 // MARK: - 서버 DTO 구성되기 전 임의로 사용하는 Entity
 public enum ReportPeriod: Int, CaseIterable {
     case week
@@ -18,26 +20,26 @@ public enum ReportPeriod: Int, CaseIterable {
     public var title: String {
         switch self {
         case .week:
-            return "최근"
+            return LocalizableString.recent
         case .month:
-            return "1개월"
+            return LocalizableString.oneMonth
         case .threeMonths:
-            return "3개월"
+            return LocalizableString.threeMonths
         case .year:
-            return "1년"
+            return LocalizableString.oneYear
         }
     }
     
     public var description: String {
         switch self {
         case .week:
-            return "7일"
+            return LocalizableString.sevenDays
         case .month:
-            return "1개월"
+            return LocalizableString.oneMonth
         case .threeMonths:
-            return "3개월"
+            return LocalizableString.threeMonths
         case .year:
-            return "1년"
+            return LocalizableString.oneYear
         }
     }
     

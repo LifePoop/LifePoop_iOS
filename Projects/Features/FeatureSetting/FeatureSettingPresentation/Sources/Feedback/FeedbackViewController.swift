@@ -97,7 +97,7 @@ public final class FeedbackViewController: LifePoopViewController, ViewType {
     
     public override func configureUI() {
         super.configureUI()
-        title = "의견 보내기"
+        title = LocalizableString.sendUsFeedback
     }
     
     public override func layoutUI() {

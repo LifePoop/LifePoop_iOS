@@ -116,7 +116,7 @@ public final class SettingViewController: LifePoopViewController, ViewType {
     
     public override func configureUI() {
         super.configureUI()
-        title = "설정"
+        title = LocalizableString.settingTitle
     }
     
     public override func layoutUI() {

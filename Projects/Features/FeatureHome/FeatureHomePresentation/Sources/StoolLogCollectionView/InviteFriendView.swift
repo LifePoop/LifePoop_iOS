@@ -11,6 +11,8 @@ import UIKit
 import DesignSystem
 import SnapKit
 
+import Utils
+
 final class InviteFriendView: UIView {
     
     private let myProfileCharactorImageView: UIImageView = {
@@ -22,7 +24,7 @@ final class InviteFriendView: UIView {
     
     private let nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "나"
+        label.text = LocalizableString.me
         label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .center
         return label
@@ -37,7 +39,7 @@ final class InviteFriendView: UIView {
     
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "친구를 초대하고\n변 활동을 응원해보세요!"
+        label.text = LocalizableString.inviteFriendsAndEncourageBowelMovements
         label.numberOfLines = 2
         label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = ColorAsset.gray800.color

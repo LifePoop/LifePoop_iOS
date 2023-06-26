@@ -1,0 +1,32 @@
+/* 
+  Localizable.strings
+  DesignSystem
+
+  Created by 김상혁 on 2023/06/26.
+  Copyright © 2023 Lifepoo. All rights reserved.
+*/
+
+
+/* LifePoopAlertViewType */
+"logOutWarningTitle" = "라이푸 서비스를\n로그아웃 하시겠어요?";
+"withdrawWarningTitle" = "라이푸 서비스를\n진짜 탈퇴하시겠어요?";
+"enterInvitationCode" = "초대 코드 입력하기";
+"logOutWarningDescription" = "로그인 후 다시 나의 변 기록을 불러올 수 있어요 💩";
+"withdrawWarningDescription" = "지금 탈퇴하면, 나의 변 기록이 전부 사라져요 🥲";
+"enterInvitationCodeYouReceivedFromYourFriend" = "친구에게 받은 초대 코드를 입력해주세요";
+"cancel" = "취소";
+"confirmSignOut" = "로그아웃하기";
+"withdraw" = "탈퇴하기";
+"doneEntering" = "입력 완료";
+
+/* CheeringButtonView */
+"goCheeringFriends" = "친구들 응원하러 가기";
+
+/* SuggestionButton */
+"select" = "선택하기";
+
+/* ConditionalTextField */
+"done" = "완료";
+
+/* StoolCountBarView */
+"count" = "%d번";

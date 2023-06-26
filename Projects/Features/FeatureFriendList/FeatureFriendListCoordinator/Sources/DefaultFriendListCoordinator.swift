@@ -15,6 +15,7 @@ import CoreEntity
 import DesignSystem
 import FeatureFriendListCoordinatorInterface
 import FeatureFriendListPresentation
+import Logger
 import Utils
 
 public final class DefaultFriendListCoordinator: FriendListCoordinator {
@@ -46,6 +47,10 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
         case .shouldDismissInvitationCodePopup:
             dismissViewController()
         }
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }
 

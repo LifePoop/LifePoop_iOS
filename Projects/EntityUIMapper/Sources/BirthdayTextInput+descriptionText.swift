@@ -11,17 +11,19 @@ import Foundation
 import CoreEntity
 import DesignSystem
 
+import Utils
+
 public extension BirthdayTextInput.Status {
     var descriptionText: ConditionalTextField.TextFieldStatus {
         switch self {
         case .`default`:
-            return ConditionalTextField.TextFieldStatus.`default`(text: "생년월일 6자를 입력해주세요.")
+            return ConditionalTextField.TextFieldStatus.`default`(text: LocalizableString.guideToValidDateOfBirthFormat)
         case .defaultWarning:
-            return ConditionalTextField.TextFieldStatus.impossible(text: "생년월일 6자를 입력해주세요.")
+            return ConditionalTextField.TextFieldStatus.impossible(text: LocalizableString.guideToValidDateOfBirthFormat)
         case .possible:
-            return ConditionalTextField.TextFieldStatus.possible(text: "올바른 생년월일이에요.")
+            return ConditionalTextField.TextFieldStatus.possible(text: LocalizableString.validDateOfBirth)
         case .impossible:
-            return ConditionalTextField.TextFieldStatus.impossible(text: "올바른 생년월일을 입력해주세요.")
+            return ConditionalTextField.TextFieldStatus.impossible(text: LocalizableString.invalidDataOfBirth)
         }
     }
 }

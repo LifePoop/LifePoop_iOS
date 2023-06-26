@@ -18,7 +18,7 @@ import Utils
 public final class LaunchScreenViewController: LifePoopViewController, ViewType {
     
     private let animationView: LottieAnimationView = {
-        let animationView = LottieAnimationView(name: "onboarding")
+        let animationView = LottieAnimationView(name: Constant.LottieResource.onboarding)
         animationView.contentMode = .scaleAspectFit
         animationView.animationSpeed = 1.2
         return animationView

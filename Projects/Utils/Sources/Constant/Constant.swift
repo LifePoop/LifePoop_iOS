@@ -11,6 +11,12 @@ import Foundation
 public enum Constant { }
 
 public extension Constant {
+    enum LottieResource {
+        public static let onboarding = "onboarding"
+    }
+}
+
+public extension Constant {
     enum ValidPattern {
         public static let nickname = "^[가-힣a-zA-Z0-9]{2,5}$"
     }

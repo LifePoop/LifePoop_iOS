@@ -15,17 +15,17 @@ let project = Project.makeModule(
     dependencies: [
         .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.DesignSystem).dependency,
-        .Project.module(.Logger).dependency,
-        .Project.module(.Features(.Home, .Presentation)).dependency,
-        .Project.module(.Features(.Home, .CoordinatorInterface)).dependency,
-        .Project.module(.Features(.Setting, .Coordinator)).dependency,
-        .Project.module(.Features(.Setting, .CoordinatorInterface)).dependency,
         .Project.module(.Features(.FriendList, .Coordinator)).dependency,
         .Project.module(.Features(.FriendList, .CoordinatorInterface)).dependency,
+        .Project.module(.Features(.Home, .CoordinatorInterface)).dependency,
+        .Project.module(.Features(.Home, .Presentation)).dependency,
+        .Project.module(.Features(.Setting, .Coordinator)).dependency,
+        .Project.module(.Features(.Setting, .CoordinatorInterface)).dependency,
         .Project.module(.Features(.StoolLog, .Coordinator)).dependency,
+        .Project.module(.Logger).dependency,
         .Project.module(.Utils).dependency,
-        .SPM.RxSwift.dependency,
-        .SPM.RxRelay.dependency
+        .SPM.RxRelay.dependency,
+        .SPM.RxSwift.dependency
     ],
     hasTests: false
 )

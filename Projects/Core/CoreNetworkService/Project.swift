@@ -14,9 +14,9 @@ let project = Project.makeModule(
     packages: [],
     dependencies: [
         .Project.module(.Core(.CoreEntity)).dependency,
-        .SPM.RxSwift.dependency,
         .SPM.RxCocoa.dependency,
-        .SPM.RxRelay.dependency
+        .SPM.RxRelay.dependency,
+        .SPM.RxSwift.dependency
     ],
     hasTests: false
 )

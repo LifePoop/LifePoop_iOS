@@ -15,9 +15,9 @@ let project = Project.makeModule(
     dependencies: [
         .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.DesignSystem).dependency,
-        .Project.module(.Logger).dependency,
-        .Project.module(.Features(.Login, .Presentation)).dependency,
         .Project.module(.Features(.Login, .CoordinatorInterface)).dependency,
+        .Project.module(.Features(.Login, .Presentation)).dependency,
+        .Project.module(.Logger).dependency,
         .Project.module(.Utils).dependency,
     ],
     hasTests: false

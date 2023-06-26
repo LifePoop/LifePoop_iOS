@@ -120,12 +120,12 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
         view.addSubview(shapeSelectionStackView)
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(-6)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(6)
             make.centerX.equalToSuperview()
         }
         
         colorTitleLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview().multipliedBy(0.56)
+            make.centerY.equalToSuperview().multipliedBy(0.62)
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
         }
         
@@ -136,7 +136,7 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
         }
         
         shapeTitleLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview().multipliedBy(1.24)
+            make.centerY.equalToSuperview().multipliedBy(1.30)
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
         }
         

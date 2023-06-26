@@ -30,7 +30,7 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
     
     public func updateNickname(to newNickname: String) -> Completable {
         return userDefaultsRepository
-            .updateValue(for: .isAutoLoginActivated, with: newNickname)
+            .updateValue(for: .userNickname, with: newNickname)
             .logErrorIfDetected(category: .userDefaults)
     }
     

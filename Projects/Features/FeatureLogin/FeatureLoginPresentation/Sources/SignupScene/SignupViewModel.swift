@@ -58,7 +58,7 @@ public final class SignupViewModel: ViewModelType {
         let birthdayTextFieldStatus = BehaviorRelay<BirthdayTextInput.Status>(value: .`default`)
         let shouldCheckCondition = PublishRelay<Int>()
         let selectAllOptionConfig = Observable.just(AgreementCondition(
-            descriptionText: "전체동의",
+            descriptionText: LocalizableString.agreeToAllTerms,
             descriptionTextSize: .large
         ))
         let shouldSelectGender = PublishRelay<GenderType>()

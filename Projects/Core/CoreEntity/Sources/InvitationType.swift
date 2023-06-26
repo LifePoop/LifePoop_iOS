@@ -8,6 +8,8 @@
 
 import Foundation
 
+import Utils
+
 public enum InvitationType: CustomStringConvertible, CaseIterable {
     
     case sharingInvitationCode
@@ -16,9 +18,9 @@ public enum InvitationType: CustomStringConvertible, CaseIterable {
     public var description: String {
         switch self {
         case .sharingInvitationCode:
-            return "초대 코드 공유하기"
+            return LocalizableString.shareInvitationCode
         case .enteringInvitationCode:
-            return "초대 코드 입력하기"
+            return LocalizableString.enterInvitationCode
         }
     }
 }

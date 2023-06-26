@@ -59,7 +59,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         
         viewDidLoadOrRefresh
             .map { Date().localizedString }
-            .map { "\($0)의 변 기록이에요" }
+            .map { LocalizableString.stoolDiaryFor($0) }
             .bind(to: output.setDateDescription)
             .disposed(by: disposeBag)
         

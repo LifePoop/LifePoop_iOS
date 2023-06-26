@@ -76,7 +76,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.isSatisfied
-            .map { $0 ? "만족한 이유를 알려주세요!" : "불만족한 이유를 알려주세요!" }
+            .map { $0 ? LocalizableString.whyAreYouSatisfied : LocalizableString.whyAreYouDissatisfied }
             .bind(to: output.titleText)
             .disposed(by: disposeBag)
         

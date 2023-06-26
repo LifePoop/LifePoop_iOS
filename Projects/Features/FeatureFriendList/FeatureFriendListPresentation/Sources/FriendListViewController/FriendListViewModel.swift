@@ -26,7 +26,7 @@ public final class FriendListViewModel: ViewModelType {
     }
     
     public struct Output {
-        let navigationTitle = Observable.of("친구 목록")
+        let navigationTitle = Observable.of(LocalizableString.friendsList)
         let shouldShowFriendList = BehaviorRelay<[FriendEntity]>(value: [])
         let shouldShowEmptyList = PublishRelay<Void>()
         let shouldShowToastMessge = PublishRelay<String>()

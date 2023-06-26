@@ -47,14 +47,14 @@ public final class LoginViewController: LifePoopViewController, ViewType {
     }()
     
     private let kakaoTalkLoginButon = LoginButton(
-        title: "카카오로 계속하기",
+        title: LocalizableString.continueWithKakao,
         backgroundColor: ColorAsset.pooYellow.color,
         fontColor: ColorAsset.pooBrown.color,
         iconImage: ImageAsset.iconKakao.image
     )
     
     private let appleLoginButton = LoginButton(
-        title: "Apple로 계속하기",
+        title: LocalizableString.continueWithApple,
         backgroundColor: ColorAsset.black.color,
         fontColor: ColorAsset.white.color,
         iconImage: ImageAsset.iconApple.image

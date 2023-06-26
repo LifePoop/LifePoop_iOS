@@ -43,21 +43,21 @@ final class ReportTotalSizeView: UIView {
     
     private lazy var largeTextLabel: UILabel = {
         let label = UILabel()
-        label.text = "대"
+        label.text = LocalizableString.large
         label.font = .systemFont(ofSize: 16)
         return label
     }()
     
     private lazy var mediumTextLabel: UILabel = {
         let label = UILabel()
-        label.text = "중"
+        label.text = LocalizableString.medium
         label.font = .systemFont(ofSize: 16)
         return label
     }()
     
     private lazy var smallTextLabel: UILabel = {
         let label = UILabel()
-        label.text = "소"
+        label.text = LocalizableString.small
         label.font = .systemFont(ofSize: 16)
         return label
     }()

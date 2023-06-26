@@ -35,9 +35,9 @@ public final class LoginViewModel: ViewModelType {
     public let output = Output()
     
     private let subLabelTexts = [
-        "나의 변을 기록하고",
-        "서로의 변을 응원하고",
-        "배변일지를 공유받자!"
+        LocalizableString.logYourStools,
+        LocalizableString.cheerForEachOthersPoops,
+        LocalizableString.shareYourBowelMovements
     ]
     
     @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase

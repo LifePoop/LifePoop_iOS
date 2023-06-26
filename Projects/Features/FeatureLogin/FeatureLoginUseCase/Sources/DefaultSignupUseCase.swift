@@ -28,25 +28,25 @@ public final class DefaultSignupUseCase: SignupUseCase {
     // TODO: Repository로 이동
     private let conditionEntities: [AgreementCondition] = [
         .init(
-            descriptionText: "만 14세 이상입니다.(필수)",
+            descriptionText: LocalizableString.overFourteenYearsOld,
             descriptionTextSize: .normal,
             containsDetailView: false,
             selectionType: .essential
         ),
         .init(
-            descriptionText: "서비스 이용 약관 (필수)",
+            descriptionText: LocalizableString.termsOfService,
             descriptionTextSize: .normal,
             containsDetailView: true,
             selectionType: .essential
         ),
         .init(
-            descriptionText: "개인정보 수집 및 이용 (필수)",
+            descriptionText: LocalizableString.privacyPolicyEssential,
             descriptionTextSize: .normal,
             containsDetailView: true,
             selectionType: .essential
         ),
         .init(
-            descriptionText: "이벤트, 프로모션 알림 메일 수신 (선택)",
+            descriptionText: LocalizableString.receiveEventAndPromotionNotificationsOptional,
             descriptionTextSize: .normal,
             containsDetailView: false,
             selectionType: .optional

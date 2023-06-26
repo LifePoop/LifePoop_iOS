@@ -74,7 +74,7 @@ public final class HomeViewModel: ViewModelType {
         
         fetchedFriends
             .compactMap { $0.error }
-            .toastMeessageMap(to: .failToFetchFriendList)
+            .toastMessageMap(to: .home(.fetchFriendListFail))
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
         
@@ -92,7 +92,7 @@ public final class HomeViewModel: ViewModelType {
         
         fetchedStoolLogs
             .compactMap { $0.error }
-            .toastMeessageMap(to: .failToFetchStoolLog)
+            .toastMessageMap(to: .home(.fetchStoolLogFail))
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
         

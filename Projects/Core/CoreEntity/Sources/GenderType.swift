@@ -8,6 +8,8 @@
 
 import Foundation
 
+import Utils
+
 public enum GenderType: Int, CaseIterable, CustomStringConvertible {
     
     case female
@@ -16,9 +18,9 @@ public enum GenderType: Int, CaseIterable, CustomStringConvertible {
     
     public var description: String {
         switch self {
-        case .female: return "여성"
-        case .male: return "남성"
-        case .etc: return "기타"
+        case .female: return LocalizableString.female
+        case .male: return LocalizableString.male
+        case .etc: return LocalizableString.etc
         }
     }    
 }

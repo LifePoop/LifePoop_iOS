@@ -8,7 +8,9 @@
 
 import Foundation
 
+import Utils
+
 public struct TermsOfServiceSettingModel: SettingModel {
-    public let description: String = "서비스 이용 약관"
+    public let description: String = LocalizableString.termsOfService
     public let type: SettingType = .termsOfService
 }

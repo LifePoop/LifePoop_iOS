@@ -24,7 +24,7 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
         let label = UILabel()
         label.textColor = ColorAsset.black.color
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "색깔"
+        label.text = LocalizableString.color
         return label
     }()
     
@@ -32,7 +32,7 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
         let label = UILabel()
         label.textColor = ColorAsset.black.color
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "모양"
+        label.text = LocalizableString.shape
         return label
     }()
     
@@ -40,7 +40,7 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
         let label = UILabel()
         label.textColor = ColorAsset.black.color
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "크기"
+        label.text = LocalizableString.size
         return label
     }()
     
@@ -81,7 +81,7 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
     
     private let sizeSelectionSegmentControl = LifePoopSegmentControl()
     
-    private let completeButton = LifePoopButton(title: "완료")
+    private let completeButton = LifePoopButton(title: LocalizableString.done)
     
     private let toastMessageLabel = ToastLabel()
     

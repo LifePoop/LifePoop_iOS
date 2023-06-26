@@ -8,6 +8,8 @@
 
 import Foundation
 
+import Utils
+
 public enum FeedVisibility: Int, Codable, CaseIterable {
     case `private`
     case `public`
@@ -15,9 +17,9 @@ public enum FeedVisibility: Int, Codable, CaseIterable {
     public var text: String {
         switch self {
         case .private:
-            return "나만 보기"
+            return LocalizableString.privateStory
         case .public:
-            return "전체 공개"
+            return LocalizableString.publicStory
         }
     }
 }

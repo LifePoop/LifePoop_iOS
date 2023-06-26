@@ -28,7 +28,7 @@ public class LifePoopAlertView: UIControl {
         return label
     }()
     
-    private (set)lazy var descriptionLabel: UILabel = {
+    private(set) lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.text = type.subTitle
         label.textAlignment = .center
@@ -62,7 +62,7 @@ public class LifePoopAlertView: UIControl {
         return button
     }()
     
-    private (set)lazy var buttonStackView: UIStackView = {
+    private(set) lazy var buttonStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [cancelButton, confirmButton])
         stackView.axis = .horizontal
         stackView.spacing = 10

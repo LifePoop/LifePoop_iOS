@@ -32,7 +32,7 @@ public final class BottomSheet: UIControl {
     var contentBackgroundView = UIView()
     private var minTopOffset: CGFloat = .zero
     private var maxTopOffset: CGFloat = .zero
-    private (set)var defaultHeight: CGFloat = .zero
+    private(set) var defaultHeight: CGFloat = .zero
     private var isClosed = false {
         didSet {
             guard isClosed == true else { return }

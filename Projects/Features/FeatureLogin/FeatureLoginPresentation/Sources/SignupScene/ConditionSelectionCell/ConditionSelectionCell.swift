@@ -36,7 +36,7 @@ final class ConditionSelectionCell: UICollectionViewCell {
         }
     }
     
-    private (set)var disposeBag = DisposeBag()
+    private(set) var disposeBag = DisposeBag()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

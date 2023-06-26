@@ -113,5 +113,7 @@ public final class InvitationCodeViewModel: ViewModelType {
             .disposed(by: disposeBag)
     }
     
-    
+    deinit {
+        Logger.logDeallocation(object: self)
+    }
 }

@@ -177,4 +177,8 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
     }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
+    }
 }

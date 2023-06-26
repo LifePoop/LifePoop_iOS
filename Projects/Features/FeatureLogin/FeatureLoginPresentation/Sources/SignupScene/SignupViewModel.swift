@@ -15,6 +15,7 @@ import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
 import FeatureLoginUseCase
+import Logger
 import SharedDIContainer
 import SharedUseCase
 import Utils
@@ -249,5 +250,9 @@ public final class SignupViewModel: ViewModelType {
                 self?.output.shouldSelectAllConditions.accept(isEveryConditionsSelected)
             })
             .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }

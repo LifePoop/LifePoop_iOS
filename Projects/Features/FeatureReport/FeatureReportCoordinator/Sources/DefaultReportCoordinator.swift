@@ -10,6 +10,7 @@ import UIKit
 
 import FeatureReportCoordinatorInterface
 import FeatureReportPresentation
+import Logger
 import Utils
 
 public final class DefaultReportCoordinator: ReportCoordinator {
@@ -31,6 +32,10 @@ public final class DefaultReportCoordinator: ReportCoordinator {
         case .flowDidStart:
             pushReportViewController()
         }
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }
 

@@ -13,6 +13,7 @@ import CoreEntity
 import FeatureHomeCoordinatorInterface
 import FeatureHomeDIContainer
 import FeatureHomeUseCase
+import Logger
 import Utils
 
 public final class HomeViewModel: ViewModelType {
@@ -161,6 +162,10 @@ public final class HomeViewModel: ViewModelType {
             .compactMap { $0 }
             .bind(to: output.bindStoolLogHeaderViewModel)
             .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }
 

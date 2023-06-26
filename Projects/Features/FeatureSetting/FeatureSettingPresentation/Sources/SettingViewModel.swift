@@ -15,6 +15,7 @@ import CoreEntity
 import FeatureSettingCoordinatorInterface
 import FeatureSettingDIContainer
 import FeatureSettingUseCase
+import Logger
 import SharedDIContainer
 import SharedUseCase
 import Utils
@@ -224,6 +225,7 @@ public final class SettingViewModel: ViewModelType {
     
     deinit {
         coordinator?.coordinate(by: .flowDidFinish)
+        Logger.logDeallocation(object: self)
     }
 }
 

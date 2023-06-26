@@ -15,6 +15,7 @@ import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
 import FeatureLoginUseCase
+import Logger
 import Utils
 
 public final class LoginViewModel: ViewModelType {
@@ -100,5 +101,9 @@ public final class LoginViewModel: ViewModelType {
             }
             .bind(to: output.subLabelText)
             .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }

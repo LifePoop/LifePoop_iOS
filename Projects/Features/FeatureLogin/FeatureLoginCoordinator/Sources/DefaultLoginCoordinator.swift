@@ -12,6 +12,7 @@ import CoreEntity
 import DesignSystem
 import FeatureLoginCoordinatorInterface
 import FeatureLoginPresentation
+import Logger
 import Utils
 
 public final class DefaultLoginCoordinator: LoginCoordinator {
@@ -53,6 +54,10 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
         case .shouldPopCurrentScene:
             popCurrentViewController()
         }
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }
 

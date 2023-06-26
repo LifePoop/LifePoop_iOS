@@ -13,6 +13,7 @@ import RxSwift
 
 import CoreEntity
 import FeatureHomeCoordinatorInterface
+import Logger
 import Utils
 
 public final class StoolLogHeaderViewModel: ViewModelType {
@@ -89,5 +90,9 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .map { $0.isEmpty }
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }

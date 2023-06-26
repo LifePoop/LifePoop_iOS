@@ -46,4 +46,8 @@ public final class FriendInvitationViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
     }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
+    }
 }

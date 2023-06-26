@@ -15,6 +15,7 @@ import CoreEntity
 import FeatureFriendListCoordinatorInterface
 import FeatureFriendListDIContainer
 import FeatureFriendListUseCase
+import Logger
 import Utils
 
 public final class FriendListViewModel: ViewModelType {
@@ -68,5 +69,9 @@ public final class FriendListViewModel: ViewModelType {
                 }
             })
             .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }

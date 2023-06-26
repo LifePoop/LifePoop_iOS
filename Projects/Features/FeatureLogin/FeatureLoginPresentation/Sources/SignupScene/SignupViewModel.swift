@@ -78,6 +78,9 @@ public final class SignupViewModel: ViewModelType {
     @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
     @Inject(LoginDIContainer.shared) private var signupUseCase: SignupUseCase
     @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
+    
+    // FIXME: 디폴트 캐릭터 지정하기 위한 UseCase - 서버에서 디폴트 캐릭터 설정된 상태로 받아올 경우 삭제
+    @Inject(SharedDIContainer.shared) private var profileCharacterUseCase: ProfileCharacterUseCase
 
     private weak var coordinator: LoginCoordinator?
     private let authInfo: UserAuthInfoEntity
@@ -91,6 +94,15 @@ public final class SignupViewModel: ViewModelType {
     
     private func bind() {
         guard let coordinator = self.coordinator else { return }
+        
+        // FIXME: 디폴트 캐릭터 지정하는 코드 - 서버에서 디폴트 캐릭터 설정된 상태로 받아올 경우 삭제
+        input.didTapNextButton
+            .withUnretained(self)
+            .flatMapCompletableMaterialized { `self`, _ in
+                self.profileCharacterUseCase.updateProfileCharacter(to: ProfileCharacter(color: .brown, shape: .good))
+            }
+            .bind { _ in }
+            .disposed(by: disposeBag)
         
         signupUseCase.fetchSelectableConditions()
             .withUnretained(self)

@@ -25,7 +25,7 @@ public final class FriendInvitationViewModel: ViewModelType {
     }
     
     public struct Output {
-        let navitationTitle = Observable.of("초대장 보내기")
+        let navitationTitle = Observable.of(LocalizableString.sendInvitation)
         let invitationTypes = Observable.of(InvitationType.allCases)
     }
     
@@ -45,5 +45,9 @@ public final class FriendInvitationViewModel: ViewModelType {
                 coordinator?.coordinate(by: .shouldShowInvitationCodePopup(type: invitationType, toastMessageStream: toastMessageStream))
             })
             .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }

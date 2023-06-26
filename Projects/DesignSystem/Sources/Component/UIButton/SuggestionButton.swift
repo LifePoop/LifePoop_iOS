@@ -14,7 +14,7 @@ public final class SuggestionButton: PaddingButton {
     
     private let label: UILabel = {
         let label = UILabel()
-        label.text = "선택하기"
+        label.text = DesignSystemStrings.select
         label.textColor = ColorAsset.gray800.color
         label.font = .systemFont(ofSize: 18)
         return label

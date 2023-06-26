@@ -13,6 +13,7 @@ import CoreEntity
 import FeatureStoolLogCoordinatorInterface
 import FeatureStoolLogDIContainer
 import FeatureStoolLogUseCase
+import Logger
 import Utils
 
 public final class SatisfactionSelectViewModel: ViewModelType {
@@ -84,6 +85,9 @@ public final class SatisfactionSelectViewModel: ViewModelType {
                 owner.coordinator?.coordinate(by: .didSelectSatisfaction(isSatisfied: isSatisfactionSelected))
             })
             .disposed(by: disposeBag)
-
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }

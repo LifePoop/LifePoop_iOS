@@ -8,6 +8,8 @@
 
 import Foundation
 
+import Utils
+
 public enum SettingListSection: Int {
     case info
     case support
@@ -15,9 +17,9 @@ public enum SettingListSection: Int {
     public var title: String {
         switch self {
         case .info:
-            return "내 정보"
+            return LocalizableString.myInfo
         case .support:
-            return "고객 지원"
+            return LocalizableString.customerSupport
         }
     }
 }

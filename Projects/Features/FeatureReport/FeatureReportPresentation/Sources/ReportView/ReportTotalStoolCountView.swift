@@ -51,12 +51,13 @@ final class ReportTotalStoolCountView: UIView {
 
 private extension ReportTotalStoolCountView {
     func animatingCountDescription(nickname: String, periodText: String, count: Int) {
-        let prefixString = "최근 \(periodText) 내 \(nickname)님은 "
-        let suffixString = " 변했어요"
         countDescriptionLabel.startCountingAnimation(upTo: count) { [weak self] currentCount in
-            let countString = "\(currentCount)번"
-            let fullString = "\(prefixString)\(countString)\(suffixString)"
-            self?.countDescriptionLabel.text = fullString
+            let countString = LocalizableString.count(currentCount)
+            self?.countDescriptionLabel.text = LocalizableString.totalBowelMovementsCountDescription(
+                periodText,
+                nickname,
+                currentCount
+            )
             if let range = self?.countDescriptionLabel.rangeOfString(target: countString) {
                 self?.countDescriptionLabel.applyFontAndColor(
                     font: .boldSystemFont(ofSize: 20),

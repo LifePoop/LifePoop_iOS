@@ -14,6 +14,7 @@ import CoreEntity
 import DesignSystem
 import FeatureSettingCoordinatorInterface
 import FeatureSettingPresentation
+import Logger
 import Utils
 
 public final class DefaultSettingCoordinator: SettingCoordinator {
@@ -62,7 +63,7 @@ public final class DefaultSettingCoordinator: SettingCoordinator {
     }
     
     deinit {
-        print("\(self) - \(#function)") // TODO: import Logger
+        Logger.logDeallocation(object: self)
     }
 }
 

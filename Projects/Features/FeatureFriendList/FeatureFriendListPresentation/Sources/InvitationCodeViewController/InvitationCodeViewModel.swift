@@ -32,10 +32,11 @@ public final class InvitationCodeViewModel: ViewModelType {
         var description: String {
             switch self {
             case .success(let activity):
-                return activity == .copying ? "초대 코드 복사 완료" :
-                                              "초대 코드 공유 완료"
+                return activity == .copying ?
+                LocalizableString.toastInvitationCodeCopySuccess :
+                LocalizableString.toastInvitationCodeSharingSuccess
             case .failure:
-                return "초대 코드 공유 실패"
+                return LocalizableString.toastInvitationCodeSharingFail
             }
         }
     }
@@ -112,5 +113,7 @@ public final class InvitationCodeViewModel: ViewModelType {
             .disposed(by: disposeBag)
     }
     
-    
+    deinit {
+        Logger.logDeallocation(object: self)
+    }
 }

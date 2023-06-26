@@ -28,7 +28,7 @@ public final class CheeringButtonView: ShadowView {
     
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "친구들 응원하러 가기"
+        label.text = DesignSystemStrings.goCheeringFriends
         label.adjustsFontSizeToFitWidth = true
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         label.setContentHuggingPriority(.defaultHigh, for: .horizontal)

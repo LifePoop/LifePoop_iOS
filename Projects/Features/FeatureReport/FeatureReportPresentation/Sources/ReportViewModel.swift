@@ -28,7 +28,6 @@ public final class ReportViewModel: ViewModelType {
     public struct Output {
         let updatePeriodSegmentTitles = PublishRelay<[String]>()
         let selectPeriodSegmentIndexAt = PublishRelay<Int>()
-        let updatePeriodDescription = PublishRelay<String>()
         let updateStoolCountInfo = PublishRelay<(nickname: String, periodText: String, count: Int)>()
         let totalSatisfaction = PublishRelay<Int>()
         let totalDissatisfaction = PublishRelay<Int>()
@@ -165,12 +164,6 @@ public final class ReportViewModel: ViewModelType {
         userStoolReport
             .map { $0.totalStoolSize }
             .bind(to: output.totalStoolSize)
-            .disposed(by: disposeBag)
-        
-        state.selectedPeriod
-            .compactMap { $0?.description }
-            .map { "최근 \($0) 내 배변일지" }
-            .bind(to: output.updatePeriodDescription)
             .disposed(by: disposeBag)
     }
     

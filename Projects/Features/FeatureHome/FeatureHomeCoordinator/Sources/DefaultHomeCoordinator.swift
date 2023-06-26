@@ -21,6 +21,7 @@ import FeatureReportCoordinator
 import FeatureSettingCoordinator
 import FeatureSettingCoordinatorInterface
 import FeatureStoolLogCoordinator
+import Logger
 import Utils
 
 public final class DefaultHomeCoordinator: HomeCoordinator {
@@ -58,6 +59,10 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
         case .reportButtonDidTap:
             startReportCoordinatorFlow()
         }
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }
 

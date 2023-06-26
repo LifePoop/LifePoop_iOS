@@ -22,7 +22,7 @@ public final class BottomSheetController: UIViewController {
     
     private var bottomSheetHeight: CGFloat = .zero
 
-    private (set)weak var contentViewController: UIViewController?
+    private(set) weak var contentViewController: UIViewController?
     
     public weak var delegate: BottomSheetDelegate?
     

@@ -14,6 +14,7 @@ import RxSwift
 import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
+import Logger
 import SharedDIContainer
 import SharedUseCase
 import Utils
@@ -75,5 +76,9 @@ public final class LaunchScreenViewModel: ViewModelType {
             }
         })
         .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }

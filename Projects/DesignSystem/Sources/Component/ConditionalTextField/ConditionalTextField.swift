@@ -54,7 +54,7 @@ final public class ConditionalTextField: UIControl {
     
     private lazy var doneBarButtonItem: UIBarButtonItem = {
         let barButtonItem = UIBarButtonItem(
-            title: "완료",
+            title: DesignSystemStrings.done,
             style: .done,
             target: nil,
             action: #selector(tapDoneBarButton)

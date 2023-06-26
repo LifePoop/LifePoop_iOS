@@ -122,7 +122,7 @@ public final class WithdrawalViewController: LifePoopViewController, ViewType {
     
     public override func configureUI() {
         super.configureUI()
-        title = "탈퇴하기"
+        title = LocalizableString.withdraw
     }
     
     public override func layoutUI() {

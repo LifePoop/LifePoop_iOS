@@ -8,7 +8,9 @@
 
 import Foundation
 
+import Utils
+
 public struct FeedVisibilitySettingModel: SettingModel {
-    public let description: String = "공개범위 설정"
+    public let description: String = LocalizableString.setUpStoryVisibility
     public let type: SettingType = .feedVisibility
 }

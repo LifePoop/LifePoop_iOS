@@ -14,6 +14,7 @@ import FeatureHomeCoordinator
 import FeatureHomeCoordinatorInterface
 import FeatureLoginCoordinator
 import FeatureLoginCoordinatorInterface
+import Logger
 import Utils
 
 public final class DefaultAppCoordinator: AppCoordinator {
@@ -39,6 +40,10 @@ public final class DefaultAppCoordinator: AppCoordinator {
         case .authenticationProcessDidFinish:
             startHomeCoordinatorFlow(animated: true)
         }
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }
 

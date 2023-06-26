@@ -21,7 +21,7 @@ public final class SatisfactionSelectViewController: LifePoopViewController, Vie
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = ColorAsset.black.color
-        label.text = "잘 변했나요?"
+        label.text = LocalizableString.wereYouSatisfied
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 18)
         label.adjustsFontSizeToFitWidth = true
@@ -41,7 +41,7 @@ public final class SatisfactionSelectViewController: LifePoopViewController, Vie
     private let satisfactionLabel: UILabel = {
         let label = UILabel()
         label.textColor = ColorAsset.black.color
-        label.text = "네, 만족해요"
+        label.text = LocalizableString.yesSatisfied
         label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         label.sizeToFit()
         return label
@@ -59,7 +59,7 @@ public final class SatisfactionSelectViewController: LifePoopViewController, Vie
     private let disatisfactionLabel: UILabel = {
         let label = UILabel()
         label.textColor = ColorAsset.black.color
-        label.text = "아니요, 불만족해요"
+        label.text = LocalizableString.noDissatisfied
         label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         label.sizeToFit()
         return label
@@ -105,7 +105,7 @@ public final class SatisfactionSelectViewController: LifePoopViewController, Vie
         super.configureUI()
         
         view.backgroundColor = UIColor.systemBackground
-        navigationItem.title = "잘 변했나요?"
+        navigationItem.title = LocalizableString.wereYouSatisfied
     }
     
     public override func layoutUI() {

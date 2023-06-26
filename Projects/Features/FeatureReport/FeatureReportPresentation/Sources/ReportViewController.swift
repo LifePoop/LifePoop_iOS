@@ -28,7 +28,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let reportTotalStoolCountView = ReportTotalStoolCountView()
     private lazy var totalStoolCountContainerView: ReportContainerView = {
         return ReportContainerView(
-            title: "총 배변 횟수",
+            title: LocalizableString.totalBowelMovementsCount,
             innerView: reportTotalStoolCountView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 23, left: 16, bottom: 23, right: 16))
         )
@@ -37,7 +37,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let reportTotalSatisfactionView = ReportTotalSatisfactionView()
     private lazy var totalSatisfactionContainerView: ReportContainerView = {
         return ReportContainerView(
-            title: "만족도",
+            title: LocalizableString.satisfactionLevel,
             innerView: reportTotalSatisfactionView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16))
         )
@@ -46,7 +46,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let reportTotalColorView = ReportTotalColorView()
     private lazy var totalColorContainerView: ReportContainerView = {
         return ReportContainerView(
-            title: "색깔",
+            title: LocalizableString.color,
             innerView: reportTotalColorView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16))
         )
@@ -55,7 +55,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let reportTotalShapeView = ReportTotalShapeView()
     private lazy var totalShapeContainerView: ReportContainerView = {
         return ReportContainerView(
-            title: "모양",
+            title: LocalizableString.shape,
             innerView: reportTotalShapeView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 16, left: 12.5, bottom: 16, right: 12.5))
         )
@@ -64,7 +64,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let reportTotalSizeView = ReportTotalSizeView()
     private lazy var totalSizeContainerView: ReportContainerView = {
         return ReportContainerView(
-            title: "크기",
+            title: LocalizableString.size,
             innerView: reportTotalSizeView,
             innerViewInsetPadding: Padding.custom(UIEdgeInsets(top: 16, left: 13.5, bottom: 16, right: 13.5))
         )
@@ -131,7 +131,7 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     
     public override func configureUI() {
         super.configureUI()
-        title = "변 기록 리포트"
+        title = LocalizableString.stoolLogReport
     }
     
     public override func layoutUI() {

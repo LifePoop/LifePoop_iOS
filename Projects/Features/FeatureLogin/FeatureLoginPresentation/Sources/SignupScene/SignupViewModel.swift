@@ -15,6 +15,7 @@ import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
 import FeatureLoginUseCase
+import Logger
 import SharedDIContainer
 import SharedUseCase
 import Utils
@@ -58,7 +59,7 @@ public final class SignupViewModel: ViewModelType {
         let birthdayTextFieldStatus = BehaviorRelay<BirthdayTextInput.Status>(value: .`default`)
         let shouldCheckCondition = PublishRelay<Int>()
         let selectAllOptionConfig = Observable.just(AgreementCondition(
-            descriptionText: "전체동의",
+            descriptionText: LocalizableString.agreeToAllTerms,
             descriptionTextSize: .large
         ))
         let shouldSelectGender = PublishRelay<GenderType>()
@@ -261,5 +262,9 @@ public final class SignupViewModel: ViewModelType {
                 self?.output.shouldSelectAllConditions.accept(isEveryConditionsSelected)
             })
             .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }

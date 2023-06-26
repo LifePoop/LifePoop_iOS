@@ -1,8 +1,8 @@
-/*
+/* 
   Localizable.strings
-  App
+  Utils
 
-  Created by 김상혁 on 2023/06/24.
+  Created by 김상혁 on 2023/06/25.
   Copyright © 2023 Lifepoo. All rights reserved.
 */
 
@@ -47,9 +47,9 @@
 
 "agreeToAllTerms" = "약관 모두 동의하기";
 "overFourteenYearsOld" = "만 14세 이상입니다. (필수)";
-"termsOfService" = "서비스 이용 약관 (필수)";
-"collectionAndUseOfPersonalInformation" = "개인정보 수집 및 이용 (필수)";
-"receiveEventAndPromotionNotifications" = "이벤트, 프로모션 알림 메일 수신 (선택)";
+"termsOfServiceEssential" = "서비스 이용 약관 (필수)";
+"privacyPolicyEssential" = "개인정보 수집 및 이용 (필수)";
+"receiveEventAndPromotionNotificationsOptional" = "이벤트, 프로모션 알림 메일 수신 (선택)";
 "see" = "보기";
 
 
@@ -62,6 +62,8 @@
 "wereYouSatisfied" = "잘 변했나요?";
 "whyAreYouSatisfied" = "만족한 이유를 알려주세요!";
 "whyAreYouDissatisfied" = "불만족한 이유를 알려주세요!";
+"yesSatisfied" = "네, 만족해요";
+"noDissatisfied" = "아니요, 불만족해요";
 
 
 /* 친구 목록 */
@@ -76,12 +78,15 @@
 /* 리포트 */
 "stoolLogReport" = "변 기록 리포트";
 "recent" = "최근";
+"sevenDays" = "7일";
 "oneMonth" = "1개월";
 "threeMonths" = "3개월";
 "oneYear" = "1년";
 "totalBowelMovementsCount" = "총 배변 횟수";
 "totalBowelMovementsCountDescription" = "최근 %@ 내 %@님은 %d번 변했어요";
-"satisfaction" = "만족도";
+"satisfactionLevel" = "만족도";
+"satisfaction" = "만족";
+"dissatisfaction" = "불만족";
 "satisfactionCount" = "%d번 만족";
 "dissatisfactionCount" = "%d번 불만족";
 "count" = "%d번";
@@ -100,7 +105,8 @@
 
 
 /* 설정 */
-"aboutMe" = "내 정보";
+"settingTitle" = "설정";
+"myInfo" = "내 정보";
 "loginInfo" = "로그인 정보";
 "profileInfo" = "프로필 정보";
 "setUpStoryVisibility" = "스토리 공개범위 설정";
@@ -122,6 +128,44 @@
 
 
 /* 설정 - 프로필 정보 수정 */
+"setUpProfileTitle" = "프로필 정보 수정";
 "setUpProfile" = "프로필을 설정해주세요";
 "setUpCharacter" = "캐릭터를 설정해주세요";
 "doneModification" = "수정 완료";
+
+
+/* 설정 - 탈퇴 */
+"inconvenientRecording" = "기록하는 과정이 불편해서";
+"noLongerNeeded" = "더 이상 사용의 필요성을 느끼지 못해서";
+"inconvenientSharing" = "공유하는 과정이 불편해서";
+"reportingNotUseful" = "리포트 기능이 유용하지 않아서";
+"lackOfInterest" = "흥미가 떨어져서";
+
+
+/* 토스트 메세지 */
+"toastFetchFriendListSuccess" = "친구 목록을 성공적으로 불러왔습니다.";
+"toastFetchFriendListFail" = "친구 목록을 불러오는 데 실패했습니다.";
+"toastFetchStoolLogSuccess" = "변 기록을 성공적으로 불러왔습니다.";
+"toastFetchStoolLogFail" = "변 기록을 불러오는 데 실패했습니다.";
+
+"toastPostStoolLogSuccess" = "새로운 변 기록이 등록했습니다.";
+"toastPostStoolLogFail" = "변 기록을 등록하는 데 실패했습니다.";
+
+"toastFetchAccessTokenSuccess" = "사용자 인증 토큰을 성공적으로 불러왔습니다.";
+"toastFetchAccessTokenFail" = "사용자 인증 토큰을 불러오는 데 실패했습니다.";
+
+"toastChangeUserProfileSuccess" = "프로필 정보가 성공적으로 수정되었습니다.";
+"toastChangeUserProfileFail" = "프로필 정보를 수정하는 데 실패했습니다.";
+"toastChangeNicknameSuccess" = "닉네임이 성공적으로 변경되었습니다.";
+"toastChangeNicknameFail" = "닉네임 변경을 적용하는 데 실패했습니다.";
+"toastChangeProfileCharacterSuccess" = "프로필 캐릭터가 성공적으로 변경되었습니다.";
+"toastChangeProfileCharacterFail" = "프로필 캐릭터를 변경하는 데 실패했습니다.";
+"toastChangeFeedVisibilitySuccess" = "스토리 공개 범위 설정이 성공적으로 변경되었습니다.";
+"toastChangeFeedVisibilityFail" = "스토리 공개 범위 설정을 변경하는 데 실패했습니다.";
+"toastChangeAutoLoginSuccess" = "자동 로그인 설정이 성공적으로 변경되었습니다.";
+"toastChangeAutoLoginFail" = "자동 로그인 설정을 변경하는 데 실패했습니다.";
+
+"toastInvitationCodeCopySuccess" = "초대 코드 복사 완료";
+"toastInvitationCodeSharingSuccess" = "초대 코드 공유 완료";
+"toastInvitationCodeSharingFail" = "초대 코드 공유 실패";
+

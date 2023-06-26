@@ -206,7 +206,7 @@ public final class SettingViewModel: ViewModelType {
                 self.userSettingUseCase.updateFeedVisibility(to: isActivated)
             }
             .compactMap { $0.error }
-            .toastMeessageMap(to: .setting(.failToChangeFeedVisibility))
+            .toastMessageMap(to: .setting(.changeFeedVisibilityFail))
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
         
@@ -217,7 +217,7 @@ public final class SettingViewModel: ViewModelType {
                 self.userSettingUseCase.updateIsAutoLoginActivated(to: isActivated)
             }
             .compactMap { $0.error }
-            .toastMeessageMap(to: .setting(.failToChangeIsAutoLogin))
+            .toastMessageMap(to: .setting(.changeIsAutoLoginFail))
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
     }

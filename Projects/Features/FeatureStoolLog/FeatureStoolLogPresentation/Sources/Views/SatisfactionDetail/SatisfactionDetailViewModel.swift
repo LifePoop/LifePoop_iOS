@@ -153,7 +153,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
         
         stoolLogPostResult
             .compactMap { $0.error }
-            .toastMeessageMap(to: .stoolLog(.failToLog))
+            .toastMessageMap(to: .stoolLog(.postStoolLogFail))
             .bind(to: output.showToastMessage)
             .disposed(by: disposeBag)
         

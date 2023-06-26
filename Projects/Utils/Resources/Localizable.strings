@@ -26,8 +26,7 @@
 "continueWithKakao" = "카카오로 계속하기";
 "continueWithApple" = "Apple로 계속하기";
 
-
-/* 사용자 정보 설정 */
+/* 온보딩 - 사용자 정보 입력 */
 "pleaseSetNickname" = "닉네임을 설정해주세요";
 "nicknamePlaceholder" = "닉네임 입력하기";
 "guideToAvailableNicknameFormats" = "2~5자로 한글, 영문, 숫자를 사용할 수 있어요.";
@@ -51,6 +50,7 @@
 "privacyPolicyEssential" = "개인정보 수집 및 이용 (필수)";
 "receiveEventAndPromotionNotificationsOptional" = "이벤트, 프로모션 알림 메일 수신 (선택)";
 "see" = "보기";
+"next" = "다음";
 
 
 /* 홈 */

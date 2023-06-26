@@ -11,21 +11,14 @@ import Foundation
 public enum Constant { }
 
 public extension Constant {
-    enum Text {
-        
-    }
-}
-
-public extension Constant {
-    enum Image {
-        
+    enum ValidPattern {
+        public static let nickname = "^[가-힣a-zA-Z0-9]{2,5}$"
     }
 }
 
 public extension Constant {
     enum DateFormat {
-        static let iso8601Format = "yyyy-MM-dd'T'HH:mm:ssZ"
-        static let userDisplayFormat = "yyyy년 M월 d일"
+        public static let iso8601Format = "yyyy-MM-dd'T'HH:mm:ssZ"
     }
 }
 

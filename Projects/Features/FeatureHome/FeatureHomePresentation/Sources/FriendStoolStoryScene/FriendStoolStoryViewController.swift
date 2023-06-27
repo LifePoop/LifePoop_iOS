@@ -19,6 +19,12 @@ import Utils
 
 public final class FriendStoolStoryViewController: LifePoopViewController, ViewType {
     
+    private let closeButton: UIButton = {
+        let button = UIButton()
+        button.setBackgroundImage(ImageAsset.btnClose.original, for: .normal)
+        return button
+    }()
+    
     private let segmentedProgressView: SegmentedProgressView = {
         let view = SegmentedProgressView()
         view.spacingBetweenSegments = 5
@@ -62,6 +68,10 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         
         rx.viewDidLayoutSubviews
             .bind(to: input.viewDidLayoutSubviews)
+            .disposed(by: disposeBag)
+        
+        closeButton.rx.tap
+            .bind(to: input.didTapCloseButton)
             .disposed(by: disposeBag)
     }
     
@@ -115,10 +125,16 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         
         let screenWidth = UIScreen.main.bounds.width
         
+        view.addSubview(closeButton)
+        closeButton.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(12)
+            make.trailing.equalToSuperview().inset(27)
+        }
+        
         view.addSubview(segmentedProgressView)
         segmentedProgressView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(29)
-            make.leading.trailing.equalToSuperview().inset(29)
+            make.top.equalTo(closeButton.snp.bottom).offset(17)
+            make.leading.trailing.equalToSuperview().inset(27)
             make.height.equalTo(4)
         }
         

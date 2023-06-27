@@ -29,6 +29,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLayoutSubviews = PublishRelay<Void>()
+        let didTapCloseButton = PublishRelay<Void>()
         let didTapScreen = PublishRelay<ScreenSide>()
         let didTapCheeringButton = PublishRelay<Void>()
     }
@@ -47,11 +48,12 @@ public final class FriendStoolStoryViewModel: ViewModelType {
     private var disposeBag = DisposeBag()
     
     public init(coordinator: HomeCoordinator?, friend: FriendEntity, stoolStoryLogs: [StoolStoryLogEntity]) {
-
-        output.shouldUpdateProgressState.accept(.init(
-            currentIndex: 0,
-            totalCount: stoolStoryLogs.count
-        ))
+        
+        input.didTapCloseButton
+            .bind(onNext: { _ in
+                coordinator?.coordinate(by: .storyCloseButtonDidTap)
+            })
+            .disposed(by: disposeBag)
         
         input.viewDidLayoutSubviews
             .take(1)

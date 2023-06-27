@@ -1,0 +1,18 @@
+#!/bin/sh
+
+FILES_PATTERN="Project.swift"
+EXIT_CODE=0
+
+for FILE in $(find . -name "$FILES_PATTERN")
+do
+    DEPENDENCIES=$(grep -o '\..*\.dependency' $FILE)
+    SORTED_DEPENDENCIES=$(echo "$DEPENDENCIES" | sort)
+
+    if [ "$DEPENDENCIES" != "$SORTED_DEPENDENCIES" ]
+    then
+        echo "Dependencies in $FILE are not sorted"
+        EXIT_CODE=1
+    fi
+done
+
+exit $EXIT_CODE

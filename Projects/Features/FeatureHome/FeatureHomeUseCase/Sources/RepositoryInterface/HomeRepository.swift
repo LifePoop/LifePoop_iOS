@@ -13,4 +13,5 @@ import CoreEntity
 public protocol HomeRepository {
     func fetchFriendList() -> Single<[FriendEntity]>
     func fetchStoolLogs() -> Single<[StoolLogEntity]>
+    func fetchStoolLogsOfSelectedFriend(_ friend: FriendEntity) -> Single<[StoolLogEntity]>
 }

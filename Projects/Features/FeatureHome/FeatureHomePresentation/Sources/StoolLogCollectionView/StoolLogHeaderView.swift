@@ -12,6 +12,7 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+import CoreEntity
 import DesignSystem
 import DesignSystemReactive
 import Utils
@@ -96,6 +97,10 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
         inviteFriendViewTapGesture.rx.event
             .map { _ in }
             .bind(to: input.inviteFriendButtonDidTap)
+            .disposed(by: disposeBag)
+        
+        friendListCollectionView.rx.itemSelected
+            .bind(to: input.friendListCellDidTap)
             .disposed(by: disposeBag)
     }
     

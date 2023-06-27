@@ -13,4 +13,5 @@ import CoreEntity
 public protocol HomeUseCase {
     func fetchFriendList() -> Observable<[FriendEntity]>
     func fetchStoolLogs() -> Observable<[StoolLogEntity]>
+    func fetchStoolLogsOfSelectedFriend(_ friend: FriendEntity) -> Observable<[StoolStoryLogEntity]>
 }

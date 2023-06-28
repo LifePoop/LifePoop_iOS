@@ -8,7 +8,9 @@
 
 import Foundation
 
+import Utils
+
 public struct SendFeedbackSettingModel: SettingModel {
-    public let description: String = "의견 보내기"
+    public let description: String = LocalizableString.sendUsFeedback
     public let type: SettingType = .sendFeedback
 }

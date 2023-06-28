@@ -8,7 +8,9 @@
 
 import Foundation
 
+import Utils
+
 public struct VersionSettingModel: SettingModel {
-    public let description: String = "버전 정보"
+    public let description: String = LocalizableString.versionInfo
     public let type: SettingType = .version
 }

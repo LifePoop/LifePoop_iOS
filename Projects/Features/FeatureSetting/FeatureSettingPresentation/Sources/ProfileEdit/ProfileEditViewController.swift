@@ -29,7 +29,7 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "프로필을 설정해주세요"
+        label.text = LocalizableString.setUpProfile
         label.font = .systemFont(ofSize: 20, weight: .bold)
         return label
     }()
@@ -38,13 +38,13 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
     
     private let nicknameTextField: ConditionalTextField = {
         let textField = ConditionalTextField()
-        textField.title = "닉네임을 설정해주세요"
-        textField.placeholder = "닉네임 입력하기"
+        textField.title = LocalizableString.pleaseSetNickname
+        textField.placeholder = LocalizableString.nicknamePlaceholder
         return textField
     }()
     
     private let editConfirmButton: LifePoopButton = {
-        let button = LifePoopButton(title: "수정 완료")
+        let button = LifePoopButton(title: LocalizableString.doneModification)
         button.isEnabled = false
         return button
     }()
@@ -120,7 +120,7 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
     
     public override func configureUI() {
         super.configureUI()
-        title = "프로필 정보 수정"
+        title = LocalizableString.setUpProfileTitle
     }
     
     public override func layoutUI() {

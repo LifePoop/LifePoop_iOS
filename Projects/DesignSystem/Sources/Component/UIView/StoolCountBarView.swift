@@ -38,7 +38,7 @@ public final class StoolCountBarView: UIView {
     
     public init(color: UIColor, count: Int, barWidthRatio: CGFloat) {
         barView.backgroundColor = color
-        countLabel.text = "\(count)번"
+        countLabel.text = DesignSystemStrings.count(count)
         self.countLabelMaxWidth = countLabel.intrinsicContentSize.width
         self.barWidthPercentage = barWidthRatio
         super.init(frame: .zero)

@@ -22,15 +22,15 @@ public enum WithdrawReason: Int, CaseIterable {
     public var title: String {
         switch self {
         case .inconvenientRecording:
-            return "기록하는 과정이 불편해서"
+            return LocalizableString.inconvenientRecording
         case .noLongerNeeded:
-            return "더 이상 사용의 필요성을 느끼지 못해서"
+            return LocalizableString.noLongerNeeded
         case .inconvenientSharing:
-            return "공유하는 과정이 불편해서"
+            return LocalizableString.inconvenientSharing
         case .reportingNotUseful:
-            return "리포트 기능이 유용하지 않아서"
+            return LocalizableString.reportingNotUseful
         case .lackOfInterest:
-            return "흥미가 떨어져서"
+            return LocalizableString.lackOfInterest
         }
     }
 }

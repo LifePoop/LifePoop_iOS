@@ -20,7 +20,7 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
     
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "캐릭터를 설정해주세요"
+        label.text = LocalizableString.setUpCharacter
         label.font = .systemFont(ofSize: 20, weight: .bold)
         return label
     }()
@@ -29,7 +29,7 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
         let label = UILabel()
         label.textColor = ColorAsset.black.color
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "색깔"
+        label.text = LocalizableString.color
         return label
     }()
     
@@ -37,7 +37,7 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
         let label = UILabel()
         label.textColor = ColorAsset.black.color
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
-        label.text = "모양"
+        label.text = LocalizableString.shape
         return label
     }()
     
@@ -120,12 +120,12 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
         view.addSubview(shapeSelectionStackView)
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(-6)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(6)
             make.centerX.equalToSuperview()
         }
         
         colorTitleLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview().multipliedBy(0.56)
+            make.centerY.equalToSuperview().multipliedBy(0.62)
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
         }
         
@@ -136,7 +136,7 @@ public final class ProfileCharacterEditViewController: LifePoopViewController, V
         }
         
         shapeTitleLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview().multipliedBy(1.24)
+            make.centerY.equalToSuperview().multipliedBy(1.30)
             make.leading.equalTo(view.safeAreaLayoutGuide).offset(24)
         }
         

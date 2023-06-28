@@ -13,7 +13,7 @@ public struct Logger {
     public static func log(message: String, category: OSLog.LogCategory, type: OSLogType) {
         #if DEBUG
         let log = OSLog(subsystem: OSLog.subsystem, category: category.value)
-        os_log(type, log: log, "\(message)")
+        os_log(type, log: log, "[🔖] \(message)")
         #endif
     }
     
@@ -21,7 +21,7 @@ public struct Logger {
         #if DEBUG
         let log = OSLog(subsystem: OSLog.subsystem, category: OSLog.LogCategory.deallocation.value)
         let objectDescription = String(describing: object)
-        os_log(.info, log: log, "\(objectDescription)")
+        os_log(.info, log: log, "[🗑️] \(objectDescription)")
         #endif
     }
 }

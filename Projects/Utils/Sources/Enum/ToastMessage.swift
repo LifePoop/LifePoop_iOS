@@ -8,64 +8,118 @@
 
 import Foundation
 
-public enum ToastMessage { // TODO: Category별 열거형 분리
-    case failToFetchFriendList
-    case failToFetchStoolLog
-    case failToFetchAccessToken
-    case failToFetchImageData
-    case stoolLog(StoolLogToastMessageType)
-    case setting(SettingToastMessageType)
+public enum ToastMessage {
+    case auth(Auth)
+    case home(Home)
+    case stoolLog(StoolLog)
+    case setting(Setting)
+    case invitation(Invitation)
     
-    public var localized: String { // TODO: Localizing
+    public var localized: String {
         switch self {
-        case .failToFetchFriendList:
-            return "친구 목록을 불러오는 데 실패했습니다."
-        case .failToFetchStoolLog:
-            return "변 기록을 불러오는 데 실패했습니다."
-        case .failToFetchAccessToken:
-            return "사용자 인증 토큰을 불러오는 데 실패했습니다."
-        case .failToFetchImageData:
-            return "이미지 데이터를 불러오는 데 실패했습니다."
-        case .stoolLog(let stoolLogType):
-            switch stoolLogType {
-            case .LogSucceded:
-                return "새로운 변 기록이 등록되었습니다."
-            case .failToLog:
-                return "변 기록을 등록하는 데 실패했습니다."
+        case .auth(let auth):
+            switch auth {
+            case .fetchAccessTokenSuccess:
+                return LocalizableString.toastFetchAccessTokenSuccess
+            case .fetchAccessTokenFail:
+                return LocalizableString.toastFetchAccessTokenFail
             }
-        case .setting(let settingType):
-            switch settingType {
-            case .userProfileChangeSucceeded:
-                return "프로필 정보가 수정되었습니다."
-            case .failToChangeUserProfile:
-                return "프로필 정보를 수정하는 데 실패했습니다."
-            case .failToChangeNickname:
-                return "닉네임 변경을 적용하는 데 실패했습니다."
-            case .failToChangeProfileCharacter:
-                return "프로필 캐릭터를 변경하는 데 실패했습니다."
-            case .failToChangeFeedVisibility:
-                return "공개범위 설정을 변경하는 데 실패했습니다."
-            case .failToChangeIsAutoLogin:
-                return "자동 로그인 설정을 변경하는 데 실패했습니다."
+        case .home(let home):
+            switch home {
+            case .fetchFriendListSuccess:
+                return LocalizableString.toastFetchFriendListSuccess
+            case .fetchFriendListFail:
+                return LocalizableString.toastFetchFriendListFail
+            case .fetchStoolLogSuccess:
+                return LocalizableString.toastFetchStoolLogSuccess
+            case .fetchStoolLogFail:
+                return LocalizableString.toastFetchStoolLogFail
+            }
+        case .stoolLog(let stoolLog):
+            switch stoolLog {
+            case .postStoolLogSuccess:
+                return LocalizableString.toastPostStoolLogSuccess
+            case .postStoolLogFail:
+                return LocalizableString.toastPostStoolLogFail
+            }
+        case .setting(let setting):
+            switch setting {
+            case .changeUserProfileSuccess:
+                return LocalizableString.toastChangeUserProfileSuccess
+            case .changeUserProfileFail:
+                return LocalizableString.toastChangeUserProfileFail
+            case .changeNicknameSuccess:
+                return LocalizableString.toastChangeNicknameSuccess
+            case .changeNicknameFail:
+                return LocalizableString.toastChangeNicknameFail
+            case .changeProfileCharacterSuccess:
+                return LocalizableString.toastChangeProfileCharacterSuccess
+            case .changeProfileCharacterFail:
+                return LocalizableString.toastChangeProfileCharacterFail
+            case .changeFeedVisibilitySuccess:
+                return LocalizableString.toastChangeFeedVisibilitySuccess
+            case .changeFeedVisibilityFail:
+                return LocalizableString.toastChangeFeedVisibilityFail
+            case .changeIsAutoLoginSuccess:
+                return LocalizableString.toastChangeAutoLoginSuccess
+            case .changeIsAutoLoginFail:
+                return LocalizableString.toastChangeAutoLoginFail
+            }
+        case .invitation(let invitation):
+            switch invitation {
+            case .invitationCodeCopySuccess:
+                return LocalizableString.toastInvitationCodeCopySuccess
+            case .invitationCodeSharingSuccess:
+                return LocalizableString.toastInvitationCodeSharingSuccess
+            case .invitationCodeSharingFail:
+                return LocalizableString.toastInvitationCodeSharingFail
             }
         }
     }
 }
 
 public extension ToastMessage {
-    enum SettingToastMessageType {
-        case userProfileChangeSucceeded
-        case failToChangeUserProfile
-        case failToChangeNickname
-        case failToChangeProfileCharacter
-        case failToChangeFeedVisibility
-        case failToChangeIsAutoLogin
+    enum Auth {
+        case fetchAccessTokenSuccess
+        case fetchAccessTokenFail
     }
 }
-    
+
 public extension ToastMessage {
-    enum StoolLogToastMessageType {
-        case LogSucceded
-        case failToLog
+    enum Home {
+        case fetchFriendListSuccess
+        case fetchFriendListFail
+        case fetchStoolLogSuccess
+        case fetchStoolLogFail
+    }
+}
+
+public extension ToastMessage {
+    enum StoolLog {
+        case postStoolLogSuccess
+        case postStoolLogFail
+    }
+}
+
+public extension ToastMessage {
+    enum Setting {
+        case changeUserProfileSuccess
+        case changeUserProfileFail
+        case changeNicknameSuccess
+        case changeNicknameFail
+        case changeProfileCharacterSuccess
+        case changeProfileCharacterFail
+        case changeFeedVisibilitySuccess
+        case changeFeedVisibilityFail
+        case changeIsAutoLoginSuccess
+        case changeIsAutoLoginFail
+    }
+}
+
+public extension ToastMessage {
+    enum Invitation {
+        case invitationCodeCopySuccess
+        case invitationCodeSharingSuccess
+        case invitationCodeSharingFail
     }
 }

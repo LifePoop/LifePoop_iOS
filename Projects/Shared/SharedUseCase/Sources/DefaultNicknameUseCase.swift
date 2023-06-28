@@ -30,7 +30,7 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
     
     public func updateNickname(to newNickname: String) -> Completable {
         return userDefaultsRepository
-            .updateValue(for: .isAutoLoginActivated, with: newNickname)
+            .updateValue(for: .userNickname, with: newNickname)
             .logErrorIfDetected(category: .userDefaults)
     }
     
@@ -78,7 +78,7 @@ private extension DefaultNicknameUseCase {
     }
     
     func constainsAnyInvalidCharacters(input text: String) -> Observable<Bool> {
-        let pattern = "^[가-힣a-zA-Z0-9]{2,5}$"
+        let pattern = Constant.ValidPattern.nickname
         let regex = try? NSRegularExpression(pattern: pattern)
         let range = NSRange(location: 0, length: text.utf16.count)
         

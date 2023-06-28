@@ -19,14 +19,14 @@ let project = Project.makeModule(
         .Project.module(.DesignSystem).dependency,
         .Project.module(.DesignSystemReactive).dependency,
         .Project.module(.EntityUIMapper).dependency,
+        .Project.module(.Features(.StoolLog, .CoordinatorInterface)).dependency,
+        .Project.module(.Features(.StoolLog, .DIContainer)).dependency,
+        .Project.module(.Features(.StoolLog, .UseCase)).dependency,
         .Project.module(.Logger).dependency,
         .Project.module(.Utils).dependency,
-        .Project.module(.Features(.StoolLog, .UseCase)).dependency,
-        .Project.module(.Features(.StoolLog, .DIContainer)).dependency,
-        .Project.module(.Features(.StoolLog, .CoordinatorInterface)).dependency,
-        .SPM.SnapKit.dependency,
-        .SPM.RxSwift.dependency,
+        .SPM.RxCocoa.dependency,
         .SPM.RxRelay.dependency,
-        .SPM.RxCocoa.dependency
+        .SPM.RxSwift.dependency,
+        .SPM.SnapKit.dependency
     ]
 )

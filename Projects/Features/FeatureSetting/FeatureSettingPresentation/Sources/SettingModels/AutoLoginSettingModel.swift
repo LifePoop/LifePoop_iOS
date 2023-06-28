@@ -8,7 +8,9 @@
 
 import Foundation
 
+import Utils
+
 public struct AutoLoginSettingModel: SettingModel {
-    public let description: String = "자동 로그인 사용"
+    public let description: String = LocalizableString.setUpAutomaticSignIn
     public let type: SettingType = .autoLogin
 }

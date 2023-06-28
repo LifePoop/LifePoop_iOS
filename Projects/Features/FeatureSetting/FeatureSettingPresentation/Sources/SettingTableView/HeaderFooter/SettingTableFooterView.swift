@@ -8,8 +8,8 @@
 
 import UIKit
 
-import SnapKit
 import RxSwift
+import SnapKit
 
 import DesignSystem
 import Utils
@@ -19,7 +19,7 @@ public final class SettingTableFooterView: UITableViewHeaderFooterView, ViewType
     public lazy var logOutButton: UIButton = {
         let button = UIButton()
         let attributedTitle = NSAttributedString(
-            string: "로그아웃",
+            string: LocalizableString.signOut,
             attributes: [
                 .underlineStyle: NSUnderlineStyle.single.rawValue,
                 .foregroundColor: ColorAsset.pooPink.color,
@@ -34,7 +34,7 @@ public final class SettingTableFooterView: UITableViewHeaderFooterView, ViewType
     public lazy var withdrawalButton: UIButton = {
         let button = UIButton()
         let attributedTitle = NSAttributedString(
-            string: "탈퇴하기",
+            string: LocalizableString.withdraw,
             attributes: [
                 .underlineStyle: NSUnderlineStyle.single.rawValue,
                 .foregroundColor: ColorAsset.gray600.color,

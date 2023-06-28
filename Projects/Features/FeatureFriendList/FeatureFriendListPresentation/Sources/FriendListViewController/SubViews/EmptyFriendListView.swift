@@ -11,12 +11,13 @@ import UIKit
 import SnapKit
 
 import DesignSystem
+import Utils
 
 final class EmptyFriendListView: UIView {
     
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = "친구를 초대하고,\n변 활동을 응원해보세요!"
+        label.text = LocalizableString.inviteFriendsAndEncourageBowelMovements
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         label.textColor = ColorAsset.gray600.color

@@ -8,7 +8,9 @@
 
 import Foundation
 
+import Utils
+
 public struct LoginTypeSettingModel: SettingModel {
-    public let description: String = "로그인 정보"
+    public let description: String = LocalizableString.loginInfo
     public let type: SettingType = .loginType
 }

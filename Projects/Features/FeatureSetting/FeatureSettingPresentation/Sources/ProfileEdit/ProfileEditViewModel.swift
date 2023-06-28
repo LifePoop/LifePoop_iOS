@@ -67,7 +67,7 @@ public final class ProfileEditViewModel: ViewModelType {
         
         userProfileCharacter
             .compactMap { $0.error }
-            .toastMeessageMap(to: .setting(.failToChangeProfileCharacter))
+            .toastMessageMap(to: .setting(.changeProfileCharacterFail))
             .bind(to: output.showToastMessage)
             .disposed(by: disposeBag)
         
@@ -81,23 +81,6 @@ public final class ProfileEditViewModel: ViewModelType {
             .compactMap { $0 }
             .bind(to: output.setUserNickname)
             .disposed(by: disposeBag)
-        
-        // FIXME: 서버에서 유저 생성시 기본 캐릭터 설정해줄 경우 불필요함 - 삭제하기
-        /// 아직 프로필 캐릭터를 설정하지 않은 유저에 대해 디폴트 캐릭터 설정하는 코드
-        /// - 이렇게 '프로필 정보 수정 화면에 진입할 때' nil인지 확인해서 디폴트 캐릭터를 설정할 것인지,
-        /// - 아니면 '초기에 사용자가 계정을 생성할 때' 디폴트 캐릭터를 설정해 줄 것인지는 추후 결정
-        // input.viewDidLoad
-        //     .withLatestFrom(state.profileCharacter)
-        //     .filter { $0 == nil }
-        //     .map { _ in ProfileCharacter(color: .brown, shape: .good) }
-        //     .withUnretained(self)
-        //     .flatMapCompletableMaterialized { `self`, profileCharacter in
-        //         self.profileCharacterUseCase.updateProfileCharacter(to: profileCharacter)
-        //     }
-        //     .filter { $0.isCompleted }
-        //     .map { _ in ProfileCharacter(color: .brown, shape: .good) }
-        //     .bind(to: state.profileCharacter)
-        //     .disposed(by: disposeBag)
         
         input.nicknameDidChange
             .skip(1)
@@ -147,7 +130,7 @@ public final class ProfileEditViewModel: ViewModelType {
         
         editRequestResult
             .filter { $0.isCompleted }
-            .toastMeessageMap(to: .setting(.userProfileChangeSucceeded))
+            .toastMessageMap(to: .setting(.changeUserProfileSuccess))
             .bind(to: output.showToastMessage)
             .disposed(by: disposeBag)
         
@@ -179,7 +162,7 @@ public final class ProfileEditViewModel: ViewModelType {
         
         editRequestResult
             .compactMap { $0.error }
-            .toastMeessageMap(to: .setting(.failToChangeUserProfile))
+            .toastMessageMap(to: .setting(.changeUserProfileFail))
             .bind(to: output.showToastMessage)
             .disposed(by: disposeBag)
         

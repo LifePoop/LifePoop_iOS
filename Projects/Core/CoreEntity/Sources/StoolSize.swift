@@ -8,6 +8,8 @@
 
 import Foundation
 
+import Utils
+
 public enum StoolSize: Int, CaseIterable, CustomStringConvertible {
     case small
     case medium
@@ -16,11 +18,11 @@ public enum StoolSize: Int, CaseIterable, CustomStringConvertible {
     public var description: String {
         switch self {
         case .small:
-            return "소"
+            return LocalizableString.small
         case .medium:
-            return "중"
+            return LocalizableString.medium
         case .large:
-            return "대"
+            return LocalizableString.large
         }
     }
     

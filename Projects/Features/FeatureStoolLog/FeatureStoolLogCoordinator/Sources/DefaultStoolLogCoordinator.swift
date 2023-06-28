@@ -15,6 +15,7 @@ import CoreEntity
 import DesignSystem
 import FeatureStoolLogCoordinatorInterface
 import FeatureStoolLogPresentation
+import Logger
 import Utils
 
 public final class DefaultStoolLogCoordinator: StoolLogCoordinator {
@@ -68,6 +69,10 @@ public final class DefaultStoolLogCoordinator: StoolLogCoordinator {
                 self.dismissBottomSheet()
             }
         }
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }
 

@@ -15,6 +15,7 @@ import CoreEntity
 import FeatureHomeCoordinatorInterface
 import FeatureHomeDIContainer
 import FeatureHomeUseCase
+import Logger
 import Utils
 
 public final class StoolLogHeaderViewModel: ViewModelType {
@@ -64,7 +65,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         
         viewDidLoadOrRefresh
             .map { Date().localizedString }
-            .map { "\($0)의 변 기록이에요" }
+            .map { LocalizableString.stoolDiaryFor($0) }
             .bind(to: output.setDateDescription)
             .disposed(by: disposeBag)
         
@@ -109,5 +110,9 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .map { $0.isEmpty }
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)
+    }
+    
+    deinit {
+        Logger.logDeallocation(object: self)
     }
 }

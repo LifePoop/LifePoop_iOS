@@ -25,14 +25,13 @@ final class ReportTotalSatisfactionView: UIView {
     
     private lazy var satisfactionCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "N번"
         label.font = .systemFont(ofSize: 16, weight: .bold)
         return label
     }()
     
     private lazy var satisfactionLabel: UILabel = {
         let label = UILabel()
-        label.text = "만족"
+        label.text = LocalizableString.satisfaction
         label.font = .systemFont(ofSize: 16)
         return label
     }()
@@ -45,14 +44,13 @@ final class ReportTotalSatisfactionView: UIView {
     
     private lazy var dissatisfactionCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "N번"
         label.font = .systemFont(ofSize: 16, weight: .bold)
         return label
     }()
     
     private lazy var dissatisfactionLabel: UILabel = {
         let label = UILabel()
-        label.text = "불만족"
+        label.text = LocalizableString.dissatisfaction
         label.font = .systemFont(ofSize: 16)
         return label
     }()
@@ -60,7 +58,7 @@ final class ReportTotalSatisfactionView: UIView {
     private var satisfactionCount: Int = 0 {
         didSet {
             satisfactionCountLabel.startCountingAnimation(upTo: satisfactionCount) { [weak self] animatingCount in
-                self?.satisfactionCountLabel.text = "\(animatingCount)번"
+                self?.satisfactionCountLabel.text = LocalizableString.count(animatingCount)
             }
         }
     }
@@ -68,7 +66,7 @@ final class ReportTotalSatisfactionView: UIView {
     private var dissatisfactionCount: Int = 0 {
         didSet {
             dissatisfactionCountLabel.startCountingAnimation(upTo: dissatisfactionCount) { [weak self] animatingCount in
-                self?.dissatisfactionCountLabel.text = "\(animatingCount)번"
+                self?.dissatisfactionCountLabel.text = LocalizableString.count(animatingCount)
             }
         }
     }

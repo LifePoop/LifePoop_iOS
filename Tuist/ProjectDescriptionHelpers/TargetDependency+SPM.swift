@@ -9,32 +9,32 @@ import ProjectDescription
 
 public extension TargetDependency {
     enum SPM: String, CaseIterable {
-        case SnapKit
-        case RxSwift
-        case RxCocoa
-        case RxRelay
-        case KakaoSDKCommon
         case KakaoSDKAuth
+        case KakaoSDKCommon
         case KakaoSDKUser
         case Lottie
+        case RxCocoa
+        case RxRelay
+        case RxSwift
+        case SnapKit
 
         public var dependency: TargetDependency {
             switch self {
-            case .SnapKit, .Lottie:
-                return .package(product: rawValue)
-            case .RxSwift, .RxCocoa, .RxRelay:
-                return .external(name: rawValue)
             case .KakaoSDKCommon, .KakaoSDKAuth, .KakaoSDKUser:
                 return .external(name: rawValue)
+            case .RxSwift, .RxCocoa, .RxRelay:
+                return .external(name: rawValue)
+            case .SnapKit, .Lottie:
+                return .package(product: rawValue)
             }
         }
         
         public static var allDependencies: [TargetDependency] {
             return [
-                Self.SnapKit.dependency,
-                Self.RxSwift.dependency,
                 Self.RxCocoa.dependency,
-                Self.RxRelay.dependency
+                Self.RxRelay.dependency,
+                Self.RxSwift.dependency,
+                Self.SnapKit.dependency
             ]
         }
     }

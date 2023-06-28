@@ -13,9 +13,9 @@ let project = Project.makeModule(
     product: .staticFramework,
     packages: [],
     dependencies: [
-        .Project.module(.Logger).dependency,
-        .Project.module(.Features(.Report, .Presentation)).dependency,
         .Project.module(.Features(.Report, .CoordinatorInterface)).dependency,
+        .Project.module(.Features(.Report, .Presentation)).dependency,
+        .Project.module(.Logger).dependency,
         .Project.module(.Utils).dependency,
     ],
     hasTests: false

@@ -13,6 +13,7 @@ import SnapKit
 
 import CoreEntity
 import DesignSystem
+import Utils
 
 final class ConditionSelectionCell: UICollectionViewCell {
     
@@ -23,7 +24,7 @@ final class ConditionSelectionCell: UICollectionViewCell {
     
     let detailViewButton: UIButton = {
         let button = UIButton()
-        button.setTitle("보기", for: .normal)
+        button.setTitle(LocalizableString.see, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
         button.setTitleColor(ColorAsset.primary.color, for: .normal)
         return button
@@ -35,7 +36,7 @@ final class ConditionSelectionCell: UICollectionViewCell {
         }
     }
     
-    private (set)var disposeBag = DisposeBag()
+    private(set) var disposeBag = DisposeBag()
     
     override init(frame: CGRect) {
         super.init(frame: frame)

@@ -109,11 +109,6 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .disposed(by: disposeBag)
         
         output.shouldEnableCheeringButton
-            .map { $0 ? ColorAsset.white.color : ColorAsset.pooPink.color }
-            .bind(to: cheeringLabel.rx.textColor)
-            .disposed(by: disposeBag)
-        
-        output.shouldEnableCheeringButton
             .map { $0 ? LocalizableString.boost : LocalizableString.doneBoost }
             .asDriver(onErrorJustReturn: LocalizableString.doneBoost)
             .drive(onNext: { [weak self] title in

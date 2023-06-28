@@ -74,7 +74,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                     stoolStoryLogs[progressState.currentIndex].isCheeringUpAvailable
                 )
                 self.output.shouldUpdateFriendStoolLogSummary.accept(
-                    "\(friend.name)님이 \(progressState.totalCount)번 변했어요"
+                    LocalizableString.bowelMovementCountOfFriend(friend.name, progressState.totalCount)
                 )
             })
             .disposed(by: disposeBag)

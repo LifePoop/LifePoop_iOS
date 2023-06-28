@@ -100,8 +100,10 @@
 /* 스토리 */
 "bowelMovementCountOfFriend" = "%@님이 %d번 변했어요";
 "cheeringWithBoost" = "힘주기로 응원해보세요!";
+"doneCheeringWithBoost" = "친구에게 응원을 전달했어요!";
 "boost" = "힘주기";
 "doneBoost" = "힘주기 완료";
+
 
 
 /* 설정 */

@@ -46,16 +46,16 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
     
     private let cheeringLabel: UILabel = {
         let label = UILabel()
-        label.text = "힘주기로 응원해보세요!"
+        label.text = LocalizableString.cheeringWithBoost
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = ColorAsset.white.color
         return label
     }()
     
     private let cheeringButton: LifePoopButton = {
-        let button = LifePoopButton(title: "힘주기")
-        button.setTitle("힘주기", for: .normal)
-        button.setTitle("힘주기 완료", for: .disabled)
+        let button = LifePoopButton(title: LocalizableString.boost)
+        button.setTitle(LocalizableString.boost, for: .normal)
+        button.setTitle(LocalizableString.doneBoost, for: .disabled)
         
         return button
     }()
@@ -98,7 +98,9 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .disposed(by: disposeBag)
         
         output.shouldEnableCheeringButton
-            .map { $0 ? "힘주기로 응원해보세요!" : "친구에게 응원을 전달했어요!" }
+            .map { $0 ? LocalizableString.cheeringWithBoost :
+                        LocalizableString.doneCheeringWithBoost
+            }
             .bind(to: cheeringLabel.rx.text)
             .disposed(by: disposeBag)
         
@@ -112,8 +114,8 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .disposed(by: disposeBag)
         
         output.shouldEnableCheeringButton
-            .map { $0 ? "힘주기" : "힘주기 완료" }
-            .asDriver(onErrorJustReturn: "힘주기 완료")
+            .map { $0 ? LocalizableString.boost : LocalizableString.doneBoost }
+            .asDriver(onErrorJustReturn: LocalizableString.doneBoost)
             .drive(onNext: { [weak self] title in
                 self?.cheeringButton.titleLabel?.text = title
             })

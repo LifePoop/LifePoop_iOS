@@ -15,10 +15,6 @@ struct SettingModelFactory {
             return LoginTypeSettingModel()
         case .profile:
             return ProfileSettingModel()
-        case .feedVisibility:
-            return FeedVisibilitySettingModel()
-        case .autoLogin:
-            return AutoLoginSettingModel()
         case .version:
             return VersionSettingModel()
         case .termsOfService:

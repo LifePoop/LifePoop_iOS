@@ -265,22 +265,6 @@ private extension SettingViewModel {
             )
             cellViewModel.bindCellText(with: state.userNickname)
             return cellViewModel
-        case .feedVisibility:
-            let cellViewModel = SettingTapActionCellViewModel(
-                model: model,
-                tapAction: input.feedVisibilityDidTap
-            )
-            state.feedVisibility
-                .compactMap { $0?.text }
-                .bind(to: cellViewModel.output.additionalText)
-                .disposed(by: disposeBag)
-            return cellViewModel
-        case .autoLogin:
-            return SettingSwitchCellViewModel(
-                model: model,
-                isSwitchOn: state.isAutoLoginOn,
-                switchToggleAction: input.useAutoLoginDidToggle
-            )
         case .version:
             return SettingTextCellViewModel(
                 model: model,

@@ -37,8 +37,8 @@ public final class HomeViewModel: ViewModelType {
     }
     
     public struct State {
-        let friends = BehaviorRelay<[FriendEntity]>(value: [])
         let userProfileCharacter = BehaviorRelay<FriendEntity?>(value: nil)
+        let friends = BehaviorRelay<(user: FriendEntity, friends: [FriendEntity])?>(value: nil)
         let stoolLogs = BehaviorRelay<[StoolLogEntity]>(value: [])
         let headerViewModel = BehaviorRelay<StoolLogHeaderViewModel?>(value: nil)
     }
@@ -88,10 +88,15 @@ public final class HomeViewModel: ViewModelType {
             }
             .share()
         
-        fetchedFriends
-            .compactMap { $0.element }
-            .bind(to: state.friends)
-            .disposed(by: disposeBag)
+        Observable.combineLatest(
+            state.userProfileCharacter.compactMap { $0 },
+            fetchedFriends.compactMap { $0.element }
+        )
+        .map { (userProfileCharacter, fetchedFriends) in
+            (user: userProfileCharacter, friends: fetchedFriends)
+        }
+        .bind(to: state.friends)
+        .disposed(by: disposeBag)
         
         fetchedFriends
             .compactMap { $0.error }
@@ -155,13 +160,14 @@ public final class HomeViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         state.friends
-            .map { $0.isEmpty }
+            .compactMap { $0?.friends.isEmpty }
             .distinctUntilChanged()
             .bind(to: output.isFriendEmpty)
             .disposed(by: disposeBag)
         
         state.friends
-            .map { !$0.isEmpty }
+            .compactMap { $0?.friends.isEmpty }
+            .map { !$0 }
             .distinctUntilChanged()
             .bind(to: output.shouldLayoutCheeringButton)
             .disposed(by: disposeBag)

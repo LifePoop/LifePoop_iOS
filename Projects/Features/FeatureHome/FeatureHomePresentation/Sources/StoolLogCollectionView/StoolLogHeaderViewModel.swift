@@ -27,16 +27,16 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     
     public struct Output {
         let toggleFriendListCollectionView = PublishRelay<Bool>()
-        let updateFriends = PublishRelay<[FriendEntity]>()
         let updateUserProfileCharacter = PublishRelay<FriendEntity>()
+        let updateFriends = PublishRelay<(user: FriendEntity, friends: [FriendEntity])>()
         let setDateDescription = PublishRelay<String>()
         let setFriendsCheeringDescription = PublishRelay<String>()
         let showErrorMessage = PublishRelay<String>()
     }
     
     public struct State {
-        let friends = BehaviorRelay<[FriendEntity]>(value: [])
         let userProfileCharacter = BehaviorRelay<FriendEntity?>(value: nil)
+        let friends = BehaviorRelay<(user: FriendEntity, friends: [FriendEntity])?>(value: nil)
     }
     
     public let input = Input()
@@ -57,6 +57,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         
         viewDidLoadOrRefresh
             .withLatestFrom(state.friends)
+            .compactMap { $0 }
             .bind(to: output.updateFriends)
             .disposed(by: disposeBag)
         
@@ -73,6 +74,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         
         viewDidLoadOrRefresh
             .withLatestFrom(state.friends)
+            .compactMap { $0?.friends }
             .map { $0.isEmpty }
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)
@@ -91,10 +93,12 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         .disposed(by: disposeBag)
         
         state.friends
+            .compactMap { $0 }
             .bind(to: output.updateFriends)
             .disposed(by: disposeBag)
         
         state.friends
+            .compactMap { $0?.friends }
             .map { $0.isEmpty }
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)

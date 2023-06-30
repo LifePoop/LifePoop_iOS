@@ -31,9 +31,10 @@ public final class FriendListCollectionViewDiffableDataSource: UICollectionViewD
     
     // MARK: - DiffableDataSource Methods
     
-    public func update(with friendEntities: [FriendEntity]) {
+    public func update(with userProfileCharacter: FriendEntity, friendEntities: [FriendEntity]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.friend])
+        snapshot.appendItems([userProfileCharacter])
         snapshot.appendItems(friendEntities)
         apply(snapshot, animatingDifferences: true)
     }

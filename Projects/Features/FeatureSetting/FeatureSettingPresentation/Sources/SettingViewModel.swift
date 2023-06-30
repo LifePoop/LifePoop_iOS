@@ -194,7 +194,6 @@ public final class SettingViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.withdrawButtonDidTap
-            .bind { coordinator?.coordinate(by: .withdrawButtonDidTap) }
             .disposed(by: disposeBag)
         
         // MARK: - Bind State

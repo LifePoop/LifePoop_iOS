@@ -53,8 +53,6 @@ public final class DefaultSettingCoordinator: SettingCoordinator {
             pushDocumentViewController(with: title, text: text)
         case .sendFeedbackDidTap:
             pushFeedbackViewController()
-        case .withdrawButtonDidTap:
-            pushWithdrawalViewController()
         case .logOutConfirmButtonDidTap:
             completionDelegate?.finishFlow(by: .userDidLogout)
         case .withdrawConfirmButtonDidTap:
@@ -107,13 +105,6 @@ private extension DefaultSettingCoordinator {
         guard let feedbackURL = URL(string: Constant.LifePoopURL.feedback) else { return }
         let feedbackWebViewController = LifePoopWebViewController(targetURL: feedbackURL)
         navigationController.pushViewController(feedbackWebViewController, animated: true)
-    }
-    
-    func pushWithdrawalViewController() {
-        let viewController = WithdrawalViewController()
-        let viewModel = WithdrawalViewModel(coordinator: self)
-        viewController.bind(viewModel: viewModel)
-        navigationController.pushViewController(viewController, animated: true)
     }
 }
 

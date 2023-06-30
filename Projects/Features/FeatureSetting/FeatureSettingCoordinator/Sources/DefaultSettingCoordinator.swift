@@ -104,10 +104,9 @@ private extension DefaultSettingCoordinator {
     }
     
     func pushFeedbackViewController() {
-        let viewController = FeedbackViewController()
-        let viewModel = FeedbackViewModel(coordinator: self)
-        viewController.bind(viewModel: viewModel)
-        navigationController.pushViewController(viewController, animated: true)
+        guard let feedbackURL = URL(string: Constant.LifePoopURL.feedback) else { return }
+        let feedbackWebViewController = LifePoopWebViewController(targetURL: feedbackURL)
+        navigationController.pushViewController(feedbackWebViewController, animated: true)
     }
     
     func pushWithdrawalViewController() {

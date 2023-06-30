@@ -15,6 +15,7 @@ import SnapKit
 import DesignSystem
 import Utils
 
+@available(*, deprecated, message: "탈퇴 사유 선택하지 않는 것으로 변경됨")
 public final class WithdrawalViewController: LifePoopViewController, ViewType {
     
     private lazy var scrollView: UIScrollView = {

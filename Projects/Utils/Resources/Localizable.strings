@@ -33,7 +33,7 @@
 "availableNickname." = "사용 가능한 닉네임이에요.";
 "unavailableNickname" = "사용 불가능한 닉네임이에요.";
 
-"pleaseEnterYourDateOfBirth" = "생년월일을 입력해주세요";
+"pleaseEnterYourDateOfBirth" = "생년월일 6자를 입력해주세요";
 "DateOfBirthPlaceholder" = "예) 990101";
 "guideToValidDateOfBirthFormat" = "생년월일 6자를 입력해주세요.";
 "validDateOfBirth." = "올바른 생년월일이에요.";
@@ -56,10 +56,10 @@
 /* 홈 */
 "stoolDiaryFor" = "%@의 변 기록이에요";
 "friendsAreCheeringMe" = "%@님 외 %d명이 응원하고 있어요!";
-"noOneCheeredForMe" = "내 변을 응원한 사람이 없어요";
-"goCheeringFriends" = "친구들 응원하러 가기";
+"noOneCheeredForMe" = "아직 받은 응원이 없어요";
+"goCheeringFriends" = "친구 목록으로 이동하기";
 "logStoolDiary" = "변 기록하기";
-"wereYouSatisfied" = "잘 변했나요?";
+"wereYouSatisfied" = "잘 변 했나요?";
 "whyAreYouSatisfied" = "만족한 이유를 알려주세요!";
 "whyAreYouDissatisfied" = "불만족한 이유를 알려주세요!";
 "yesSatisfied" = "네, 만족해요";
@@ -83,7 +83,7 @@
 "threeMonths" = "3개월";
 "oneYear" = "1년";
 "totalBowelMovementsCount" = "총 배변 횟수";
-"totalBowelMovementsCountDescription" = "최근 %@ 내 %@님은 %d번 변했어요";
+"totalBowelMovementsCountDescription" = "최근 %@ 내 %@님은 %d번 변 했어요";
 "satisfactionLevel" = "만족도";
 "satisfaction" = "만족";
 "dissatisfaction" = "불만족";
@@ -98,8 +98,9 @@
 
 
 /* 스토리 */
-"bowelMovementCountOfFriend" = "%@님이 %d번 변했어요";
+"bowelMovementCountOfFriend" = "%@님이 %d번 변 했어요";
 "cheeringWithBoost" = "힘주기로 응원해보세요!";
+"doneCheeringWithBoost" = "친구에게 응원을 전달했어요!";
 "boost" = "힘주기";
 "doneBoost" = "힘주기 완료";
 
@@ -124,7 +125,7 @@
 "logOutWarningTitle" = "라이푸 서비스를\n로그아웃 하시겠어요?";
 "withdrawWarningTitle" = "라이푸 서비스를\n진짜 탈퇴하시겠어요?";
 "logOutWarningDescription" = "로그인 후 다시 나의 변 기록을 불러올 수 있어요 💩";
-"withdrawWarningDescription" = "지금 탈퇴하면, 나의 변 기록이 전부 사라져요 🥲";
+"withdrawWarningDescription" = "지금 탈퇴하면, 나의 변 기록이 모두 사라져요 🥲";
 
 
 /* 설정 - 프로필 정보 수정 */

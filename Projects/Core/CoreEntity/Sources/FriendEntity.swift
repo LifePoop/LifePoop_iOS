@@ -10,7 +10,7 @@ import Foundation
 
 public struct FriendEntity {
     public let name: String
-    public let isActivated: Bool
+    public var isActivated: Bool
     public let profile: ProfileCharacter
     
     public init(name: String, isActivated: Bool, profile: ProfileCharacter) {

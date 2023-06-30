@@ -28,6 +28,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     public struct Output {
         let toggleFriendListCollectionView = PublishRelay<Bool>()
         let updateFriends = PublishRelay<[FriendEntity]>()
+        let updateUserProfileCharacter = PublishRelay<FriendEntity>()
         let setDateDescription = PublishRelay<String>()
         let setFriendsCheeringDescription = PublishRelay<String>()
         let showErrorMessage = PublishRelay<String>()
@@ -35,6 +36,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     
     public struct State {
         let friends = BehaviorRelay<[FriendEntity]>(value: [])
+        let userProfileCharacter = BehaviorRelay<FriendEntity?>(value: nil)
     }
     
     public let input = Input()
@@ -75,6 +77,12 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)
         
+        viewDidLoadOrRefresh
+            .withLatestFrom(state.userProfileCharacter)
+            .compactMap { $0 }
+            .bind(to: output.updateUserProfileCharacter)
+            .disposed(by: disposeBag)
+        
         Observable.merge(
             input.inviteFriendButtonDidTap.asObservable(),
             input.cheeringButtonDidTap.asObservable()
@@ -89,6 +97,11 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         state.friends
             .map { $0.isEmpty }
             .bind(to: output.toggleFriendListCollectionView)
+            .disposed(by: disposeBag)
+        
+        state.userProfileCharacter
+            .compactMap { $0 }
+            .bind(to: output.updateUserProfileCharacter)
             .disposed(by: disposeBag)
     }
     

@@ -63,6 +63,10 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     public func bindInput(to viewModel: HomeViewModel) {
         let input = viewModel.input
         
+        rx.viewWillAppear
+            .bind(to: input.viewWillAppear)
+            .disposed(by: disposeBag)
+        
         rx.viewDidLoad
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)

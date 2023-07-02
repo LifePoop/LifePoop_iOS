@@ -35,13 +35,17 @@ public final class SettingViewModel: ViewModelType {
         let logoutCancelButtonDidTap = PublishRelay<Void>()
         let logoutConfirmButtonDidTap = PublishRelay<Void>()
         let withdrawButtonDidTap = PublishRelay<Void>()
+        let withdrawCancelButtonDidTap = PublishRelay<Void>()
+        let withdrawConfirmButtonDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
         let settingCellViewModels = BehaviorRelay<[any SettingCellViewModel]>(value: [])
         let footerViewModel = BehaviorRelay<SettingTableFooterViewModel?>(value: nil)
         let showLogoutAlert = PublishRelay<Void>()
+        let showWithdrawAlert = PublishRelay<Void>()
         let dismissLogoutAlert = PublishRelay<Void>()
+        let dismissWithdrawAlert = PublishRelay<Void>()
         let showErrorMessage = PublishRelay<String>()
     }
     
@@ -194,7 +198,21 @@ public final class SettingViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.withdrawButtonDidTap
-            .bind { coordinator?.coordinate(by: .withdrawButtonDidTap) }
+            .bind(to: output.showWithdrawAlert)
+            .disposed(by: disposeBag)
+        
+        Observable.merge(
+            input.withdrawCancelButtonDidTap.asObservable(),
+            input.withdrawConfirmButtonDidTap.asObservable()
+        )
+        .bind(to: output.dismissWithdrawAlert)
+        .disposed(by: disposeBag)
+        
+        input.withdrawConfirmButtonDidTap
+            .bind {
+                // TODO: Execute Withdraw UseCase
+                coordinator?.coordinate(by: .withdrawConfirmButtonDidTap)
+            }
             .disposed(by: disposeBag)
         
         // MARK: - Bind State
@@ -247,22 +265,6 @@ private extension SettingViewModel {
             )
             cellViewModel.bindCellText(with: state.userNickname)
             return cellViewModel
-        case .feedVisibility:
-            let cellViewModel = SettingTapActionCellViewModel(
-                model: model,
-                tapAction: input.feedVisibilityDidTap
-            )
-            state.feedVisibility
-                .compactMap { $0?.text }
-                .bind(to: cellViewModel.output.additionalText)
-                .disposed(by: disposeBag)
-            return cellViewModel
-        case .autoLogin:
-            return SettingSwitchCellViewModel(
-                model: model,
-                isSwitchOn: state.isAutoLoginOn,
-                switchToggleAction: input.useAutoLoginDidToggle
-            )
         case .version:
             return SettingTextCellViewModel(
                 model: model,

@@ -18,7 +18,6 @@ final class InviteFriendView: UIView {
     private let myProfileCharactorImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = ImageAsset.profileGoodBrown.original // FIXME: UseCase 바인딩해서 image 설정
         return imageView
     }()
     
@@ -89,7 +88,8 @@ final class InviteFriendView: UIView {
 }
 
 extension InviteFriendView {
-    func setMyProfileCharactor(image: UIImage) {
+    func setMyProfileCharactor(image: UIImage, name: String) {
         myProfileCharactorImageView.image = image
+        nameLabel.text = name
     }
 }

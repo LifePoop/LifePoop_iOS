@@ -22,21 +22,17 @@ public final class FriendStoolStoryViewModel: ViewModelType {
         case right
     }
     
-    struct ProgressState {
-        let currentIndex: Int
-        let totalCount: Int
-    }
-    
     public struct Input {
         let viewDidLayoutSubviews = PublishRelay<Void>()
         let didTapCloseButton = PublishRelay<Void>()
         let didTapScreen = PublishRelay<ScreenSide>()
         let didTapCheeringButton = PublishRelay<Void>()
+        let didUpdateProgressState = PublishRelay<Int>()
     }
     
     public struct Output {
         let stoolStoryLogs = BehaviorRelay<[StoolStoryLogEntity]>(value: [])
-        let shouldUpdateProgressState = PublishRelay<ProgressState>()
+        let shouldUpdateProgressState = PublishRelay<Int>()
         let shouldUpdateShownStoolLog = PublishRelay<StoolLogEntity>()
         let shouldEnableCheeringButton = PublishRelay<Bool>()
         let shouldUpdateFriendStoolLogSummary = PublishRelay<String>()
@@ -44,7 +40,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
     
     public let input = Input()
     public let output = Output()
-    
+        
     private var disposeBag = DisposeBag()
     
     public init(coordinator: HomeCoordinator?, friend: FriendEntity, stoolStoryLogs: [StoolStoryLogEntity]) {
@@ -63,29 +59,27 @@ public final class FriendStoolStoryViewModel: ViewModelType {
         
         input.viewDidLayoutSubviews
             .take(1)
-            .map { stoolStoryLogs.count }
-            .filter { $0 > 0 }
-            .map { ProgressState(currentIndex: 0, totalCount: $0) }
+            .filter { stoolStoryLogs.count > 0 }
             .withUnretained(self)
-            .bind(onNext: { `self`, progressState in
-                self.output.shouldUpdateProgressState.accept(progressState)
-                self.output.shouldUpdateShownStoolLog.accept(stoolStoryLogs[progressState.currentIndex].stoolLog)
+            .bind(onNext: { `self`, _ in
+                let totalCount = stoolStoryLogs.count
+                let currentIndex = 0
+                
+                self.output.shouldUpdateShownStoolLog.accept(stoolStoryLogs[currentIndex].stoolLog)
                 self.output.shouldEnableCheeringButton.accept(
-                    stoolStoryLogs[progressState.currentIndex].isCheeringUpAvailable
+                    stoolStoryLogs[currentIndex].isCheeringUpAvailable
                 )
                 self.output.shouldUpdateFriendStoolLogSummary.accept(
-                    LocalizableString.bowelMovementCountOfFriend(friend.name, progressState.totalCount)
+                    LocalizableString.bowelMovementCountOfFriend(friend.name, totalCount)
                 )
             })
             .disposed(by: disposeBag)
         
-        let progressState = input.didTapScreen
-            .withLatestFrom(output.shouldUpdateProgressState) {
-                (side: $0, progressState: $1)
-            }
-            .map { side, progressState in
-                let totalCount = progressState.totalCount
-                var currentIndex = progressState.currentIndex
+        input.didTapScreen
+            .withLatestFrom(input.didUpdateProgressState) { ($0, $1) }
+            .map { side, currentIndex in
+                let totalCount = stoolStoryLogs.count
+                var currentIndex = currentIndex
                 
                 switch side {
                 case .left:
@@ -93,22 +87,20 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 case .right:
                     currentIndex = currentIndex >= totalCount-1 ? totalCount-1 : currentIndex+1
                 }
-                return ProgressState(currentIndex: currentIndex, totalCount: totalCount)
+                
+                return currentIndex
             }
-            .share()
-        
-        progressState
             .bind(to: output.shouldUpdateProgressState)
             .disposed(by: disposeBag)
-        
-        progressState
-            .map { $0.currentIndex }
+
+        input.didUpdateProgressState
+            .filter { $0 >= 0 }
             .withLatestFrom(output.stoolStoryLogs) { $1[$0].stoolLog }
             .bind(to: output.shouldUpdateShownStoolLog)
             .disposed(by: disposeBag)
-        
-        progressState
-            .map { $0.currentIndex }
+
+        input.didUpdateProgressState
+            .filter { $0 >= 0 }
             .withLatestFrom(output.stoolStoryLogs) { $1[$0].isCheeringUpAvailable }
             .bind(to: output.shouldEnableCheeringButton)
             .disposed(by: disposeBag)

@@ -73,6 +73,10 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         closeButton.rx.tap
             .bind(to: input.didTapCloseButton)
             .disposed(by: disposeBag)
+        
+        segmentedProgressView.rx.currentlyTrackedIndex
+            .bind(to: input.didUpdateProgressState)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: FriendStoolStoryViewModel) {
@@ -83,9 +87,9 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .bind(to: segmentedProgressView.rx.numberOfSegments)
             .disposed(by: disposeBag)
         
+        // MARK: currentlyTrackedIndex의 Binder 타입으로 바로 이벤트 방출시키지 발 것
         output.shouldUpdateProgressState
-            .map { $0.currentIndex }
-            .bind(to: segmentedProgressView.rx.currentlyTrackedIndex)
+            .bind(onNext: segmentedProgressView.manuallyTrackSegment(forIndexOf:))
             .disposed(by: disposeBag)
         
         output.shouldUpdateShownStoolLog
@@ -163,7 +167,7 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
     public override func configureUI() {
         super.configureUI()
         
-        view.backgroundColor = ColorAsset.grayStoryBackground.color
+        view.backgroundColor = ColorAsset.gray800.color
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTapGeuture(_:))))
     }
     

@@ -8,7 +8,7 @@
 
 import UIKit
 
-public final class SegmentedProgressView: UIView {
+public final class SegmentedProgressView: UIControl {
     
     private var segments: [Segment] = []
     

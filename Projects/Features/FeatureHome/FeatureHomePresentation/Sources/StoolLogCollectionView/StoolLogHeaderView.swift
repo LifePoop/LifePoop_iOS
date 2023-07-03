@@ -115,6 +115,12 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
             }
             .disposed(by: disposeBag)
         
+        output.updateUserProfileCharacter
+            .asSignal()
+            .map { ($0.feedImage, $0.name) }
+            .emit(onNext: inviteFriendView.setMyProfileCharactor(image:name:))
+            .disposed(by: disposeBag)
+        
         output.updateFriends
             .asSignal()
             .emit(onNext: friendListCollectionViewDiffableDataSource.update)
@@ -168,7 +174,7 @@ private extension StoolLogHeaderView {
             make.top.equalTo(todayStoolLogLabel.snp.bottom).offset(18)
             make.leading.trailing.equalToSuperview().inset(24)
         }
-            
+        
         inviteFriendView.snp.makeConstraints { make in
             make.top.equalTo(collectionViewTopSeparatorView.snp.bottom)
             make.bottom.equalTo(collectionViewBottonSeparatorView.snp.top)

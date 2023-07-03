@@ -56,6 +56,7 @@ public final class SettingViewController: LifePoopViewController, ViewType {
     }()
     
     private let logoutAlertView = LifePoopAlertView(type: .logout)
+    private let withdrawAlertView = LifePoopAlertView(type: .withdraw)
     
     public var viewModel: SettingViewModel?
     private let disposeBag = DisposeBag()
@@ -82,6 +83,14 @@ public final class SettingViewController: LifePoopViewController, ViewType {
         logoutAlertView.confirmButton.rx.tap
             .bind(to: input.logoutConfirmButtonDidTap)
             .disposed(by: disposeBag)
+        
+        withdrawAlertView.cancelButton.rx.tap
+            .bind(to: input.withdrawCancelButtonDidTap)
+            .disposed(by: disposeBag)
+        
+        withdrawAlertView.confirmButton.rx.tap
+            .bind(to: input.withdrawConfirmButtonDidTap)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: SettingViewModel) {
@@ -106,9 +115,23 @@ public final class SettingViewController: LifePoopViewController, ViewType {
             }
             .disposed(by: disposeBag)
         
+        output.showWithdrawAlert
+            .asSignal()
+            .withUnretained(self)
+            .emit { `self`, _ in
+                guard let view = self.navigationController?.view else { return }
+                self.withdrawAlertView.show(in: view)
+            }
+            .disposed(by: disposeBag)
+        
         output.dismissLogoutAlert
             .asSignal()
             .emit(onNext: logoutAlertView.dismiss)
+            .disposed(by: disposeBag)
+        
+        output.dismissWithdrawAlert
+            .asSignal()
+            .emit(onNext: withdrawAlertView.dismiss)
             .disposed(by: disposeBag)
     }
     

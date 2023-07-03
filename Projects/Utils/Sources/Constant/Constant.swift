@@ -17,6 +17,12 @@ public extension Constant {
 }
 
 public extension Constant {
+    enum LifePoopURL {
+        public static let feedback = "https://docs.google.com/forms/d/1H9FBgTbP3y4Yw2pkdtXwQmwMrSTov1jl8CQ__ny_hsQ/edit"
+    }
+}
+
+public extension Constant {
     enum ValidPattern {
         public static let nickname = "^[가-힣a-zA-Z0-9]{2,5}$"
     }

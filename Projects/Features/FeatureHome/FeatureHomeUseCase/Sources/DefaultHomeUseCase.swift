@@ -11,11 +11,14 @@ import RxSwift
 import CoreEntity
 import FeatureHomeDIContainer
 import Logger
+import SharedDIContainer
+import SharedUseCase
 import Utils
 
 public final class DefaultHomeUseCase: HomeUseCase {
     
     @Inject(HomeDIContainer.shared) private var homeRepository: HomeRepository
+    @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     
     public init() { }
     
@@ -30,6 +33,13 @@ public final class DefaultHomeUseCase: HomeUseCase {
         return homeRepository
             .fetchStoolLogs()
             .logErrorIfDetected(category: .network)
+            .asObservable()
+    }
+    
+    public func fetchUserCharacter() -> Observable<ProfileCharacter?> {
+        return userDefaultsRepository
+            .getValue(for: .profileCharacter)
+            .logErrorIfDetected(category: .userDefaults)
             .asObservable()
     }
     

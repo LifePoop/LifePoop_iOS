@@ -77,6 +77,10 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         segmentedProgressView.rx.currentlyTrackedIndex
             .bind(to: input.didUpdateProgressState)
             .disposed(by: disposeBag)
+        
+        cheeringButton.rx.tap
+            .bind(to: input.didTapCheeringButton)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: FriendStoolStoryViewModel) {
@@ -117,6 +121,18 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .asDriver(onErrorJustReturn: LocalizableString.doneBoost)
             .drive(onNext: { [weak self] title in
                 self?.cheeringButton.titleLabel?.text = title
+            })
+            .disposed(by: disposeBag)
+        
+        output.shouldShowLoadingIndicator
+            .asSignal()
+            .withUnretained(self)
+            .emit(onNext: { `self`, shouldShowLoadingIndicator in
+                if shouldShowLoadingIndicator {
+                    self.cheeringButton.showLoadingIndicator()
+                } else {
+                    self.cheeringButton.hideLoadingIndicator()
+                }
             })
             .disposed(by: disposeBag)
     }
@@ -173,7 +189,9 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
     
     @objc private func handleTapGeuture(_ gestureRecognizer: UITapGestureRecognizer) {
         let location = gestureRecognizer.location(in: view)
+        let didTapCheeringButton = cheeringButton.frame.contains(location)
         
+        if didTapCheeringButton { return }
         if location.x <= view.frame.width/2 {
             viewModel?.input.didTapScreen.accept(.left)
         } else {

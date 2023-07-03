@@ -36,6 +36,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
         let shouldUpdateShownStoolLog = PublishRelay<StoolLogEntity>()
         let shouldEnableCheeringButton = PublishRelay<Bool>()
         let shouldUpdateFriendStoolLogSummary = PublishRelay<String>()
+        let shouldShowLoadingIndicator = PublishRelay<Bool>()
     }
     
     public let input = Input()
@@ -44,6 +45,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
     private var disposeBag = DisposeBag()
     
     public init(coordinator: HomeCoordinator?, friend: FriendEntity, stoolStoryLogs: [StoolStoryLogEntity]) {
+        var stoolStoryLogs = stoolStoryLogs
         
         input.didTapCloseButton
             .bind(onNext: { _ in
@@ -95,14 +97,30 @@ public final class FriendStoolStoryViewModel: ViewModelType {
 
         input.didUpdateProgressState
             .filter { $0 >= 0 }
-            .withLatestFrom(output.stoolStoryLogs) { $1[$0].stoolLog }
+            .map { stoolStoryLogs[$0].stoolLog }
             .bind(to: output.shouldUpdateShownStoolLog)
             .disposed(by: disposeBag)
 
         input.didUpdateProgressState
             .filter { $0 >= 0 }
             .observe(on: MainScheduler.asyncInstance)
-            .withLatestFrom(output.stoolStoryLogs) { $1[$0].isCheeringUpAvailable }
+            .map { stoolStoryLogs[$0].isCheeringUpAvailable }
+            .bind(to: output.shouldEnableCheeringButton)
+            .disposed(by: disposeBag)
+        
+        // MARK: 응원하기 버튼 터치 후 임시로 로딩 표시 띄우기 위한 로직, 추후 제거해야 함
+        input.didTapCheeringButton
+            .do(onNext: { [weak self] _ in
+                self?.output.shouldShowLoadingIndicator.accept(true)
+            })
+            .delay(.seconds(1), scheduler: MainScheduler.instance)
+            .do(onNext: { [weak self] _ in
+                guard let lastLog = stoolStoryLogs.popLast() else { return }
+                let newLog = StoolStoryLogEntity(stoolLog: lastLog.stoolLog, isCheeringUpAvailable: false)
+                stoolStoryLogs.append(newLog)
+                self?.output.shouldShowLoadingIndicator.accept(false)
+            })
+            .map { _ in false }
             .bind(to: output.shouldEnableCheeringButton)
             .disposed(by: disposeBag)
     }

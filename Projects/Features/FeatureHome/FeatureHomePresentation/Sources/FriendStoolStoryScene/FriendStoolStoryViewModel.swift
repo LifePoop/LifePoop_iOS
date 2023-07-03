@@ -101,6 +101,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
 
         input.didUpdateProgressState
             .filter { $0 >= 0 }
+            .observe(on: MainScheduler.asyncInstance)
             .withLatestFrom(output.stoolStoryLogs) { $1[$0].isCheeringUpAvailable }
             .bind(to: output.shouldEnableCheeringButton)
             .disposed(by: disposeBag)

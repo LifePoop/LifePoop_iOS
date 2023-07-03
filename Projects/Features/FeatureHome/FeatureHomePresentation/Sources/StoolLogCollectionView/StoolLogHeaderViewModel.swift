@@ -93,7 +93,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         input.friendListCellDidTap
             .map { $0.item }
             .withLatestFrom(output.updateFriends) { index, friendEntities in
-                friendEntities[index]
+                friendEntities.friends[index]
             }
             .withUnretained(self)
             .flatMapLatest { `self`, friend in

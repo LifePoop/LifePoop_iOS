@@ -19,6 +19,7 @@ public extension Project {
         sources: SourceFilesList = ["Sources/**"],
         resources: ResourceFileElements? = nil,
         infoPlist: InfoPlist = .default,
+        entitlements: Path? = nil,
         hasTests: Bool = true
     ) -> Project {
         let settings: Settings = .settings(
@@ -37,6 +38,7 @@ public extension Project {
             infoPlist: infoPlist,
             sources: sources,
             resources: resources,
+            entitlements: entitlements,
             dependencies: dependencies
         )
         
@@ -70,6 +72,7 @@ public extension Project {
         infoPlist: InfoPlist,
         sources: SourceFilesList,
         resources: ResourceFileElements?,
+        entitlements: Path?,
         dependencies: [TargetDependency]
     ) -> Target {
         return Target(
@@ -81,6 +84,7 @@ public extension Project {
             infoPlist: infoPlist,
             sources: sources,
             resources: resources,
+            entitlements: entitlements,
             scripts: [.SwiftLintShell],
             dependencies: dependencies
         )

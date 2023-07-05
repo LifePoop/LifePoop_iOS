@@ -17,5 +17,6 @@ let project = Project.makeModule(
     dependencies: TargetDependency.SPM.allDependencies + TargetDependency.Project.allDependencies,
     resources: ["Resources/**"],
     infoPlist: .file(path: "Attributes/Info.plist"),
+    entitlements: .entitlementsPath(for: .App),
     hasTests: false
 )

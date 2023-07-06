@@ -16,7 +16,7 @@ public final class SettingTableHeaderView: UITableViewHeaderFooterView {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 18)
+        label.font = .systemFont(ofSize: 16)
         label.textColor = ColorAsset.gray600.color
         return label
     }()

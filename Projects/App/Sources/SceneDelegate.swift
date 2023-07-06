@@ -49,7 +49,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
-        configureNavigationBarBackButtonItem()
+        configureNavigationBarAppearance()
         registerAllDependencies()
         
         initKakaoAuthSDKInfo()
@@ -159,9 +159,10 @@ private extension SceneDelegate {
 // MARK: - UI Setup
 
 private extension SceneDelegate {
-    func configureNavigationBarBackButtonItem() {
+    func configureNavigationBarAppearance() {
         let emptyImage = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).image { _ in }
         UINavigationBar.appearance().backIndicatorImage = emptyImage
         UINavigationBar.appearance().backIndicatorTransitionMaskImage = emptyImage
+        UINavigationBar.appearance().barTintColor = .systemBackground
     }
 }

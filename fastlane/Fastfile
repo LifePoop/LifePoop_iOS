@@ -49,7 +49,7 @@ platform :ios do
     
     slack(
       message: "TestFlight에 새로운 빌드가 배포되었습니다 :rocket:",
-      slack_url: "https://hooks.slack.com/services/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",
+      slack_url: ENV["SLACK_URL"],
       default_payloads: [],
       payload: {
           "버전" => version_number,

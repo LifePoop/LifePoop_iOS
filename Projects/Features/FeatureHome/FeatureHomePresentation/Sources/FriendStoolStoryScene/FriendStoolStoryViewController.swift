@@ -64,7 +64,6 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         let button = LifePoopButton(title: LocalizableString.boost)
         button.setTitle(LocalizableString.boost, for: .normal)
         button.setTitle(LocalizableString.doneBoost, for: .disabled)
-        
         return button
     }()
     
@@ -115,15 +114,25 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .bind(to: stoolImageView.rx.image)
             .disposed(by: disposeBag)
         
+        output.shouldHideCheeringButton
+            .bind(to: cheeringButton.rx.isHidden)
+            .disposed(by: disposeBag)
+        
         output.shouldEnableCheeringButton
             .bind(to: cheeringButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        output.shouldEnableCheeringButton
-            .map { $0 ? LocalizableString.cheeringWithBoost :
-                        LocalizableString.doneCheeringWithBoost
-            }
+        output.shouldUpdateCheeringButtonText
+            .debug()
+            .bind(to: cheeringButton.rx.title)
+            .disposed(by: disposeBag)
+        
+        output.shouldUpdateCheeringLabelText
             .bind(to: cheeringLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.shouldHideCheeringLabel
+            .bind(to: cheeringLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
         output.shouldUpdateFriendStoolLogSummary
@@ -132,14 +141,6 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         
         output.shouldUpdateStoolLogTime
             .bind(to: timeLabel.rx.text)
-            .disposed(by: disposeBag)
-        
-        output.shouldEnableCheeringButton
-            .map { $0 ? LocalizableString.boost : LocalizableString.doneBoost }
-            .asDriver(onErrorJustReturn: LocalizableString.doneBoost)
-            .drive(onNext: { [weak self] title in
-                self?.cheeringButton.titleLabel?.text = title
-            })
             .disposed(by: disposeBag)
         
         output.shouldShowLoadingIndicator

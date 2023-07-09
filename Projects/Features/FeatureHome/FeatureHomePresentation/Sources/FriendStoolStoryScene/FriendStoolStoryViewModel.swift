@@ -35,7 +35,11 @@ public final class FriendStoolStoryViewModel: ViewModelType {
         let stoolStoryLogs = BehaviorRelay<[StoolStoryLogEntity]>(value: [])
         let shouldUpdateProgressState = PublishRelay<Int>()
         let shouldUpdateShownStoolLog = PublishRelay<StoolLogEntity>()
+        let shouldHideCheeringButton = PublishRelay<Bool>()
         let shouldEnableCheeringButton = PublishRelay<Bool>()
+        let shouldUpdateCheeringButtonText = BehaviorRelay<String>(value: LocalizableString.boost)
+        let shouldHideCheeringLabel = PublishRelay<Bool>()
+        let shouldUpdateCheeringLabelText = BehaviorRelay<String>(value: LocalizableString.cheeringWithBoost)
         let shouldUpdateStoolLogTime = PublishRelay<String>()
         let shouldUpdateFriendStoolLogSummary = PublishRelay<String>()
         let shouldShowLoadingIndicator = PublishRelay<Bool>()
@@ -43,6 +47,8 @@ public final class FriendStoolStoryViewModel: ViewModelType {
     
     public let input = Input()
     public let output = Output()
+    
+    private var hasDoneCheering = false
         
     private var disposeBag = DisposeBag()
     
@@ -99,25 +105,68 @@ public final class FriendStoolStoryViewModel: ViewModelType {
             }
             .bind(to: output.shouldUpdateProgressState)
             .disposed(by: disposeBag)
-
-        input.didUpdateProgressState
+        
+        let updateResult = input.didUpdateProgressState
             .filter { $0 >= 0 }
-            .map { stoolStoryLogs[$0].stoolLog }
+            .observe(on: MainScheduler.asyncInstance)
+            .withUnretained(self)
+            .map { `self`, index in
+                let stoolLog = stoolStoryLogs[index].stoolLog
+                let isCheeringUpAvailable = stoolStoryLogs[index].isCheeringUpAvailable
+                let shouldHideCheeringLabel = index < stoolStoryLogs.count-1
+                let shouldHideCheeringButton = index < stoolStoryLogs.count-1
+                let shouldUpdateStoolLogTime = self.getTimeDifference(fromDateOf: stoolLog.date ?? "")
+                
+                return (
+                    shouldUpdateShownStoolLog: stoolLog,
+                    shouldEnableCheeringButton: isCheeringUpAvailable,
+                    shouldHideCheeringLabel: shouldHideCheeringLabel,
+                    shouldHideCheeringButton: shouldHideCheeringButton,
+                    shouldUpdateStoolLogTime: shouldUpdateStoolLogTime
+                )
+            }
+            .share()
+        
+        updateResult
+            .map { $0.shouldUpdateShownStoolLog }
             .bind(to: output.shouldUpdateShownStoolLog)
             .disposed(by: disposeBag)
 
-        input.didUpdateProgressState
-            .filter { $0 >= 0 }
-            .observe(on: MainScheduler.asyncInstance)
-            .map { stoolStoryLogs[$0].isCheeringUpAvailable }
+        updateResult
+            .map { $0.shouldHideCheeringLabel }
+            .bind(to: output.shouldHideCheeringLabel)
+            .disposed(by: disposeBag)
+        
+        updateResult
+            .map { $0.shouldHideCheeringButton }
+            .bind(to: output.shouldHideCheeringButton)
+            .disposed(by: disposeBag)
+        
+        updateResult
+            .map { $0.shouldEnableCheeringButton }
             .bind(to: output.shouldEnableCheeringButton)
             .disposed(by: disposeBag)
+        
+        updateResult
+            .filter { !$0.shouldHideCheeringLabel }
+            .map {
+                $0.shouldEnableCheeringButton ? LocalizableString.cheeringWithBoost
+                                              : LocalizableString.doneCheeringWithBoost
+            }
+            .bind(to: output.shouldUpdateCheeringLabelText)
+            .disposed(by: disposeBag)
+        
+        updateResult
+            .filter { !$0.shouldHideCheeringButton }
+            .map {
+                $0.shouldEnableCheeringButton ? LocalizableString.boost
+                                              : LocalizableString.doneBoost
+            }
+            .bind(to: output.shouldUpdateCheeringButtonText)
+            .disposed(by: disposeBag)
 
-        input.didUpdateProgressState
-            .filter { $0 >= 0 }
-            .observe(on: MainScheduler.asyncInstance)
-            .compactMap { stoolStoryLogs[$0].stoolLog.date }
-            .compactMap { [weak self] in self?.getTimeDifference(fromDateOf: $0) }
+        updateResult
+            .map { $0.shouldUpdateStoolLogTime }
             .bind(to: output.shouldUpdateStoolLogTime)
             .disposed(by: disposeBag)
         
@@ -132,6 +181,9 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 let newLog = StoolStoryLogEntity(stoolLog: lastLog.stoolLog, isCheeringUpAvailable: false)
                 stoolStoryLogs.append(newLog)
                 self?.output.shouldShowLoadingIndicator.accept(false)
+                self?.hasDoneCheering = true
+                self?.output.shouldUpdateCheeringLabelText.accept(LocalizableString.doneCheeringWithBoost)
+                self?.output.shouldUpdateCheeringButtonText.accept(LocalizableString.doneBoost)
             })
             .map { _ in false }
             .bind(to: output.shouldEnableCheeringButton)

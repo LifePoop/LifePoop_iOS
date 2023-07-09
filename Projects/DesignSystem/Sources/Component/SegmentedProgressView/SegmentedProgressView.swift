@@ -91,7 +91,7 @@ public final class SegmentedProgressView: UIControl {
 extension SegmentedProgressView {
     
     func doAnimation(fromIndexOf targetIndex: Int = 0) {
-        let animation = UIViewPropertyAnimator(duration: 1, curve: .linear) {
+        let animation = UIViewPropertyAnimator(duration: 6, curve: .linear) {
             self.currentlyTrackedIndex = targetIndex
             self.trackSegment(forIndexOf: targetIndex)
         }

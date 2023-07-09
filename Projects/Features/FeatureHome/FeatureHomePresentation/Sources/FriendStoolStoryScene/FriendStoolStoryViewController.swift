@@ -37,6 +37,14 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         return imageView
     }()
     
+    private let timeLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = ColorAsset.white.color
+        label.text = "N분 전"
+        return label
+    }()
+    
     private let stoolLogSummaryLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
@@ -116,6 +124,10 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .bind(to: stoolLogSummaryLabel.rx.text)
             .disposed(by: disposeBag)
         
+        output.shouldUpdateStoolLogTime
+            .bind(to: timeLabel.rx.text)
+            .disposed(by: disposeBag)
+        
         output.shouldEnableCheeringButton
             .map { $0 ? LocalizableString.boost : LocalizableString.doneBoost }
             .asDriver(onErrorJustReturn: LocalizableString.doneBoost)
@@ -155,6 +167,12 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             make.height.equalTo(4)
         }
         
+        view.addSubview(timeLabel)
+        timeLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(29)
+            make.top.equalTo(segmentedProgressView.snp.bottom).offset(24)
+        }
+ 
         view.addSubview(cheeringButton)
         cheeringButton.snp.makeConstraints { make in
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)

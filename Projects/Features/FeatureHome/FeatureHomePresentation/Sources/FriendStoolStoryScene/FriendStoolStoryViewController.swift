@@ -86,6 +86,12 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .bind(to: input.didUpdateProgressState)
             .disposed(by: disposeBag)
         
+        segmentedProgressView.rx.progressDidEnd
+            .filter { $0 }
+            .map { _ in Void() }
+            .bind(to: input.didTapCloseButton)
+            .disposed(by: disposeBag)
+        
         cheeringButton.rx.tap
             .bind(to: input.didTapCheeringButton)
             .disposed(by: disposeBag)

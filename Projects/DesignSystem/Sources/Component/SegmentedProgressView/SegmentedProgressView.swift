@@ -19,11 +19,22 @@ public final class SegmentedProgressView: UIControl {
             doAnimation()
         }
     }
+    
+    public var progressDidEnd: Bool = false {
+        didSet {
+            guard progressDidEnd else { return }
+            sendActions(for: .editingDidEnd)
+        }
+    }
   
     /// Do not directly change the value from outside of SegmentedProgressView.
     public var currentlyTrackedIndex: Int = -1 {
         didSet {
-            guard currentlyTrackedIndex < numberOfSegments else { return }
+            guard currentlyTrackedIndex < numberOfSegments else {
+                sendActions(for: .editingDidEnd)
+                return
+            }
+            
             trackSegment(forIndexOf: currentlyTrackedIndex)
             sendActions(for: .valueChanged)
         }
@@ -80,7 +91,7 @@ public final class SegmentedProgressView: UIControl {
 extension SegmentedProgressView {
     
     func doAnimation(fromIndexOf targetIndex: Int = 0) {
-        let animation = UIViewPropertyAnimator(duration: 6, curve: .linear) {
+        let animation = UIViewPropertyAnimator(duration: 1, curve: .linear) {
             self.currentlyTrackedIndex = targetIndex
             self.trackSegment(forIndexOf: targetIndex)
         }
@@ -90,6 +101,7 @@ extension SegmentedProgressView {
             
             let shouldProceed = (targetIndex+1 < self.segments.count)
             guard shouldProceed else {
+                self.progressDidEnd = targetIndex+1 >= self.segments.count
                 return
             }
             
@@ -133,8 +145,9 @@ private extension SegmentedProgressView {
             fatalError("The size of the segments array must be equal to number of segments value in dataSource.")
         }
         
-        guard targetIndex <= numberOfSegments else {
-            fatalError("Given index value should be euqal or lower than number of segments.")
+        guard targetIndex < numberOfSegments else {
+            progressDidEnd = true
+            return
         }
                 
         let endIndex = numberOfSegments-1

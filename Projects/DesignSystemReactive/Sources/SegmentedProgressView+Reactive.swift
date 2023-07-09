@@ -21,5 +21,13 @@ public extension Reactive where Base == SegmentedProgressView {
             .asObservable()
 
         return ControlEvent(events: source)
-    }    
+    }
+    
+    var progressDidEnd: ControlEvent<Bool> {
+        let source = controlEvent(.editingDidEnd)
+            .compactMap { [weak base] in base?.progressDidEnd }
+            .asObservable()
+
+        return ControlEvent(events: source)
+    }
 }

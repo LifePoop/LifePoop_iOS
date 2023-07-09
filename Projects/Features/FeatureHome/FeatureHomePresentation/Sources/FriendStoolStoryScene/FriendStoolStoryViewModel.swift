@@ -92,7 +92,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 case .left:
                     currentIndex = currentIndex <= 0 ? 0 : currentIndex-1
                 case .right:
-                    currentIndex = currentIndex >= totalCount-1 ? totalCount-1 : currentIndex+1
+                    currentIndex = currentIndex >= totalCount-1 ? totalCount : currentIndex+1
                 }
                 
                 return currentIndex

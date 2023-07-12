@@ -10,17 +10,29 @@
 <br>
 <br>
 
-## Tech Stacks, Libraries & Tools
+## 기술 및 사용 이유
 
-|기술 / 라이브러리|설명|
+|Design Pattern & Architecture|Description|
 |---|---|
-|**MVVM-C**|UI 표시, 데이터 가공, 화면 전환 로직을 각각 분리하기 위한 디자인 패턴|
-|**RxSwift**|비동기 및 이벤트 기반 반응형 프로그래밍 도구|
-|**SnapKit**|Layout Constraint 코드를 간결하게 작성 가능한 Swift DSL|
+|**MVVM-C**|UI 표시, 데이터 가공, 화면 전환 로직 분리|
+|**Clean Architecture**|계층 간 책임 분리, 재사용성 및 유지보수성 향상|
+
+<br>
+
+|Libraries|Description|
+|---|---|
+|**RxSwift**|비동기 및 이벤트 기반 반응형 프로그래밍|
+|**SnapKit**|Layout Constraint 코드 간결화|
 |**lottie-ios**|애니메이션 처리, 사용자 경험 향상|
-|**KakaoSDK(Common, Auth, User)**|카카오의 공통, 인증, 사용자 API 이용|
+|**KakaoSDK(Common, Auth, User)**|카카오 공통, 인증, 사용자 API|
+
+<br>
+
+|Tools|Description|
+|---|---|
 |**Tuist**|워크스페이스 설정 및 모듈화, 의존성 관리|
-|**SwiftLint**|코드 스타일과 규칙을 강제, 일관된 코드 스타일을 유지|
+|**Fastlane**|빌드 배포 자동화|
+|**SwiftLint**|일관된 코드 스타일 유지|
 
 <br>
 <br>
@@ -33,24 +45,24 @@
 <br>
 <br>
 
-## Screenshots
+## 스크린샷
 
-- 온보딩 & 정보 입력  
+#### 온보딩 & 정보 입력  
 ![Group 2884](https://github.com/LifePoop/LifePoop_iOS/assets/57667738/cddf5efd-edb8-4d1d-80bc-6b07bffff5f3)
 
-- 홈 화면 & 변 기록  
+#### 홈 화면 & 변 기록  
 ![Group 2888](https://github.com/LifePoop/LifePoop_iOS/assets/57667738/bc13231b-5312-414d-b288-bb3649e2b9d0)
 
-- 친구 목록 & 리포트 화면  
+#### 친구 목록 & 리포트 화면  
 ![Group 2886](https://github.com/LifePoop/LifePoop_iOS/assets/57667738/ba616eab-e7c6-4df9-8083-691affe420b9)
 
-- 설정  
+#### 설정  
 ![Group 2887](https://github.com/LifePoop/LifePoop_iOS/assets/57667738/017900b9-d2d6-45a5-a510-b6e2d2e1501a)
 
 <br>
 <br>
 
-## Demos
+## 데모 영상
 
 #### 온보딩
 https://github.com/LifePoop/LifePoop_iOS/assets/57667738/3bfc678c-607c-4d4e-a39b-23cf9ce825ba

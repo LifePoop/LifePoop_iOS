@@ -144,12 +144,12 @@ private extension StoolLogHeaderView {
         
         collectionViewTopSeparatorView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(16)
-            make.leading.equalToSuperview().offset(24)
+            make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
         }
         
         collectionViewBottonSeparatorView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
+            make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
         }
         

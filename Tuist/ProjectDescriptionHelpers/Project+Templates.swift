@@ -21,6 +21,7 @@ public extension Project {
         infoPlist: InfoPlist = .default,
         entitlements: Path? = nil,
         settings: Settings? = nil,
+        additionalFiles: [FileElement] = [],
         hasTests: Bool = true
     ) -> Project {
         let appTarget = makeTarget(
@@ -54,7 +55,8 @@ public extension Project {
             packages: packages,
             settings: settings,
             targets: targets,
-            schemes: schemes
+            schemes: schemes,
+            additionalFiles: additionalFiles
         )
     }
     

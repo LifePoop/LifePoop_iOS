@@ -24,5 +24,8 @@ let project = Project.makeModule(
         .release(name: .release, xcconfig: "./xcconfigs/\(Modules.App.name).release.xcconfig"),
       ]
     ),
+    additionalFiles: [
+        "./xcconfigs/\(Modules.App.name).base.xcconfig"
+    ],
     hasTests: false
 )

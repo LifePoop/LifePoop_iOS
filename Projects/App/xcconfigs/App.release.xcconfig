@@ -8,7 +8,7 @@
 // Configuration settings file format documentation can be found at:
 // https://help.apple.com/xcode/#/dev745c5c974
 
-DEVELOPMENT_TEAM = MPN6WL3W3U
-CODE_SIGN_STYLE = Manual
+#include "./App.base.xcconfig"
+
 CODE_SIGN_IDENTITY = Apple Distribution
 PROVISIONING_PROFILE_SPECIFIER = match AppStore com.Lifepoo.App

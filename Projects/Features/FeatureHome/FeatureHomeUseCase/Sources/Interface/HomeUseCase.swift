@@ -14,4 +14,5 @@ public protocol HomeUseCase {
     func fetchFriendList() -> Observable<[FriendEntity]>
     func fetchStoolLogs() -> Observable<[StoolLogEntity]>
     func fetchUserCharacter() -> Observable<ProfileCharacter?>
+    func fetchStoolLogsOfSelectedFriend(_ friend: FriendEntity) -> Observable<[StoolStoryLogEntity]>
 }

@@ -27,4 +27,8 @@ public final class DefaultHomeRepository: HomeRepository {
     public func fetchStoolLogs() -> Single<[StoolLogEntity]> {
         return Single.just(StoolLogEntity.dummyData)
     }
+    
+    public func fetchStoolLogsOfSelectedFriend(_ friend: FriendEntity) -> Single<[StoolLogEntity]> {
+        return Single.just(StoolLogEntity.dummyData)
+    }
 }

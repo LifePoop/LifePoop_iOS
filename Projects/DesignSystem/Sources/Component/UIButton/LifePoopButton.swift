@@ -19,7 +19,12 @@ public final class LifePoopButton: PaddingButton {
         return activityIndicator
     }()
     
-    private let title: String
+    public var title: String {
+        didSet {
+            configureUI()
+            setNeedsDisplay()
+        }
+    }
     private var attributedTitle: NSAttributedString {
         NSAttributedString(
             string: title,

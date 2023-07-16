@@ -37,25 +37,29 @@ public extension UILabel {
         return NSRange(targetRange, in: labelText)
     }
     
-    func applyFont(_ font: UIFont, range: NSRange) {
-        guard let attributedString = mutableAttributedString else { return }
+    func applyFont(_ font: UIFont, range: NSRange?) {
+        guard let attributedString = mutableAttributedString,
+              let range = range else { return }
         attributedString.addAttribute(NSAttributedString.Key.font, value: font, range: range)
         attributedText = attributedString
     }
     
-    func applyTextColor(_ color: UIColor, range: NSRange) {
-        guard let attributedString = mutableAttributedString else { return }
+    func applyTextColor(_ color: UIColor, range: NSRange?) {
+        guard let attributedString = mutableAttributedString,
+              let range = range else { return }
         attributedString.addAttribute(NSAttributedString.Key.foregroundColor, value: color, range: range)
         attributedText = attributedString
     }
     
-    func applyFontAndColor(font: UIFont, color: UIColor, range: NSRange) {
+    func applyFontAndColor(font: UIFont, color: UIColor, range: NSRange?) {
+        guard let range = range else { return }
         applyFont(font, range: range)
         applyTextColor(color, range: range)
     }
     
-    func applyUnderline(range: NSRange) {
-        guard let attributedString = mutableAttributedString else { return }
+    func applyUnderline(range: NSRange?) {
+        guard let attributedString = mutableAttributedString,
+              let range = range else { return }
         attributedString.addAttribute(
             NSAttributedString.Key.underlineStyle,
             value: NSUnderlineStyle.single.rawValue,

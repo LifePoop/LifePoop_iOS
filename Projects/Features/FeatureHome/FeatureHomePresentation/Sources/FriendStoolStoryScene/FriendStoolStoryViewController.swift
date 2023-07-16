@@ -61,7 +61,7 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
     }()
     
     private let cheeringButton: LifePoopButton = {
-        let button = LifePoopButton(title: LocalizableString.boost)
+        let button = LifePoopButton()
         button.setTitle(LocalizableString.boost, for: .normal)
         button.setTitle(LocalizableString.doneBoost, for: .disabled)
         return button
@@ -120,11 +120,6 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         
         output.shouldEnableCheeringButton
             .bind(to: cheeringButton.rx.isEnabled)
-            .disposed(by: disposeBag)
-        
-        output.shouldUpdateCheeringButtonText
-            .debug()
-            .bind(to: cheeringButton.rx.title)
             .disposed(by: disposeBag)
         
         output.shouldUpdateCheeringLabelText

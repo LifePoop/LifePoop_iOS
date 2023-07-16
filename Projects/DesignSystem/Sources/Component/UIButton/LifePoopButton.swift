@@ -19,22 +19,6 @@ public final class LifePoopButton: PaddingButton {
         return activityIndicator
     }()
     
-    public var title: String {
-        didSet {
-            configureUI()
-            setNeedsDisplay()
-        }
-    }
-    private var attributedTitle: NSAttributedString {
-        NSAttributedString(
-            string: title,
-            attributes: [
-                .foregroundColor: UIColor.systemBackground,
-                .font: UIFont.systemFont(ofSize: 16, weight: .bold)
-            ]
-        )
-    }
-    
     public override var isHighlighted: Bool {
         didSet {
             updateBackgroundColor()
@@ -47,8 +31,9 @@ public final class LifePoopButton: PaddingButton {
         }
     }
     
-    public init(title: String) {
-        self.title = title
+    private var storedTitle: NSAttributedString?
+    
+    public init() {
         super.init(padding: Padding.custom(UIEdgeInsets(top: 17.5, left: .zero, bottom: 17.5, right: .zero)))
         configureUI()
         layoutUI()
@@ -59,13 +44,14 @@ public final class LifePoopButton: PaddingButton {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public override func setTitle(_ title: String?, for state: UIControl.State) {
+        setAttributedTitle(title?.nsAttributedString(fontSize: 16, weight: .bold, color: .systemBackground), for: state)
+    }
+    
     private func configureUI() {
         clipsToBounds = true
         layer.cornerRadius = 12
         updateBackgroundColor()
-        setAttributedTitle(attributedTitle, for: .normal)
-        setTitleColor(.systemBackground, for: .normal)
-        setTitleColor(.systemBackground, for: .disabled)
     }
     
     private func layoutUI() {
@@ -75,12 +61,31 @@ public final class LifePoopButton: PaddingButton {
             make.center.equalToSuperview()
         }
     }
-    
-    private func updateBackgroundColor() {
+}
+
+// MARK: - Supporting Methods
+
+private extension LifePoopButton {
+    func updateBackgroundColor() {
         if isEnabled {
             backgroundColor = isHighlighted ? ColorAsset.disabledBlue.color : ColorAsset.primary.color
         } else {
             backgroundColor = ColorAsset.disabledBlue.color
+        }
+    }
+    
+    func storeCurrentTitle() {
+        storedTitle = attributedTitle(for: .disabled)
+    }
+    
+    func restoreTitle() {
+        setAttributedTitle(storedTitle, for: .disabled)
+    }
+    
+    func removeTitle() {
+        for state: UIControl.State in [.normal, .selected, .highlighted, .disabled] {
+            setTitle(nil, for: state)
+            setAttributedTitle(nil, for: state)
         }
     }
 }
@@ -89,14 +94,15 @@ public final class LifePoopButton: PaddingButton {
 
 public extension LifePoopButton {
     func showLoadingIndicator() {
+        storeCurrentTitle()
+        removeTitle()
         isEnabled = false
-        setAttributedTitle(nil, for: .normal)
         loadingIndicator.startAnimating()
     }
     
     func hideLoadingIndicator() {
+        restoreTitle()
         isEnabled = true
-        setAttributedTitle(attributedTitle, for: .normal)
         loadingIndicator.stopAnimating()
     }
 }

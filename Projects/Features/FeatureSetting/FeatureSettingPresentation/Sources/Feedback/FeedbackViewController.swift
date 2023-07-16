@@ -64,7 +64,8 @@ public final class FeedbackViewController: LifePoopViewController, ViewType {
     )
     
     private let sendButton: LifePoopButton = {
-        let button = LifePoopButton(title: "보내기")
+        let button = LifePoopButton()
+        button.setTitle("보내기", for: .normal)
         button.isEnabled = false
         return button
     }()

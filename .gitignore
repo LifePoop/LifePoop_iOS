@@ -72,3 +72,11 @@ Tuist/Dependencies
 ### Provisioning Profile
 master.key
 Signing/
+
+### Fastlane
+*.ipa
+fastlane/.env
+fastlane/.env.default
+fastlane/report.xml
+fastlane/README.md
+profiles/

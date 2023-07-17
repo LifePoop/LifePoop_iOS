@@ -1,0 +1,108 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+APP_NAME = "LifePoop"
+TARGET_SCHEME = "App"
+TARGET_PATH = "Projects/#{TARGET_SCHEME}/#{TARGET_SCHEME}.xcodeproj"
+APP_IDENTIFIER = ENV["APP_IDENTIFIER"]
+
+PROFILE_PATH = ENV["PROFILE_PATH"]
+TEAM_NAME = ENV["TEAM_NAME"]
+TEAM_ID_RELEASE = ENV["TEAM_ID_RELEASE"]
+TEAM_ID_DEBUG = ENV["TEAM_ID_DEBUG"]
+
+CODE_SIGNING_IDENTITY_DEBUG = "Apple Development: #{TEAM_NAME} (#{TEAM_ID_DEBUG})"
+CODE_SIGNING_IDENTITY_RELEASE = "Apple Distribution: #{TEAM_NAME} (#{TEAM_ID_RELEASE})"
+
+update_fastlane()
+
+default_platform(:ios)
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do
+    match_and_setup_provisioning
+    
+    build_app(
+      workspace: "#{APP_NAME}.xcworkspace",
+      scheme: "#{TARGET_SCHEME}",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: { 
+          "#{APP_IDENTIFIER}": "match AppStore #{APP_IDENTIFIER}"
+        }
+      }
+    )
+    
+    upload_to_testflight
+    slack_notify_build
+  end
+  
+  lane :match_and_setup_provisioning do
+    # Match - appstore (Release)
+    match(
+      type: "appstore",
+      app_identifier: "#{APP_IDENTIFIER}",
+      readonly: true,
+      output_path: "#{PROFILE_PATH}"
+    )
+    appstore_profile = "#{PROFILE_PATH}/AppStore_#{APP_IDENTIFIER}.mobileprovision"
+    
+    # Match - development (Debug)
+    match(
+      type: "development",
+      app_identifier: "#{APP_IDENTIFIER}",
+      readonly: true,
+      output_path: "#{PROFILE_PATH}"
+    )
+    development_profile = "#{PROFILE_PATH}/Development_#{APP_IDENTIFIER}.mobileprovision"
+    
+    # Signing & Provisionig - Release
+    update_project_provisioning(
+      xcodeproj: "#{TARGET_PATH}",
+      target_filter: "#{TARGET_SCHEME}",
+      profile: appstore_profile,
+      code_signing_identity: "#{CODE_SIGNING_IDENTITY_RELEASE}",
+      build_configuration: "Release"
+    )
+    
+    # Signing & Provisionig - Debug
+    update_project_provisioning(
+      xcodeproj: "#{TARGET_PATH}",
+      target_filter: "#{TARGET_SCHEME}",
+      profile: development_profile,
+      code_signing_identity: "#{CODE_SIGNING_IDENTITY_DEBUG}",
+      build_configuration: "Debug"
+    )
+  end
+  
+  lane :slack_notify_build do
+    version_number = get_version_number(
+      xcodeproj: "#{TARGET_PATH}",
+      target: "#{TARGET_SCHEME}"
+    )
+    build_number = latest_testflight_build_number
+    
+    slack(
+      message: ":airplane: TestFlight 빌드 업로드에 성공하였습니다.",
+      slack_url: ENV["SLACK_URL"],
+      default_payloads: [:git_branch],
+      payload: {
+        "Version" => version_number,
+        "Build Number" => build_number,
+        "Date" => Time.new.to_s
+      }
+    )
+  end
+end

@@ -18,5 +18,14 @@ let project = Project.makeModule(
     resources: ["Resources/**"],
     infoPlist: .file(path: "Attributes/Info.plist"),
     entitlements: .entitlementsPath(for: .App),
+    settings: .settings(
+      configurations: [
+        .debug(name: .debug, xcconfig: "./xcconfigs/\(Modules.App.name).debug.xcconfig"),
+        .release(name: .release, xcconfig: "./xcconfigs/\(Modules.App.name).release.xcconfig"),
+      ]
+    ),
+    additionalFiles: [
+        "./xcconfigs/\(Modules.App.name).base.xcconfig"
+    ],
     hasTests: false
 )

@@ -62,7 +62,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
-            .map { Date().localizedString }
+            .map { Date().localizedDateString }
             .map { LocalizableString.stoolDiaryFor($0) }
             .bind(to: output.setDateDescription)
             .disposed(by: disposeBag)

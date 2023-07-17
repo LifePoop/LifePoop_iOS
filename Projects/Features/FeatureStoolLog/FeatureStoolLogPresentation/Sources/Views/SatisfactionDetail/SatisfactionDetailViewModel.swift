@@ -163,7 +163,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             .withLatestFrom(state.stoolLogs) { ($0, $1) }
             .map { (newStoolLog, existingStoolLogs) -> [StoolLogEntity] in
                 var newStoolLogs = existingStoolLogs
-                newStoolLogs.append(newStoolLog)
+                newStoolLogs.insert(newStoolLog, at: .zero)
                 return newStoolLogs
             }
             .bind(to: state.stoolLogs)

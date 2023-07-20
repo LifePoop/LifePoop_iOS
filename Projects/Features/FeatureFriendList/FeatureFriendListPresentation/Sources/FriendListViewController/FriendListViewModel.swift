@@ -22,20 +22,28 @@ public final class FriendListViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
-        let didSelectFirend = PublishRelay<FriendEntity>()
-        let didTapInvitationButton = PublishRelay<Void>()
+        let friendDidSelect = PublishRelay<IndexPath>()
+        let invitationButtonDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
-        let navigationTitle = Observable.of(LocalizableString.friendsList)
-        let shouldShowFriendList = BehaviorRelay<[FriendEntity]>(value: [])
-        let shouldShowEmptyList = PublishRelay<Void>()
-        let shouldShowToastMessge = PublishRelay<String>()
+        let showFriendList = PublishRelay<[FriendEntity]>()
+        let setNavigationTitle = Observable.of(LocalizableString.friendsList)
+        let showEmptyList = PublishRelay<Void>()
+        let showToastMessge = PublishRelay<String>()
     }
     
-    @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
-    private weak var coordiantor: FriendListCoordinator?
+    public struct State {
+        let friendList = BehaviorRelay<[FriendEntity]>(value: [])
+    }
     
+    public let input = Input()
+    public let output = Output()
+    public let state = State()
+    
+    @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
+    
+    private weak var coordiantor: FriendListCoordinator?
     private var disposeBag = DisposeBag()
     
     public init(coordinator: FriendListCoordinator?) {
@@ -43,19 +51,7 @@ public final class FriendListViewModel: ViewModelType {
         bind(coordinator: coordinator)
     }
     
-    public let input = Input()
-    public let output = Output()
-    
     private func bind(coordinator: FriendListCoordinator?) {
-        
-        input.didTapInvitationButton
-            .withUnretained(self)
-            .bind { `self`, _ in
-                coordinator?.coordinate(
-                    by: .shouldShowFriendInvitation(toastMessageStream: self.output.shouldShowToastMessge)
-                )
-            }
-            .disposed(by: disposeBag)
         
         input.viewDidLoad
             .withUnretained(self)
@@ -63,11 +59,24 @@ public final class FriendListViewModel: ViewModelType {
             .withUnretained(self)
             .bind(onNext: { `self`, friendList in
                 if friendList.isEmpty {
-                    self.output.shouldShowEmptyList.accept(())
+                    self.output.showEmptyList.accept(())
                 } else {
-                    self.output.shouldShowFriendList.accept(friendList)
+                    self.state.friendList.accept(friendList)
                 }
             })
+            .disposed(by: disposeBag)
+        
+        input.invitationButtonDidTap
+            .withUnretained(self)
+            .bind { `self`, _ in
+                coordinator?.coordinate(
+                    by: .shouldShowFriendInvitation(toastMessageStream: self.output.showToastMessge)
+                )
+            }
+            .disposed(by: disposeBag)
+        
+        state.friendList
+            .bind(to: output.showFriendList)
             .disposed(by: disposeBag)
     }
     

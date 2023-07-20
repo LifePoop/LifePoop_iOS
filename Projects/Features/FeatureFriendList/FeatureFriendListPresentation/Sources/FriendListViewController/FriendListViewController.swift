@@ -62,21 +62,25 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
         
         rightBarButtonItem.rx.tap
-            .bind(to: input.didTapInvitationButton)
+            .bind(to: input.invitationButtonDidTap)
+            .disposed(by: disposeBag)
+        
+        friendListCollectionView.rx.itemSelected
+            .bind(to: input.friendDidSelect)
             .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: FriendListViewModel) {
         let output = viewModel.output
         
-        output.navigationTitle
+        output.setNavigationTitle
             .withUnretained(self)
             .bind(onNext: { `self`, title in
                 self.navigationItem.title = title
             })
             .disposed(by: disposeBag)
         
-        output.shouldShowEmptyList
+        output.showEmptyList
             .withUnretained(self)
             .bind(onNext: { `self`, _ in
                 self.friendListCollectionView.isHidden = true
@@ -84,7 +88,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
             })
             .disposed(by: disposeBag)
 
-        output.shouldShowFriendList
+        output.showFriendList
             .do(onNext: { [weak self] _ in
                 self?.emptyFriendListView.isHidden = true
                 self?.friendListCollectionView.isHidden = false
@@ -98,7 +102,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
             }
             .disposed(by: disposeBag)
         
-        output.shouldShowToastMessge
+        output.showToastMessge
             .map { message in
                 let fullString = NSMutableAttributedString()
                 

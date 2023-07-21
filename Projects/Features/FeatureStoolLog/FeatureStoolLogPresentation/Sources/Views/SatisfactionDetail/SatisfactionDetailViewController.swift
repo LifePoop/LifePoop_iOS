@@ -81,7 +81,11 @@ public final class SatisfactionDetailViewController: LifePoopViewController, Vie
     
     private let sizeSelectionSegmentControl = LifePoopSegmentControl()
     
-    private let completeButton = LifePoopButton(title: LocalizableString.done)
+    private let completeButton: LifePoopButton = {
+        let button = LifePoopButton()
+        button.setTitle(LocalizableString.done, for: .normal)
+        return button
+    }()
     
     private let toastMessageLabel = ToastLabel()
     

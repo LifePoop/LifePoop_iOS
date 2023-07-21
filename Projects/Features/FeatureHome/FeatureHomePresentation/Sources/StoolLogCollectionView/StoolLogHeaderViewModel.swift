@@ -13,6 +13,8 @@ import RxSwift
 
 import CoreEntity
 import FeatureHomeCoordinatorInterface
+import FeatureHomeDIContainer
+import FeatureHomeUseCase
 import Logger
 import Utils
 
@@ -23,6 +25,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         let viewDidLoad = PublishRelay<Void>()
         let inviteFriendButtonDidTap = PublishRelay<Void>()
         let cheeringButtonDidTap = PublishRelay<Void>()
+        let friendListCellDidTap = PublishRelay<IndexPath>()
     }
     
     public struct Output {
@@ -45,6 +48,8 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     
     private weak var coordinator: HomeCoordinator?
     private let disposeBag = DisposeBag()
+    
+    @Inject(HomeDIContainer.shared) private var homeUseCase: HomeUseCase
     
     public init(coordinator: HomeCoordinator?) {
         self.coordinator = coordinator
@@ -83,6 +88,26 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .withLatestFrom(state.userProfileCharacter)
             .compactMap { $0 }
             .bind(to: output.updateUserProfileCharacter)
+            .disposed(by: disposeBag)
+        
+        let friendListCellIndex = input.friendListCellDidTap
+            .map { $0.item }
+            .share()
+        
+        friendListCellIndex
+            .filter { $0 != 0 }
+            .map { $0 - 1 }
+            .withLatestFrom(output.updateFriends) { index, friendEntities in
+                friendEntities.friends[index]
+            }
+            .withUnretained(self)
+            .flatMapLatest { `self`, friend in
+                self.homeUseCase.fetchStoolLogsOfSelectedFriend(friend)
+                    .map { (friend: friend, stoolLogs: $0) }
+            }
+            .bind(onNext: { friend, stoolLogs in
+                coordinator?.coordinate(by: .friendButtonDidTap(friend: friend, stoolLogs: stoolLogs))
+            })
             .disposed(by: disposeBag)
         
         Observable.merge(

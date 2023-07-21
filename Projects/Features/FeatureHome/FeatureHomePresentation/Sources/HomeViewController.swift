@@ -53,7 +53,11 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         return collectionView
     }()
     
-    private let stoolLogButton = LifePoopButton(title: LocalizableString.logStoolDiary)
+    private let stoolLogButton: LifePoopButton = {
+        let button = LifePoopButton()
+        button.setTitle(LocalizableString.logStoolDiary, for: .normal)
+        return button
+    }()
     
     public var viewModel: HomeViewModel?
     private let disposeBag = DisposeBag()

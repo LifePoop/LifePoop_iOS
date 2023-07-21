@@ -53,7 +53,8 @@ public final class WithdrawalViewController: LifePoopViewController, ViewType {
     private let withdrawAlertView = LifePoopAlertView(type: .withdraw)
     
     private lazy var withdrawButton: LifePoopButton = {
-        let button = LifePoopButton(title: "탈퇴하기")
+        let button = LifePoopButton()
+        button.setTitle("탈퇴하기", for: .normal)
         button.isEnabled = false
         return button
     }()

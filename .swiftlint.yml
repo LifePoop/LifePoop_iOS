@@ -23,3 +23,4 @@ disabled_rules:
 opt_in_rules:
     - empty_string
     - sorted_imports
+    - operator_usage_whitespace

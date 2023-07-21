@@ -48,8 +48,8 @@ public final class LoginViewController: LifePoopViewController, ViewType {
     
     private let kakaoTalkLoginButon = LoginButton(
         title: LocalizableString.continueWithKakao,
-        backgroundColor: ColorAsset.pooYellow.color,
-        fontColor: ColorAsset.pooBrown.color,
+        backgroundColor: ColorAsset.kakaoYellow.color,
+        fontColor: ColorAsset.kakaoBrown.color,
         iconImage: ImageAsset.iconKakao.image
     )
     
@@ -107,8 +107,8 @@ public final class LoginViewController: LifePoopViewController, ViewType {
             .withUnretained(self)
             .map { `self`, _ in
                 let width = self.bannerCollectionView.bounds.size.width
-                let xValue = self.bannerCollectionView.contentOffset.x + (width/2.0)
-                let newPage = Int(xValue/width)
+                let xValue = self.bannerCollectionView.contentOffset.x + (width / 2.0)
+                let newPage = Int(xValue / width)
                 return newPage
             }
             .share()

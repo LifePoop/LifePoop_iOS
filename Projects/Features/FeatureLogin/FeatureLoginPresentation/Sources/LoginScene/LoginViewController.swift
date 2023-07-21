@@ -164,9 +164,9 @@ public final class LoginViewController: LifePoopViewController, ViewType {
         view.addSubview(appleLoginButton)
 
         bannerCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(frameHeight*0.07)
-            make.centerX.equalToSuperview()
-            make.width.height.equalTo(frameWidth*0.8)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(frameHeight * 0.07)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(frameWidth * 0.8)
         }
 
         subLabel.snp.makeConstraints { make in

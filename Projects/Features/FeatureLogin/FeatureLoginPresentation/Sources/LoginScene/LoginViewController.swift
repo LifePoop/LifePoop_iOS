@@ -164,31 +164,31 @@ public final class LoginViewController: LifePoopViewController, ViewType {
         view.addSubview(appleLoginButton)
 
         bannerCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(frameHeight * 0.07)
+            make.bottom.equalTo(view.snp.centerY).offset(51)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(frameWidth * 0.8)
         }
 
         subLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(bannerCollectionView.snp.bottom).offset(frameHeight*0.03)
+            make.top.equalTo(bannerCollectionView.snp.bottom).offset(frameHeight * 0.03)
         }
 
         pageControl.snp.makeConstraints { make in
-            make.top.equalTo(subLabel.snp.bottom).offset(frameHeight*0.03)
+            make.top.equalTo(subLabel.snp.bottom).offset(frameHeight * 0.03)
             make.centerX.equalToSuperview()
         }
         
         appleLoginButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalToSuperview().inset(frameHeight*0.05)
-            make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
+            make.bottom.equalToSuperview().inset(frameHeight * 0.05)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         kakaoTalkLoginButon.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(appleLoginButton.snp.top).offset(-frameHeight*0.01)
-            make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
+            make.bottom.equalTo(appleLoginButton.snp.top).offset(-10)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
     }
 }

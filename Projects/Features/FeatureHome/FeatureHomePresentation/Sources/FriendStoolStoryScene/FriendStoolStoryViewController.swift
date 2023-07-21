@@ -78,21 +78,21 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .disposed(by: disposeBag)
         
         closeButton.rx.tap
-            .bind(to: input.didTapCloseButton)
+            .bind(to: input.closeButtonDidTap)
             .disposed(by: disposeBag)
         
         segmentedProgressView.rx.currentlyTrackedIndex
-            .bind(to: input.didUpdateProgressState)
+            .bind(to: input.progressStateDidUpdate)
             .disposed(by: disposeBag)
         
         segmentedProgressView.rx.progressDidEnd
             .filter { $0 }
             .map { _ in Void() }
-            .bind(to: input.didTapCloseButton)
+            .bind(to: input.closeButtonDidTap)
             .disposed(by: disposeBag)
         
         cheeringButton.rx.tap
-            .bind(to: input.didTapCheeringButton)
+            .bind(to: input.cheeringButtonDidTap)
             .disposed(by: disposeBag)
     }
     
@@ -105,40 +105,40 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .disposed(by: disposeBag)
         
         // MARK: currentlyTrackedIndex의 Binder 타입으로 바로 이벤트 방출시키지 발 것
-        output.shouldUpdateProgressState
+        output.updateProgressState
             .bind(onNext: segmentedProgressView.manuallyTrackSegment(forIndexOf:))
             .disposed(by: disposeBag)
         
-        output.shouldUpdateShownStoolLog
+        output.updateShownStoolLog
             .map { $0.stoolImage }
             .bind(to: stoolImageView.rx.image)
             .disposed(by: disposeBag)
         
-        output.shouldHideCheeringButton
+        output.hideCheeringButton
             .bind(to: cheeringButton.rx.isHidden)
             .disposed(by: disposeBag)
         
-        output.shouldEnableCheeringButton
+        output.enableCheeringButton
             .bind(to: cheeringButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        output.shouldUpdateCheeringLabelText
+        output.updateCheeringLabelText
             .bind(to: cheeringLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.shouldHideCheeringLabel
+        output.hideCheeringLabel
             .bind(to: cheeringLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
-        output.shouldUpdateFriendStoolLogSummary
+        output.updateFriendStoolLogSummary
             .bind(to: stoolLogSummaryLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.shouldUpdateStoolLogTime
+        output.updateStoolLogTime
             .bind(to: timeLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.shouldShowLoadingIndicator
+        output.showLoadingIndicator
             .asSignal()
             .withUnretained(self)
             .emit(onNext: { `self`, shouldShowLoadingIndicator in
@@ -213,9 +213,9 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         
         if didTapCheeringButton { return }
         if location.x <= view.frame.width/2 {
-            viewModel?.input.didTapScreen.accept(.left)
+            viewModel?.input.screenDidTap.accept(.left)
         } else {
-            viewModel?.input.didTapScreen.accept(.right)
+            viewModel?.input.screenDidTap.accept(.right)
         }
     }
 }

@@ -25,24 +25,24 @@ public final class FriendStoolStoryViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLayoutSubviews = PublishRelay<Void>()
-        let didTapCloseButton = PublishRelay<Void>()
-        let didTapScreen = PublishRelay<ScreenSide>()
-        let didTapCheeringButton = PublishRelay<Void>()
-        let didUpdateProgressState = PublishRelay<Int>()
+        let closeButtonDidTap = PublishRelay<Void>()
+        let screenDidTap = PublishRelay<ScreenSide>()
+        let cheeringButtonDidTap = PublishRelay<Void>()
+        let progressStateDidUpdate = PublishRelay<Int>()
     }
     
     public struct Output {
         let stoolStoryLogs = BehaviorRelay<[StoolStoryLogEntity]>(value: [])
-        let shouldUpdateProgressState = PublishRelay<Int>()
-        let shouldUpdateShownStoolLog = PublishRelay<StoolLogEntity>()
-        let shouldHideCheeringButton = PublishRelay<Bool>()
-        let shouldEnableCheeringButton = PublishRelay<Bool>()
-        let shouldUpdateCheeringButtonText = BehaviorRelay<String>(value: LocalizableString.boost)
-        let shouldHideCheeringLabel = PublishRelay<Bool>()
-        let shouldUpdateCheeringLabelText = BehaviorRelay<String>(value: LocalizableString.cheeringWithBoost)
-        let shouldUpdateStoolLogTime = PublishRelay<String>()
-        let shouldUpdateFriendStoolLogSummary = PublishRelay<String>()
-        let shouldShowLoadingIndicator = PublishRelay<Bool>()
+        let updateProgressState = PublishRelay<Int>()
+        let updateShownStoolLog = PublishRelay<StoolLogEntity>()
+        let hideCheeringButton = PublishRelay<Bool>()
+        let enableCheeringButton = PublishRelay<Bool>()
+        let updateCheeringButtonText = BehaviorRelay<String>(value: LocalizableString.boost)
+        let hideCheeringLabel = PublishRelay<Bool>()
+        let updateCheeringLabelText = BehaviorRelay<String>(value: LocalizableString.cheeringWithBoost)
+        let updateStoolLogTime = PublishRelay<String>()
+        let updateFriendStoolLogSummary = PublishRelay<String>()
+        let showLoadingIndicator = PublishRelay<Bool>()
     }
     
     public let input = Input()
@@ -55,7 +55,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
     public init(coordinator: HomeCoordinator?, friend: FriendEntity, stoolStoryLogs: [StoolStoryLogEntity]) {
         var stoolStoryLogs = stoolStoryLogs
         
-        input.didTapCloseButton
+        input.closeButtonDidTap
             .bind(onNext: { _ in
                 coordinator?.coordinate(by: .storyCloseButtonDidTap)
             })
@@ -75,46 +75,46 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 let totalCount = stoolStoryLogs.count
                 let currentIndex = 0
                 
-                self.output.shouldUpdateShownStoolLog.accept(stoolStoryLogs[currentIndex].stoolLog)
-                self.output.shouldEnableCheeringButton.accept(
+                self.output.updateShownStoolLog.accept(stoolStoryLogs[currentIndex].stoolLog)
+                self.output.enableCheeringButton.accept(
                     stoolStoryLogs[currentIndex].isCheeringUpAvailable
                 )
-                self.output.shouldUpdateStoolLogTime.accept(
+                self.output.updateStoolLogTime.accept(
                     self.getTimeDifference(fromDateOf: stoolStoryLogs[currentIndex].stoolLog.date ?? "")
                 )
-                self.output.shouldUpdateFriendStoolLogSummary.accept(
+                self.output.updateFriendStoolLogSummary.accept(
                     LocalizableString.bowelMovementCountOfFriend(friend.name, totalCount)
                 )
             })
             .disposed(by: disposeBag)
         
-        input.didTapScreen
-            .withLatestFrom(input.didUpdateProgressState) { ($0, $1) }
+        input.screenDidTap
+            .withLatestFrom(input.progressStateDidUpdate) { ($0, $1) }
             .map { side, currentIndex in
                 let totalCount = stoolStoryLogs.count
                 var currentIndex = currentIndex
                 
                 switch side {
                 case .left:
-                    currentIndex = currentIndex <= 0 ? 0 : currentIndex-1
+                    currentIndex = currentIndex <= 0 ? 0 : currentIndex - 1
                 case .right:
-                    currentIndex = currentIndex >= totalCount-1 ? totalCount : currentIndex+1
+                    currentIndex = currentIndex >= totalCount - 1 ? totalCount : currentIndex + 1
                 }
                 
                 return currentIndex
             }
-            .bind(to: output.shouldUpdateProgressState)
+            .bind(to: output.updateProgressState)
             .disposed(by: disposeBag)
         
-        let updateResult = input.didUpdateProgressState
+        let updateResult = input.progressStateDidUpdate
             .filter { $0 >= 0 }
             .observe(on: MainScheduler.asyncInstance)
             .withUnretained(self)
             .map { `self`, index in
                 let stoolLog = stoolStoryLogs[index].stoolLog
                 let isCheeringUpAvailable = stoolStoryLogs[index].isCheeringUpAvailable
-                let shouldHideCheeringLabel = index < stoolStoryLogs.count-1
-                let shouldHideCheeringButton = index < stoolStoryLogs.count-1
+                let shouldHideCheeringLabel = index < stoolStoryLogs.count - 1
+                let shouldHideCheeringButton = index < stoolStoryLogs.count - 1
                 let shouldUpdateStoolLogTime = self.getTimeDifference(fromDateOf: stoolLog.date ?? "")
                 
                 return (
@@ -129,22 +129,22 @@ public final class FriendStoolStoryViewModel: ViewModelType {
         
         updateResult
             .map { $0.shouldUpdateShownStoolLog }
-            .bind(to: output.shouldUpdateShownStoolLog)
+            .bind(to: output.updateShownStoolLog)
             .disposed(by: disposeBag)
 
         updateResult
             .map { $0.shouldHideCheeringLabel }
-            .bind(to: output.shouldHideCheeringLabel)
+            .bind(to: output.hideCheeringLabel)
             .disposed(by: disposeBag)
         
         updateResult
             .map { $0.shouldHideCheeringButton }
-            .bind(to: output.shouldHideCheeringButton)
+            .bind(to: output.hideCheeringButton)
             .disposed(by: disposeBag)
         
         updateResult
             .map { $0.shouldEnableCheeringButton }
-            .bind(to: output.shouldEnableCheeringButton)
+            .bind(to: output.enableCheeringButton)
             .disposed(by: disposeBag)
         
         updateResult
@@ -153,7 +153,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 $0.shouldEnableCheeringButton ? LocalizableString.cheeringWithBoost
                                               : LocalizableString.doneCheeringWithBoost
             }
-            .bind(to: output.shouldUpdateCheeringLabelText)
+            .bind(to: output.updateCheeringLabelText)
             .disposed(by: disposeBag)
         
         updateResult
@@ -162,31 +162,31 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 $0.shouldEnableCheeringButton ? LocalizableString.boost
                                               : LocalizableString.doneBoost
             }
-            .bind(to: output.shouldUpdateCheeringButtonText)
+            .bind(to: output.updateCheeringButtonText)
             .disposed(by: disposeBag)
 
         updateResult
             .map { $0.shouldUpdateStoolLogTime }
-            .bind(to: output.shouldUpdateStoolLogTime)
+            .bind(to: output.updateStoolLogTime)
             .disposed(by: disposeBag)
         
         // MARK: 응원하기 버튼 터치 후 임시로 로딩 표시 띄우기 위한 로직, 추후 제거해야 함
-        input.didTapCheeringButton
+        input.cheeringButtonDidTap
             .do(onNext: { [weak self] _ in
-                self?.output.shouldShowLoadingIndicator.accept(true)
+                self?.output.showLoadingIndicator.accept(true)
             })
             .delay(.seconds(1), scheduler: MainScheduler.instance)
             .do(onNext: { [weak self] _ in
                 guard let lastLog = stoolStoryLogs.popLast() else { return }
                 let newLog = StoolStoryLogEntity(stoolLog: lastLog.stoolLog, isCheeringUpAvailable: false)
                 stoolStoryLogs.append(newLog)
-                self?.output.shouldShowLoadingIndicator.accept(false)
+                self?.output.showLoadingIndicator.accept(false)
                 self?.hasDoneCheering = true
-                self?.output.shouldUpdateCheeringLabelText.accept(LocalizableString.doneCheeringWithBoost)
-                self?.output.shouldUpdateCheeringButtonText.accept(LocalizableString.doneBoost)
+                self?.output.updateCheeringLabelText.accept(LocalizableString.doneCheeringWithBoost)
+                self?.output.updateCheeringButtonText.accept(LocalizableString.doneBoost)
             })
             .map { _ in false }
-            .bind(to: output.shouldEnableCheeringButton)
+            .bind(to: output.enableCheeringButton)
             .disposed(by: disposeBag)
     }
 }
@@ -218,7 +218,7 @@ private extension FriendStoolStoryViewModel {
         
         let timeDifference = currentDate.timeIntervalSince(mergedDate)
 
-        return timeDifference >= 60*60 ? "\(Int(timeDifference / (60 * 60)))시간 전"
-                                       : "\(Int(timeDifference / 60))분 전"
+        return timeDifference >= 60 * 60 ? "\(Int(timeDifference / (60 * 60)))시간 전"
+                                         : "\(Int(timeDifference / 60))분 전"
     }
 }

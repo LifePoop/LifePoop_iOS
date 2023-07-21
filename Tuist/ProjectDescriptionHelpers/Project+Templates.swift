@@ -19,37 +19,31 @@ public extension Project {
         sources: SourceFilesList = ["Sources/**"],
         resources: ResourceFileElements? = nil,
         infoPlist: InfoPlist = .default,
+        entitlements: Path? = nil,
+        settings: Settings? = nil,
+        additionalFiles: [FileElement] = [],
         hasTests: Bool = true
     ) -> Project {
-        let settings: Settings = .settings(
-            base: [:],
-            configurations: [
-                .debug(name: .debug),
-                .release(name: .release)
-            ], defaultSettings: .recommended)
-        
-        let appTarget = Target(
+        let appTarget = makeTarget(
             name: name,
             platform: platform,
             product: product,
-            bundleId: "com.\(organizationName).\(name)",
+            bundleIdSuffix: organizationName,
             deploymentTarget: deploymentTarget,
             infoPlist: infoPlist,
             sources: sources,
             resources: resources,
-            scripts: [.SwiftLintShell],
-            dependencies: dependencies
+            entitlements: entitlements,
+            dependencies: dependencies,
+            settings: settings
         )
         
-        let testTarget = Target(
-            name: "\(name)Tests",
+        let testTarget = makeTestTarget(
+            name: name,
             platform: platform,
-            product: .unitTests,
-            bundleId: "com.\(organizationName).\(name)Tests",
+            bundleIdSuffix: organizationName,
             deploymentTarget: deploymentTarget,
-            infoPlist: .default,
-            sources: ["Tests/**"],
-            dependencies: [.target(name: name)]
+            dependencyName: name
         )
         
         let schemes: [Scheme] = [.makeScheme(target: .debug, name: name)]
@@ -61,7 +55,56 @@ public extension Project {
             packages: packages,
             settings: settings,
             targets: targets,
-            schemes: schemes
+            schemes: schemes,
+            additionalFiles: additionalFiles
+        )
+    }
+    
+    static func makeTarget(
+        name: String,
+        platform: Platform,
+        product: Product,
+        bundleIdSuffix: String,
+        deploymentTarget: DeploymentTarget?,
+        infoPlist: InfoPlist,
+        sources: SourceFilesList,
+        resources: ResourceFileElements?,
+        entitlements: Path?,
+        dependencies: [TargetDependency],
+        settings: Settings?
+    ) -> Target {
+        return Target(
+            name: name,
+            platform: platform,
+            product: product,
+            bundleId: "com.\(bundleIdSuffix).\(name)",
+            deploymentTarget: deploymentTarget,
+            infoPlist: infoPlist,
+            sources: sources,
+            resources: resources,
+            entitlements: entitlements,
+            scripts: [.SwiftLintShell],
+            dependencies: dependencies,
+            settings: settings
+        )
+    }
+    
+    static func makeTestTarget(
+        name: String,
+        platform: Platform,
+        bundleIdSuffix: String,
+        deploymentTarget: DeploymentTarget?,
+        dependencyName: String
+    ) -> Target {
+        return Target(
+            name: "\(name)Tests",
+            platform: platform,
+            product: .unitTests,
+            bundleId: "com.\(bundleIdSuffix).\(name)Tests",
+            deploymentTarget: deploymentTarget,
+            infoPlist: .default,
+            sources: ["Tests/**"],
+            dependencies: [.target(name: dependencyName)]
         )
     }
 }

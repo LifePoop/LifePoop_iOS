@@ -1,0 +1,14 @@
+//
+//  App.debug.xcconfig
+//  Manifests
+//
+//  Created by 김상혁 on 2023/07/13.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "./App.base.xcconfig"
+
+CODE_SIGN_IDENTITY = Apple Developer
+PROVISIONING_PROFILE_SPECIFIER = match Development com.Lifepoo.App

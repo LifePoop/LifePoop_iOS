@@ -90,8 +90,13 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .bind(to: output.updateUserProfileCharacter)
             .disposed(by: disposeBag)
         
-        input.friendListCellDidTap
+        let friendListCellIndex = input.friendListCellDidTap
             .map { $0.item }
+            .share()
+        
+        friendListCellIndex
+            .filter { $0 != 0 }
+            .map { $0 - 1 }
             .withLatestFrom(output.updateFriends) { index, friendEntities in
                 friendEntities.friends[index]
             }

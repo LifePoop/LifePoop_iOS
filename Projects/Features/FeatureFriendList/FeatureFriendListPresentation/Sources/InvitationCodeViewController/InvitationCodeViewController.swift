@@ -65,6 +65,14 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
             .bind(onNext: showEnteringCodePopup)
             .disposed(by: disposeBag)
         
+        output.enableConfirmButton
+            .bind(to: alertView.rx.isConfirmButtonEnabled)
+            .disposed(by: disposeBag)
+        
+        output.hidePlaceholder
+            .bind(to: alertView.rx.isPlaceholderHidden)
+            .disposed(by: disposeBag)
+        
         // TODO: 우선은 클립보드에 초대코드 복사된 것만 확인
         // 추후 서버에서 초대코드 생성되면 UseCase 거쳐서 textToShare 초기화하도록 수정할 예정
         output.shouldShowSharingActivityView

@@ -22,10 +22,30 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         return textField
     }()
     
+    private var placeholder: UILabel = {
+        let label = UILabel()
+        label.text = "초대코드 8자를 정확하게 입력해주세요"
+        label.textColor = ColorAsset.pooPink.color
+        label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
+    
     public var text: String? {
         didSet {
             textField.text = text ?? ""
             sendActions(for: .valueChanged)
+        }
+    }
+    
+    public var isConfirmButtonEnabled: Bool = false {
+        didSet {
+            super.confirmButton.isEnabled = isConfirmButtonEnabled
+        }
+    }
+    
+    public var isPlaceholderHidden: Bool = false {
+        didSet {
+            self.placeholder.isHidden = isPlaceholderHidden
         }
     }
     
@@ -48,14 +68,21 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     private func layoutUI() {
 
         addSubview(textField)
+        addSubview(placeholder)
+        
         textField.snp.makeConstraints { make in
             make.top.equalTo(super.descriptionLabel.snp.bottom).offset(13)
             make.leading.trailing.equalToSuperview().inset(23)
             make.height.equalTo(45)
         }
         
+        placeholder.snp.makeConstraints { make in
+            make.top.equalTo(textField.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(23)
+        }
+        
         super.buttonStackView.snp.remakeConstraints { make in
-            make.top.equalTo(textField.snp.bottom).offset(34)
+            make.top.equalTo(placeholder.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(24)
         }

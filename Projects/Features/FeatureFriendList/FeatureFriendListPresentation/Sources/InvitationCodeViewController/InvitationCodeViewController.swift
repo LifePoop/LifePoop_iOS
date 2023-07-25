@@ -18,7 +18,7 @@ import Utils
 
 public final class InvitationCodeViewController: LifePoopViewController, ViewType {
     
-    private let alertView = LifePoopTextFieldAlertView(type: .invitationCode, placeholder: "ex) vMXxOXq")
+    private let alertView = LifePoopTextFieldAlertView(type: .invitationCode, placeholder: "ex) vMXxaOXq")
     
     private var disposeBag = DisposeBag()
     public var viewModel: InvitationCodeViewModel?

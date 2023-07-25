@@ -26,6 +26,7 @@
 "continueWithKakao" = "카카오로 계속하기";
 "continueWithApple" = "Apple로 계속하기";
 
+
 /* 온보딩 - 사용자 정보 입력 */
 "pleaseSetNickname" = "닉네임을 설정해주세요";
 "nicknamePlaceholder" = "닉네임 입력하기";
@@ -95,6 +96,9 @@
 "wateryCount" = "물렁 %d번";
 "smoothCount" = "매끈 %d번";
 "hardCount" = "딱딱 %d번";
+"watery" = "물렁";
+"smooth" = "매끈";
+"hard" = "딱딱";
 
 
 /* 스토리 */
@@ -170,4 +174,3 @@
 "toastInvitationCodeCopySuccess" = "초대 코드 복사 완료";
 "toastInvitationCodeSharingSuccess" = "초대 코드 공유 완료";
 "toastInvitationCodeSharingFail" = "초대 코드 공유 실패";
-

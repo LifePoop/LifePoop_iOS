@@ -40,8 +40,8 @@ public final class SettingViewModel: ViewModelType {
     }
     
     public struct Output {
-        let settingCellViewModels = BehaviorRelay<[any SettingCellViewModel]>(value: [])
-        let footerViewModel = BehaviorRelay<SettingTableFooterViewModel?>(value: nil)
+        let updateSettingCellViewModels = PublishRelay<[any SettingCellViewModel]>()
+        let updateFooterViewModel = PublishRelay<SettingTableFooterViewModel>()
         let showLogoutAlert = PublishRelay<Void>()
         let showWithdrawAlert = PublishRelay<Void>()
         let dismissLogoutAlert = PublishRelay<Void>()
@@ -50,6 +50,8 @@ public final class SettingViewModel: ViewModelType {
     }
     
     public struct State {
+        let settingCellViewModels = BehaviorRelay<[any SettingCellViewModel]>(value: [])
+        let footerViewModel = BehaviorRelay<SettingTableFooterViewModel?>(value: nil)
         let userLoginType = BehaviorRelay<LoginType?>(value: nil)
         let userNickname = BehaviorRelay<String?>(value: nil)
         let feedVisibility = BehaviorRelay<FeedVisibility?>(value: nil)
@@ -122,7 +124,7 @@ public final class SettingViewModel: ViewModelType {
             .map { `self`, _ in
                 SettingType.allCases.map { self.generateSettingCellViewModel(by: $0) }
             }
-            .bind(to: output.settingCellViewModels)
+            .bind(to: state.settingCellViewModels)
             .disposed(by: disposeBag)
         
         input.viewDidLoad
@@ -130,7 +132,7 @@ public final class SettingViewModel: ViewModelType {
             .do { [weak self] in
                 self?.bind(settingTableFooterViewModel: $0)
             }
-            .bind(to: output.footerViewModel)
+            .bind(to: state.footerViewModel)
             .disposed(by: disposeBag)
         
         input.profileInfoDidTap
@@ -216,6 +218,15 @@ public final class SettingViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         // MARK: - Bind State
+        
+        state.settingCellViewModels
+            .bind(to: output.updateSettingCellViewModels)
+            .disposed(by: disposeBag)
+        
+        state.footerViewModel
+            .compactMap { $0 }
+            .bind(to: output.updateFooterViewModel)
+            .disposed(by: disposeBag)
         
         state.feedVisibility
             .distinctUntilChanged()

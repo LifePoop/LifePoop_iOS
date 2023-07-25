@@ -84,7 +84,7 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
         
         output.setProfileCharater
             .asSignal()
-            .map { $0.image }
+            .map { $0.largeImage }
             .emit(onNext: profileImageEditView.setProfileImageView)
             .disposed(by: disposeBag)
         

@@ -69,8 +69,8 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
             .bind(to: alertView.rx.isConfirmButtonEnabled)
             .disposed(by: disposeBag)
         
-        output.hidePlaceholder
-            .bind(to: alertView.rx.isPlaceholderHidden)
+        output.hideWarningLabel
+            .bind(to: alertView.rx.isWarningLabelhidden)
             .disposed(by: disposeBag)
         
         // TODO: 우선은 클립보드에 초대코드 복사된 것만 확인

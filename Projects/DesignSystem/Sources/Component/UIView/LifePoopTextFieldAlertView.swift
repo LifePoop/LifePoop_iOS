@@ -22,7 +22,7 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         return textField
     }()
     
-    private var placeholder: UILabel = {
+    private var warningLabel: UILabel = {
         let label = UILabel()
         label.text = DesignSystemStrings.requestCorrectInvitationCodeInput
         label.textColor = ColorAsset.pooPink.color
@@ -43,9 +43,9 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         }
     }
     
-    public var isPlaceholderHidden: Bool = false {
+    public var isWarningLabelhidden: Bool = false {
         didSet {
-            self.placeholder.isHidden = isPlaceholderHidden
+            self.warningLabel.isHidden = isWarningLabelhidden
         }
     }
     
@@ -68,7 +68,7 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     private func layoutUI() {
 
         addSubview(textField)
-        addSubview(placeholder)
+        addSubview(warningLabel)
         
         textField.snp.makeConstraints { make in
             make.top.equalTo(super.descriptionLabel.snp.bottom).offset(13)
@@ -76,13 +76,13 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
             make.height.equalTo(45)
         }
         
-        placeholder.snp.makeConstraints { make in
+        warningLabel.snp.makeConstraints { make in
             make.top.equalTo(textField.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview().inset(23)
         }
         
         super.buttonStackView.snp.remakeConstraints { make in
-            make.top.equalTo(placeholder.snp.bottom).offset(10)
+            make.top.equalTo(warningLabel.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(24)
         }

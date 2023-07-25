@@ -56,7 +56,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         let shouldShowInvitationCodePopup = PublishRelay<Void>()
         let shouldShowSharingActivityView = PublishRelay<Void>()
         let enableConfirmButton = PublishRelay<Bool>()
-        let hidePlaceholder = PublishRelay<Bool>()
+        let hideWarningLabel = PublishRelay<Bool>()
     }
     
     public let input = Input()
@@ -102,7 +102,7 @@ public final class InvitationCodeViewModel: ViewModelType {
 
         input.didEnterInvitationCode
             .map { $0.count <= 8 }
-            .bind(to: output.hidePlaceholder)
+            .bind(to: output.hideWarningLabel)
             .disposed(by: disposeBag)
         
         input.didTapCancelButton

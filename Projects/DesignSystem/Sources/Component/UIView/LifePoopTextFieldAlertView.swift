@@ -24,7 +24,7 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     
     private var placeholder: UILabel = {
         let label = UILabel()
-        label.text = "초대코드 8자를 정확하게 입력해주세요"
+        label.text = DesignSystemStrings.requestCorrectInvitationCodeInput
         label.textColor = ColorAsset.pooPink.color
         label.font = UIFont.systemFont(ofSize: 14)
         return label

@@ -158,7 +158,7 @@ private extension InvitationCodeViewController {
         let alertViewNeedsToGoUp = keyboardMinY <= alertViewMaxY + marginOfError
         
         if alertViewNeedsToGoUp {
-            alertView.moveUp(to: 30)
+            alertView.moveUp(to: 45)
         }
     }
 }

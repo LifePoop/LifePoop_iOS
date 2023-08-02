@@ -19,6 +19,7 @@
 "withdraw" = "탈퇴하기";
 "doneEntering" = "입력 완료";
 "requestCorrectInvitationCodeInput" = "초대 코드 8자를 정확하게 입력해주세요";
+"paste" = "붙여넣기";
 
 /* CheeringButtonView */
 "goCheeringFriends" = "친구들 응원하러 가기";

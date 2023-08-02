@@ -103,7 +103,7 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let pasteButton = UIBarButtonItem(
-            title: "Paste",
+            title: DesignSystemStrings.paste,
             style: .plain,
             target: self,
             action: #selector(pasteButtonTapped)

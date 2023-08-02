@@ -21,7 +21,9 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         textField.insertLeftPadding(of: 10)
         return textField
     }()
-    
+
+    private var pasteButton: UIBarButtonItem?
+
     private var warningLabel: UILabel = {
         let label = UILabel()
         label.text = DesignSystemStrings.requestCorrectInvitationCodeInput
@@ -51,9 +53,10 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     
     public init(type: LifePoopAlertViewType, placeholder: String) {
         super.init(type: type)
-
+        
         textField.placeholder = placeholder
         layoutUI()
+        configureUI()
     }
     
     @discardableResult
@@ -66,7 +69,7 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     }
     
     private func layoutUI() {
-
+        
         addSubview(textField)
         addSubview(warningLabel)
         
@@ -86,5 +89,38 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(24)
         }
+    }
+    
+    private func configureUI() {
+        addPasteButtonToKeyboard()
+    }
+    
+    private func addPasteButtonToKeyboard() {
+        guard
+            let clipboardString = UIPasteboard.general.string
+            , clipboardString.count == 8
+        else { return }
+        
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let pasteButton = UIBarButtonItem(
+            title: "Paste",
+            style: .plain,
+            target: self,
+            action: #selector(pasteButtonTapped)
+        )
+        
+        self.pasteButton = pasteButton
+        
+        let toolbar = UIToolbar()
+        toolbar.items = [flexibleSpace, pasteButton]
+        toolbar.sizeToFit()
+        
+        textField.inputAccessoryView = toolbar
+    }
+    
+    @objc private func pasteButtonTapped() {
+        guard let clipboardString = UIPasteboard.general.string else { return }
+        
+        text = clipboardString
     }
 }

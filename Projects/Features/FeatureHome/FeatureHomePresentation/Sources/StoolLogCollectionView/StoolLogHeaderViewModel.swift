@@ -31,7 +31,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     public struct Output {
         let toggleFriendListCollectionView = PublishRelay<Bool>()
         let updateUserProfileCharacter = PublishRelay<FriendEntity>()
-        let updateFriends = PublishRelay<(user: FriendEntity, friends: [FriendEntity])>()
+        let updateFriends = PublishRelay<[FriendEntity]>()
         let setDateDescription = PublishRelay<String>()
         let setFriendsCheeringDescription = PublishRelay<String>()
         let showErrorMessage = PublishRelay<String>()
@@ -39,7 +39,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     
     public struct State {
         let userProfileCharacter = BehaviorRelay<FriendEntity?>(value: nil)
-        let friends = BehaviorRelay<(user: FriendEntity, friends: [FriendEntity])?>(value: nil)
+        let friends = BehaviorRelay<[FriendEntity]>(value: [])
     }
     
     public let input = Input()
@@ -79,7 +79,6 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         
         viewDidLoadOrRefresh
             .withLatestFrom(state.friends)
-            .compactMap { $0?.friends }
             .map { $0.isEmpty }
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)
@@ -95,10 +94,8 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .share()
         
         friendListCellIndex
-            .filter { $0 != 0 }
-            .map { $0 - 1 }
             .withLatestFrom(output.updateFriends) { index, friendEntities in
-                friendEntities.friends[index]
+                friendEntities[index]
             }
             .withUnretained(self)
             .flatMapLatest { `self`, friend in
@@ -123,7 +120,6 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         state.friends
-            .compactMap { $0?.friends }
             .map { $0.isEmpty }
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)

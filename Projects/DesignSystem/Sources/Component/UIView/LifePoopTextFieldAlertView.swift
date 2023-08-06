@@ -21,8 +21,10 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         textField.insertLeftPadding(of: 10)
         return textField
     }()
-
-    private var pasteButton: UIBarButtonItem?
+    
+    public var textFieldInputAccessoryView: UIView? {
+        textField.inputAccessoryView
+    }
 
     private var warningLabel: UILabel = {
         let label = UILabel()
@@ -108,8 +110,6 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
             target: self,
             action: #selector(pasteButtonTapped)
         )
-        
-        self.pasteButton = pasteButton
         
         let toolbar = UIToolbar()
         toolbar.items = [flexibleSpace, pasteButton]

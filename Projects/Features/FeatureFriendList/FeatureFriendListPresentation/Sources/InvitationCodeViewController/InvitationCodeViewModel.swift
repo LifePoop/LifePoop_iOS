@@ -42,7 +42,7 @@ public final class InvitationCodeViewModel: ViewModelType {
     }
     
     public struct Input {
-        let viewDidLoad = PublishRelay<Void>()
+        let viewDidAppear = PublishRelay<Void>()
         let didEnterInvitationCode = PublishRelay<String>()
         let didTapConfirmButton = PublishRelay<Void>()
         let didTapCancelButton = PublishRelay<Void>()
@@ -70,7 +70,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         toastMessageStream: PublishRelay<String>
     ) {
         
-        input.viewDidLoad
+        input.viewDidAppear
             .map { invitationType }
             .withUnretained(self)
             .bind(onNext: { `self`, invitationType in

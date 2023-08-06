@@ -27,7 +27,7 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
         let input = viewModel.input
         
         rx.viewDidAppear
-            .bind(to: input.viewDidLoad)
+            .bind(to: input.viewDidAppear)
             .disposed(by: disposeBag)
         
         rx.viewDidLoad
@@ -157,8 +157,13 @@ private extension InvitationCodeViewController {
         let marginOfError: CGFloat = 20
         let alertViewNeedsToGoUp = keyboardMinY <= alertViewMaxY + marginOfError
         
+        var pasteButtonHeight: CGFloat = .zero
+        if let pasteButtonView = self.alertView.textFieldInputAccessoryView {
+            pasteButtonHeight = pasteButtonView.frame.height
+        }
+        
         if alertViewNeedsToGoUp {
-            alertView.moveUp(to: 45)
+            alertView.moveUp(to: 30 + pasteButtonHeight)
         }
     }
 }

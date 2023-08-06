@@ -98,10 +98,8 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     }
     
     private func addPasteButtonToKeyboard() {
-        guard
-            let clipboardString = UIPasteboard.general.string
-            , clipboardString.count == 8
-        else { return }
+        guard let clipboardString = UIPasteboard.general.string,
+              clipboardString.count == 8 else { return }
         
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let pasteButton = UIBarButtonItem(

@@ -111,7 +111,9 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
             action: #selector(pasteButtonTapped)
         )
         
-        let toolbar = UIToolbar()
+        let toolbar = UIToolbar(
+            frame: CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width, height: 44))
+        )
         toolbar.items = [flexibleSpace, pasteButton]
         toolbar.sizeToFit()
         

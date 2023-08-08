@@ -28,22 +28,16 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
         view.endEditing(true)
     }
     
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        addKeyboardNotificationObserver()
+    }
+    
     public func bindInput(to viewModel: InvitationCodeViewModel) {
         let input = viewModel.input
         
         rx.viewDidAppear
             .bind(to: input.viewDidAppear)
-            .disposed(by: disposeBag)
-        
-        rx.viewDidLoad
-            .withUnretained(self)
-            .bind(onNext: { `self`, _ in
-                NotificationCenter.default.addObserver(
-                    self,
-                    selector: #selector(self.keyboardWillShow(_:)),
-                    name: UIResponder.keyboardWillShowNotification, object: nil
-                )
-            })
             .disposed(by: disposeBag)
         
         alertView.cancelButton.rx.tap
@@ -154,27 +148,43 @@ private extension InvitationCodeViewController {
     }
 }
 
+// MARK: - Keyboard Notification Methods
+
 private extension InvitationCodeViewController {
     
-    @objc func keyboardWillShow(_ notification: Notification) {
-        guard
-            let keyboardView = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-        else { return }
+    func addKeyboardNotificationObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillDismiss),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc func keyboardWillShow(_ notification: NSNotification) {
+        let keyboardView = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        guard let keyboardHeight = keyboardView?.cgRectValue.height else { return }
         
-        let keyboardRect = keyboardView.cgRectValue
-
-        let keyboardMinY = keyboardRect.minY
-        let alertViewMaxY = alertView.frame.maxY
-        let marginOfError: CGFloat = 20
-        let alertViewNeedsToGoUp = keyboardMinY <= alertViewMaxY + marginOfError
+        let keyboardTopY = view.frame.maxY - keyboardHeight
+        let alertViewBottomY = alertView.frame.maxY
         
-        var pasteButtonHeight: CGFloat = .zero
-        if let pasteButtonView = self.alertView.textFieldInputAccessoryView {
-            pasteButtonHeight = pasteButtonView.frame.height
+        if alertViewBottomY > keyboardTopY {
+            let extraSpace: CGFloat = 10.0
+            let offsetY = alertViewBottomY - keyboardTopY + extraSpace
+            
+            UIView.animate(withDuration: 0.3, animations: {
+                self.alertView.transform = CGAffineTransform(translationX: 0, y: -offsetY)
+            })
         }
-        
-        if alertViewNeedsToGoUp {
-            alertView.moveUp(to: 30 + pasteButtonHeight)
-        }
+    }
+    
+    @objc func keyboardWillDismiss(_ notification: NSNotification) {
+        self.alertView.transform = .identity
     }
 }

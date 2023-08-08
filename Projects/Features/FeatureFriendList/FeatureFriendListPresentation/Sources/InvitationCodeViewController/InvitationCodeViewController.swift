@@ -23,6 +23,11 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
     private var disposeBag = DisposeBag()
     public var viewModel: InvitationCodeViewModel?
     
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        view.endEditing(true)
+    }
+    
     public func bindInput(to viewModel: InvitationCodeViewModel) {
         let input = viewModel.input
         

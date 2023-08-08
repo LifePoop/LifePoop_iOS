@@ -96,7 +96,9 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
 private extension InvitationCodeViewController {
     
     func showEnteringCodePopup() {
-        alertView.show(in: view)
+        alertView.show(in: view) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
         alertView.becomeFirstResponder()
     }
     

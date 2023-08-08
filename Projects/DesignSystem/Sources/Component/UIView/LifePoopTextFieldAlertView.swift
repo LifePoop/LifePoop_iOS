@@ -19,6 +19,7 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         textField.clipsToBounds = true
         textField.layer.cornerRadius = 6
         textField.insertLeftPadding(of: 10)
+        textField.delegate = self
         return textField
     }()
     
@@ -118,7 +119,14 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     
     @objc private func pasteButtonTapped() {
         guard let clipboardString = UIPasteboard.general.string else { return }
-        
         text = clipboardString
+        textField.resignFirstResponder()
+    }
+}
+
+extension LifePoopTextFieldAlertView: UITextFieldDelegate {
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

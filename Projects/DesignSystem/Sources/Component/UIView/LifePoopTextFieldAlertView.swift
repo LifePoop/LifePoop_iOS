@@ -20,13 +20,14 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         textField.layer.cornerRadius = 6
         textField.insertLeftPadding(of: 10)
         textField.delegate = self
+        textField.clearButtonMode = .whileEditing
         return textField
     }()
     
     public var textFieldInputAccessoryView: UIView? {
         textField.inputAccessoryView
     }
-
+    
     private var warningLabel: UILabel = {
         let label = UILabel()
         label.text = DesignSystemStrings.requestCorrectInvitationCodeInput

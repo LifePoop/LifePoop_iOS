@@ -107,11 +107,6 @@ public class LifePoopAlertView: UIControl {
         
         fadeOut(completion: removeViews)
     }
-    
-    public func moveUp(to value: CGFloat) {
-        frame.origin.y -= value
-        UIView.animate(withDuration: 0.3) { self.layoutIfNeeded() }
-    }
 }
 
 // MARK: - Supporting Methods
@@ -129,6 +124,7 @@ private extension LifePoopAlertView {
             make.bottom.equalTo(buttonStackView).offset(16)
             make.leading.trailing.equalToSuperview().inset(30)
         }
+        parentView.layoutIfNeeded()
     }
     
     func fadeIn() {

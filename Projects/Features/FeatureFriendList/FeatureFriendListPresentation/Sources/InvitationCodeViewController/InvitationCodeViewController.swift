@@ -58,11 +58,15 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
         let output = viewModel.output
         
         output.shouldDismissAlertView
-            .bind(onNext: dismissEnteringCodePopup)
+            .bind(with: self, onNext: { `self`, _ in
+                self.dismissEnteringCodePopup()
+            })
             .disposed(by: disposeBag)
         
         output.shouldShowInvitationCodePopup
-            .bind(onNext: showEnteringCodePopup)
+            .bind(with: self, onNext: { `self`, _ in
+                self.showEnteringCodePopup()
+            })
             .disposed(by: disposeBag)
         
         output.enableConfirmButton
@@ -76,10 +80,12 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
         // TODO: 우선은 클립보드에 초대코드 복사된 것만 확인
         // 추후 서버에서 초대코드 생성되면 UseCase 거쳐서 textToShare 초기화하도록 수정할 예정
         output.shouldShowSharingActivityView
-            .bind(onNext: showSharingPopup)
+            .bind(with: self, onNext: { `self`, _ in
+                self.showSharingPopup()
+            })
             .disposed(by: disposeBag)
     }
-        
+    
     override public func configureUI() {
         super.configureUI()
         

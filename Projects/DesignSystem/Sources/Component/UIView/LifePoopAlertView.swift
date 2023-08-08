@@ -129,6 +129,7 @@ private extension LifePoopAlertView {
             make.bottom.equalTo(buttonStackView).offset(16)
             make.leading.trailing.equalToSuperview().inset(30)
         }
+        parentView.layoutIfNeeded()
     }
     
     func fadeIn() {

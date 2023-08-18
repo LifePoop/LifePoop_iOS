@@ -75,6 +75,7 @@ Signing/
 
 ### Fastlane
 *.ipa
+*.dSYM.zip
 fastlane/.env
 fastlane/.env.default
 fastlane/report.xml

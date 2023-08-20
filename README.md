@@ -36,10 +36,14 @@
 <br>
 <br>
 
-## Wiki
-- [프로젝트 모듈화 여정](https://github.com/LifePoop/LifePoop_iOS/wiki/1.-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EB%AA%A8%EB%93%88%ED%99%94-%EC%97%AC%EC%A0%95)
-- [클린 아키텍처 기반 계층 설계 및 모듈 구성](https://github.com/LifePoop/LifePoop_iOS/wiki/2.-%ED%81%B4%EB%A6%B0-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EA%B8%B0%EB%B0%98-%EA%B3%84%EC%B8%B5-%EC%84%A4%EA%B3%84-%EB%B0%8F-%EB%AA%A8%EB%93%88-%EA%B5%AC%EC%84%B1)
-- [프로젝트 구성 모듈의 책임에 대한 설명](https://github.com/LifePoop/LifePoop_iOS/wiki/3.-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%84%B1-%EB%AA%A8%EB%93%88%EC%9D%98-%EC%B1%85%EC%9E%84%EC%97%90-%EB%8C%80%ED%95%9C-%EC%84%A4%EB%AA%85)
+## 클린 아키텍처 기반 모듈화 구조
+
+<img src="https://github.com/LifePoop/LifePoop_iOS/assets/57667738/b4edce23-7863-45f7-927c-eaed32a5ac06" width="70%">
+
+#### Wiki
+- **[프로젝트 모듈화 여정](https://github.com/LifePoop/LifePoop_iOS/wiki/1.-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EB%AA%A8%EB%93%88%ED%99%94-%EC%97%AC%EC%A0%95)**
+- **[클린 아키텍처 기반 계층 설계 및 모듈 구성](https://github.com/LifePoop/LifePoop_iOS/wiki/2.-%ED%81%B4%EB%A6%B0-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EA%B8%B0%EB%B0%98-%EA%B3%84%EC%B8%B5-%EC%84%A4%EA%B3%84-%EB%B0%8F-%EB%AA%A8%EB%93%88-%EA%B5%AC%EC%84%B1)**
+- **[프로젝트 구성 모듈의 책임에 대한 설명](https://github.com/LifePoop/LifePoop_iOS/wiki/3.-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%84%B1-%EB%AA%A8%EB%93%88%EC%9D%98-%EC%B1%85%EC%9E%84%EC%97%90-%EB%8C%80%ED%95%9C-%EC%84%A4%EB%AA%85)**
 
 <br>
 <br>
@@ -103,7 +107,7 @@ https://github.com/LifePoop/LifePoop_iOS/assets/57667738/def55523-1540-4d21-99be
 <br>
 
 
-## Developers
+## iOS Developers
 
 |<img width="200" alt="CleanShot 2023-07-01 at 00 46 37@2x" src="https://github.com/LifePoop/LifePoop_iOS/assets/57667738/f6f4144f-c26d-4bf6-8af7-9abff02a9271">|<img width="200" alt="CleanShot 2023-07-01 at 00 46 23@2x" src="https://github.com/LifePoop/LifePoop_iOS/assets/57667738/69bef9ea-6241-40ef-ad1d-33d29d475241">|
 |---|---|

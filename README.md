@@ -4,8 +4,7 @@
 ![CleanShot 2023-06-29 at 23 10 1](https://github.com/LifePoop/LifePoop_iOS/assets/57667738/95774914-2b55-463c-9014-39fffcf47e91)
 
 - 배변 활동을 간편하게 기록하고 서로의 건강 활동을 응원해주며, 배변 일지를 리포트할 수 있는 앱입니다.
-- 차별화된 ‘변 캐릭터’를 만들어, 기존의 딱딱한 배변 활동 일지 기록을
-조금 더 유쾌하고 편안하게 풀어내자는 방향성을 담고 있습니다.
+- 차별화된 ‘변 캐릭터’를 만들어, 배변 활동 기록을 조금 더 유쾌하고 편안하게 풀어내자는 방향성을 담고 있습니다.
 
 <br>
 <br>
@@ -21,7 +20,7 @@
 
 |Libraries|Description|
 |---|---|
-|**RxSwift**|비동기 및 이벤트 기반 반응형 프로그래밍|
+|**RxSwift**|비동기 및 반응형 프로그래밍|
 |**SnapKit**|Layout Constraint 코드 간결화|
 |**lottie-ios**|애니메이션 처리, 사용자 경험 향상|
 |**KakaoSDK(Common, Auth, User)**|카카오 공통, 인증, 사용자 API|
@@ -31,7 +30,7 @@
 |Tools|Description|
 |---|---|
 |**Tuist**|워크스페이스 설정 및 모듈화, 의존성 관리|
-|**Fastlane**|빌드 배포 자동화|
+|**Fastlane, Github Actions**|Testflight 빌드 배포 자동화|
 |**SwiftLint**|일관된 코드 스타일 유지|
 
 <br>
@@ -45,7 +44,21 @@
 <br>
 <br>
 
-## 스크린샷
+## 실행 화면
+
+|온보딩|회원가입|변 기록|변 기록 리포트|
+|---|---|---|---|
+|![CleanShot 2023-08-20 at 15 55 47](https://github.com/sanghyeok-kim/MyGitHubTracker/assets/57667738/a4d8faf3-13df-46f1-a778-95573975ee68)|![CleanShot 2023-08-20 at 15 17 14](https://github.com/sanghyeok-kim/MyGitHubTracker/assets/57667738/14f58b1c-1369-421a-bede-8afdc7ef14e7)|![CleanShot 2023-08-20 at 15 35 46](https://github.com/sanghyeok-kim/MyGitHubTracker/assets/57667738/2fb75671-9764-46b5-bbc4-e7a33b2aecc3)|![CleanShot 2023-08-20 at 15 22 20](https://github.com/sanghyeok-kim/MyGitHubTracker/assets/57667738/bc7e9326-585e-4e7b-8c31-7659c52e5007)|
+
+|설정 - 프로필 수정|설정|친구의 스토리 & 힘주기|친구 목록 - 초대 코드 복사 & 입력|
+|---|---|---|---|
+|![CleanShot 2023-08-20 at 15 22 54](https://github.com/sanghyeok-kim/MyGitHubTracker/assets/57667738/a7e1b3e3-33ec-446c-915b-5fbcddc21bc8)|![CleanShot 2023-08-20 at 15 30 59](https://github.com/sanghyeok-kim/MyGitHubTracker/assets/57667738/4c4ac2fd-aec1-4891-8301-524a0830b027)|![CleanShot 2023-08-20 at 16 04 38](https://github.com/sanghyeok-kim/MyGitHubTracker/assets/57667738/8f2765eb-6ec7-4d09-a7d7-79983c8842c6)|![CleanShot 2023-08-20 at 15 44 15](https://github.com/sanghyeok-kim/MyGitHubTracker/assets/57667738/55860582-562a-49ab-81d3-3904e600f5ec)|
+
+<br>
+
+<details>
+<summary>스크린 샷</summary>
+
 
 #### 온보딩 & 정보 입력  
 ![Group 2884](https://github.com/LifePoop/LifePoop_iOS/assets/57667738/cddf5efd-edb8-4d1d-80bc-6b07bffff5f3)
@@ -58,11 +71,12 @@
 
 #### 설정  
 ![Group 2887](https://github.com/LifePoop/LifePoop_iOS/assets/57667738/017900b9-d2d6-45a5-a510-b6e2d2e1501a)
+</details>
 
 <br>
-<br>
 
-## 데모 영상
+<details>
+<summary>데모 영상</summary>
 
 #### 온보딩
 https://github.com/LifePoop/LifePoop_iOS/assets/57667738/3bfc678c-607c-4d4e-a39b-23cf9ce825ba
@@ -81,6 +95,8 @@ https://github.com/LifePoop/LifePoop_iOS/assets/57667738/b56b22a4-3477-4cbb-95aa
 
 #### 설정
 https://github.com/LifePoop/LifePoop_iOS/assets/57667738/def55523-1540-4d21-99be-20dcc0fb389e
+
+</details>
 
 
 <br>

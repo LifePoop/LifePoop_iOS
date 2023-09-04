@@ -99,7 +99,11 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         return collectionView
     }()
     
-    private let nextButton = LifePoopButton(title: LocalizableString.next)
+    private let nextButton: LifePoopButton = {
+        let button = LifePoopButton()
+        button.setTitle(LocalizableString.next, for: .normal)
+        return button
+    }()
     
     private var sumOfVerticalMargins: CGFloat = .zero
     

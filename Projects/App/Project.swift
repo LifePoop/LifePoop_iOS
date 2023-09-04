@@ -18,5 +18,27 @@ let project = Project.makeModule(
     resources: ["Resources/**"],
     infoPlist: .file(path: "Attributes/Info.plist"),
     entitlements: .entitlementsPath(for: .App),
+    settings: .settings(
+        configurations: [
+            .debug(
+                name: "Debug",
+                settings: SettingsDictionary()
+                    .manualCodeSigning(
+                        identity: "Apple Development",
+                        provisioningProfileSpecifier: "match Development com.Lifepoo.App"
+                    ),
+                xcconfig: "./xcconfigs/\(Modules.App.name).base.xcconfig"
+            ),
+            .release(
+                name: "Release",
+                settings: SettingsDictionary()
+                    .manualCodeSigning(
+                        identity: "Apple Distribution",
+                        provisioningProfileSpecifier: "match AppStore com.Lifepoo.App"
+                    ),
+                xcconfig: "./xcconfigs/\(Modules.App.name).base.xcconfig"
+            )
+        ]
+    ),
     hasTests: false
 )

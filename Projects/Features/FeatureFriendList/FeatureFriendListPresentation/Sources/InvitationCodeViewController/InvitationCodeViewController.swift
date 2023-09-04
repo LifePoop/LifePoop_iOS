@@ -18,27 +18,26 @@ import Utils
 
 public final class InvitationCodeViewController: LifePoopViewController, ViewType {
     
-    private let alertView = LifePoopTextFieldAlertView(type: .invitationCode, placeholder: "ex) vMXxOXq")
+    private let alertView = LifePoopTextFieldAlertView(type: .invitationCode, placeholder: "ex) vMXxaOXq")
     
     private var disposeBag = DisposeBag()
     public var viewModel: InvitationCodeViewModel?
+    
+    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        view.endEditing(true)
+    }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        addKeyboardNotificationObserver()
+    }
     
     public func bindInput(to viewModel: InvitationCodeViewModel) {
         let input = viewModel.input
         
         rx.viewDidAppear
-            .bind(to: input.viewDidLoad)
-            .disposed(by: disposeBag)
-        
-        rx.viewDidLoad
-            .withUnretained(self)
-            .bind(onNext: { `self`, _ in
-                NotificationCenter.default.addObserver(
-                    self,
-                    selector: #selector(self.keyboardWillShow(_:)),
-                    name: UIResponder.keyboardWillShowNotification, object: nil
-                )
-            })
+            .bind(to: input.viewDidAppear)
             .disposed(by: disposeBag)
         
         alertView.cancelButton.rx.tap
@@ -58,20 +57,34 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
         let output = viewModel.output
         
         output.shouldDismissAlertView
-            .bind(onNext: dismissEnteringCodePopup)
+            .bind(with: self, onNext: { `self`, _ in
+                self.dismissEnteringCodePopup()
+            })
             .disposed(by: disposeBag)
         
         output.shouldShowInvitationCodePopup
-            .bind(onNext: showEnteringCodePopup)
+            .bind(with: self, onNext: { `self`, _ in
+                self.showEnteringCodePopup()
+            })
+            .disposed(by: disposeBag)
+        
+        output.enableConfirmButton
+            .bind(to: alertView.rx.isConfirmButtonEnabled)
+            .disposed(by: disposeBag)
+        
+        output.hideWarningLabel
+            .bind(to: alertView.rx.isWarningLabelhidden)
             .disposed(by: disposeBag)
         
         // TODO: 우선은 클립보드에 초대코드 복사된 것만 확인
         // 추후 서버에서 초대코드 생성되면 UseCase 거쳐서 textToShare 초기화하도록 수정할 예정
         output.shouldShowSharingActivityView
-            .bind(onNext: showSharingPopup)
+            .bind(with: self, onNext: { `self`, _ in
+                self.showSharingPopup()
+            })
             .disposed(by: disposeBag)
     }
-        
+    
     override public func configureUI() {
         super.configureUI()
         
@@ -83,7 +96,9 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
 private extension InvitationCodeViewController {
     
     func showEnteringCodePopup() {
-        alertView.show(in: view)
+        alertView.show(in: view) { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
         alertView.becomeFirstResponder()
     }
     
@@ -135,22 +150,43 @@ private extension InvitationCodeViewController {
     }
 }
 
+// MARK: - Keyboard Notification Methods
+
 private extension InvitationCodeViewController {
     
-    @objc func keyboardWillShow(_ notification: Notification) {
-        guard
-            let keyboardView = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-        else { return }
+    func addKeyboardNotificationObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillDismiss),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc func keyboardWillShow(_ notification: NSNotification) {
+        let keyboardView = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        guard let keyboardHeight = keyboardView?.cgRectValue.height else { return }
         
-        let keyboardRect = keyboardView.cgRectValue
-
-        let keyboardMinY = keyboardRect.minY
-        let alertViewMaxY = alertView.frame.maxY
-        let marginOfError: CGFloat = 20
-        let alertViewNeedsToGoUp = keyboardMinY <= alertViewMaxY + marginOfError
+        let keyboardTopY = view.frame.maxY - keyboardHeight
+        let alertViewBottomY = alertView.frame.maxY
         
-        if alertViewNeedsToGoUp {
-            alertView.moveUp(to: 30)
+        if alertViewBottomY > keyboardTopY {
+            let extraSpace: CGFloat = 10.0
+            let offsetY = alertViewBottomY - keyboardTopY + extraSpace
+            
+            UIView.animate(withDuration: 0.3, animations: {
+                self.alertView.transform = CGAffineTransform(translationX: 0, y: -offsetY)
+            })
         }
+    }
+    
+    @objc func keyboardWillDismiss(_ notification: NSNotification) {
+        self.alertView.transform = .identity
     }
 }

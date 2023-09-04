@@ -19,7 +19,21 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         textField.clipsToBounds = true
         textField.layer.cornerRadius = 6
         textField.insertLeftPadding(of: 10)
+        textField.delegate = self
+        textField.clearButtonMode = .whileEditing
         return textField
+    }()
+    
+    public var textFieldInputAccessoryView: UIView? {
+        textField.inputAccessoryView
+    }
+    
+    private var warningLabel: UILabel = {
+        let label = UILabel()
+        label.text = DesignSystemStrings.requestCorrectInvitationCodeInput
+        label.textColor = ColorAsset.pooPink.color
+        label.font = UIFont.systemFont(ofSize: 14)
+        return label
     }()
     
     public var text: String? {
@@ -29,11 +43,24 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
         }
     }
     
+    public var isConfirmButtonEnabled: Bool = false {
+        didSet {
+            super.confirmButton.isEnabled = isConfirmButtonEnabled
+        }
+    }
+    
+    public var isWarningLabelhidden: Bool = false {
+        didSet {
+            self.warningLabel.isHidden = isWarningLabelhidden
+        }
+    }
+    
     public init(type: LifePoopAlertViewType, placeholder: String) {
         super.init(type: type)
-
+        
         textField.placeholder = placeholder
         layoutUI()
+        configureUI()
     }
     
     @discardableResult
@@ -46,18 +73,63 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     }
     
     private func layoutUI() {
-
+        
         addSubview(textField)
+        addSubview(warningLabel)
+        
         textField.snp.makeConstraints { make in
             make.top.equalTo(super.descriptionLabel.snp.bottom).offset(13)
             make.leading.trailing.equalToSuperview().inset(23)
             make.height.equalTo(45)
         }
         
+        warningLabel.snp.makeConstraints { make in
+            make.top.equalTo(textField.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(23)
+        }
+        
         super.buttonStackView.snp.remakeConstraints { make in
-            make.top.equalTo(textField.snp.bottom).offset(34)
+            make.top.equalTo(warningLabel.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(24)
         }
+    }
+    
+    private func configureUI() {
+        addPasteButtonToKeyboard()
+    }
+    
+    private func addPasteButtonToKeyboard() {
+        guard let clipboardString = UIPasteboard.general.string,
+              clipboardString.count == 8 else { return }
+        
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let pasteButton = UIBarButtonItem(
+            title: DesignSystemStrings.paste,
+            style: .plain,
+            target: self,
+            action: #selector(pasteButtonTapped)
+        )
+        
+        let toolbar = UIToolbar(
+            frame: CGRect(origin: .zero, size: CGSize(width: UIScreen.main.bounds.width, height: 44))
+        )
+        toolbar.items = [flexibleSpace, pasteButton]
+        toolbar.sizeToFit()
+        
+        textField.inputAccessoryView = toolbar
+    }
+    
+    @objc private func pasteButtonTapped() {
+        guard let clipboardString = UIPasteboard.general.string else { return }
+        text = clipboardString
+        textField.resignFirstResponder()
+    }
+}
+
+extension LifePoopTextFieldAlertView: UITextFieldDelegate {
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

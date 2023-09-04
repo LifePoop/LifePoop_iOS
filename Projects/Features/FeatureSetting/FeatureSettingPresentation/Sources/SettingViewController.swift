@@ -96,14 +96,14 @@ public final class SettingViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: SettingViewModel) {
         let output = viewModel.output
         
-        output.settingCellViewModels
-            .asDriver()
-            .drive(onNext: settingTableViewDataSource.setCellViewModels)
+        output.updateSettingCellViewModels
+            .asSignal()
+            .emit(onNext: settingTableViewDataSource.updateCellViewModels)
             .disposed(by: disposeBag)
         
-        output.footerViewModel
-            .asDriver()
-            .drive(settingTableViewDelegate.footerViewModel)
+        output.updateFooterViewModel
+            .asSignal()
+            .emit(to: settingTableViewDelegate.footerViewModel)
             .disposed(by: disposeBag)
         
         output.showLogoutAlert

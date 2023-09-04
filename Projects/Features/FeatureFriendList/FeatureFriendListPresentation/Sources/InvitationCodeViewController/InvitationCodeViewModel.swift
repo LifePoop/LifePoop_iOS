@@ -42,7 +42,7 @@ public final class InvitationCodeViewModel: ViewModelType {
     }
     
     public struct Input {
-        let viewDidLoad = PublishRelay<Void>()
+        let viewDidAppear = PublishRelay<Void>()
         let didEnterInvitationCode = PublishRelay<String>()
         let didTapConfirmButton = PublishRelay<Void>()
         let didTapCancelButton = PublishRelay<Void>()
@@ -55,6 +55,8 @@ public final class InvitationCodeViewModel: ViewModelType {
         let shouldDismissAlertView = PublishRelay<Void>()
         let shouldShowInvitationCodePopup = PublishRelay<Void>()
         let shouldShowSharingActivityView = PublishRelay<Void>()
+        let enableConfirmButton = PublishRelay<Bool>()
+        let hideWarningLabel = PublishRelay<Bool>()
     }
     
     public let input = Input()
@@ -68,7 +70,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         toastMessageStream: PublishRelay<String>
     ) {
         
-        input.viewDidLoad
+        input.viewDidAppear
             .map { invitationType }
             .withUnretained(self)
             .bind(onNext: { `self`, invitationType in
@@ -91,6 +93,16 @@ public final class InvitationCodeViewModel: ViewModelType {
         input.didCloseSharingPopup
             .compactMap { $0?.description }
             .bind(to: toastMessageStream)
+            .disposed(by: disposeBag)
+        
+        input.didEnterInvitationCode
+            .map { $0.count >= 8 }
+            .bind(to: output.enableConfirmButton)
+            .disposed(by: disposeBag)
+
+        input.didEnterInvitationCode
+            .map { $0.count <= 8 }
+            .bind(to: output.hideWarningLabel)
             .disposed(by: disposeBag)
         
         input.didTapCancelButton

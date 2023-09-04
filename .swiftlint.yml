@@ -12,7 +12,6 @@ disabled_rules:
     - vertical_whitespace
     - vertical_parameter_alignment
     - cyclomatic_complexity
-    - void_function_in_ternary
     - comment_spacing
     - function_parameter_count
     - type_name
@@ -23,3 +22,4 @@ disabled_rules:
 opt_in_rules:
     - empty_string
     - sorted_imports
+    - operator_usage_whitespace

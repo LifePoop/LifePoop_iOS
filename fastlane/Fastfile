@@ -1,0 +1,179 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+ENV['TZ'] = 'Asia/Seoul'
+
+DEVELOPER_APP_ID = ENV["DEVELOPER_APP_ID"]
+DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
+PROVISIONING_PROFILE_SPECIFIER = ENV["PROVISIONING_PROFILE_SPECIFIER"]
+TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
+TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
+APPLE_ISSUER_ID = ENV["APPLE_ISSUER_ID"]
+APPLE_KEY_ID = ENV["APPLE_KEY_ID"]
+APPLE_KEY_CONTENT = ENV["APPLE_KEY_CONTENT"]
+GIT_AUTHORIZATION = ENV["GIT_AUTHORIZATION"]
+
+APP_NAME = "LifePoop"
+TARGET_SCHEME = "App"
+TARGET_PATH = "./Projects/#{TARGET_SCHEME}/#{TARGET_SCHEME}.xcodeproj"
+XCCONFIGS_FILE_PATH = "../Projects/App/xcconfigs/App.base.xcconfig"
+
+platform :ios do
+  lane :beta do |options|
+    
+    # beta 명령어의 매개변수로 버전값 지정, 지정하지 않을 경우 xcconfig에 설정된 버전값을 가져와서 지정함
+    new_version_number = options[:new_version_number] || get_xcconfig_value("MARKETING_VERSION")
+    new_build_number = Time.new.strftime("%y%m%d.%H%M%S")
+    set_build_info(new_build_number, new_version_number)
+    UI.message("New Version Number: #{new_version_number}, New Build Number: #{new_build_number}")
+    
+    keychain_name = TEMP_KEYCHAIN_USER
+    keychain_password = TEMP_KEYCHAIN_PASSWORD
+    ensure_temp_keychain(keychain_name, keychain_password)
+    
+    api_key = app_store_connect_api_key(
+      key_id: APPLE_KEY_ID,
+      issuer_id: APPLE_ISSUER_ID,
+      key_content: APPLE_KEY_CONTENT,            
+    )
+    
+    match(
+      type: "appstore",
+      app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
+      git_basic_authorization: Base64.strict_encode64(GIT_AUTHORIZATION),
+      readonly: true,
+      keychain_name: keychain_name,
+      keychain_password: keychain_password,
+      api_key: api_key
+    )
+    
+    build_app(
+      configuration: "Release",
+      workspace: "#{APP_NAME}.xcworkspace",
+      scheme: "#{TARGET_SCHEME}",
+      skip_profile_detection: true,
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          DEVELOPER_APP_IDENTIFIER => PROVISIONING_PROFILE_SPECIFIER
+        }
+      }
+    )
+    
+    upload_to_testflight(
+      apple_id: "#{DEVELOPER_APP_ID}",
+      app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      distribute_external: false,
+      notify_external_testers: false,
+      ipa: "./#{TARGET_SCHEME}.ipa"
+    )
+    
+    delete_temp_keychain(keychain_name)
+    send_slack_notification(new_version_number, new_build_number)
+  end
+end
+
+# - Keychain Functions
+
+def delete_temp_keychain(name)
+  delete_keychain(
+    name: name
+  ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+end
+
+def create_temp_keychain(name, password)
+  create_keychain(
+    name: name,
+    password: password,
+    unlock: false,
+    timeout: 0
+  )
+end
+
+def ensure_temp_keychain(name, password)
+  delete_temp_keychain(name)
+  create_temp_keychain(name, password)
+end
+
+# - Build & Versioning Functions
+
+def set_build_info(new_build_number, new_version_number)
+  set_xcconfig_value("MARKETING_VERSION", new_version_number)
+  increment_build_number(
+    xcodeproj: "#{TARGET_PATH}",
+    build_number: new_build_number
+  )
+end
+
+# - XCConfig Functions
+
+def read_xcconfig_file(xcconfigs_file_path)
+  configs = {}
+
+  # xcconfig 파일이 있는지 확인
+  unless File.exist?(xcconfigs_file_path)
+    UI.error("xcconfig file not found at path: #{XCCONFIGS_FILE_PATH}")
+    return configs
+  end
+
+  # xcconfig 파일 내용 읽기
+  File.readlines(xcconfigs_file_path).each do |line|
+    key, value = line.split(" = ").map(&:strip)
+    configs[key] = value if key && value
+  end
+
+  return configs
+end
+
+def write_to_xcconfig_file(configs, xcconfigs_file_path = XCCONFIGS_FILE_PATH)
+  # 파일에 쓰기
+  File.open(xcconfigs_file_path, "w") do |file|
+    configs.each { |key, value| file.puts "#{key} = #{value}" }
+  end
+end
+
+def get_xcconfig_value(targetKey, xcconfigs_file_path = XCCONFIGS_FILE_PATH)
+  configs = read_xcconfig_file(xcconfigs_file_path)
+  return configs[targetKey]
+end
+
+def set_xcconfig_value(targetKey, targetValue, xcconfigs_file_path = XCCONFIGS_FILE_PATH)
+  configs = read_xcconfig_file(xcconfigs_file_path)
+
+  # 값 설정
+  configs[targetKey] = targetValue
+
+  # 새로운 값으로 xcconfig 파일 업데이트
+  write_to_xcconfig_file(configs, xcconfigs_file_path)
+end
+
+# - Slack Functions
+
+def send_slack_notification(version_number, build_number)
+  slack(
+    message: ":airplane: TestFlight 빌드 업로드에 성공하였습니다.",
+    slack_url: ENV["SLACK_URL"],
+    default_payloads: [:git_branch],
+    payload: {
+      "Version" => version_number,
+      "Build Number" => build_number,
+      "Date" => Time.new.to_s
+    }
+  )
+end

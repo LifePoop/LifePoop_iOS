@@ -20,15 +20,10 @@ public extension Project {
         resources: ResourceFileElements? = nil,
         infoPlist: InfoPlist = .default,
         entitlements: Path? = nil,
+        settings: Settings? = nil,
+        additionalFiles: [FileElement] = [],
         hasTests: Bool = true
     ) -> Project {
-        let settings: Settings = .settings(
-            base: [:],
-            configurations: [
-                .debug(name: .debug),
-                .release(name: .release)
-            ], defaultSettings: .recommended)
-        
         let appTarget = makeTarget(
             name: name,
             platform: platform,
@@ -39,7 +34,8 @@ public extension Project {
             sources: sources,
             resources: resources,
             entitlements: entitlements,
-            dependencies: dependencies
+            dependencies: dependencies,
+            settings: settings
         )
         
         let testTarget = makeTestTarget(
@@ -59,7 +55,8 @@ public extension Project {
             packages: packages,
             settings: settings,
             targets: targets,
-            schemes: schemes
+            schemes: schemes,
+            additionalFiles: additionalFiles
         )
     }
     
@@ -73,7 +70,8 @@ public extension Project {
         sources: SourceFilesList,
         resources: ResourceFileElements?,
         entitlements: Path?,
-        dependencies: [TargetDependency]
+        dependencies: [TargetDependency],
+        settings: Settings?
     ) -> Target {
         return Target(
             name: name,
@@ -86,7 +84,8 @@ public extension Project {
             resources: resources,
             entitlements: entitlements,
             scripts: [.SwiftLintShell],
-            dependencies: dependencies
+            dependencies: dependencies,
+            settings: settings
         )
     }
     

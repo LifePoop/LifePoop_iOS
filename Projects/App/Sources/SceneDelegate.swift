@@ -117,7 +117,6 @@ private extension SceneDelegate {
         SharedDIContainer.shared.register(service: BundleResourceRepository.self) { DefaultBundleResourceRepository() }
         SharedDIContainer.shared.register(service: UserDefaultsRepository.self) { DefaultUserDefaultsRepository() }
         SharedDIContainer.shared.register(service: KeyChainRepository.self) { DefaultKeyChainRepository() }
-        SharedDIContainer.shared.register(service: UserInfoUseCase.self) { DefaultUserInfoUseCase() }
     }
     
     func registerLoginDependencies() {

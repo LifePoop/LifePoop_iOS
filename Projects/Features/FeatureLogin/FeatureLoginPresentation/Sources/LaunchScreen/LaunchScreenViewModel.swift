@@ -14,9 +14,8 @@ import RxSwift
 import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
+import FeatureLoginUseCase
 import Logger
-import SharedDIContainer
-import SharedUseCase
 import Utils
 
 public final class LaunchScreenViewModel: ViewModelType {
@@ -28,9 +27,9 @@ public final class LaunchScreenViewModel: ViewModelType {
     }
     
     public struct Output { }
-    
-    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
-    
+
+    @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
+
     public let input = Input()
     public let output = Output()
     
@@ -42,8 +41,8 @@ public final class LaunchScreenViewModel: ViewModelType {
         
         let preparationResult = input.viewWillAppear
             .withUnretained(self)
-            .flatMapCompletableMaterialized {  `self`, _ in
-                self.userInfoUseCase.clearUserAuthInfoIfNeeded()
+            .flatMapCompletableMaterialized { `self`, _ in
+                self.loginUseCase.clearUserAuthInfoIfNeeded()
             }
             .share()
         
@@ -65,7 +64,7 @@ public final class LaunchScreenViewModel: ViewModelType {
         )
         .withUnretained(self)
         .flatMapLatest { `self`, _ in
-            self.userInfoUseCase.userInfo
+            self.loginUseCase.userInfo
                 .map { $0 != nil }
         }
         .bind(onNext: { hasToken in

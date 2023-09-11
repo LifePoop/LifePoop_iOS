@@ -12,5 +12,5 @@ public protocol DataMapper {
     associatedtype Input
     associatedtype Output
 
-    func transform(_ input: Input) -> Output
+    func transform(_ input: Input) throws -> Output
 }

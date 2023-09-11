@@ -8,15 +8,14 @@
 
 import Foundation
 
-// MARK: Eraser Pattern for DataMapper
-public struct AnyDataMapper<DTO, Entity>: DataMapper {
-    private let _transform: (_: DTO) -> Entity
-    
-    public init<T: DataMapper>(_ mapper: T) where T.Input == DTO, T.Output == Entity {
+public struct AnyDataMapper<Input, Output>: DataMapper {
+    private let _transform: (_: Input) throws -> Output
+
+    public init<T: DataMapper>(_ mapper: T) where T.Input == Input, T.Output == Output {
         self._transform = mapper.transform
     }
-    
-    public func transform(_ dto: DTO) -> Entity {
-        return _transform(dto)
+
+    public func transform(_ input: Input) throws -> Output {
+        return try _transform(input)
     }
 }

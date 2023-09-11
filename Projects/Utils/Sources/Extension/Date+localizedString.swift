@@ -10,10 +10,14 @@ import Foundation
 
 public extension Date {
     var localizedDateString: String {
-        return LifePoopDateFormatter.shared.localizedString(from: self, dateStyle: .long, timeStyle: .none)
+        return LifePoopDateFormatter.shared.convertDateToLocalizedString(from: self, dateStyle: .long, timeStyle: .none)
     }
     
     var localizedTimeString: String {
-        return LifePoopDateFormatter.shared.localizedString(from: self, dateStyle: .none, timeStyle: .short)
+        return LifePoopDateFormatter.shared.convertDateToLocalizedString(from: self, dateStyle: .none, timeStyle: .short)
+    }
+    
+    var iso8601FormatDateString: String {
+        return LifePoopDateFormatter.shared.convertDateToISO8601FormatString(from: self)
     }
 }

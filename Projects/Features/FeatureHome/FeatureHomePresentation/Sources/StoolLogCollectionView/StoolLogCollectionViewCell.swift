@@ -59,7 +59,7 @@ extension StoolLogCollectionViewCell {
     func configure(with stoolLogItem: StoolLogItem) {
         switch stoolLogItem.itemState {
         case .stoolLog(let stoolLogEntity):
-            timeDescriptionLabel.text = stoolLogEntity.date
+            timeDescriptionLabel.text = stoolLogEntity.date.localizedTimeString
             stoolCharactorImageView.image = stoolLogEntity.stoolImage
             backgroundImageView.image = ImageAsset.logBackground.original
         case .empty:

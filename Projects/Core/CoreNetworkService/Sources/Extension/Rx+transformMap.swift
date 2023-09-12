@@ -15,7 +15,7 @@ import RxSwift
 public extension ObservableType {
     func transformMap<T: DataMapper>(_ mapper: T) -> Observable<T.Output> where Element == T.Input {
         return map { element in
-            return mapper.transform(element)
+            return try mapper.transform(element)
         }
     }
 }
@@ -31,7 +31,7 @@ public extension PrimitiveSequence where Trait == SingleTrait {
 public extension ObservableType where Element: Sequence {
     func transformMap<T: DataMapper>(_ mapper: T) -> Observable<[T.Output]> where Element.Element == T.Input {
         return map { sequenceElement in
-            return sequenceElement.map { mapper.transform($0) }
+            return try sequenceElement.map { try mapper.transform($0) }
         }
     }
 }

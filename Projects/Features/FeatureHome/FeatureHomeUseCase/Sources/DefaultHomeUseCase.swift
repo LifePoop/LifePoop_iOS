@@ -19,6 +19,7 @@ public final class DefaultHomeUseCase: HomeUseCase {
     
     @Inject(HomeDIContainer.shared) private var homeRepository: HomeRepository
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     
     public init() { }
     
@@ -30,10 +31,13 @@ public final class DefaultHomeUseCase: HomeUseCase {
     }
     
     public func fetchStoolLogs() -> Observable<[StoolLogEntity]> {
-        return homeRepository
-            .fetchStoolLogs()
+        return userInfoUseCase.userInfo
+            .compactMap { _ in 16 } // FIXME: $0?.userInfo로 변경
+            .withUnretained(self)
+            .flatMap { `self`, userID in
+                self.homeRepository.fetchStoolLogs(of: userID)
+            }
             .logErrorIfDetected(category: .network)
-            .asObservable()
     }
     
     public func fetchUserCharacter() -> Observable<ProfileCharacter?> {
@@ -50,20 +54,22 @@ public final class DefaultHomeUseCase: HomeUseCase {
             .logErrorIfDetected(category: .network)
             .compactMap { [weak self] in self?.convertToStoryLogs($0) }
     }
+    
+    public func postStoolLog(_ stoolLogEntity: StoolLogEntity) -> Observable<StoolLogEntity> {
+        return userInfoUseCase.userInfo
+            .compactMap { _ in "accessToken" } // FIXME: $0?.authInfo.authToken?.accessToken으로 변경
+            .withUnretained(self)
+            .flatMap { `self`, accessToken in
+                self.homeRepository.postStoolLog(stoolLogEntity, accessToken: accessToken)
+            }
+            .map { StoolLogEntity(postID: $0.postID, stoolLogEntity: stoolLogEntity) }
+            .logErrorIfDetected(category: .network)
+    }
 }
 
 private extension DefaultHomeUseCase {
-    
     func convertToStoryLogs(_ stoolLogs: [StoolLogEntity]) -> [StoolStoryLogEntity] {
-        
-        let sortedStoolLogs = stoolLogs.sorted {
-            guard
-                let lhsDate = $0.date,
-                let rhsDate = $1.date
-            else { return false }
-            return lhsDate < rhsDate
-        }
-        
+        let sortedStoolLogs = stoolLogs.sorted { $0.date < $1.date }
         // TODO: 추후 서버에서 DTO 내려줄 때, '힘주기' 여부가 포함되야 하고, 아래 isFirst 조건과 함께 고려해서 isCheeringUpAvailable값이 결정되야 함
         // 우선은 isLast여부로만 힘주기 가능여부 판단하도록 처리
         let storyLogs = sortedStoolLogs.enumerated().map { index, stoolLog in

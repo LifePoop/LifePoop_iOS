@@ -9,7 +9,10 @@
 import Foundation
 
 final class LifePoopDateFormatter {
+    
     static let shared = LifePoopDateFormatter()
+    
+    private init() { }
     
     private let userLocale: Locale = {
         if let regionCode = Locale.current.regionCode,
@@ -27,11 +30,31 @@ final class LifePoopDateFormatter {
         return formatter
     }()
     
-    private init() { }
+    private lazy var iso8601DateFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        formatter.timeZone = TimeZone(abbreviation: "KST")
+        return formatter
+    }()
     
-    func localizedString(from date: Date, dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
+    func convertDateToLocalizedString(
+        from date: Date,
+        dateStyle: DateFormatter.Style,
+        timeStyle: DateFormatter.Style
+    ) -> String {
         dateFormatter.dateStyle = dateStyle
         dateFormatter.timeStyle = timeStyle
         return dateFormatter.string(from: date)
+    }
+    
+    func convertDateToISO8601FormatString(from date: Date) -> String {
+        let dateString = iso8601DateFormatter
+            .string(from: date)
+            .replacingOccurrences(of: "+09:00", with: "Z")
+        return dateString
+    }
+    
+    func convertISO8601FormatStringToDate(from dateString: String) -> Date? {
+        return iso8601DateFormatter.date(from: dateString)
     }
 }

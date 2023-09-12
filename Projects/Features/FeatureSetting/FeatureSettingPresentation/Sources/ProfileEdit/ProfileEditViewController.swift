@@ -44,7 +44,8 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
     }()
     
     private let editConfirmButton: LifePoopButton = {
-        let button = LifePoopButton(title: LocalizableString.doneModification)
+        let button = LifePoopButton()
+        button.setTitle(LocalizableString.doneModification, for: .normal)
         button.isEnabled = false
         return button
     }()
@@ -83,7 +84,7 @@ public final class ProfileEditViewController: LifePoopViewController, ViewType {
         
         output.setProfileCharater
             .asSignal()
-            .map { $0.image }
+            .map { $0.largeImage }
             .emit(onNext: profileImageEditView.setProfileImageView)
             .disposed(by: disposeBag)
         

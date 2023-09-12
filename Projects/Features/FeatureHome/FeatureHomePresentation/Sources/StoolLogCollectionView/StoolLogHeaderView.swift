@@ -12,6 +12,7 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+import CoreEntity
 import DesignSystem
 import DesignSystemReactive
 import Utils
@@ -97,6 +98,10 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
             .map { _ in }
             .bind(to: input.inviteFriendButtonDidTap)
             .disposed(by: disposeBag)
+        
+        friendListCollectionView.rx.itemSelected
+            .bind(to: input.friendListCellDidTap)
+            .disposed(by: disposeBag)
     }
     
     func bindOutput(from viewModel: StoolLogHeaderViewModel) {
@@ -144,12 +149,12 @@ private extension StoolLogHeaderView {
         
         collectionViewTopSeparatorView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(16)
-            make.leading.equalToSuperview().offset(24)
+            make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
         }
         
         collectionViewBottonSeparatorView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
+            make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
         }
         

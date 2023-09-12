@@ -81,4 +81,39 @@ public extension ProfileCharacter {
             return ImageAsset.profileSoftYellowHighlighted.original
         }
     }
+    
+    var largeImage: UIImage {
+        switch (shape, color) {
+        case (.good, .black):
+            return ImageAsset.profileGoodBlackLarge.original
+        case (.good, .pink):
+            return ImageAsset.profileGoodRedLarge.original
+        case (.good, .brown):
+            return ImageAsset.profileGoodBrownLarge.original
+        case (.good, .green):
+            return ImageAsset.profileGoodGreenLarge.original
+        case (.good, .yellow):
+            return ImageAsset.profileGoodYellowLarge.original
+        case (.hard, .black):
+            return ImageAsset.profileHardBlackLarge.original
+        case (.hard, .brown):
+            return ImageAsset.profileHardBrownLarge.original
+        case (.hard, .green):
+            return ImageAsset.profileHardGreenLarge.original
+        case (.hard, .pink):
+            return ImageAsset.profileHardRedLarge.original
+        case (.hard, .yellow):
+            return ImageAsset.profileHardYellowLarge.original
+        case (.soft, .black):
+            return ImageAsset.profileSoftBlackLarge.original
+        case (.soft, .brown):
+            return ImageAsset.profileSoftBrownLarge.original
+        case (.soft, .green):
+            return ImageAsset.profileSoftGreenLarge.original
+        case (.soft, .pink):
+            return ImageAsset.profileSoftRedLarge.original
+        case (.soft, .yellow):
+            return ImageAsset.profileSoftYellowLarge.original
+        }
+    }
 }

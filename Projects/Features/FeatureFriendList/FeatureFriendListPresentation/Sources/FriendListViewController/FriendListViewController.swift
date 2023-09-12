@@ -33,7 +33,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         collectionView.allowsMultipleSelection = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.delegate = self
-        
+        collectionView.contentInset = UIEdgeInsets(top: 30, left: .zero, bottom: 16, right: .zero)
         return collectionView
     }()
     
@@ -135,7 +135,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         friendListCollectionView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.bottom.equalToSuperview()
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
         }
         
         view.addSubview(emptyFriendListView)

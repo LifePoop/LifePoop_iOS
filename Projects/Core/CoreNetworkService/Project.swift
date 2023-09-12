@@ -14,6 +14,7 @@ let project = Project.makeModule(
     packages: [],
     dependencies: [
         .Project.module(.Core(.CoreEntity)).dependency,
+        .Project.module(.Utils).dependency,
         .SPM.RxCocoa.dependency,
         .SPM.RxRelay.dependency,
         .SPM.RxSwift.dependency

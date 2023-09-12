@@ -128,8 +128,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             .withLatestFrom(selectedStatus)
             .map { (isSatisfied, color, shape, size) -> StoolLogEntity in
                 return StoolLogEntity(
-                    id: 0, // FIXME: User Identifier로 변경
-                    date: Date().localizedTimeString,
+                    date: Date(),
                     isSatisfied: isSatisfied,
                     color: color,
                     shape: shape,
@@ -163,7 +162,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             .withLatestFrom(state.stoolLogs) { ($0, $1) }
             .map { (newStoolLog, existingStoolLogs) -> [StoolLogEntity] in
                 var newStoolLogs = existingStoolLogs
-                newStoolLogs.append(newStoolLog)
+                newStoolLogs.insert(newStoolLog, at: .zero)
                 return newStoolLogs
             }
             .bind(to: state.stoolLogs)

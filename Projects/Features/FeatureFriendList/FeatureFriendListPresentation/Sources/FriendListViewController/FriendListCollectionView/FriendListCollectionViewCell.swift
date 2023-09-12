@@ -50,7 +50,7 @@ final class FriendListCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(profileImageView)
         profileImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
+            make.leading.equalToSuperview().inset(24)
             make.centerY.equalToSuperview()
         }
         
@@ -62,7 +62,7 @@ final class FriendListCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(storyButton)
         storyButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(5)
+            make.trailing.equalToSuperview().inset(29)
             make.centerY.equalToSuperview()
         }
     }

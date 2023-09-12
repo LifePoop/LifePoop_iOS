@@ -13,6 +13,8 @@ import RxSwift
 
 import CoreEntity
 import FeatureHomeCoordinatorInterface
+import FeatureHomeDIContainer
+import FeatureHomeUseCase
 import Logger
 import Utils
 
@@ -23,12 +25,13 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         let viewDidLoad = PublishRelay<Void>()
         let inviteFriendButtonDidTap = PublishRelay<Void>()
         let cheeringButtonDidTap = PublishRelay<Void>()
+        let friendListCellDidTap = PublishRelay<IndexPath>()
     }
     
     public struct Output {
         let toggleFriendListCollectionView = PublishRelay<Bool>()
         let updateUserProfileCharacter = PublishRelay<FriendEntity>()
-        let updateFriends = PublishRelay<(user: FriendEntity, friends: [FriendEntity])>()
+        let updateFriends = PublishRelay<[FriendEntity]>()
         let setDateDescription = PublishRelay<String>()
         let setFriendsCheeringDescription = PublishRelay<String>()
         let showErrorMessage = PublishRelay<String>()
@@ -36,7 +39,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     
     public struct State {
         let userProfileCharacter = BehaviorRelay<FriendEntity?>(value: nil)
-        let friends = BehaviorRelay<(user: FriendEntity, friends: [FriendEntity])?>(value: nil)
+        let friends = BehaviorRelay<[FriendEntity]>(value: [])
     }
     
     public let input = Input()
@@ -45,6 +48,8 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     
     private weak var coordinator: HomeCoordinator?
     private let disposeBag = DisposeBag()
+    
+    @Inject(HomeDIContainer.shared) private var homeUseCase: HomeUseCase
     
     public init(coordinator: HomeCoordinator?) {
         self.coordinator = coordinator
@@ -62,7 +67,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
-            .map { Date().localizedString }
+            .map { Date().localizedDateString }
             .map { LocalizableString.stoolDiaryFor($0) }
             .bind(to: output.setDateDescription)
             .disposed(by: disposeBag)
@@ -74,7 +79,6 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         
         viewDidLoadOrRefresh
             .withLatestFrom(state.friends)
-            .compactMap { $0?.friends }
             .map { $0.isEmpty }
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)
@@ -83,6 +87,24 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .withLatestFrom(state.userProfileCharacter)
             .compactMap { $0 }
             .bind(to: output.updateUserProfileCharacter)
+            .disposed(by: disposeBag)
+        
+        let friendListCellIndex = input.friendListCellDidTap
+            .map { $0.item }
+            .share()
+        
+        friendListCellIndex
+            .withLatestFrom(output.updateFriends) { index, friendEntities in
+                friendEntities[index]
+            }
+            .withUnretained(self)
+            .flatMapLatest { `self`, friend in
+                self.homeUseCase.fetchStoolLogsOfSelectedFriend(friend)
+                    .map { (friend: friend, stoolLogs: $0) }
+            }
+            .bind(onNext: { friend, stoolLogs in
+                coordinator?.coordinate(by: .friendButtonDidTap(friend: friend, stoolLogs: stoolLogs))
+            })
             .disposed(by: disposeBag)
         
         Observable.merge(
@@ -98,7 +120,6 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         state.friends
-            .compactMap { $0?.friends }
             .map { $0.isEmpty }
             .bind(to: output.toggleFriendListCollectionView)
             .disposed(by: disposeBag)

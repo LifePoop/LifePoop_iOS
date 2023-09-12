@@ -9,27 +9,24 @@
 import Foundation
 
 public extension Date {
-    private var userLocale: Locale {
-        if let regionCode = Locale.current.regionCode,
-           let languageCode = Locale.preferredLanguages.first?.components(separatedBy: "-").first {
-            let localeIdentifier = "\(languageCode)_\(regionCode)"
-            return Locale(identifier: localeIdentifier)
-        } else {
-            return Locale.current
-        }
+    /// 현지화된 long 스타일의 `String` 타입으로 변환합니다. (시간은 포함되지 않습니다.)
+    ///
+    /// 예) "2023년 6월 21일"
+    var localizedDateString: String {
+        return LifePoopDateFormatter.shared.convertDateToLocalizedString(from: self, dateStyle: .long, timeStyle: .none)
     }
     
-    var localizedString: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.locale = userLocale
-        return formatter.string(from: self)
-    }
-    
+    /// 현지화된 short 스타일의 `String` 타입으로 변환합니다. (날짜는 포함되지 않습니다.)
+    ///
+    /// 예) "오후 2:30"
     var localizedTimeString: String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        formatter.locale = userLocale
-        return formatter.string(from: self)
+        return LifePoopDateFormatter.shared.convertDateToLocalizedString(from: self, dateStyle: .none, timeStyle: .short)
+    }
+    
+    /// ISO8601 형식의 `String` 타입으로 변환합니다.
+    ///
+    /// 예)  "2023-09-10T15:30:00Z"
+    var iso8601FormatDateString: String {
+        return LifePoopDateFormatter.shared.convertDateToISO8601FormatString(from: self)
     }
 }

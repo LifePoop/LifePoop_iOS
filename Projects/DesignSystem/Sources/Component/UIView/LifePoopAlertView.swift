@@ -84,8 +84,8 @@ public class LifePoopAlertView: UIControl {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func show(in parentView: UIView) {
-        addViews(in: parentView)
+    public func show(in parentView: UIView, completion: (() -> Void)? = nil) {
+        addViews(in: parentView, completion: completion)
         fadeIn()
     }
     
@@ -107,17 +107,12 @@ public class LifePoopAlertView: UIControl {
         
         fadeOut(completion: removeViews)
     }
-    
-    public func moveUp(to value: CGFloat) {
-        frame.origin.y -= value
-        UIView.animate(withDuration: 0.3) { self.layoutIfNeeded() }
-    }
 }
 
 // MARK: - Supporting Methods
 
 private extension LifePoopAlertView {
-    func addViews(in parentView: UIView) {
+    func addViews(in parentView: UIView, completion: (() -> Void)? = nil) {
         parentView.addSubview(backgroundView)
         backgroundView.addSubview(self)
         backgroundView.frame = parentView.bounds
@@ -129,6 +124,8 @@ private extension LifePoopAlertView {
             make.bottom.equalTo(buttonStackView).offset(16)
             make.leading.trailing.equalToSuperview().inset(30)
         }
+        
+        completion?()
     }
     
     func fadeIn() {

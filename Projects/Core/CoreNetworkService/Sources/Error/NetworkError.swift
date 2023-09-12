@@ -18,13 +18,15 @@ public enum NetworkError: LocalizedError {
     case invalidRequest
     case decodeError
     case encodeError
+    case dataMappingError
+    case accessTokenNotFound
     
     public var errorDescription: String? {
         switch self {
         case .errorDetected(let error):
             return "Error detected: \(error.localizedDescription)"
         case .objectDeallocated:
-            return "Object Deallocated."
+            return "Object deallocated."
         case .invalidURL:
             return "Invalid URL."
         case .invalidResponse:
@@ -39,6 +41,10 @@ public enum NetworkError: LocalizedError {
             return "Fail to decode."
         case .encodeError:
             return "Fail to encode."
+        case .dataMappingError:
+            return "Fail to map data."
+        case .accessTokenNotFound:
+            return "No access token found."
         }
     }
 }

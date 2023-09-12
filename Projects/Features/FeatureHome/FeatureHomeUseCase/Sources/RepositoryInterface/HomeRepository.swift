@@ -12,5 +12,7 @@ import CoreEntity
 
 public protocol HomeRepository {
     func fetchFriendList() -> Single<[FriendEntity]>
-    func fetchStoolLogs() -> Single<[StoolLogEntity]>
+    func fetchStoolLogs(of userID: Int) -> Single<[StoolLogEntity]>
+    func fetchStoolLogsOfSelectedFriend(_ friend: FriendEntity) -> Single<[StoolLogEntity]>
+    func postStoolLog(_ stoolLogEntity: StoolLogEntity, accessToken: String) -> Single<StoolLogEntity>
 }

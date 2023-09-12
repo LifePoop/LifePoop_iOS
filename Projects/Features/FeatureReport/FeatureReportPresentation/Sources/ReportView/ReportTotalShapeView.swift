@@ -44,21 +44,27 @@ final class ReportTotalShapeView: UIView {
     private lazy var softTextLabel: UILabel = {
         let label = UILabel()
         label.text = LocalizableString.wateryCount(5) // TODO: UseCase 처리
-        label.font = .systemFont(ofSize: 16)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        let shapeStringRange = label.rangeOfString(target: LocalizableString.watery)
+        label.applyFont(.systemFont(ofSize: 16, weight: .medium), range: shapeStringRange)
         return label
     }()
     
     private lazy var goodTextLabel: UILabel = {
         let label = UILabel()
         label.text = LocalizableString.smoothCount(10) // TODO: UseCase 처리
-        label.font = .systemFont(ofSize: 16)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        let shapeStringRange = label.rangeOfString(target: LocalizableString.smooth)
+        label.applyFont(.systemFont(ofSize: 16, weight: .medium), range: shapeStringRange)
         return label
     }()
     
     private lazy var hardTextLabel: UILabel = {
         let label = UILabel()
         label.text = LocalizableString.hardCount(2) // TODO: UseCase 처리
-        label.font = .systemFont(ofSize: 16)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        let shapeStringRange = label.rangeOfString(target: LocalizableString.hard)
+        label.applyFont(.systemFont(ofSize: 16, weight: .medium), range: shapeStringRange)
         return label
     }()
     

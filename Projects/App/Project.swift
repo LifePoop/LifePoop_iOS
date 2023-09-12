@@ -19,13 +19,26 @@ let project = Project.makeModule(
     infoPlist: .file(path: "Attributes/Info.plist"),
     entitlements: .entitlementsPath(for: .App),
     settings: .settings(
-      configurations: [
-        .debug(name: .debug, xcconfig: "./xcconfigs/\(Modules.App.name).debug.xcconfig"),
-        .release(name: .release, xcconfig: "./xcconfigs/\(Modules.App.name).release.xcconfig"),
-      ]
+        configurations: [
+            .debug(
+                name: "Debug",
+                settings: SettingsDictionary()
+                    .manualCodeSigning(
+                        identity: "Apple Development",
+                        provisioningProfileSpecifier: "match Development com.Lifepoo.App"
+                    ),
+                xcconfig: "./xcconfigs/\(Modules.App.name).base.xcconfig"
+            ),
+            .release(
+                name: "Release",
+                settings: SettingsDictionary()
+                    .manualCodeSigning(
+                        identity: "Apple Distribution",
+                        provisioningProfileSpecifier: "match AppStore com.Lifepoo.App"
+                    ),
+                xcconfig: "./xcconfigs/\(Modules.App.name).base.xcconfig"
+            )
+        ]
     ),
-    additionalFiles: [
-        "./xcconfigs/\(Modules.App.name).base.xcconfig"
-    ],
     hasTests: false
 )

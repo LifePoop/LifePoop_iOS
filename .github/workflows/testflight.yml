@@ -1,0 +1,70 @@
+name: Build-And-Deploy-Testflight
+
+on:
+  workflow_dispatch:
+
+jobs:
+  testflight:
+    name: Build and Deploy Testflight
+    runs-on: macOS-latest
+    strategy:
+      matrix:
+        ruby: ['3.1']
+        
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      
+    - name: Access Match Repository via SSH
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_KEY }}
+        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+        
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        
+    - name: Set up Fastlane
+      run: brew install fastlane
+      
+    - name: Install Tuist
+      run: |
+        curl -Ls https://install.tuist.io | bash
+      
+    - name: Generate Xcode project using Tuist
+      run: tuist fetch; tuist generate
+
+    - name: Deploy iOS Beta to TestFlight via Fastlane
+      run: fastlane beta
+      env:
+        # Developer Info
+        FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
+        APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
+        DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
+        
+        # App Info
+        DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
+        DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
+        
+        # Provisioning Profile Info
+        PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
+
+        # Match
+        MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+
+        # Temporary Keychain Info
+        TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+        TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+
+        # Apple API Info
+        APPLE_KEY_ID: '${{ secrets.APPLE_KEY_ID }}'
+        APPLE_ISSUER_ID: '${{ secrets.APPLE_ISSUER_ID }}'
+        APPLE_KEY_CONTENT: '${{ secrets.APPLE_KEY_CONTENT }}'
+
+        # Git Authorization
+        GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+        
+        # Slack
+        SLACK_URL: '${{ secrets.SLACK_URL }}'

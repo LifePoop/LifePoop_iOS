@@ -65,7 +65,15 @@ public final class LaunchScreenViewModel: ViewModelType {
         .withUnretained(self)
         .flatMapLatest { `self`, _ in
             self.loginUseCase.userInfo
-                .map { $0 != nil }
+        }
+        .withUnretained(self)
+        .flatMapLatest { `self`, userInfo in
+            // MARK: 기기에 인증 정보가 존재하면 유효성 검증 위해 자동으로 로그인 요청
+            if let userAuthInfo = userInfo?.authInfo {
+                return self.loginUseCase.requestSignin(with: userAuthInfo)
+            } else {
+                return Observable.just(false)
+            }
         }
         .bind(onNext: { hasToken in
             if hasToken {

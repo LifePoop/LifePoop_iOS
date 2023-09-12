@@ -59,7 +59,20 @@ public final class LoginViewModel: ViewModelType {
         fetchKakaoToken
             .compactMap { $0.element }
             .compactMap { $0 }
-            .bind(onNext: { coordinator?.coordinate(by: .didTapKakaoLoginButton(userAuthInfo: $0)) })
+            .withUnretained(self)
+            .flatMapLatest { `self`, userAuthInfo in
+                self.loginUseCase.requestSignin(with: userAuthInfo)
+                    .map { (userAuthInfo: userAuthInfo, isSuccess: $0 ) }
+            }
+            .bind(onNext: { userAuthInfo, isSuccess in
+                if isSuccess {
+                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                } else {
+                    coordinator?.coordinate(
+                        by: .didTapKakaoLoginButton(userAuthInfo: userAuthInfo)
+                    )
+                }
+            })
             .disposed(by: disposeBag)
         
         fetchKakaoToken
@@ -78,11 +91,20 @@ public final class LoginViewModel: ViewModelType {
         fetchAppleToken
             .compactMap { $0.element }
             .compactMap { $0 }
-            .bind {
-                coordinator?.coordinate(
-                    by: .didTapAppleLoginButton(userAuthInfo: $0)
-                )
+            .withUnretained(self)
+            .flatMapLatest { `self`, userAuthInfo in
+                self.loginUseCase.requestSignin(with: userAuthInfo)
+                    .map { (userAuthInfo: userAuthInfo, isSuccess: $0 ) }
             }
+            .bind(onNext: { userAuthInfo, isSuccess in
+                if isSuccess {
+                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                } else {
+                    coordinator?.coordinate(
+                        by: .didTapAppleLoginButton(userAuthInfo: userAuthInfo)
+                    )
+                }
+            })
             .disposed(by: disposeBag)
         
         fetchAppleToken

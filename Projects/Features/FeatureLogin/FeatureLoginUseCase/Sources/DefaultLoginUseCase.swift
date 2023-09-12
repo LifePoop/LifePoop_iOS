@@ -40,6 +40,10 @@ public final class DefaultLoginUseCase: LoginUseCase {
             })
     }
     
+    public func requestSignin(with userInfo: UserAuthInfoEntity) -> Observable<Bool> {
+        loginRepository.requestSignin(with: userInfo).asObservable()
+    }
+
     public func saveUserInfo(_ userInfo: UserInfoEntity) -> Completable {
         keyChainRepository
             .saveObjectToKeyChain(userInfo, forKey: .userAuthInfo)

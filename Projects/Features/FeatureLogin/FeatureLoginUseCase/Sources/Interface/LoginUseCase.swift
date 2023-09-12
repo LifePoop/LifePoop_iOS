@@ -13,6 +13,7 @@ import CoreEntity
 public protocol LoginUseCase {
     var userInfo: Observable<UserInfoEntity?> { get }
     func saveUserInfo(_ userInfo: UserInfoEntity) -> Completable
+    func requestSignin(with userInfo: UserAuthInfoEntity) -> Observable<Bool>
     func fetchUserAuthInfo(for loginType: LoginType) -> Observable<UserAuthInfoEntity?>
     func clearUserAuthInfoIfNeeded() -> Completable
 }

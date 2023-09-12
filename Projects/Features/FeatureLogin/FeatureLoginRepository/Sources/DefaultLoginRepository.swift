@@ -17,6 +17,8 @@ import Utils
 
 public final class DefaultLoginRepository: NSObject, LoginRepository {
     
+    @Inject(CoreDIContainer.shared) private var urlSessionEndpointService: EndpointService
+    
     public override init() { }
     
     private func authManager(for loginType: LoginType) -> AuthManagable {
@@ -29,6 +31,17 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
     }
     
     public func fetchAccessToken(for loginType: LoginType) -> Single<String> {
-        authManager(for: loginType).fetchToken()
+        authManager(for: loginType).fetchAccessToken()
+    }
+    
+    public func requestSignin(with userAuthInfo: UserAuthInfoEntity) -> Single<Bool> {
+        guard let loginType = userAuthInfo.loginType else { return Single.just(false) }
+        
+        return urlSessionEndpointService
+            .fetchStatusCode(endpoint: LifePoopLocalTarget.login(accessToken: userAuthInfo.accessToken, provider: loginType.description))
+            .asObservable()
+            .map { $0 >= 200 && $0 < 300 }
+            .catchAndReturn(false)
+            .asSingle()
     }
 }

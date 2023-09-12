@@ -51,15 +51,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
     public func fetchUserAuthInfo(for loginType: LoginType) -> Observable<UserAuthInfoEntity?> {
         loginRepository.fetchAccessToken(for: loginType)
             .asObservable()
-            .compactMap {
-                switch loginType {
-                case .apple:
-                    return $0 as? AppleAuthResultEntity
-                case .kakao:
-                    return $0 as? KakaoAuthResultEntity
-                }
-            }
-            .map { UserAuthInfoEntity(loginType: loginType, authToken: $0) }
+            .map { UserAuthInfoEntity(loginType: loginType, accessToken: $0) }
             .logErrorIfDetected(category: .authentication)
     }
     

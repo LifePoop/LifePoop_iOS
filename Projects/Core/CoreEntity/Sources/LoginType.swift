@@ -8,7 +8,11 @@
 
 import Foundation
 
-public enum LoginType: String, Codable {
-    case apple
-    case kakao
+public enum LoginType: String, Codable, CustomStringConvertible {
+    case apple = "APPLE"
+    case kakao = "KAKAO"
+    
+    public var description: String {
+        return rawValue
+    }
 }

@@ -18,5 +18,5 @@ public protocol AuthManagable: AnyObject {
     
     static func initAuthInfo(rightAfter preparation: (() -> Void)?)
     
-    func fetchToken() -> Single<AccessTokenPossessable>
+    func fetchAccessToken() -> Single<String>
 }

@@ -11,16 +11,16 @@ import Foundation
 public struct UserAuthInfoEntity: Codable {
 
     public let loginType: LoginType?
-    public let authToken: AccessTokenPossessable?
+    public let accessToken: String
 
     enum CodingKeys: String, CodingKey {
-        case authToken
+        case accessToken
         case loginType
     }
 
-    public init(loginType: LoginType, authToken: AccessTokenPossessable) {
+    public init(loginType: LoginType, accessToken: String) {
         self.loginType = loginType
-        self.authToken = authToken
+        self.accessToken = accessToken
     }
     
     public init(from decoder: Decoder) throws {
@@ -28,15 +28,7 @@ public struct UserAuthInfoEntity: Codable {
         
         let rawLoginType = try container.decode(String.self, forKey: .loginType)
         self.loginType = LoginType(rawValue: rawLoginType) ?? .none
-
-        switch self.loginType {
-        case .apple:
-            self.authToken = try container.decode(AppleAuthResultEntity.self, forKey: .authToken)
-        case .kakao:
-            self.authToken = try container.decode(KakaoAuthResultEntity.self, forKey: .authToken)
-        default:
-            self.authToken = nil
-        }
+        self.accessToken = try container.decode(String.self, forKey: .accessToken)
         
     }
     
@@ -44,12 +36,6 @@ public struct UserAuthInfoEntity: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try container.encode(loginType?.rawValue ?? "", forKey: .loginType)
-        
-        if let kakaoAuthToken = authToken as? KakaoAuthResultEntity {
-            try container.encode(kakaoAuthToken, forKey: .authToken)
-        } else if let appleAuthToken = authToken as? AppleAuthResultEntity {
-            try container.encode(appleAuthToken, forKey: .authToken)
-        }
-        
+        try container.encode(accessToken, forKey: .accessToken)
     }
 }

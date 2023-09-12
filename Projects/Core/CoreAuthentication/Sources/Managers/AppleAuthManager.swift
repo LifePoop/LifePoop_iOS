@@ -30,7 +30,7 @@ public final class AppleAuthManager: AuthManagable {
         }
     }
     
-    public func fetchToken() -> Single<AccessTokenPossessable> {
+    public func fetchAccessToken() -> Single<String> {
         guard AppleAuthManager.isAlreadyInitialized else {
             return Single.error(AuthenticationError.authInfoNotInitialized)
         }
@@ -40,7 +40,7 @@ public final class AppleAuthManager: AuthManagable {
             .compactMap { $0.credential as? ASAuthorizationAppleIDCredential }
             .compactMap { $0.identityToken }
             .compactMap { String(data: $0, encoding: .utf8) }
-            .map { AppleAuthResultEntity(accessToken: $0) }
+//            .map { AppleAuthResultEntity(accessToken: $0) }
             .asSingle()
     }
 }

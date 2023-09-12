@@ -31,8 +31,8 @@ public final class DefaultHomeUseCase: HomeUseCase {
     }
     
     public func fetchStoolLogs() -> Observable<[StoolLogEntity]> {
-        return userInfoUseCase.userInfo
-            .compactMap { _ in 16 } // FIXME: $0?.userInfo로 변경
+        return userInfo
+            .compactMap { $0?.userId }
             .withUnretained(self)
             .flatMap { `self`, userID in
                 self.homeRepository.fetchStoolLogs(of: userID)
@@ -56,8 +56,8 @@ public final class DefaultHomeUseCase: HomeUseCase {
     }
     
     public func postStoolLog(_ stoolLogEntity: StoolLogEntity) -> Observable<StoolLogEntity> {
-        return userInfoUseCase.userInfo
-            .compactMap { _ in "accessToken" } // FIXME: $0?.authInfo.authToken?.accessToken으로 변경
+        return userInfo
+            .compactMap { $0?.authInfo.accessToken }
             .withUnretained(self)
             .flatMap { `self`, accessToken in
                 self.homeRepository.postStoolLog(stoolLogEntity, accessToken: accessToken)

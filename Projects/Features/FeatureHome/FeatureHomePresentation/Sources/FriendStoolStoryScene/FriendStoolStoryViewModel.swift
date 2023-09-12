@@ -80,7 +80,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                     stoolStoryLogs[currentIndex].isCheeringUpAvailable
                 )
                 self.output.updateStoolLogTime.accept(
-                    self.getTimeDifference(fromDateOf: stoolStoryLogs[currentIndex].stoolLog.date ?? "")
+                    self.getTimeDifference(fromDateOf: stoolStoryLogs[currentIndex].stoolLog.date)
                 )
                 self.output.updateFriendStoolLogSummary.accept(
                     LocalizableString.bowelMovementCountOfFriend(friend.name, totalCount)
@@ -115,7 +115,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 let isCheeringUpAvailable = stoolStoryLogs[index].isCheeringUpAvailable
                 let shouldHideCheeringLabel = index < stoolStoryLogs.count - 1
                 let shouldHideCheeringButton = index < stoolStoryLogs.count - 1
-                let shouldUpdateStoolLogTime = self.getTimeDifference(fromDateOf: stoolLog.date ?? "")
+                let shouldUpdateStoolLogTime = self.getTimeDifference(fromDateOf: stoolLog.date)
                 
                 return (
                     shouldUpdateShownStoolLog: stoolLog,
@@ -194,31 +194,8 @@ public final class FriendStoolStoryViewModel: ViewModelType {
 private extension FriendStoolStoryViewModel {
     
     // MARK: 추후 서버에서 내려주는 값 맞춰서 로직 수정해야 함, 다국어 맞춰서 LocalizedString 형식으로 수정, Locale 수정
-    func getTimeDifference(fromDateOf logDate: String) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.dateFormat = "a HH:mm"
-
-        guard let logDate = dateFormatter.date(from: logDate) else { return "" }
-
-        let currentDate = Date()
-        let currentCalendar = Calendar.current
-        let currentDateComponents = currentCalendar.dateComponents([.year, .month, .day], from: currentDate)
-        
-        let timeComponents = currentCalendar.dateComponents([.hour, .minute], from: logDate)
-
-        var mergedComponents = DateComponents()
-        mergedComponents.year = currentDateComponents.year
-        mergedComponents.month = currentDateComponents.month
-        mergedComponents.day = currentDateComponents.day
-        mergedComponents.hour = timeComponents.hour
-        mergedComponents.minute = timeComponents.minute
-        
-        guard let mergedDate = currentCalendar.date(from: mergedComponents) else { return "" }
-        
-        let timeDifference = currentDate.timeIntervalSince(mergedDate)
-
-        return timeDifference >= 60 * 60 ? "\(Int(timeDifference / (60 * 60)))시간 전"
-                                         : "\(Int(timeDifference / 60))분 전"
+    func getTimeDifference(fromDateOf logDate: Date) -> String {
+        // FIXME: date 타입이 String에서 Date로 변경된 것에 대한 로직 반영
+        return "Temp Text"
     }
 }

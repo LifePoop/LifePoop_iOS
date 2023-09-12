@@ -10,7 +10,7 @@ import Foundation
 
 public struct UserInfoEntity: Codable {
     
-    public let nickname: String
+    public let nickname: String //FIXME: userID로 변경
     public let authInfo: UserAuthInfoEntity
     
     public init(nickname: String, authInfo: UserAuthInfoEntity) {

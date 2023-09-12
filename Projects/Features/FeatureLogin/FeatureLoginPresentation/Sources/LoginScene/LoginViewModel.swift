@@ -52,7 +52,7 @@ public final class LoginViewModel: ViewModelType {
         let fetchKakaoToken = input.didTapKakaoLoginButton
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
-                `self`.loginUseCase.fetchUserAuthInfo(for: .kakao)
+                `self`.loginUseCase.fetchAccessToken(for: .kakao)
             }
             .share()
         
@@ -84,7 +84,7 @@ public final class LoginViewModel: ViewModelType {
         let fetchAppleToken = input.didTapAppleLoginButton
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
-                `self`.loginUseCase.fetchUserAuthInfo(for: .apple)
+                `self`.loginUseCase.fetchAccessToken(for: .apple)
             }
             .share()
         

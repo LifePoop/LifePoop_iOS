@@ -52,7 +52,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
             .logErrorIfDetected(category: .authentication)
     }
     
-    public func fetchUserAuthInfo(for loginType: LoginType) -> Observable<UserAuthInfoEntity?> {
+    public func fetchAccessToken(for loginType: LoginType) -> Observable<UserAuthInfoEntity?> {
         loginRepository.fetchAccessToken(for: loginType)
             .asObservable()
             .map { UserAuthInfoEntity(loginType: loginType, accessToken: $0) }

@@ -19,9 +19,17 @@ public final class DefaultHomeUseCase: HomeUseCase {
     
     @Inject(HomeDIContainer.shared) private var homeRepository: HomeRepository
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
-    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
-    
+    @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
+
     public init() { }
+    
+    private var userInfo: Observable<UserInfoEntity?> {
+        keyChainRepository
+            .getObjectFromKeyChain(asTypeOf: UserInfoEntity.self, forKey: .userAuthInfo)
+            .logErrorIfDetected(category: .authentication)
+            .catchAndReturn(nil)
+            .asObservable()
+    }
     
     public func fetchFriendList() -> Observable<[FriendEntity]> {
         return homeRepository

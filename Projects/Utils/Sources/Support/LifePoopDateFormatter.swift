@@ -37,6 +37,11 @@ final class LifePoopDateFormatter {
         return formatter
     }()
     
+    func convertDateToString(from date: Date) -> String {
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.string(from: date)
+    }
+    
     func convertDateToLocalizedString(
         from date: Date,
         dateStyle: DateFormatter.Style,

@@ -9,6 +9,13 @@
 import Foundation
 
 public extension Date {
+    /// 'yyyy-MM-dd' 형태의 `String` 타입으로 변환합니다. (시간은 포함되지 않습니다.)
+    ///
+    /// 예) "2023-06-21"
+    var dateString: String { // TODO: Rename
+        return LifePoopDateFormatter.shared.convertDateToString(from: self)
+    }
+    
     /// 현지화된 long 스타일의 `String` 타입으로 변환합니다. (시간은 포함되지 않습니다.)
     ///
     /// 예) "2023년 6월 21일"

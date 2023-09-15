@@ -52,14 +52,27 @@ public final class LoginViewModel: ViewModelType {
         let fetchKakaoToken = input.didTapKakaoLoginButton
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
-                `self`.loginUseCase.fetchUserAuthInfo(for: .kakao)
+                `self`.loginUseCase.fetchAccessToken(for: .kakao)
             }
             .share()
         
         fetchKakaoToken
             .compactMap { $0.element }
             .compactMap { $0 }
-            .bind(onNext: { coordinator?.coordinate(by: .didTapKakaoLoginButton(userAuthInfo: $0)) })
+            .withUnretained(self)
+            .flatMapLatest { `self`, userAuthInfo in
+                self.loginUseCase.requestSignin(with: userAuthInfo)
+                    .map { (userAuthInfo: userAuthInfo, isSuccess: $0 ) }
+            }
+            .bind(onNext: { userAuthInfo, isSuccess in
+                if isSuccess {
+                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                } else {
+                    coordinator?.coordinate(
+                        by: .didTapKakaoLoginButton(userAuthInfo: userAuthInfo)
+                    )
+                }
+            })
             .disposed(by: disposeBag)
         
         fetchKakaoToken
@@ -71,18 +84,27 @@ public final class LoginViewModel: ViewModelType {
         let fetchAppleToken = input.didTapAppleLoginButton
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
-                `self`.loginUseCase.fetchUserAuthInfo(for: .apple)
+                `self`.loginUseCase.fetchAccessToken(for: .apple)
             }
             .share()
         
         fetchAppleToken
             .compactMap { $0.element }
             .compactMap { $0 }
-            .bind {
-                coordinator?.coordinate(
-                    by: .didTapAppleLoginButton(userAuthInfo: $0)
-                )
+            .withUnretained(self)
+            .flatMapLatest { `self`, userAuthInfo in
+                self.loginUseCase.requestSignin(with: userAuthInfo)
+                    .map { (userAuthInfo: userAuthInfo, isSuccess: $0 ) }
             }
+            .bind(onNext: { userAuthInfo, isSuccess in
+                if isSuccess {
+                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                } else {
+                    coordinator?.coordinate(
+                        by: .didTapAppleLoginButton(userAuthInfo: userAuthInfo)
+                    )
+                }
+            })
             .disposed(by: disposeBag)
         
         fetchAppleToken

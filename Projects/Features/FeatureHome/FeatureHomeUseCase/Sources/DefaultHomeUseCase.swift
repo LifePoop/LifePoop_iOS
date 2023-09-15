@@ -19,9 +19,17 @@ public final class DefaultHomeUseCase: HomeUseCase {
     
     @Inject(HomeDIContainer.shared) private var homeRepository: HomeRepository
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
-    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
-    
+    @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
+
     public init() { }
+    
+    private var userInfo: Observable<UserInfoEntity?> {
+        keyChainRepository
+            .getObjectFromKeyChain(asTypeOf: UserInfoEntity.self, forKey: .userAuthInfo)
+            .logErrorIfDetected(category: .authentication)
+            .catchAndReturn(nil)
+            .asObservable()
+    }
     
     public func fetchFriendList() -> Observable<[FriendEntity]> {
         return homeRepository
@@ -31,8 +39,8 @@ public final class DefaultHomeUseCase: HomeUseCase {
     }
     
     public func fetchStoolLogs() -> Observable<[StoolLogEntity]> {
-        return userInfoUseCase.userInfo
-            .compactMap { _ in 16 } // FIXME: $0?.userInfo로 변경
+        return userInfo
+            .compactMap { $0?.userId }
             .withUnretained(self)
             .flatMap { `self`, userID in
                 self.homeRepository.fetchStoolLogs(of: userID)
@@ -56,8 +64,8 @@ public final class DefaultHomeUseCase: HomeUseCase {
     }
     
     public func postStoolLog(_ stoolLogEntity: StoolLogEntity) -> Observable<StoolLogEntity> {
-        return userInfoUseCase.userInfo
-            .compactMap { _ in "accessToken" } // FIXME: $0?.authInfo.authToken?.accessToken으로 변경
+        return userInfo
+            .compactMap { $0?.authInfo.accessToken }
             .withUnretained(self)
             .flatMap { `self`, accessToken in
                 self.homeRepository.postStoolLog(stoolLogEntity, accessToken: accessToken)

@@ -23,7 +23,7 @@ import Utils
 public struct SignupInfo {
     
     let nickname: String
-    let birthday: String
+    let birthDate: String
     let gender: GenderType?
     let conditions: Set<AgreementCondition>
 }
@@ -173,7 +173,7 @@ public final class SignupViewModel: ViewModelType {
                 output.shouldSelectGender,
                 state.selectedConditions
             )
-            .map { SignupInfo(nickname: $0, birthday: $1, gender: $2, conditions: $3) }
+            .map { SignupInfo(nickname: $0, birthDate: $1, gender: $2, conditions: $3) }
             .share()
         
         signupInfo
@@ -181,7 +181,7 @@ public final class SignupViewModel: ViewModelType {
             .flatMap { `self`, signupInfo in
                 Observable.combineLatest(
                     self.signupUseCase.isNicknameInputValid(signupInfo.nickname).map { $0.isValid },
-                    self.signupUseCase.isBirthdayInputValid(signupInfo.birthday).map { $0.isValid },
+                    self.signupUseCase.isBirthdayInputValid(signupInfo.birthDate).map { $0.isValid },
                     self.signupUseCase.isAllEsssentialConditionsSelected(signupInfo.conditions)
                 )
             }
@@ -194,7 +194,12 @@ public final class SignupViewModel: ViewModelType {
             .withLatestFrom(signupInfo)
             .withUnretained(self)
             .flatMapLatestCompletableMaterialized { `self`, signupInfo in
-                let userInfo = UserInfoEntity(nickname: signupInfo.nickname, authInfo: self.authInfo)
+                // FIXME: 추후 서버에서 내려주는 값으로 대체
+                let userInfo = UserInfoEntity(
+                    userId: 16,
+                    nickname: signupInfo.nickname,
+                    authInfo: self.authInfo
+                )
                 return self.loginUseCase.saveUserInfo(userInfo)
             }
             .filter { $0.isCompleted }

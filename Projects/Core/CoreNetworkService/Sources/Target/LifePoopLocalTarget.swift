@@ -9,6 +9,7 @@
 import Foundation
 
 public enum LifePoopLocalTarget {
+    case login(accessToken: String, provider: String)
     case fetchStoolLog(userID: Int)
     case postStoolLog(accessToken: String)
 }
@@ -16,13 +17,15 @@ public enum LifePoopLocalTarget {
 extension LifePoopLocalTarget: TargetType {
     public var baseURL: URL? {
         switch self {
-        case .fetchStoolLog, .postStoolLog:
+        case .login, .fetchStoolLog, .postStoolLog:
             return URL(string: "http://localhost:3000")
         }
     }
     
     public var path: String {
         switch self {
+        case .login:
+            return "/auth/*/login"
         case .fetchStoolLog(let userID):
             return "/post/\(userID)"
         case .postStoolLog:
@@ -32,6 +35,8 @@ extension LifePoopLocalTarget: TargetType {
     
     public var method: HTTPMethod {
         switch self {
+        case .login:
+            return .post
         case .fetchStoolLog:
             return .get
         case .postStoolLog:
@@ -41,6 +46,8 @@ extension LifePoopLocalTarget: TargetType {
     
     public var headers: [String: String]? {
         switch self {
+        case .login:
+            return nil
         case .fetchStoolLog:
             return nil
         case .postStoolLog(let accessToken):
@@ -54,6 +61,11 @@ extension LifePoopLocalTarget: TargetType {
     
     public var parameters: [String: Any]? {
         switch self {
+        case .login(let accessToken, let provider):
+            return [
+                "accessToken": accessToken,
+                "provider": provider
+            ]
         case .fetchStoolLog, .postStoolLog:
             return nil
         }

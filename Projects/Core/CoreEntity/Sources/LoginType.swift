@@ -11,4 +11,8 @@ import Foundation
 public enum LoginType: String, Codable {
     case apple
     case kakao
+    
+    public var description: String {
+        return rawValue.uppercased()
+    }
 }

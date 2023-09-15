@@ -14,9 +14,8 @@ import RxSwift
 import CoreEntity
 import FeatureLoginCoordinatorInterface
 import FeatureLoginDIContainer
+import FeatureLoginUseCase
 import Logger
-import SharedDIContainer
-import SharedUseCase
 import Utils
 
 public final class LaunchScreenViewModel: ViewModelType {
@@ -28,9 +27,9 @@ public final class LaunchScreenViewModel: ViewModelType {
     }
     
     public struct Output { }
-    
-    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
-    
+
+    @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
+
     public let input = Input()
     public let output = Output()
     
@@ -42,8 +41,8 @@ public final class LaunchScreenViewModel: ViewModelType {
         
         let preparationResult = input.viewWillAppear
             .withUnretained(self)
-            .flatMapCompletableMaterialized {  `self`, _ in
-                self.userInfoUseCase.clearUserAuthInfoIfNeeded()
+            .flatMapCompletableMaterialized { `self`, _ in
+                self.loginUseCase.clearUserAuthInfoIfNeeded()
             }
             .share()
         
@@ -65,8 +64,16 @@ public final class LaunchScreenViewModel: ViewModelType {
         )
         .withUnretained(self)
         .flatMapLatest { `self`, _ in
-            self.userInfoUseCase.userInfo
-                .map { $0 != nil }
+            self.loginUseCase.userInfo
+        }
+        .withUnretained(self)
+        .flatMapLatest { `self`, userInfo in
+            // MARK: 기기에 인증 정보가 존재하면 유효성 검증 위해 자동으로 로그인 요청
+            if let userAuthInfo = userInfo?.authInfo {
+                return self.loginUseCase.requestSignin(with: userAuthInfo)
+            } else {
+                return Observable.just(false)
+            }
         }
         .bind(onNext: { hasToken in
             if hasToken {

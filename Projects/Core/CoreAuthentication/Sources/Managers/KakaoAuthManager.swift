@@ -43,7 +43,7 @@ public final class KakaoAuthManager: AuthManagable {
         }
     }
         
-    public func fetchToken() -> Single<AccessTokenPossessable> {
+    public func fetchAccessToken() -> Single<String> {
         Single.create { observer in
             guard KakaoAuthManager.isAlreadyInitialized else {
                 observer(.failure(AuthenticationError.authInfoNotInitialized))
@@ -66,12 +66,7 @@ public final class KakaoAuthManager: AuthManagable {
                     return
                 }
                 
-                let authResultEntity = KakaoAuthResultEntity(
-                    accessToken: token.accessToken,
-                    refreshToken: token.refreshToken
-                )
-                
-                observer(.success(authResultEntity))
+                observer(.success(token.accessToken))
             })
             
             return Disposables.create()

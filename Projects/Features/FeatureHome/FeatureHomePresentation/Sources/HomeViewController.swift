@@ -19,7 +19,12 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     
     private let settingBarButtonItem = UIBarButtonItem(image: ImageAsset.iconSetting.original)
     private let reportBarButtonItem = UIBarButtonItem(image: ImageAsset.iconReport.original)
-    private let lifePoopLogoBarButtonItem = UIBarButtonItem(image: ImageAsset.logoSmall.original)
+    
+    private let lifePoopLogoBarButtonItem: UIBarButtonItem = {
+        let barButtonItem = UIBarButtonItem(image: ImageAsset.logoSmall.original)
+        barButtonItem.isEnabled = false
+        return barButtonItem
+    }()
     
     private let stoolLogRefreshControl = UIRefreshControl()
     private lazy var stoolLogCollectionViewDiffableDataSource = StoolLogCollectionViewDiffableDataSource(

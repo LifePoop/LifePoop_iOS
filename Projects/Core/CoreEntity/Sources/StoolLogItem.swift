@@ -1,37 +1,35 @@
 //
 //  StoolLogItem.swift
-//  FeatureHomePresentation
+//  CoreEntity
 //
-//  Created by 김상혁 on 2023/06/23.
+//  Created by 김상혁 on 2023/09/18.
 //  Copyright © 2023 Lifepoo. All rights reserved.
 //
 
 import Foundation
 
-import CoreEntity
-
-struct StoolLogItem {
+public struct StoolLogItem {
     
     private let id = UUID()
     
-    enum ItemState {
+    public enum ItemState {
         case stoolLog(StoolLogEntity)
         case empty
     }
     
-    init(itemState: ItemState) {
+    public let itemState: ItemState
+    
+    public init(itemState: ItemState) {
         self.itemState = itemState
     }
-    
-    let itemState: ItemState
 }
 
 extension StoolLogItem: Hashable {
-    static func == (lhs: Self, rhs: Self) -> Bool {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.id == rhs.id
     }
     
-    func hash(into hasher: inout Hasher) {
+    public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
 }

@@ -95,7 +95,7 @@ public final class HomeViewModel: ViewModelType {
         
         fetchedStoolLogs
             .compactMap { $0.error }
-            .toastMessageMap(to: .home(.fetchStoolLogFail))
+            .toastMessageMap(to: .stoolLog(.fetchStoolLogFail))
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
         

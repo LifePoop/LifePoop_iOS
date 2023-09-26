@@ -91,32 +91,26 @@ public final class DefaultSignupUseCase: SignupUseCase {
         }
     }
     
+    public func createFormattedDateString(with dateString: String) -> String? {
+        
+        let inputDateFormatter = DateFormatter()
+        inputDateFormatter.dateFormat = "yyMMdd"
+        
+        let outputDateFormatter = DateFormatter()
+        outputDateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        guard let inputDate = inputDateFormatter.date(from: dateString) else { return nil }
+        return outputDateFormatter.string(from: inputDate)
+    }
+    
     private func isLeapYear(_ year: Int) -> Bool {
         return (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
     }
     
     private func getBirthdayInputValidation(_ input: String) -> Bool {
-        guard input.count == 6 else { return false }
+        let inputDateFormatter = DateFormatter()
+        inputDateFormatter.dateFormat = "yyyy-MM-dd"
         
-        let numbersSet = CharacterSet.decimalDigits
-        let inputCharacterSet = CharacterSet(charactersIn: input)
-        guard inputCharacterSet.isSubset(of: numbersSet) else { return false }
-        
-        guard let year = Int(input.prefix(2)),
-              let month = Int(input.dropFirst(2).prefix(2)),
-              let day = Int(input.suffix(2)) else { return false }
-        
-        let isLeap = isLeapYear(year + 2000)
-        
-        switch month {
-        case 1, 3, 5, 7, 8, 10, 12:
-            return day >= 1 && day <= 31
-        case 4, 6, 9, 11:
-            return day >= 1 && day <= 30
-        case 2:
-            return day >= 1 && day <= (isLeap ? 29 : 28)
-        default:
-            return false
-        }
+        return inputDateFormatter.date(from: input) != nil
     }
 }

@@ -165,7 +165,20 @@ public final class SignupViewModel: ViewModelType {
                 output.shouldSelectGender,
                 state.selectedConditions
             )
-            .map { SignupInfo(nickname: $0, birthDate: $1, gender: $2, conditions: $3) }
+            .compactMap { [weak self] nickname, birthDate, gender, conditions -> SignupInput? in
+                guard let oAuthAccessToekn = self?.authInfo.accessToken,
+                      let provider = self?.authInfo.loginType,
+                      let birthDate = self?.signupUseCase.createFormattedDateString(with: birthDate) else { return nil }
+                
+                return SignupInput(
+                    nickname: nickname,
+                    birthDate: birthDate,
+                    gender: gender,
+                    conditions: conditions,
+                    oAuthAccessToken: oAuthAccessToekn,
+                    provider: provider
+                )
+            }
             .share()
         
         signupInfo
@@ -185,17 +198,11 @@ public final class SignupViewModel: ViewModelType {
             .throttle(.seconds(3), latest: false, scheduler: MainScheduler.instance)
             .withLatestFrom(signupInfo)
             .withUnretained(self)
-            .flatMapLatestCompletableMaterialized { `self`, signupInfo in
-                // FIXME: 추후 서버에서 내려주는 값으로 대체
-                let userInfo = UserInfoEntity(
-                    userId: 16,
-                    nickname: signupInfo.nickname,
-                    authInfo: self.authInfo
-                )
-                return self.loginUseCase.saveUserInfo(userInfo)
+            .flatMapLatest { `self`, signupInfo in
+                self.signupUseCase.requestSignup(signupInfo)
             }
-            .filter { $0.isCompleted }
-            .bind(onNext: { _ in
+            .bind(onNext: { isSuccess in
+                guard isSuccess else { return }
                 coordinator.coordinate(by: .shouldFinishLoginFlow)
             })
             .disposed(by: disposeBag)

@@ -158,7 +158,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         
         birthdayTextField.rx.textChanged
             .skip(1)
-            .bind(to: input.didEnterBirthday)
+            .bind(to: input.didEnterBirthDate)
             .disposed(by: disposeBag)
         
         nicknameTextField.rx.controlEvent(.editingDidEndOnExit)

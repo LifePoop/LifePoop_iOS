@@ -20,14 +20,6 @@ import SharedDIContainer
 import SharedUseCase
 import Utils
 
-public struct SignupInfo {
-    
-    let nickname: String
-    let birthDate: String
-    let gender: GenderType?
-    let conditions: Set<AgreementCondition>
-}
-
 public final class SignupViewModel: ViewModelType {
 
     enum DetailViewType {
@@ -44,7 +36,7 @@ public final class SignupViewModel: ViewModelType {
     public struct Input {
         let didTapNextButton = PublishRelay<Void>()
         let didEnterNickname = PublishRelay<String>()
-        let didEnterBirthday = PublishRelay<String>()
+        let didEnterBirthDate = PublishRelay<String>()
         let didTapSelectAllCondition = PublishRelay<Bool>()
         let didSelectConfirmCondition = PublishRelay<AgreementCondition>()
         let didDeselectConfirmCondition = PublishRelay<AgreementCondition>()
@@ -130,7 +122,7 @@ public final class SignupViewModel: ViewModelType {
             .bind(to: output.nicknameTextFieldStatus)
             .disposed(by: disposeBag)
         
-        let birthdayInputStatus = input.didEnterBirthday
+        let birthdayInputStatus = input.didEnterBirthDate
             .withUnretained(self)
             .flatMap { `self`, input in
                 self.signupUseCase.isBirthdayInputValid(input)
@@ -169,7 +161,7 @@ public final class SignupViewModel: ViewModelType {
         let signupInfo = Observable
             .combineLatest(
                 input.didEnterNickname,
-                input.didEnterBirthday,
+                input.didEnterBirthDate,
                 output.shouldSelectGender,
                 state.selectedConditions
             )

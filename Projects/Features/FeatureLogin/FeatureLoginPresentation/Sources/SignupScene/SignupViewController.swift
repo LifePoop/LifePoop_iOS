@@ -54,7 +54,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     private let genderSelectionButtons: [TextSelectionButton] = GenderType.allCases.map {
         TextSelectionButton(
             index: $0.index,
-            title: $0.description,
+            title: $0.localizedDescription,
             backgroundColor: .init(
                 selected: ColorAsset.primary.color,
                 deselected: ColorAsset.gray300.color

@@ -14,13 +14,24 @@ public enum GenderType: Int, CaseIterable, CustomStringConvertible {
     
     case female
     case male
-    case etc
+    case other
     
     public var description: String {
         switch self {
+        case .female:
+            "FEMALE"
+        case .male:
+            "MALE"
+        case .other:
+            "OTHER"
+        }
+    }
+    
+    public var localizedDescription: String {
+        switch self {
         case .female: return LocalizableString.female
         case .male: return LocalizableString.male
-        case .etc: return LocalizableString.etc
+        case .other: return LocalizableString.other
         }
     }    
 }

@@ -9,7 +9,8 @@
 import Foundation
 
 public enum LifePoopLocalTarget {
-    case login(accessToken: String, provider: String)
+    case login(provider: String)
+    case signup(provider: String)
     case fetchStoolLog(userID: Int)
     case postStoolLog(accessToken: String)
 }
@@ -17,15 +18,19 @@ public enum LifePoopLocalTarget {
 extension LifePoopLocalTarget: TargetType {
     public var baseURL: URL? {
         switch self {
-        case .login, .fetchStoolLog, .postStoolLog:
+        case .login, .signup:
+            return URL(string: "https://api.lifepoo.link")
+        case .fetchStoolLog, .postStoolLog:
             return URL(string: "http://localhost:3000")
         }
     }
     
     public var path: String {
         switch self {
-        case .login:
-            return "/auth/*/login"
+        case .signup(let provider):
+            return "/auth/\(provider)/register"
+        case .login(let provider):
+            return "/auth/\(provider)/login"
         case .fetchStoolLog(let userID):
             return "/post/\(userID)"
         case .postStoolLog:
@@ -35,7 +40,7 @@ extension LifePoopLocalTarget: TargetType {
     
     public var method: HTTPMethod {
         switch self {
-        case .login:
+        case .login, .signup:
             return .post
         case .fetchStoolLog:
             return .get
@@ -46,10 +51,11 @@ extension LifePoopLocalTarget: TargetType {
     
     public var headers: [String: String]? {
         switch self {
-        case .login:
-            return nil
-        case .fetchStoolLog:
-            return nil
+        case .signup, .login, .fetchStoolLog:
+            return [
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            ]
         case .postStoolLog(let accessToken):
             return [
                 "Content-Type": "application/json",
@@ -61,12 +67,7 @@ extension LifePoopLocalTarget: TargetType {
     
     public var parameters: [String: Any]? {
         switch self {
-        case .login(let accessToken, let provider):
-            return [
-                "accessToken": accessToken,
-                "provider": provider
-            ]
-        case .fetchStoolLog, .postStoolLog:
+        case .signup, .login, .fetchStoolLog, .postStoolLog:
             return nil
         }
     }

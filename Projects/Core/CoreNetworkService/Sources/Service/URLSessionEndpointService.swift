@@ -24,6 +24,9 @@ public final class URLSessionEndpointService: EndpointService {
     
     public func fetchStatusCode<E: Encodable>(endpoint: TargetType, with bodyObject: E) -> Single<Int> {
         return performRequest(endpoint: endpoint, bodyObject: bodyObject)
+//            .do(onSuccess: {
+//                print($0)
+//            })
             .map { $0.statusCode }
     }
 }

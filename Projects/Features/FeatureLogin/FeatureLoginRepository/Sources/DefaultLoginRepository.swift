@@ -38,7 +38,12 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
         guard let loginType = userAuthInfo.loginType else { return Single.just(false) }
         
         return urlSessionEndpointService
-            .fetchStatusCode(endpoint: LifePoopLocalTarget.login(accessToken: userAuthInfo.accessToken, provider: loginType.description))
+            .fetchStatusCode(
+                endpoint: LifePoopLocalTarget.login(
+                    provider: loginType.description
+                ),
+                with: ["oAuthAccessToken": userAuthInfo.accessToken]
+            )
             .asObservable()
             .map { $0 >= 200 && $0 < 300 }
             .catchAndReturn(false)

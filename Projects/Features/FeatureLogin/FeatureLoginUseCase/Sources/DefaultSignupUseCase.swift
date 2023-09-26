@@ -20,10 +20,15 @@ import Utils
 public final class DefaultSignupUseCase: SignupUseCase {
     
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
+    @Inject(LoginDIContainer.shared) private var signupRepository: SignupRepository
     
     public init() { }
     
     private var essentialConditions: Set<AgreementCondition> = []
+    
+    public func requestSignup(_ signupInfo: SignupInput) -> Observable<Bool> {
+        signupRepository.requestSignup(with: signupInfo).asObservable()
+    }
     
     // TODO: Repository로 이동
     private let conditionEntities: [AgreementCondition] = [

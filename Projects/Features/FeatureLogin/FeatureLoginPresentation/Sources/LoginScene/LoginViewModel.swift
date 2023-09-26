@@ -97,12 +97,14 @@ public final class LoginViewModel: ViewModelType {
                     .map { (userAuthInfo: userAuthInfo, isSuccess: $0 ) }
             }
             .bind(onNext: { userAuthInfo, isSuccess in
-                if isSuccess {
-                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
-                } else {
-                    coordinator?.coordinate(
-                        by: .didTapAppleLoginButton(userAuthInfo: userAuthInfo)
-                    )
+                DispatchQueue.main.async {
+                    if isSuccess {
+                        coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                    } else {
+                        coordinator?.coordinate(
+                            by: .didTapAppleLoginButton(userAuthInfo: userAuthInfo)
+                        )
+                    }
                 }
             })
             .disposed(by: disposeBag)

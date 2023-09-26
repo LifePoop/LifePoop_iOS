@@ -24,10 +24,7 @@ public final class AppleAuthManager: AuthManagable {
         guard !isAlreadyInitialized else { return }
         preparation?()
         
-        let serialQueue = DispatchQueue(label: "serial-queue-auth-auth")
-        serialQueue.sync {
-            _isAlreadyInitialized = true
-        }
+        _isAlreadyInitialized = true
     }
     
     public func fetchAccessToken() -> Single<String> {

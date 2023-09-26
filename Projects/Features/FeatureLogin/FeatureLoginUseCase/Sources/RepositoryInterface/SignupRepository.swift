@@ -6,4 +6,12 @@
 //  Copyright © 2023 Lifepoo. All rights reserved.
 //
 
-import Foundation
+import RxSwift
+
+import CoreEntity
+import Utils
+
+public protocol SignupRepository: AnyObject {
+    
+    func requestSignup(with signupInfo: SignupInput) -> Single<Bool>
+}

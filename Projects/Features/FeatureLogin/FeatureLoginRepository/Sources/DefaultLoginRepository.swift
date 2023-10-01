@@ -29,24 +29,72 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
             return KakaoAuthManager()
         }
     }
-    
-    public func fetchAccessToken(for loginType: LoginType) -> Single<String> {
+   
+    public func fetchOAuthAccessToken(for loginType: LoginType) -> Single<String> {
         authManager(for: loginType).fetchAccessToken()
     }
     
-    public func requestSignin(with userAuthInfo: UserAuthInfoEntity) -> Single<Bool> {
-        guard let loginType = userAuthInfo.loginType else { return Single.just(false) }
+    public func requestAuthInfoWithOAuthAccessToken(
+        with oAuthTokenInfo: OAuthTokenInfo
+    ) -> Single<UserAuthInfoEntity?> {
+        guard let loginType = oAuthTokenInfo.loginType else { return Single.just(nil) }
         
         return urlSessionEndpointService
-            .fetchStatusCode(
+            .fetchNetworkResult(
                 endpoint: LifePoopLocalTarget.login(
                     provider: loginType.description
                 ),
-                with: ["oAuthAccessToken": userAuthInfo.accessToken]
+                with: ["oAuthAccessToken": oAuthTokenInfo.accessToken]
             )
             .asObservable()
-            .map { $0 >= 200 && $0 < 300 }
-            .catchAndReturn(false)
+            .withUnretained(self)
+            // TODO: 아래 부분 DefaultUserInfoRepository와 중복되므로 추후 개선해야 함
+            .map { `self`, networkResult -> UserAuthInfoEntity? in
+                let statusCode = networkResult.statusCode
+                guard statusCode >= 200 && statusCode < 300 else {
+                    throw NetworkError.invalidStatusCode(code: statusCode)
+                }
+                
+                var accessToken: String?
+                var refreshToken: String?
+                
+                // MARK: AccessToken 추출
+                if let bodyData = networkResult.data {
+                    let body = try JSONDecoder().decode([String: String].self, from: bodyData)
+                    accessToken = body["accessToken"]
+                }
+                
+                // MARK: RefreshToken 추출
+                if let cookies = networkResult.cookies {
+                    refreshToken = cookies["refresh_token"]
+                }
+
+                return self.createUpdatedUserAuthInfo(
+                    accessToken: accessToken,
+                    refreshToken: refreshToken,
+                    loginType: oAuthTokenInfo.loginType
+                )
+            }
             .asSingle()
+            .catchAndReturn(nil)
+    }
+}
+
+private extension DefaultLoginRepository {
+    
+    func createUpdatedUserAuthInfo(
+        accessToken: String?,
+        refreshToken: String?,
+        loginType: LoginType?
+    ) -> UserAuthInfoEntity? {
+        guard let accessToken = accessToken,
+              let refreshToken = refreshToken,
+              let loginType = loginType else { return nil }
+        
+        return UserAuthInfoEntity(
+            loginType: loginType,
+            accessToken: accessToken,
+            refreshToken: refreshToken
+        )
     }
 }

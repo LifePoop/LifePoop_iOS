@@ -13,5 +13,5 @@ import Utils
 
 public protocol SignupRepository: AnyObject {
     
-    func requestSignup(with signupInfo: SignupInput) -> Single<Bool>
+    func requestSignup(with signupInput: SignupInput) -> Single<UserAuthInfoEntity>
 }

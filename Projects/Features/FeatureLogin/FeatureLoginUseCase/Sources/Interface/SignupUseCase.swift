@@ -12,6 +12,7 @@ import CoreEntity
 
 public protocol SignupUseCase {
 
+    /** 사용자 입력 회원가입 정보로 서버에 새로운 회원정보 추가 요청 **/
     func requestSignup(_ signupInfo: SignupInput) -> Observable<Bool>
     func fetchSelectableConditions() -> Observable<[AgreementCondition]>
     func isNicknameInputValid(_ input: String) -> Observable<NicknameTextInput>

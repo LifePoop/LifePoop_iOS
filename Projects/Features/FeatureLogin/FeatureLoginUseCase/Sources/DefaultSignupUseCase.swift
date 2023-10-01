@@ -19,15 +19,45 @@ import Utils
 
 public final class DefaultSignupUseCase: SignupUseCase {
     
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
+
+    @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
+    @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     @Inject(LoginDIContainer.shared) private var signupRepository: SignupRepository
     
     public init() { }
     
     private var essentialConditions: Set<AgreementCondition> = []
     
+    /** 사용자 입력 회원가입 정보로 서버에 새로운 회원정보 추가 요청 **/
     public func requestSignup(_ signupInfo: SignupInput) -> Observable<Bool> {
-        signupRepository.requestSignup(with: signupInfo).asObservable()
+        
+        Logger.log(
+            message: """
+            회원 가입 요청
+            nickname: \(signupInfo.nickname)
+            gender: \(signupInfo.gender.description)
+            loginType: \(signupInfo.provider.description)
+            """,
+            category: .authentication,
+            type: .debug
+        )
+        
+        return signupRepository.requestSignup(with: signupInfo)
+            .asObservable()
+            .withUnretained(self)
+            .flatMapLatest { `self`, authInfo in
+                self.userInfoUseCase.refreshUserInfo(with: authInfo)
+                    .do(onNext: {
+                        Logger.log(
+                            message: "회원 가입 성공 : \($0)",
+                            category: .authentication,
+                            type: .debug
+                        )
+                    })
+            }
+            .catchAndReturn(false)
     }
     
     // TODO: Repository로 이동

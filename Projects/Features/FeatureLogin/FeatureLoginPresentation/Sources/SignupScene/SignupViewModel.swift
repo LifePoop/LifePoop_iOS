@@ -68,7 +68,6 @@ public final class SignupViewModel: ViewModelType {
     public let output = Output()
     private let state = State()
     
-    @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
     @Inject(LoginDIContainer.shared) private var signupUseCase: SignupUseCase
     @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
     
@@ -76,10 +75,10 @@ public final class SignupViewModel: ViewModelType {
     @Inject(SharedDIContainer.shared) private var profileCharacterUseCase: ProfileCharacterUseCase
 
     private weak var coordinator: LoginCoordinator?
-    private let authInfo: UserAuthInfoEntity
+    private let authInfo: OAuthTokenInfo
     private let disposeBag = DisposeBag()
     
-    public init(coordinator: LoginCoordinator?, authInfo: UserAuthInfoEntity) {
+    public init(coordinator: LoginCoordinator?, authInfo: OAuthTokenInfo) {
         self.coordinator = coordinator
         self.authInfo = authInfo
         bind()
@@ -195,12 +194,12 @@ public final class SignupViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.didTapNextButton
-            .throttle(.seconds(3), latest: false, scheduler: MainScheduler.instance)
             .withLatestFrom(signupInfo)
             .withUnretained(self)
             .flatMapLatest { `self`, signupInfo in
                 self.signupUseCase.requestSignup(signupInfo)
             }
+            .observe(on: MainScheduler.asyncInstance)
             .bind(onNext: { isSuccess in
                 guard isSuccess else { return }
                 coordinator.coordinate(by: .shouldFinishLoginFlow)

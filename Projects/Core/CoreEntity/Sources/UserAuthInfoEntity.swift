@@ -2,25 +2,28 @@
 //  UserAuthInfoEntity.swift
 //  CoreEntity
 //
-//  Created by 이준우 on 2023/05/30.
+//  Created by Lee, Joon Woo on 2023/09/29.
 //  Copyright © 2023 Lifepoo. All rights reserved.
 //
 
 import Foundation
 
 public struct UserAuthInfoEntity: Codable {
-
+    
     public let loginType: LoginType?
     public let accessToken: String
+    public let refreshToken: String
 
     enum CodingKeys: String, CodingKey {
-        case accessToken
         case loginType
+        case accessToken
+        case refreshToken
     }
 
-    public init(loginType: LoginType, accessToken: String) {
+    public init(loginType: LoginType, accessToken: String, refreshToken: String) {
         self.loginType = loginType
         self.accessToken = accessToken
+        self.refreshToken = refreshToken
     }
     
     public init(from decoder: Decoder) throws {
@@ -29,7 +32,7 @@ public struct UserAuthInfoEntity: Codable {
         let rawLoginType = try container.decode(String.self, forKey: .loginType)
         self.loginType = LoginType(rawValue: rawLoginType) ?? .none
         self.accessToken = try container.decode(String.self, forKey: .accessToken)
-        
+        self.refreshToken = try container.decode(String.self, forKey: .refreshToken)
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -37,5 +40,7 @@ public struct UserAuthInfoEntity: Codable {
 
         try container.encode(loginType?.rawValue ?? "", forKey: .loginType)
         try container.encode(accessToken, forKey: .accessToken)
+        try container.encode(refreshToken, forKey: .refreshToken)
     }
+
 }

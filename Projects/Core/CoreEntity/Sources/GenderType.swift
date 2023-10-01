@@ -10,7 +10,7 @@ import Foundation
 
 import Utils
 
-public enum GenderType: Int, CaseIterable, CustomStringConvertible {
+public enum GenderType: Int, CaseIterable, CustomStringConvertible, Codable {
     
     case female
     case male
@@ -34,4 +34,17 @@ public enum GenderType: Int, CaseIterable, CustomStringConvertible {
         case .other: return LocalizableString.other
         }
     }    
+    
+    public init?(stringValue: String) {
+        switch stringValue.uppercased() {
+        case "MALE":
+            self = .male
+        case "FEMALE":
+            self = .female
+        case "OTHER":
+            self = .other
+        default:
+            return nil
+        }
+    }
 }

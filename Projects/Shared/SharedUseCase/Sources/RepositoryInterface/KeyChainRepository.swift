@@ -27,6 +27,25 @@ public enum KeyChainAction {
 public protocol KeyChainRepository: AnyObject {
     
     func saveObjectToKeyChain<T: Codable>(_ object: T, forKey key: ItemKey) -> Completable
-    func getObjectFromKeyChain<T: Decodable>(asTypeOf targetType: T.Type, forKey key: ItemKey) -> Single<T?>
+    func getObjectFromKeyChain<T: Decodable>(
+        asTypeOf targetType: T.Type,
+        forKey key: ItemKey,
+        handleExceptionWhenValueNotFound: Bool
+    ) -> Single<T?>
     func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) -> Completable
+}
+
+public extension KeyChainRepository {
+    
+    func getObjectFromKeyChain<T: Decodable>(
+        asTypeOf targetType: T.Type,
+        forKey key: ItemKey,
+        handleExceptionWhenValueNotFound: Bool = true
+    ) -> Single<T?> {
+        getObjectFromKeyChain(
+            asTypeOf: targetType,
+            forKey: key,
+            handleExceptionWhenValueNotFound: handleExceptionWhenValueNotFound
+        )
+    }
 }

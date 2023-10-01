@@ -9,8 +9,8 @@
 import Foundation
 import Security
 
+import Logger
 import SharedUseCase
-
 import RxSwift
 
 public final class DefaultKeyChainRepository: KeyChainRepository {
@@ -36,14 +36,19 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
     
     public func getObjectFromKeyChain<T: Decodable>(
         asTypeOf targetType: T.Type,
-        forKey key: ItemKey
+        forKey key: ItemKey,
+        handleExceptionWhenValueNotFound: Bool = true
     ) -> Single<T?> {
         Single.create { [weak self] observer in
             
             do {
                 guard let self = self else { throw KeyChainError.nilData(status: -999) }
                 
-                let targetObject: T? = try self.getObjectFromKeyChain(asTypeOf: targetType, forKey: key)
+                let targetObject: T? = try self.getObjectFromKeyChain(
+                    asTypeOf: targetType,
+                    forKey: key,
+                    handleExceptionWhenValueNotFound: handleExceptionWhenValueNotFound
+                )
                 observer(.success(targetObject))
             } catch let error {
                 observer(.failure(error))
@@ -94,7 +99,12 @@ private extension DefaultKeyChainRepository {
         let encodedData = try JSONEncoder().encode(object)
         
         let keychainQuery = keychainQuery(for: .save, key: key, value: encodedData)
-        let isObjectAlreadyExists = (try? getObjectFromKeyChain(asTypeOf: T.self, forKey: key)) != nil
+        let alreadyExistingItem: T? = try getObjectFromKeyChain(
+            asTypeOf: T.self,
+            forKey: key,
+            handleExceptionWhenValueNotFound: false
+        )
+        let isObjectAlreadyExists = alreadyExistingItem != nil
         if isObjectAlreadyExists {
             try removeExistingObjectFromKeyChain(object, forKey: key)
         }
@@ -107,7 +117,8 @@ private extension DefaultKeyChainRepository {
     
     func getObjectFromKeyChain<T: Decodable>(
         asTypeOf targetType: T.Type,
-        forKey key: ItemKey
+        forKey key: ItemKey,
+        handleExceptionWhenValueNotFound: Bool = true
     ) throws -> T? {
         
         let keychainQuery = keychainQuery(for: .get, key: key)
@@ -115,9 +126,21 @@ private extension DefaultKeyChainRepository {
         let loadStatus = SecItemCopyMatching(keychainQuery, &result)
         
         switch loadStatus {
-        case errSecSuccess: break
-        case errSecItemNotFound: throw KeyChainError.gettingDataFailed(status: loadStatus)
-        default: throw KeyChainError.gettingDataFailed(status: loadStatus)
+        case errSecSuccess: 
+            break
+        case errSecItemNotFound:
+            if handleExceptionWhenValueNotFound {
+                throw KeyChainError.gettingDataFailed(status: loadStatus)
+            } else {
+                Logger.log(
+                    message: "Value with key of \(key) not exists in KeyChain",
+                    category: .default,
+                    type: .debug
+                )
+                return nil
+            }
+        default:
+            break
         }
         
         guard let loadedData = result as? Data else {

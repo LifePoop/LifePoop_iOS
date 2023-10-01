@@ -39,9 +39,9 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
         switch coordinateAction {
         case .shouldShowLaunchScreen:
             showLaunchScreenViewController()
-        case .shouldSkipLoginFlow:
+        case .skipLoginFlow:
             skipFlow()
-        case .shouldShowLoginScene:
+        case .showLoginScene:
             showLoginViewController()
         case .shouldShowDetailForm(let title, let detailText):
             showDocumentViewController(title: title, detailText: detailText)
@@ -79,7 +79,7 @@ private extension DefaultLoginCoordinator {
         navigationController.pushViewController(viewController, animated: false)
     }
     
-    func showNicknameViewController(with authInfo: UserAuthInfoEntity) {
+    func showNicknameViewController(with authInfo: OAuthTokenInfo) {
         let viewController = SignupViewController()
         let viewModel = SignupViewModel(coordinator: self, authInfo: authInfo)
         viewController.bind(viewModel: viewModel)

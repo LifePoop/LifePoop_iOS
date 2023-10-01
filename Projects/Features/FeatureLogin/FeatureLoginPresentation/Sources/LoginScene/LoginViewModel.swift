@@ -52,7 +52,7 @@ public final class LoginViewModel: ViewModelType {
         let fetchKakaoToken = input.didTapKakaoLoginButton
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
-                `self`.loginUseCase.fetchAccessToken(for: .kakao)
+                `self`.loginUseCase.fetchOAuthAccessToken(for: .kakao)
             }
             .share()
         
@@ -60,16 +60,16 @@ public final class LoginViewModel: ViewModelType {
             .compactMap { $0.element }
             .compactMap { $0 }
             .withUnretained(self)
-            .flatMapLatest { `self`, userAuthInfo in
-                self.loginUseCase.requestSignin(with: userAuthInfo)
-                    .map { (userAuthInfo: userAuthInfo, isSuccess: $0 ) }
+            .flatMapLatest { `self`, oAuthTokenInfo in
+                self.loginUseCase.requestLogin(with: oAuthTokenInfo)
+                    .map { (oAuthTokenInfo: oAuthTokenInfo, isSuccess: $0 ) }
             }
-            .bind(onNext: { userAuthInfo, isSuccess in
+            .bind(onNext: { oAuthTokenInfo, isSuccess in
                 if isSuccess {
                     coordinator?.coordinate(by: .shouldFinishLoginFlow)
                 } else {
                     coordinator?.coordinate(
-                        by: .didTapKakaoLoginButton(userAuthInfo: userAuthInfo)
+                        by: .didTapKakaoLoginButton(userAuthInfo: oAuthTokenInfo)
                     )
                 }
             })
@@ -84,7 +84,7 @@ public final class LoginViewModel: ViewModelType {
         let fetchAppleToken = input.didTapAppleLoginButton
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
-                `self`.loginUseCase.fetchAccessToken(for: .apple)
+                `self`.loginUseCase.fetchOAuthAccessToken(for: .apple)
             }
             .share()
         
@@ -92,19 +92,18 @@ public final class LoginViewModel: ViewModelType {
             .compactMap { $0.element }
             .compactMap { $0 }
             .withUnretained(self)
-            .flatMapLatest { `self`, userAuthInfo in
-                self.loginUseCase.requestSignin(with: userAuthInfo)
-                    .map { (userAuthInfo: userAuthInfo, isSuccess: $0 ) }
+            .flatMapLatest { `self`, oAuthTokenInfo in
+                self.loginUseCase.requestLogin(with: oAuthTokenInfo)
+                    .map { (oAuthTokenInfo: oAuthTokenInfo, isSuccess: $0 ) }
             }
-            .bind(onNext: { userAuthInfo, isSuccess in
-                DispatchQueue.main.async {
-                    if isSuccess {
-                        coordinator?.coordinate(by: .shouldFinishLoginFlow)
-                    } else {
-                        coordinator?.coordinate(
-                            by: .didTapAppleLoginButton(userAuthInfo: userAuthInfo)
-                        )
-                    }
+            .observe(on: MainScheduler.asyncInstance)
+            .bind(onNext: { oAuthTokenInfo, isSuccess in
+                if isSuccess {
+                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                } else {
+                    coordinator?.coordinate(
+                        by: .didTapAppleLoginButton(userAuthInfo: oAuthTokenInfo)
+                    )
                 }
             })
             .disposed(by: disposeBag)

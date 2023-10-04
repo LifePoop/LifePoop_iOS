@@ -21,7 +21,7 @@ public final class DefaultSignupUseCase: SignupUseCase {
     
     @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
-
+    
     @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     @Inject(LoginDIContainer.shared) private var signupRepository: SignupRepository
@@ -138,9 +138,27 @@ public final class DefaultSignupUseCase: SignupUseCase {
     }
     
     private func getBirthdayInputValidation(_ input: String) -> Bool {
-        let inputDateFormatter = DateFormatter()
-        inputDateFormatter.dateFormat = "yyyy-MM-dd"
+        guard input.count == 6 else { return false }
         
-        return inputDateFormatter.date(from: input) != nil
+        let numbersSet = CharacterSet.decimalDigits
+        let inputCharacterSet = CharacterSet(charactersIn: input)
+        guard inputCharacterSet.isSubset(of: numbersSet) else { return false }
+        
+        guard let year = Int(input.prefix(2)),
+              let month = Int(input.dropFirst(2).prefix(2)),
+              let day = Int(input.suffix(2)) else { return false }
+        
+        let isLeap = isLeapYear(year + 2000)
+        
+        switch month {
+        case 1, 3, 5, 7, 8, 10, 12:
+            return day >= 1 && day <= 31
+        case 4, 6, 9, 11:
+            return day >= 1 && day <= 30
+        case 2:
+            return day >= 1 && day <= (isLeap ? 29 : 28)
+        default:
+            return false
+        }
     }
 }

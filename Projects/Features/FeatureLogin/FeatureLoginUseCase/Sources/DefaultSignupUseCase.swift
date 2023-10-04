@@ -48,7 +48,7 @@ public final class DefaultSignupUseCase: SignupUseCase {
             .asObservable()
             .withUnretained(self)
             .flatMapLatest { `self`, authInfo in
-                self.userInfoUseCase.refreshUserInfo(with: authInfo)
+                self.userInfoUseCase.fetchUserInfo(with: authInfo)
                     .do(onNext: {
                         Logger.log(
                             message: "회원 가입 성공 : \($0)",

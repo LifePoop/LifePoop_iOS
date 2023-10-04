@@ -97,7 +97,7 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             }
     }
     
-    public func refreshUserInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool> {
+    public func fetchUserInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool> {
         userInfoRepository.fetchUserInfo(with: authInfo)
             .asObservable()
             .withUnretained(self)

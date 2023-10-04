@@ -18,5 +18,5 @@ public protocol UserInfoUseCase: AnyObject {
     /** 기존 사용자 인증 정보 업데이트(서버 동기화)*/
     func refreshAuthInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool>
     /** 기존 사용자 정보 업데이트(서버 동기화)*/
-    func refreshUserInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool>
+    func fetchUserInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool>
 }

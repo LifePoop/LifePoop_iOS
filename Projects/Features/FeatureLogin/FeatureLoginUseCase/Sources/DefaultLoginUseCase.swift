@@ -84,7 +84,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
                 if userInfoExists {
                     return .just(true)
                 } else {
-                    return self.userInfoUseCase.refreshUserInfo(with: updatedAuthInfo)
+                    return self.userInfoUseCase.fetchUserInfo(with: updatedAuthInfo)
                 }
             }
     }

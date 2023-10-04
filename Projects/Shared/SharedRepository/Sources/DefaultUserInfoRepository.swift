@@ -85,7 +85,7 @@ public final class DefaultUserInfoRepository: UserInfoRepository {
                     
                     throw NetworkError.dataMappingError
                 }
-                
+                // TODO: Mapper 사용하도록 수정
                 return UserInfoEntity(
                     userId: dto.id,
                     nickname: dto.nickname,

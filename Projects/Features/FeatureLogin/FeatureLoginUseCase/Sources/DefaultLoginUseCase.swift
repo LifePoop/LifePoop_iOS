@@ -66,7 +66,9 @@ public final class DefaultLoginUseCase: LoginUseCase {
                 )
             })
             .asObservable()
-            .withLatestFrom(userInfoUseCase.userInfo) { (updatedAuthInfo: $0, originalUserInfo: $1) }
+            .withLatestFrom(userInfoUseCase.userInfo) {
+                (updatedAuthInfo: $0, originalUserInfo: $1)
+            }
             .flatMapLatest { updatedAuthInfo, originalUserInfo -> Observable<Bool> in
                 guard let updatedAuthInfo = updatedAuthInfo else {
                     return .just(false)
@@ -90,6 +92,9 @@ public final class DefaultLoginUseCase: LoginUseCase {
     /** 소셜 로그인(Apple, Kakao) OAuth Access Token 요청*/
     public func fetchOAuthAccessToken(for loginType: LoginType) -> Observable<OAuthTokenInfo?> {
         loginRepository.fetchOAuthAccessToken(for: loginType)
+            .catchAndReturn("")
+            .logErrorIfDetected(category: .authentication)
+            .filter { !$0.isEmpty }
             .asObservable()
             .map { OAuthTokenInfo(loginType: loginType, accessToken: $0) }
             .logErrorIfDetected(category: .authentication)
@@ -98,21 +103,48 @@ public final class DefaultLoginUseCase: LoginUseCase {
     public func clearUserAuthInfoIfLaunchedFirstly() -> Completable {
         isAppFirstlyLaunched
             .do(onNext: {
-                Logger.log(message: "앱 설치 후 최초 기동 여부 확인: \($0)", category: .authentication, type: .debug)
+                Logger.log(
+                    message: "앱 설치 후 최초 기동 여부 확인: \($0)",
+                    category: .authentication,
+                    type: .debug
+                )
             })
             .filter { $0 }
             .withUnretained(self)
             .do(onNext: { _, _ in
-                Logger.log(message: "KeyChain에서 사용자 인증 정보를 확인합니다.", category: .authentication, type: .debug)
+                Logger.log(
+                    message: "KeyChain에서 사용자 인증 정보를 확인합니다.",
+                    category: .authentication,
+                    type: .debug
+                )
             })
             .flatMapLatest { `self`, _ in
-                self.userInfoUseCase.userInfo.catchAndReturn(nil)
+                self.keyChainRepository
+                    .getBinaryDataFromKeyChain(
+                        forKey: .userAuthInfo,
+                        handleExceptionWhenValueNotFound: false
+                    )
+                    .do(onSuccess: { data in
+                        var message: String
+                        if let data = data,
+                           let dataString = String(data: data, encoding: .utf8) {
+                            message = "KeyChain 내 사용자 정보: \(dataString)"
+                        } else {
+                            message = "KeyChain 내 사용자 정보 없음(nil)"
+                        }
+                        
+                        Logger.log(
+                            message: message,
+                            category: .authentication,
+                            type: .debug
+                        )
+                    })
             }
             .compactMap { $0 }
             .withUnretained(self)
-            .flatMapLatest { `self`, userInfo in
+            .flatMapLatest { `self`, _ in
                 self.keyChainRepository
-                    .removeObjectFromKeyChain(userInfo, forKey: .userAuthInfo)
+                    .removeObjectFromKeyChain(forKey: .userAuthInfo)
                     .do(onCompleted: {
                         Logger.log(
                             message: "KeyChain에서 기존 사용자 정보 제거 완료",
@@ -120,7 +152,12 @@ public final class DefaultLoginUseCase: LoginUseCase {
                             type: .debug
                         )
                     })
-                    .concat(self.userDefaultsRepository.updateValue(for: .isAppFirstlyLaunched, with: false))
+                    .concat(self.userDefaultsRepository
+                        .updateValue(
+                            for: .isAppFirstlyLaunched,
+                            with: false
+                        )
+                    )
             }
             .asCompletable()
     }

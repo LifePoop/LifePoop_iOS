@@ -76,7 +76,6 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
                 )
             }
             .asSingle()
-            .catchAndReturn(nil)
     }
 }
 

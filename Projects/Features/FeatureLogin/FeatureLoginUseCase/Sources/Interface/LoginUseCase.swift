@@ -17,7 +17,7 @@ public protocol LoginUseCase {
     /** 현재 로컬 기기에 저장된 사용자 인증 정보로 자동 로그인 처리 요청 */
     func requestAutoLoginWithExistingUserInfo() -> Observable<Bool>
     /** OAuth 토큰 정보로 Lifepoo Access Token, Refresh Token 획득 및 로그인 처리 요청 */
-    func requestLogin(with userInfo: OAuthTokenInfo) -> Observable<Bool>
+    func requestLogin(with userInfo: OAuthTokenInfo) -> Observable<Result<Bool, LoginError>>
     /** 소셜 로그인(Apple, Kakao) OAuth Access Token 요청*/
     func fetchOAuthAccessToken(for loginType: LoginType) -> Observable<OAuthTokenInfo?>
 }

@@ -16,10 +16,6 @@ import SharedUseCase
 import Utils
 
 public final class DefaultLoginUseCase: LoginUseCase {
-    
-    enum LoginError: Error {
-        case refreshingTokenFailed
-    }
 
     @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
 
@@ -48,45 +44,51 @@ public final class DefaultLoginUseCase: LoginUseCase {
                 }
             }
     }
-    
+
     /** OAuth 토큰 정보로 Lifepoo Access Token, Refresh Token 획득 및 로그인 처리 요청 */
-    public func requestLogin(with oAuthTokenInfo: OAuthTokenInfo) -> Observable<Bool> {
+    public func requestLogin(with oAuthTokenInfo: OAuthTokenInfo) -> Observable<Result<Bool, LoginError>> {
         loginRepository
             .requestAuthInfoWithOAuthAccessToken(with: oAuthTokenInfo)
-            .catchAndReturn(nil)
-            .do(onSuccess: { authInfo in
-                let isSuccess = authInfo != nil
-                
-                Logger.log(
-                    message: """
-                    \(oAuthTokenInfo.loginType?.description ?? "") OAuth 로그인 성공 여부: \(isSuccess)
-                    (false일 경우 생성한 OAuth Access Token에 대한 회원 정보 없기 때문에 신규 가입 필요)
-                    """,
-                    category: .authentication,
-                    type: .debug
-                )
+            .do(onSuccess: { [weak self] loginResult in
+                self?.printConsoleLog(with: loginResult)
             })
             .asObservable()
             .withLatestFrom(userInfoUseCase.userInfo) {
-                (updatedAuthInfo: $0, originalUserInfo: $1)
+                (updatedAuthInfo: $0, loginResult: $1)
             }
-            .flatMapLatest { updatedAuthInfo, originalUserInfo -> Observable<Bool> in
-                guard let updatedAuthInfo = updatedAuthInfo else {
-                    return .just(false)
-                }
+            .flatMapLatest { [weak self] loginResult, originalUserInfo -> Observable<Result<Bool, LoginError>> in
+                guard let `self` = self else { return .just(.failure(.userNotExists)) }
+                
+                switch loginResult {
+                case .success(let updatedAuthInfo):
+                    guard let updatedAuthInfo = updatedAuthInfo else {
+                        return .just(.failure(.updatedAuthInfoNil))
+                    }
 
-                let userInfoExists = originalUserInfo != nil
-                Logger.log(
-                    message: "KeyChain 내 회원정보 존재 확인: \(userInfoExists)",
-                    category: .authentication,
-                    type: .debug
-                )
+                    let userInfoExists = originalUserInfo != nil
+                    Logger.log(
+                        message: "KeyChain 내 회원정보 존재 확인: \(userInfoExists)",
+                        category: .authentication,
+                        type: .debug
+                    )
 
-                if userInfoExists {
-                    return .just(true)
-                } else {
-                    return self.userInfoUseCase.fetchUserInfo(with: updatedAuthInfo)
+                    if userInfoExists {
+                        return .just(.success(true))
+                    } else {
+                        return self.userInfoUseCase.fetchUserInfo(with: updatedAuthInfo)
+                            .map { $0 ? .success($0) : .failure(.failedFetchingUserInfo) }
+                    }
+                case .failure(let loginError):
+                    switch loginError {
+                    case .userNotExists:
+                        return .just(.success(false))
+                    default:
+                        return .error(loginError)
+                    }
                 }
+            }
+            .catch { error in
+                Observable.just(.failure(.otherNetworkError(error: error)))
             }
     }
     
@@ -172,5 +174,27 @@ private extension DefaultLoginUseCase {
             .map { $0 ?? true }
             .catchAndReturn(true)
             .asObservable()
+    }
+    
+    func printConsoleLog(with loginResult: Result<UserAuthInfoEntity?, LoginError>) {
+        var message: String
+        
+        switch loginResult {
+        case .success(let authInfo):
+            let isSuccess = authInfo != nil
+            
+            message = """
+            \(authInfo?.loginType?.description ?? "N/A") OAuth 로그인 성공 여부: \(isSuccess)
+            (false일 경우 생성한 OAuth Access Token에 대한 회원 정보 없기 때문에 신규 가입 필요)
+            """
+        case .failure(let error):
+            message = error.description
+        }
+        
+        Logger.log(
+            message: message,
+            category: .authentication,
+            type: .debug
+        )
     }
 }

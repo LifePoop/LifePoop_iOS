@@ -62,15 +62,17 @@ public final class LoginViewModel: ViewModelType {
             .withUnretained(self)
             .flatMapLatest { `self`, oAuthTokenInfo in
                 self.loginUseCase.requestLogin(with: oAuthTokenInfo)
-                    .map { (oAuthTokenInfo: oAuthTokenInfo, isSuccess: $0 ) }
+                    .map { (oAuthTokenInfo: oAuthTokenInfo, loginResult: $0 ) }
             }
-            .bind(onNext: { oAuthTokenInfo, isSuccess in
-                if isSuccess {
-                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
-                } else {
-                    coordinator?.coordinate(
-                        by: .didTapKakaoLoginButton(userAuthInfo: oAuthTokenInfo)
-                    )
+            .bind(onNext: { [weak self] oAuthTokenInfo, loginResult in
+                switch loginResult {
+                case .success(let isSuccess):
+                    isSuccess ? coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                              : coordinator?.coordinate(
+                                    by: .didTapKakaoLoginButton(userAuthInfo: oAuthTokenInfo)
+                                )
+                case .failure(let error):
+                    self?.output.showErrorMessage.accept(error.localizedDescription)
                 }
             })
             .disposed(by: disposeBag)
@@ -94,15 +96,17 @@ public final class LoginViewModel: ViewModelType {
             .withUnretained(self)
             .flatMapLatest { `self`, oAuthTokenInfo in
                 self.loginUseCase.requestLogin(with: oAuthTokenInfo)
-                    .map { (oAuthTokenInfo: oAuthTokenInfo, isSuccess: $0 ) }
+                    .map { (oAuthTokenInfo: oAuthTokenInfo, loginResult: $0 ) }
             }
-            .bind(onNext: { oAuthTokenInfo, isSuccess in
-                if isSuccess {
-                    coordinator?.coordinate(by: .shouldFinishLoginFlow)
-                } else {
-                    coordinator?.coordinate(
-                        by: .didTapAppleLoginButton(userAuthInfo: oAuthTokenInfo)
-                    )
+            .bind(onNext: { [weak self] oAuthTokenInfo, loginResult in
+                switch loginResult {
+                case .success(let isSuccess):
+                    isSuccess ? coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                              : coordinator?.coordinate(
+                                    by: .didTapAppleLoginButton(userAuthInfo: oAuthTokenInfo)
+                                )
+                case .failure(let error):
+                    self?.output.showErrorMessage.accept(error.description)
                 }
             })
             .disposed(by: disposeBag)

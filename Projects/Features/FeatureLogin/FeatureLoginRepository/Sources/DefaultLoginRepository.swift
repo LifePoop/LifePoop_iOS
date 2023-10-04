@@ -13,6 +13,7 @@ import CoreDIContainer
 import CoreEntity
 import CoreNetworkService
 import FeatureLoginUseCase
+import Logger
 import Utils
 
 public final class DefaultLoginRepository: NSObject, LoginRepository {
@@ -36,8 +37,8 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
     
     public func requestAuthInfoWithOAuthAccessToken(
         with oAuthTokenInfo: OAuthTokenInfo
-    ) -> Single<UserAuthInfoEntity?> {
-        guard let loginType = oAuthTokenInfo.loginType else { return Single.just(nil) }
+    ) -> Single<Result<UserAuthInfoEntity?, LoginError>> {
+        guard let loginType = oAuthTokenInfo.loginType else { return .just(.success(nil)) }
         
         return urlSessionEndpointService
             .fetchNetworkResult(
@@ -49,10 +50,17 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
             .asObservable()
             .withUnretained(self)
             // TODO: 아래 부분 DefaultUserInfoRepository와 중복되므로 추후 개선해야 함
-            .map { `self`, networkResult -> UserAuthInfoEntity? in
+            .map { `self`, networkResult -> Result<UserAuthInfoEntity?, LoginError> in
                 let statusCode = networkResult.statusCode
                 guard statusCode >= 200 && statusCode < 300 else {
-                    throw NetworkError.invalidStatusCode(code: statusCode)
+                    switch statusCode {
+                    case 400:
+                        return .failure(.oAuthLoginFailed)
+                    case 404:
+                        return .failure(.userNotExists)
+                    default:
+                        throw NetworkError.invalidStatusCode(code: statusCode)
+                    }
                 }
                 
                 var accessToken: String?
@@ -69,13 +77,22 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
                     refreshToken = cookies["refresh_token"]
                 }
 
-                return self.createUpdatedUserAuthInfo(
+                let updatedUserInfo = self.createUpdatedUserAuthInfo(
                     accessToken: accessToken,
                     refreshToken: refreshToken,
                     loginType: oAuthTokenInfo.loginType
                 )
+                
+                return .success(updatedUserInfo)
             }
             .asSingle()
+            .do(onError: { error in
+                Logger.log(
+                    message: error.localizedDescription,
+                    category: .network,
+                    type: .error
+                )
+            })
     }
 }
 

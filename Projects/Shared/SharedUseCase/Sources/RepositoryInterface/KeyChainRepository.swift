@@ -32,7 +32,11 @@ public protocol KeyChainRepository: AnyObject {
         forKey key: ItemKey,
         handleExceptionWhenValueNotFound: Bool
     ) -> Single<T?>
-    func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) -> Completable
+    func getBinaryDataFromKeyChain(
+        forKey key: ItemKey,
+        handleExceptionWhenValueNotFound: Bool
+    ) -> Single<Data?>
+    func removeObjectFromKeyChain(forKey key: ItemKey) -> Completable
 }
 
 public extension KeyChainRepository {

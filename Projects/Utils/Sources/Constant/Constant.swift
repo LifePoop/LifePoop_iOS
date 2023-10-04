@@ -42,6 +42,7 @@ public extension Constant {
         public static let userDefaults = "UserDefaults"
         public static let network = "Network"
         public static let database = "Database"
+        public static let keyChain = "KeyChain"
         public static let authentication = "Authentication"
     }
 }

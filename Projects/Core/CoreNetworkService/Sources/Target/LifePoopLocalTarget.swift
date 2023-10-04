@@ -21,7 +21,7 @@ extension LifePoopLocalTarget: TargetType {
     public var baseURL: URL? {
         // MARK: 실서버 요청 확인할 경우 아래 url로 사용
 //        URL(string: "https://api.lifepoo.link")
-        URL(string: "http:localhost:3000")
+        URL(string: "http://localhost:3000")
     }
     
     public var path: String {

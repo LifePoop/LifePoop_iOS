@@ -159,7 +159,7 @@ private extension DefaultUserInfoUseCase {
         )
         
         return keyChainRepository
-            .removeObjectFromKeyChain(userInfo, forKey: .userAuthInfo)
+            .removeObjectFromKeyChain(forKey: .userAuthInfo)
             .concat(userDefaultsRepository.removeValue(for: .userNickname))
             .concat(userDefaultsRepository.removeValue(for: .userLoginType))
             .concat(userDefaultsRepository.removeValue(for: .profileCharacter))

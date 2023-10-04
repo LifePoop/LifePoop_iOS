@@ -36,23 +36,25 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
     }
     
     public func coordinate(by coordinateAction: LoginCoordinateAction) {
-        switch coordinateAction {
-        case .shouldShowLaunchScreen:
-            showLaunchScreenViewController()
-        case .skipLoginFlow:
-            skipFlow()
-        case .showLoginScene:
-            showLoginViewController()
-        case .shouldShowDetailForm(let title, let detailText):
-            showDocumentViewController(title: title, detailText: detailText)
-        case .didTapKakaoLoginButton(let authInfo):
-            showNicknameViewController(with: authInfo)
-        case .didTapAppleLoginButton(let authInfo):
-            showNicknameViewController(with: authInfo)
-        case .shouldFinishLoginFlow:
-            finishFlow()
-        case .shouldPopCurrentScene:
-            popCurrentViewController()
+        DispatchQueue.main.async { [weak self] in
+            switch coordinateAction {
+            case .shouldShowLaunchScreen:
+                self?.showLaunchScreenViewController()
+            case .skipLoginFlow:
+                self?.skipFlow()
+            case .showLoginScene:
+                self?.showLoginViewController()
+            case .shouldShowDetailForm(let title, let detailText):
+                self?.showDocumentViewController(title: title, detailText: detailText)
+            case .didTapKakaoLoginButton(let authInfo):
+                self?.showNicknameViewController(with: authInfo)
+            case .didTapAppleLoginButton(let authInfo):
+                self?.showNicknameViewController(with: authInfo)
+            case .shouldFinishLoginFlow:
+                self?.finishFlow()
+            case .shouldPopCurrentScene:
+                self?.popCurrentViewController()
+            }
         }
     }
     

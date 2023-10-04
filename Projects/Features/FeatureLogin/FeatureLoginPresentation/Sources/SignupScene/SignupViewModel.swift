@@ -199,7 +199,6 @@ public final class SignupViewModel: ViewModelType {
             .flatMapLatest { `self`, signupInfo in
                 self.signupUseCase.requestSignup(signupInfo)
             }
-            .observe(on: MainScheduler.asyncInstance)
             .bind(onNext: { isSuccess in
                 guard isSuccess else { return }
                 coordinator.coordinate(by: .shouldFinishLoginFlow)

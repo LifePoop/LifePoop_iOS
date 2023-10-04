@@ -67,7 +67,6 @@ public final class LaunchScreenViewModel: ViewModelType {
         .withUnretained(self)
         .flatMapLatest { $0.0.loginUseCase.requestAutoLoginWithExistingUserInfo() }
         .asObservable()
-        .observe(on: MainScheduler.asyncInstance)
         .bind(onNext: { hasToken in
             if hasToken {
                 coordinator?.coordinate(by: .skipLoginFlow)

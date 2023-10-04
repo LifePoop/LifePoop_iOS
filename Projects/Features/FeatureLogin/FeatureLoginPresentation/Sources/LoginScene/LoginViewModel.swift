@@ -96,7 +96,6 @@ public final class LoginViewModel: ViewModelType {
                 self.loginUseCase.requestLogin(with: oAuthTokenInfo)
                     .map { (oAuthTokenInfo: oAuthTokenInfo, isSuccess: $0 ) }
             }
-            .observe(on: MainScheduler.asyncInstance)
             .bind(onNext: { oAuthTokenInfo, isSuccess in
                 if isSuccess {
                     coordinator?.coordinate(by: .shouldFinishLoginFlow)

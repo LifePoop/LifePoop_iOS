@@ -31,7 +31,7 @@ public enum GenderType: Int, CaseIterable, CustomStringConvertible, Codable {
         switch self {
         case .female: return LocalizableString.female
         case .male: return LocalizableString.male
-        case .other: return LocalizableString.other
+        case .other: return LocalizableString.etc
         }
     }    
     

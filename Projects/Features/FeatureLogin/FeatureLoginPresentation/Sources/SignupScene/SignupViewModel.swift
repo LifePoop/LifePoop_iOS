@@ -157,30 +157,17 @@ public final class SignupViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        let signupInfo = Observable
+        let signupInput = Observable
             .combineLatest(
                 input.didEnterNickname,
                 input.didEnterBirthDate,
                 output.shouldSelectGender,
                 state.selectedConditions
             )
-            .compactMap { [weak self] nickname, birthDate, gender, conditions -> SignupInput? in
-                guard let oAuthAccessToekn = self?.authInfo.accessToken,
-                      let provider = self?.authInfo.loginType,
-                      let birthDate = self?.signupUseCase.createFormattedDateString(with: birthDate) else { return nil }
-                
-                return SignupInput(
-                    nickname: nickname,
-                    birthDate: birthDate,
-                    gender: gender,
-                    conditions: conditions,
-                    oAuthAccessToken: oAuthAccessToekn,
-                    provider: provider
-                )
-            }
+            .map {(nickname: $0, birthDate: $1, gender: $2, conditions: $3)}
             .share()
         
-        signupInfo
+        signupInput
             .withUnretained(self)
             .flatMap { `self`, signupInfo in
                 Observable.combineLatest(
@@ -194,10 +181,24 @@ public final class SignupViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.didTapNextButton
-            .withLatestFrom(signupInfo)
+            .withLatestFrom(signupInput)
+            .compactMap { [weak self] nickname, birthDate, gender, conditions -> SignupInput? in
+                guard let oAuthAccessToekn = self?.authInfo.accessToken,
+                      let provider = self?.authInfo.loginType,
+                      let birthDate = self?.signupUseCase.createFormattedDateString(with: birthDate) else { return nil }
+
+                return SignupInput(
+                    nickname: nickname,
+                    birthDate: birthDate,
+                    gender: gender,
+                    conditions: conditions,
+                    oAuthAccessToken: oAuthAccessToekn,
+                    provider: provider
+                )
+            }
             .withUnretained(self)
-            .flatMapLatest { `self`, signupInfo in
-                self.signupUseCase.requestSignup(signupInfo)
+            .flatMapLatest { `self`, signupInput in
+                self.signupUseCase.requestSignup(signupInput)
             }
             .bind(onNext: { isSuccess in
                 guard isSuccess else { return }

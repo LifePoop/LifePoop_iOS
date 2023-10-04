@@ -53,6 +53,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
     public func requestLogin(with oAuthTokenInfo: OAuthTokenInfo) -> Observable<Bool> {
         loginRepository
             .requestAuthInfoWithOAuthAccessToken(with: oAuthTokenInfo)
+            .catchAndReturn(nil)
             .do(onSuccess: { authInfo in
                 let isSuccess = authInfo != nil
                 

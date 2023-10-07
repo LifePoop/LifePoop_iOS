@@ -13,6 +13,6 @@ import Utils
 
 public protocol LoginRepository: AnyObject {
     
-    func requestSignin(with userAuthInfo: UserAuthInfoEntity) -> Single<Bool>
-    func fetchAccessToken(for loginType: LoginType) -> Single<String>
+    func requestAuthInfoWithOAuthAccessToken(with userAuthInfo: OAuthTokenInfo) -> Single<Result<UserAuthInfoEntity?, LoginError>>
+    func fetchOAuthAccessToken(for loginType: LoginType) -> Single<String>
 }

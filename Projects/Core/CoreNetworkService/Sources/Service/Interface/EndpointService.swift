@@ -13,6 +13,7 @@ import RxSwift
 public protocol EndpointService {
     func fetchData<E: Encodable>(endpoint: TargetType, with bodyObject: E) -> Single<Data>
     func fetchStatusCode<E: Encodable>(endpoint: TargetType, with bodyObject: E) -> Single<Int>
+    func fetchNetworkResult<E: Encodable>(endpoint: TargetType, with bodyObject: E) -> Single<NetworkResult>
 }
 
 public extension EndpointService {
@@ -23,4 +24,9 @@ public extension EndpointService {
     func fetchStatusCode(endpoint: TargetType) -> Single<Int> {
         fetchStatusCode(endpoint: endpoint, with: EmptyBody())
     }
+    
+    func fetchNetworkResult(endpoint: TargetType) -> Single<NetworkResult> {
+        fetchNetworkResult(endpoint: endpoint, with: EmptyBody())
+    }
+
 }

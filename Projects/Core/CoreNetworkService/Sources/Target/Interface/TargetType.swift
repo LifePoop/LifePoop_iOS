@@ -13,5 +13,6 @@ public protocol TargetType {
     var path: String { get }
     var method: HTTPMethod { get }
     var headers: [String: String]? { get }
+    var cookies: [String: String] { get }
     var parameters: [String: Any]? { get }
 }

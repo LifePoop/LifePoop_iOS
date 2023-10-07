@@ -20,14 +20,6 @@ import SharedDIContainer
 import SharedUseCase
 import Utils
 
-public struct SignupInfo {
-    
-    let nickname: String
-    let birthDate: String
-    let gender: GenderType?
-    let conditions: Set<AgreementCondition>
-}
-
 public final class SignupViewModel: ViewModelType {
 
     enum DetailViewType {
@@ -44,7 +36,7 @@ public final class SignupViewModel: ViewModelType {
     public struct Input {
         let didTapNextButton = PublishRelay<Void>()
         let didEnterNickname = PublishRelay<String>()
-        let didEnterBirthday = PublishRelay<String>()
+        let didEnterBirthDate = PublishRelay<String>()
         let didTapSelectAllCondition = PublishRelay<Bool>()
         let didSelectConfirmCondition = PublishRelay<AgreementCondition>()
         let didDeselectConfirmCondition = PublishRelay<AgreementCondition>()
@@ -76,7 +68,6 @@ public final class SignupViewModel: ViewModelType {
     public let output = Output()
     private let state = State()
     
-    @Inject(LoginDIContainer.shared) private var loginUseCase: LoginUseCase
     @Inject(LoginDIContainer.shared) private var signupUseCase: SignupUseCase
     @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
     
@@ -84,10 +75,10 @@ public final class SignupViewModel: ViewModelType {
     @Inject(SharedDIContainer.shared) private var profileCharacterUseCase: ProfileCharacterUseCase
 
     private weak var coordinator: LoginCoordinator?
-    private let authInfo: UserAuthInfoEntity
+    private let authInfo: OAuthTokenInfo
     private let disposeBag = DisposeBag()
     
-    public init(coordinator: LoginCoordinator?, authInfo: UserAuthInfoEntity) {
+    public init(coordinator: LoginCoordinator?, authInfo: OAuthTokenInfo) {
         self.coordinator = coordinator
         self.authInfo = authInfo
         bind()
@@ -130,7 +121,7 @@ public final class SignupViewModel: ViewModelType {
             .bind(to: output.nicknameTextFieldStatus)
             .disposed(by: disposeBag)
         
-        let birthdayInputStatus = input.didEnterBirthday
+        let birthdayInputStatus = input.didEnterBirthDate
             .withUnretained(self)
             .flatMap { `self`, input in
                 self.signupUseCase.isBirthdayInputValid(input)
@@ -166,17 +157,17 @@ public final class SignupViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        let signupInfo = Observable
+        let signupInput = Observable
             .combineLatest(
                 input.didEnterNickname,
-                input.didEnterBirthday,
+                input.didEnterBirthDate,
                 output.shouldSelectGender,
                 state.selectedConditions
             )
-            .map { SignupInfo(nickname: $0, birthDate: $1, gender: $2, conditions: $3) }
+            .map {(nickname: $0, birthDate: $1, gender: $2, conditions: $3)}
             .share()
         
-        signupInfo
+        signupInput
             .withUnretained(self)
             .flatMap { `self`, signupInfo in
                 Observable.combineLatest(
@@ -190,20 +181,27 @@ public final class SignupViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.didTapNextButton
-            .throttle(.seconds(3), latest: false, scheduler: MainScheduler.instance)
-            .withLatestFrom(signupInfo)
-            .withUnretained(self)
-            .flatMapLatestCompletableMaterialized { `self`, signupInfo in
-                // FIXME: 추후 서버에서 내려주는 값으로 대체
-                let userInfo = UserInfoEntity(
-                    userId: 16,
-                    nickname: signupInfo.nickname,
-                    authInfo: self.authInfo
+            .withLatestFrom(signupInput)
+            .compactMap { [weak self] nickname, birthDate, gender, conditions -> SignupInput? in
+                guard let oAuthAccessToekn = self?.authInfo.accessToken,
+                      let provider = self?.authInfo.loginType,
+                      let birthDate = self?.signupUseCase.createFormattedDateString(with: birthDate) else { return nil }
+
+                return SignupInput(
+                    nickname: nickname,
+                    birthDate: birthDate,
+                    gender: gender,
+                    conditions: conditions,
+                    oAuthAccessToken: oAuthAccessToekn,
+                    provider: provider
                 )
-                return self.loginUseCase.saveUserInfo(userInfo)
             }
-            .filter { $0.isCompleted }
-            .bind(onNext: { _ in
+            .withUnretained(self)
+            .flatMapLatest { `self`, signupInput in
+                self.signupUseCase.requestSignup(signupInput)
+            }
+            .bind(onNext: { isSuccess in
+                guard isSuccess else { return }
                 coordinator.coordinate(by: .shouldFinishLoginFlow)
             })
             .disposed(by: disposeBag)

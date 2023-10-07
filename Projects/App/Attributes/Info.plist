@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -75,9 +80,7 @@
 	<string>Light</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<!-- 카카오톡으로 로그인 -->
 		<string>kakaokompassauth</string>
-		<!-- 카카오링크 -->
 		<string>kakaolink</string>
 	</array>
 </dict>

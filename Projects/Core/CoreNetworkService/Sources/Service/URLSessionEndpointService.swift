@@ -26,6 +26,10 @@ public final class URLSessionEndpointService: EndpointService {
         return performRequest(endpoint: endpoint, bodyObject: bodyObject)
             .map { $0.statusCode }
     }
+    
+    public func fetchNetworkResult<E>(endpoint: TargetType, with bodyObject: E) -> Single<NetworkResult> where E : Encodable {
+        return performRequest(endpoint: endpoint, bodyObject: bodyObject)
+    }
 }
 
 // MARK: - Supporting Methods
@@ -58,6 +62,18 @@ private extension URLSessionEndpointService {
                 request.addValue(value, forHTTPHeaderField: key)
             }
         }
+        
+        // MARK: 필요 시 요청 헤더에 쿠키 추가
+        let cookies: [HTTPCookie] = endpoint.cookies.compactMap { key, value in
+            HTTPCookie(properties: [
+                .name: key,
+                .value: value,
+                .domain: finalUrl.host ?? "api.lifepoo.link",
+                .path: "/",
+            ])
+        }
+        let cookieHeaderValue = HTTPCookie.requestHeaderFields(with: cookies)["Cookie"]
+        request.setValue(cookieHeaderValue, forHTTPHeaderField: "Cookie")
         
         if bodyObject is EmptyBody {
             return request

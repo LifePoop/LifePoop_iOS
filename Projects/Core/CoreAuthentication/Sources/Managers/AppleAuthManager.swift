@@ -24,10 +24,7 @@ public final class AppleAuthManager: AuthManagable {
         guard !isAlreadyInitialized else { return }
         preparation?()
         
-        let serialQueue = DispatchQueue(label: "serial-queue-auth-auth")
-        serialQueue.sync {
-            _isAlreadyInitialized = true
-        }
+        _isAlreadyInitialized = true
     }
     
     public func fetchAccessToken() -> Single<String> {
@@ -40,7 +37,6 @@ public final class AppleAuthManager: AuthManagable {
             .compactMap { $0.credential as? ASAuthorizationAppleIDCredential }
             .compactMap { $0.identityToken }
             .compactMap { String(data: $0, encoding: .utf8) }
-//            .map { AppleAuthResultEntity(accessToken: $0) }
             .asSingle()
     }
 }

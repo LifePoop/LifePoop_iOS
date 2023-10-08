@@ -54,7 +54,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
     private let genderSelectionButtons: [TextSelectionButton] = GenderType.allCases.map {
         TextSelectionButton(
             index: $0.index,
-            title: $0.description,
+            title: $0.localizedDescription,
             backgroundColor: .init(
                 selected: ColorAsset.primary.color,
                 deselected: ColorAsset.gray300.color
@@ -158,7 +158,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         
         birthdayTextField.rx.textChanged
             .skip(1)
-            .bind(to: input.didEnterBirthday)
+            .bind(to: input.didEnterBirthDate)
             .disposed(by: disposeBag)
         
         nicknameTextField.rx.controlEvent(.editingDidEndOnExit)

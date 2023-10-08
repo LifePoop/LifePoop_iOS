@@ -15,6 +15,7 @@ public enum LifePoopTarget {
 }
 
 extension LifePoopTarget: TargetType {
+    
     public var baseURL: URL? {
         switch self {
         case .fetchTempCode, .fetchAccessToken:
@@ -37,6 +38,13 @@ extension LifePoopTarget: TargetType {
             return .get
         case .fetchAccessToken:
             return .post
+        }
+    }
+    
+    public var cookies: [String: String] {
+        switch self {
+        default:
+            return [:]
         }
     }
     

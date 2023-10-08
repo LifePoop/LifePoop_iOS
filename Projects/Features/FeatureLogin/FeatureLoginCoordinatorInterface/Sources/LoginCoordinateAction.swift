@@ -12,11 +12,11 @@ import CoreEntity
 
 public enum LoginCoordinateAction {
     case shouldShowLaunchScreen
-    case shouldSkipLoginFlow
-    case shouldShowLoginScene
+    case skipLoginFlow
+    case showLoginScene
     case shouldShowDetailForm(title: String, detailText: String)
     case shouldPopCurrentScene
-    case didTapAppleLoginButton(userAuthInfo: UserAuthInfoEntity)
-    case didTapKakaoLoginButton(userAuthInfo: UserAuthInfoEntity)
+    case didTapAppleLoginButton(userAuthInfo: OAuthTokenInfo)
+    case didTapKakaoLoginButton(userAuthInfo: OAuthTokenInfo)
     case shouldFinishLoginFlow
 }

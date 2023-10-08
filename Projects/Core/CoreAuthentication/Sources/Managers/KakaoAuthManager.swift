@@ -27,14 +27,10 @@ public final class KakaoAuthManager: AuthManagable {
         guard !isAlreadyInitialized else { return }
         
         preparation?()
-
-        let serialQueue = DispatchQueue(label: "serial-queue-kakao-auth")
-        serialQueue.sync {
-            // FIXME: 추후 키값 코드에서 감춰놔야 함
-            KakaoSDK.initSDK(appKey: "f7f327d46b7184823676acc9d0a2035c")
-            
-            _isAlreadyInitialized = true
-        }
+        // FIXME: 추후 키값 코드에서 감춰놔야 함
+        KakaoSDK.initSDK(appKey: "f7f327d46b7184823676acc9d0a2035c")
+        
+        _isAlreadyInitialized = true
     }
     
     public static func handleLoginUrl(_ url: URL) {

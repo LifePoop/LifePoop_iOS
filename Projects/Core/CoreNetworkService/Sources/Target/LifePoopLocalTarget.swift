@@ -9,64 +9,75 @@
 import Foundation
 
 public enum LifePoopLocalTarget {
-    case login(accessToken: String, provider: String)
+    case login(provider: String)
+    case updateAccessToken(refreshToken: String)
+    case signup(provider: String)
+    case fetchUserInfo(accessToken: String)
     case fetchStoolLog(userID: Int)
     case postStoolLog(accessToken: String)
 }
 
 extension LifePoopLocalTarget: TargetType {
     public var baseURL: URL? {
-        switch self {
-        case .login, .fetchStoolLog, .postStoolLog:
-            return URL(string: "http://localhost:3000")
-        }
+        // MARK: 실서버 요청 확인할 경우 아래 url로 사용
+//        URL(string: "https://api.lifepoo.link")
+        URL(string: "http://localhost:3000")
     }
     
     public var path: String {
         switch self {
-        case .login:
-            return "/auth/*/login"
+        case .updateAccessToken:
+            return "/auth/refresh"
+        case .signup(let provider):
+            return "/auth/\(provider)/register"
+        case .login(let provider):
+            return "/auth/\(provider)/login"
         case .fetchStoolLog(let userID):
             return "/post/\(userID)"
         case .postStoolLog:
             return "/post"
+        case .fetchUserInfo:
+            return "/user"
         }
     }
     
     public var method: HTTPMethod {
         switch self {
-        case .login:
-            return .post
-        case .fetchStoolLog:
+        case .fetchStoolLog, .fetchUserInfo:
             return .get
-        case .postStoolLog:
+        case .postStoolLog, .login, .signup, .updateAccessToken:
             return .post
         }
     }
     
     public var headers: [String: String]? {
         switch self {
-        case .login:
-            return nil
-        case .fetchStoolLog:
-            return nil
-        case .postStoolLog(let accessToken):
+        case .postStoolLog(let accessToken), .fetchUserInfo(let accessToken):
             return [
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "Authorization": "Bearer \(accessToken)"
             ]
+        default:
+            return [
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            ]
         }
     }
-    
+
+    public var cookies: [String: String] {
+        switch self {
+        case .updateAccessToken(let refreshToken):
+            return ["refresh_token": refreshToken]
+        default:
+            return [:]
+        }
+    }
+
     public var parameters: [String: Any]? {
         switch self {
-        case .login(let accessToken, let provider):
-            return [
-                "accessToken": accessToken,
-                "provider": provider
-            ]
-        case .fetchStoolLog, .postStoolLog:
+        case .signup, .login, .fetchStoolLog, .postStoolLog, .updateAccessToken, .fetchUserInfo:
             return nil
         }
     }

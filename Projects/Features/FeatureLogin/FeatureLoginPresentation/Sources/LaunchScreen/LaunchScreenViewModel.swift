@@ -39,10 +39,11 @@ public final class LaunchScreenViewModel: ViewModelType {
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
         
+        // MARK: 앱 설치 후 최초 기동 시에 기존 사용자 정보 삭제
         let preparationResult = input.viewWillAppear
             .withUnretained(self)
             .flatMapCompletableMaterialized { `self`, _ in
-                self.loginUseCase.clearUserAuthInfoIfNeeded()
+                self.loginUseCase.clearUserAuthInfoIfLaunchedFirstly()
             }
             .share()
         
@@ -58,28 +59,19 @@ public final class LaunchScreenViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
+        // MARK: LaunchScreen 애니메이션 처리 및 부가 작업 끝나면 자동 로그인 시도
         Observable.zip(
             input.didFinishAnimating,
             input.didFinishPreparation
         )
         .withUnretained(self)
-        .flatMapLatest { `self`, _ in
-            self.loginUseCase.userInfo
-        }
-        .withUnretained(self)
-        .flatMapLatest { `self`, userInfo in
-            // MARK: 기기에 인증 정보가 존재하면 유효성 검증 위해 자동으로 로그인 요청
-            if let userAuthInfo = userInfo?.authInfo {
-                return self.loginUseCase.requestSignin(with: userAuthInfo)
-            } else {
-                return Observable.just(false)
-            }
-        }
+        .flatMapLatest { $0.0.loginUseCase.requestAutoLoginWithExistingUserInfo() }
+        .asObservable()
         .bind(onNext: { hasToken in
             if hasToken {
-                coordinator?.coordinate(by: .shouldSkipLoginFlow)
+                coordinator?.coordinate(by: .skipLoginFlow)
             } else {
-                coordinator?.coordinate(by: .shouldShowLoginScene)
+                coordinator?.coordinate(by: .showLoginScene)
             }
         })
         .disposed(by: disposeBag)

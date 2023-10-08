@@ -64,6 +64,8 @@ public final class SettingViewModel: ViewModelType {
     private let state = State()
     
     @Inject(SettingDIContainer.shared) private var userSettingUseCase: UserSettingUseCase
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
+
     @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
     
     private weak var coordinator: SettingCoordinator?
@@ -210,10 +212,17 @@ public final class SettingViewModel: ViewModelType {
         .bind(to: output.dismissWithdrawAlert)
         .disposed(by: disposeBag)
         
+        // MARK:  애플 탈퇴 구현을 위해 임시로 authorization code 가져오는 코드 적용
         input.withdrawConfirmButtonDidTap
-            .bind {
-                // TODO: Execute Withdraw UseCase
-                coordinator?.coordinate(by: .withdrawConfirmButtonDidTap)
+            .withUnretained(self)
+            .flatMap { `self`, _ in
+                self.userInfoUseCase.requestAccountWithdrawl(for: .apple)
+            }
+            .withUnretained(self)
+            .bind { `self`, isSuccess in
+                if isSuccess {
+                    self.coordinator?.coordinate(by: .withdrawConfirmButtonDidTap)
+                }
             }
             .disposed(by: disposeBag)
         

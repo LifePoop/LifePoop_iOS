@@ -18,4 +18,7 @@ public protocol UserInfoRepository: AnyObject {
     
     /** 전달된 refresh tokenm, access token으로 서버로부터 해당되는 사용자 정보 요청 */
     func fetchUserInfo(with authInfo: UserAuthInfoEntity) -> Single<UserInfoEntity?>
+
+    /** Apple Authorization Code값 요청 */
+    func fetchAppleAuthorizationCode() -> Single<String>
 }

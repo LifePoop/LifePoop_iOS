@@ -111,9 +111,31 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
                     .catch { Observable.error($0) }
             }
     }
+    
+    public func requestAccountWithdrawl(for loginType: LoginType) -> Observable<Bool> {
+        switch loginType {
+        case .apple:
+            return requestAppleAccountWithdrawl()
+        case .kakao:
+            break
+        }
+        
+        return .just(false)
+    }
 }
 
 private extension DefaultUserInfoUseCase {
+    
+    func requestAppleAccountWithdrawl() -> Observable<Bool> {
+        userInfoRepository
+            .fetchAppleAuthorizationCode()
+            .do(onSuccess: { value in
+                print(value)
+            })
+            .map { _ in true }
+            .asObservable()
+            .catchAndReturn(true)
+    }
     
     func clearUserInfoIfNeeded() -> Observable<Bool> {
         userInfo

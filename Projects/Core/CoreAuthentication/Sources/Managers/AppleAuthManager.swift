@@ -39,4 +39,18 @@ public final class AppleAuthManager: AuthManagable {
             .compactMap { String(data: $0, encoding: .utf8) }
             .asSingle()
     }
+    
+    public func fetchAuthorizationCode() -> Single<String> {
+        guard AppleAuthManager.isAlreadyInitialized else {
+            return Single.error(AuthenticationError.authInfoNotInitialized)
+        }
+        
+        let provider = ASAuthorizationAppleIDProvider()
+        return provider.rx.login(scope: [.fullName, .email])
+            .compactMap { $0.credential as? ASAuthorizationAppleIDCredential }
+            .compactMap { $0.authorizationCode }
+            .compactMap { String(data: $0, encoding: .utf8) }
+            .asSingle()
+
+    }
 }

@@ -8,6 +8,7 @@
 
 import Foundation
 
+import CoreAuthentication
 import CoreDIContainer
 import CoreEntity
 import CoreNetworkService
@@ -97,6 +98,11 @@ public final class DefaultUserInfoRepository: UserInfoRepository {
                 )
             }
             .logErrorIfDetected(category: .network, type: .error)
+    }
+    
+    public func fetchAppleAuthorizationCode() -> Single<String> {
+        let appleAuthManager = AppleAuthManager()
+        return appleAuthManager.fetchAuthorizationCode()
     }
 }
 

@@ -18,9 +18,11 @@ public struct StoolLogItem {
     }
     
     public let itemState: ItemState
+    public let section: StoolLogListSection
     
-    public init(itemState: ItemState) {
+    public init(itemState: ItemState, section: StoolLogListSection) {
         self.itemState = itemState
+        self.section = section
     }
 }
 

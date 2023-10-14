@@ -37,15 +37,17 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
     }
     
     public func coordinate(by coordinateAction: FriendListCoordinateAction) {
-        switch coordinateAction {
-        case .shouldShowFirendList:
-            showFriendListViewController()
-        case .shouldShowFriendInvitation(let toastMessageStream):
-            showFriendInvitationView(with: toastMessageStream)
-        case .shouldShowInvitationCodePopup(let invitationType, let toastMessageStream):
-            showInvitationCodePopup(invitationType: invitationType, toastMessageStream: toastMessageStream)
-        case .shouldDismissInvitationCodePopup:
-            dismissViewController()
+        DispatchQueue.main.async { [weak self] in
+            switch coordinateAction {
+            case .shouldShowFirendList:
+                self?.showFriendListViewController()
+            case .shouldShowFriendInvitation(let toastMessageStream):
+                self?.showFriendInvitationView(with: toastMessageStream)
+            case .shouldShowInvitationCodePopup(let invitationType, let toastMessageStream):
+                self?.showInvitationCodePopup(invitationType: invitationType, toastMessageStream: toastMessageStream)
+            case .shouldDismissInvitationCodePopup:
+                self?.dismissViewController()
+            }
         }
     }
     

@@ -135,7 +135,7 @@ public final class InvitationCodeViewModel: ViewModelType {
             .withLatestFrom(input.didEnterInvitationCode)
             .withUnretained(self)
             .flatMapLatest { `self`, invitationCode in
-                self.friendListUseCase.sendInvitationCode(invitationCode)
+                self.friendListUseCase.requestAddingFriend(with: invitationCode)
             }
             .observe(on: MainScheduler.asyncInstance)
             .do(onNext: { [weak self] _ in

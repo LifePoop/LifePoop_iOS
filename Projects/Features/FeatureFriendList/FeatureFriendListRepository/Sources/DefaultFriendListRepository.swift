@@ -22,30 +22,37 @@ public final class DefaultFriendListRepository: NSObject, FriendListRepository {
     @Inject(CoreDIContainer.shared) private var urlSessionEndpointService: EndpointService
     
     public override init() { }
-    
+
     public func fetchFriendList() -> Single<[FriendEntity]> {
         Single.just(FriendEntity.dummyData)
     }
     
-    public func sendInvitationCode(_ invitationCode: String, accessToken: String) -> Single<Result<Bool, Error>> {
+    // MARK: 서버팀에서 정의한 상태코드에 대해서만 우선 예외 던짐 처리
+    public func requestAddingFriend(with invitationCode: String, accessToken: String) -> Single<Bool> {
         urlSessionEndpointService
             .fetchStatusCode(endpoint: LifePoopLocalTarget
                 .sendInvitationCode(
                     code: invitationCode,
                     accessToken: accessToken
                 ))
-            .map { statusCode -> Result<Bool, Error> in
+            .map { statusCode in
                 switch statusCode {
                 case 201:
-                    return .success(true)
+                    return true
                 case 444:
-                    return .failure(NetworkError.invalidAccessToken)
+                    throw NetworkError.invalidAccessToken
                 default:
-                    return .failure(NetworkError.invalidStatusCode(code: statusCode))
+                    Logger.log(
+                        message: NetworkError.invalidStatusCode(
+                            code: statusCode
+                        )
+                        .localizedDescription,
+                        category: .network,
+                        type: .error
+                    )
+
+                    return false
                 }
-            }
-            .catch { error in
-                return .just(.failure(error))
             }
     }
 }

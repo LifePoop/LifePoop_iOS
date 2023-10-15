@@ -1,4 +1,3 @@
-
 //
 //  DefaultFriendListUseCase.swift
 //  FeatureFriendListUseCase
@@ -37,22 +36,43 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
             .asObservable()
     }
     
-    public func sendInvitationCode(_ invitationCode: String) -> Observable<Bool> {
+    public func requestAddingFriend(with invitationCode: String) -> Observable<Bool> {
         userInfoUseCase.userInfo
             .compactMap { $0?.authInfo.accessToken }
             .withUnretained(self)
             .flatMapLatest { `self`, accessToken in
-                self.friendListRepository.sendInvitationCode(invitationCode, accessToken: accessToken)
-            }
-            .logErrorIfDetected(category: .network, type: .error)
-            .map { result -> Bool in
-                switch result {
-                case .success(let isSuccess):
-                    return isSuccess
-                case .failure:
-                    return false
-                }
+                self.friendListRepository.requestAddingFriend(
+                    with: invitationCode,
+                    accessToken: accessToken
+                )
+                .retry(when: { errorStream in
+                    errorStream.flatMap { _ in
+                        self.retryWhenAccessTokenIsInvalid(invitationCode: invitationCode)
+                    }
+                })
             }
             .asObservable()
+    }
+    
+    private func retryWhenAccessTokenIsInvalid(invitationCode: String) -> Observable<Bool> {
+        let originalAuthInfo = userInfoUseCase.userInfo.compactMap { $0?.authInfo }
+      
+        Logger.log(
+            message: "액세스 토큰 업데이트 후 재요청",
+            category: .authentication,
+            type: .debug
+        )
+
+        return originalAuthInfo
+            .withUnretained(self)
+            .flatMap {`self`, authInfo in
+                self.userInfoUseCase.refreshAuthInfo(with: authInfo)
+            }
+            .catchAndReturn(false)
+            .withUnretained(self)
+            .flatMap { `self`, isSuccess -> Observable<Bool> in
+                guard isSuccess else { return .just(false) }
+                return self.requestAddingFriend(with: invitationCode)
+            }
     }
 }

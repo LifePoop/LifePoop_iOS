@@ -20,22 +20,29 @@ import Utils
 
 public final class InvitationCodeViewModel: ViewModelType {
     
-    enum SharingResult: CustomStringConvertible {
+    enum ActionResult: CustomStringConvertible {
         case success(activity: Activity)
-        case failure(error: Error?)
+        case failure(activity: Activity, error: Error?)
         
         enum Activity {
             case sharing
             case copying
+            case addingFriend
         }
         
         var description: String {
             switch self {
             case .success(let activity):
-                return activity == .copying ?
-                LocalizableString.toastInvitationCodeCopySuccess :
-                LocalizableString.toastInvitationCodeSharingSuccess
+                switch activity {
+                case .sharing:
+                    return LocalizableString.toastInvitationCodeSharingSuccess
+                case .copying:
+                    return LocalizableString.toastInvitationCodeCopySuccess
+                case .addingFriend:
+                    return LocalizableString.toastAddingFriendSuccess
+                }
             case .failure:
+                
                 return LocalizableString.toastInvitationCodeSharingFail
             }
         }
@@ -46,21 +53,23 @@ public final class InvitationCodeViewModel: ViewModelType {
         let didEnterInvitationCode = PublishRelay<String>()
         let didTapConfirmButton = PublishRelay<Void>()
         let didTapCancelButton = PublishRelay<Void>()
-        let didCloseSharingPopup = PublishRelay<SharingResult?>()
+        let didCloseSharingPopup = PublishRelay<ActionResult?>()
         let didCloseInvitationCodePopup = PublishRelay<Void>()
     }
     
     public struct Output {
         let placeholder = BehaviorRelay<String>(value: "")
-        let shouldDismissAlertView = PublishRelay<Void>()
-        let shouldShowInvitationCodePopup = PublishRelay<Void>()
-        let shouldShowSharingActivityView = PublishRelay<Void>()
+        let dismissAlertView = PublishRelay<Void>()
+        let showInvitationCodePopup = PublishRelay<Void>()
+        let showSharingActivityView = PublishRelay<Void>()
         let enableConfirmButton = PublishRelay<Bool>()
         let hideWarningLabel = PublishRelay<Bool>()
     }
     
     public let input = Input()
     public let output = Output()
+    
+    @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
     
     private var disposeBag = DisposeBag()
     
@@ -76,9 +85,9 @@ public final class InvitationCodeViewModel: ViewModelType {
             .bind(onNext: { `self`, invitationType in
                 switch invitationType {
                 case .sharingInvitationCode:
-                    self.output.shouldShowSharingActivityView.accept(())
+                    self.output.showSharingActivityView.accept(())
                 case .enteringInvitationCode:
-                    self.output.shouldShowInvitationCodePopup.accept(())
+                    self.output.showInvitationCodePopup.accept(())
                 }
             })
             .disposed(by: disposeBag)
@@ -106,16 +115,26 @@ public final class InvitationCodeViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.didTapCancelButton
-            .bind(to: output.shouldDismissAlertView)
+            .bind(to: output.dismissAlertView)
             .disposed(by: disposeBag)
 
         input.didTapConfirmButton
             .withLatestFrom(input.didEnterInvitationCode)
-            .do(onNext: { invitationCode in
-                Logger.log(message: "초대코드 입력 확인 : \(invitationCode)", category: .default, type: .debug)
+            .withUnretained(self)
+            .flatMapLatest { `self`, invitationCode in
+                self.friendListUseCase.sendInvitationCode(invitationCode)
+            }
+            .observe(on: MainScheduler.asyncInstance)
+            .do(onNext: { [weak self] _ in
+                self?.output.dismissAlertView.accept(())
             })
-            .map { _ in Void() }
-            .bind(to: output.shouldDismissAlertView)
+            .map { isSuccess -> String in
+                let actionResult: ActionResult = isSuccess ? 
+                    .success(activity: .addingFriend) :
+                    .failure(activity: .addingFriend, error: nil)
+                return actionResult.description
+            }
+            .bind(to: toastMessageStream)
             .disposed(by: disposeBag)
 
         input.didCloseInvitationCodePopup

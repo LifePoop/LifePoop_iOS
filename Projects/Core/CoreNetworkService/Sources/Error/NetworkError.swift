@@ -16,6 +16,7 @@ public enum NetworkError: LocalizedError {
     case invalidStatusCode(code: Int)
     case invalidResponseData
     case invalidRequest
+    case invalidAccessToken
     case decodeError
     case encodeError
     case dataMappingError
@@ -35,6 +36,8 @@ public enum NetworkError: LocalizedError {
             return "Invalid status code: \(code)"
         case .invalidResponseData:
             return "Invalid response data."
+        case .invalidAccessToken:
+            return "Invalid access token"
         case .invalidRequest:
             return "Invalid request."
         case .decodeError:

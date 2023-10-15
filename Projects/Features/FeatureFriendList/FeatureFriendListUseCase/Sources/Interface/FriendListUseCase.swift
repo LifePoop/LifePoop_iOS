@@ -15,4 +15,5 @@ import CoreEntity
 public protocol FriendListUseCase {
     
     func fetchFriendList() -> Observable<[FriendEntity]>
+    func sendInvitationCode(_ invitationCode: String) -> Observable<Bool>
 }

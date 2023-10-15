@@ -16,4 +16,5 @@ import Utils
 public protocol FriendListRepository: AnyObject {
     
     func fetchFriendList() -> Single<[FriendEntity]>
+    func sendInvitationCode(_ invitationCode: String, accessToken: String) -> Single<Result<Bool,Error>>
 }

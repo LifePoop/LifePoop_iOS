@@ -69,6 +69,8 @@ public final class InvitationCodeViewModel: ViewModelType {
     public let input = Input()
     public let output = Output()
     
+    private (set)var invitationCode: String = ""
+    
     @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
     
     private var disposeBag = DisposeBag()
@@ -78,6 +80,17 @@ public final class InvitationCodeViewModel: ViewModelType {
         invitationType: InvitationType,
         toastMessageStream: PublishRelay<String>
     ) {
+        
+        input.viewDidAppear
+            .withUnretained(self)
+            .flatMap { `self`, _ in
+                self.friendListUseCase.invitationCode
+            }
+            .withUnretained(self)
+            .bind(onNext: { `self`, invitationCode in
+                self.invitationCode = invitationCode
+            })
+            .disposed(by: disposeBag)
         
         input.viewDidAppear
             .map { invitationType }

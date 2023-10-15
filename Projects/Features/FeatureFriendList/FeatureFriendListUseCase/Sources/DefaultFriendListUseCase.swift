@@ -23,6 +23,12 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
     @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     @Inject(FriendListDIContainer.shared) private var friendListRepository: FriendListRepository
     
+    public var invitationCode: Observable<String> {
+        userInfoUseCase.userInfo
+            .map { $0?.invitationCode ?? "" }
+            .asObservable()
+    }
+    
     public init() { }
     
     public func fetchFriendList() -> Observable<[FriendEntity]> {

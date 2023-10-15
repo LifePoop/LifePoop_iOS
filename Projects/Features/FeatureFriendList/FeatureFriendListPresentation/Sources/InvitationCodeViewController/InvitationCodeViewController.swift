@@ -18,7 +18,10 @@ import Utils
 
 public final class InvitationCodeViewController: LifePoopViewController, ViewType {
     
-    private let textFieldAlertView = LifePoopTextFieldAlertView(type: .invitationCode, placeholder: "ex) vMXxaOXq")
+    private let textFieldAlertView = LifePoopTextFieldAlertView(
+        type: .invitationCode,
+        placeholder: "ex) vMXxaOXq"
+    )
     
     private var disposeBag = DisposeBag()
     public var viewModel: InvitationCodeViewModel?
@@ -107,8 +110,14 @@ private extension InvitationCodeViewController {
     }
     
     func showSharingPopup() {
-        let textToShare = "Invitation Code"
-        let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
+        // TODO: 초대코드 존재하지 않을 경우 별도 표시해야 함
+        guard let invitationCode = viewModel?.invitationCode,
+              !invitationCode.isEmpty else { return }
+        
+        let activityViewController = UIActivityViewController(
+            activityItems: [invitationCode],
+            applicationActivities: nil
+        )
         
         // MARK: 우선적으로 필요없는 타입 제외
         activityViewController.excludedActivityTypes = [

@@ -18,6 +18,8 @@ import FeatureFriendListUseCase
 import Logger
 import Utils
 
+// FIXME: 앱 배포 후, 리팩토링할 때 해당 뷰모델, 뷰컨트롤러를 FriendListViewController, ViewModel로 통합해야 함
+
 public final class FriendInvitationViewModel: ViewModelType {
     
     public struct Input {

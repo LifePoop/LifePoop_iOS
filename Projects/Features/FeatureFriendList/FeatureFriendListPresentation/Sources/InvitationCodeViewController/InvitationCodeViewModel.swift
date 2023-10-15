@@ -78,7 +78,8 @@ public final class InvitationCodeViewModel: ViewModelType {
     public init(
         coordinator: FriendListCoordinator?,
         invitationType: InvitationType,
-        toastMessageStream: PublishRelay<String>
+        toastMessageStream: PublishRelay<String>,
+        friendListUpdateStream: PublishRelay<Void>
     ) {
         
         input.viewDidAppear
@@ -147,7 +148,10 @@ public final class InvitationCodeViewModel: ViewModelType {
                     .failure(activity: .addingFriend, error: nil)
                 return actionResult.description
             }
-            .bind(to: toastMessageStream)
+            .bind(onNext: { toastMessage in
+                toastMessageStream.accept(toastMessage)
+                friendListUpdateStream.accept(())
+            })
             .disposed(by: disposeBag)
 
         input.didCloseInvitationCodePopup

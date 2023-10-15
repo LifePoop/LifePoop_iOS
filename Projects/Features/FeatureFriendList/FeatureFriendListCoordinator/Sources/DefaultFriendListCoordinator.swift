@@ -42,9 +42,16 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
             case .showFirendList:
                 self?.showFriendListViewController()
             case .showFriendInvitation(let toastMessageStream, let friendListUpdateStream):
-                self?.showFriendInvitationView(toastMessageStream: toastMessageStream, friendListUpdateStream: friendListUpdateStream)
+                self?.showFriendInvitationView(
+                    toastMessageStream: toastMessageStream,
+                    friendListUpdateStream: friendListUpdateStream
+                )
             case .showInvitationCodePopup(let invitationType, let toastMessageStream, let friendListUpdateStream):
-                self?.showInvitationCodePopup(invitationType: invitationType, toastMessageStream: toastMessageStream)
+                self?.showInvitationCodePopup(
+                    invitationType: invitationType,
+                    toastMessageStream: toastMessageStream,
+                    friendListUpdateStream: friendListUpdateStream
+                )
             case .dismissInvitationCodePopup:
                 self?.dismissViewController()
             }
@@ -86,14 +93,19 @@ private extension DefaultFriendListCoordinator {
         self.bottomSheetController = bottomSheetController
     }
     
-    func showInvitationCodePopup(invitationType: InvitationType, toastMessageStream: PublishRelay<String>) {
+    func showInvitationCodePopup(
+        invitationType: InvitationType,
+        toastMessageStream: PublishRelay<String>,
+        friendListUpdateStream: PublishRelay<Void>
+    ) {
         closeBottomSheet()
         
         let invitationCodeViewController = InvitationCodeViewController()
         let invitationCodeViewModel = InvitationCodeViewModel(
             coordinator: self,
             invitationType: invitationType,
-            toastMessageStream: toastMessageStream
+            toastMessageStream: toastMessageStream,
+            friendListUpdateStream: friendListUpdateStream
         )
         invitationCodeViewController.bind(viewModel: invitationCodeViewModel)
         

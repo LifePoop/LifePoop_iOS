@@ -95,7 +95,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         input.didCloseSharingPopup
             .map { _ in Void() }
             .bind(onNext: { _ in
-                coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
+                coordinator?.coordinate(by: .dismissInvitationCodePopup)
             })
             .disposed(by: disposeBag)
         
@@ -139,7 +139,7 @@ public final class InvitationCodeViewModel: ViewModelType {
 
         input.didCloseInvitationCodePopup
             .bind(onNext: { _ in
-                coordinator?.coordinate(by: .shouldDismissInvitationCodePopup)
+                coordinator?.coordinate(by: .dismissInvitationCodePopup)
             })
             .disposed(by: disposeBag)
     }

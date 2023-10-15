@@ -33,19 +33,19 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
     }
     
     public func start() {
-        coordinate(by: .shouldShowFirendList)
+        coordinate(by: .showFirendList)
     }
     
     public func coordinate(by coordinateAction: FriendListCoordinateAction) {
         DispatchQueue.main.async { [weak self] in
             switch coordinateAction {
-            case .shouldShowFirendList:
+            case .showFirendList:
                 self?.showFriendListViewController()
-            case .shouldShowFriendInvitation(let toastMessageStream):
-                self?.showFriendInvitationView(with: toastMessageStream)
-            case .shouldShowInvitationCodePopup(let invitationType, let toastMessageStream):
+            case .showFriendInvitation(let toastMessageStream, let friendListUpdateStream):
+                self?.showFriendInvitationView(toastMessageStream: toastMessageStream, friendListUpdateStream: friendListUpdateStream)
+            case .showInvitationCodePopup(let invitationType, let toastMessageStream, let friendListUpdateStream):
                 self?.showInvitationCodePopup(invitationType: invitationType, toastMessageStream: toastMessageStream)
-            case .shouldDismissInvitationCodePopup:
+            case .dismissInvitationCodePopup:
                 self?.dismissViewController()
             }
         }
@@ -65,10 +65,17 @@ private extension DefaultFriendListCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showFriendInvitationView(with toastMessageStream: PublishRelay<String>) {
+    func showFriendInvitationView(
+        toastMessageStream: PublishRelay<String>,
+        friendListUpdateStream: PublishRelay<Void>
+    ) {
         
         let invitationViewController = FrinedInvitationViewController()
-        let invitationViewModel = FriendInvitationViewModel(coordinator: self, toastMessageStream: toastMessageStream)
+        let invitationViewModel = FriendInvitationViewModel(
+            coordinator: self,
+            toastMessageStream: toastMessageStream,
+            friendListUpdateStream: friendListUpdateStream
+        )
         invitationViewController.bind(viewModel: invitationViewModel)
         
         let parentViewController = navigationController

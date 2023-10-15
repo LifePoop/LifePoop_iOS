@@ -117,7 +117,7 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
         
         output.updateUserProfileCharacter
             .asSignal()
-            .map { ($0.feedImage, $0.name) }
+            .map { ($0.feedImage, $0.nickname) }
             .emit(onNext: inviteFriendView.setMyProfileCharactor(image:name:))
             .disposed(by: disposeBag)
         

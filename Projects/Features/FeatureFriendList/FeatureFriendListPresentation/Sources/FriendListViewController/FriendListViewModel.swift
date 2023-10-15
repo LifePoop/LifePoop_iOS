@@ -69,6 +69,7 @@ public final class FriendListViewModel: ViewModelType {
         updateFriendList
             .withUnretained(self)
             .flatMap { `self`, _ in self.friendListUseCase.fetchFriendList() }
+            .observe(on: MainScheduler.asyncInstance)
             .withUnretained(self)
             .bind(onNext: { `self`, friendList in
                 if friendList.isEmpty {

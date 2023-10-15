@@ -20,11 +20,17 @@ import Utils
 public final class DefaultFriendListRepository: NSObject, FriendListRepository {
 
     @Inject(CoreDIContainer.shared) private var urlSessionEndpointService: EndpointService
+    @Inject(CoreDIContainer.shared) private var friendEntityMapper: AnyDataMapper<FriendDTO, FriendEntity>
     
     public override init() { }
 
-    public func fetchFriendList() -> Single<[FriendEntity]> {
-        Single.just(FriendEntity.dummyData)
+    public func fetchFriendList(accessToken: String) -> Single<[FriendEntity]> {
+        urlSessionEndpointService
+            .fetchData(endpoint: LifePoopLocalTarget.fetchFriendList(
+                accessToken: accessToken
+            ))
+            .decodeMap([FriendDTO].self)
+            .transformMap(friendEntityMapper)
     }
     
     // MARK: 서버팀에서 정의한 상태코드에 대해서만 우선 예외 던짐 처리

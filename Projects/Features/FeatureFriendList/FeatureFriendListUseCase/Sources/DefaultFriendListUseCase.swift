@@ -31,8 +31,18 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
     public init() { }
     
     public func fetchFriendList() -> Observable<[FriendEntity]> {
-        friendListRepository
-            .fetchFriendList()
+        userInfoUseCase.userInfo
+            .compactMap { $0?.authInfo.accessToken }
+            .withUnretained(self)
+            .flatMapLatest { `self`, accessToken in
+                self.friendListRepository.fetchFriendList(accessToken: accessToken)
+                    .retry(when: { errorStream in
+                        // TODO: 추후 UseCase 수준에서 어떤 형태로든 '액세스 토큰'관련 에러에 대해서만 retry 하도록 처리해야 함
+                        errorStream.flatMap { _ in
+                            self.retryWhenAccessTokenIsInvalid()
+                        }
+                    })
+            }
             .asObservable()
     }
     
@@ -46,15 +56,18 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
                     accessToken: accessToken
                 )
                 .retry(when: { errorStream in
-                    errorStream.flatMap { _ in
+                    errorStream.take(1).flatMap { _ in
                         self.retryWhenAccessTokenIsInvalid(invitationCode: invitationCode)
                     }
                 })
             }
             .asObservable()
     }
+}
+
+private extension DefaultFriendListUseCase {
     
-    private func retryWhenAccessTokenIsInvalid(invitationCode: String) -> Observable<Bool> {
+    func requestRefreshingAuthInfo() -> Observable<Bool> {
         let originalAuthInfo = userInfoUseCase.userInfo.compactMap { $0?.authInfo }
       
         Logger.log(
@@ -69,10 +82,23 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
                 self.userInfoUseCase.refreshAuthInfo(with: authInfo)
             }
             .catchAndReturn(false)
+    }
+    
+    func retryWhenAccessTokenIsInvalid(invitationCode: String) -> Observable<Bool> {
+        requestRefreshingAuthInfo()
             .withUnretained(self)
             .flatMap { `self`, isSuccess -> Observable<Bool> in
                 guard isSuccess else { return .just(false) }
                 return self.requestAddingFriend(with: invitationCode)
+            }
+    }
+    
+    func retryWhenAccessTokenIsInvalid() -> Observable<[FriendEntity]> {
+        requestRefreshingAuthInfo()
+            .withUnretained(self)
+            .flatMap { `self`, isSuccess -> Observable<[FriendEntity]> in
+                guard isSuccess else { return .just([]) }
+                return self.fetchFriendList()
             }
     }
 }

@@ -13,6 +13,7 @@ public enum LifePoopLocalTarget {
     case updateAccessToken(refreshToken: String)
     case signup(provider: String)
     case fetchUserInfo(accessToken: String)
+    case fetchFriendList(accessToken: String)
     case fetchStoolLog(userID: Int)
     case postStoolLog(accessToken: String)
     case sendInvitationCode(code: String, accessToken: String)
@@ -39,6 +40,8 @@ extension LifePoopLocalTarget: TargetType {
             return "/post"
         case .fetchUserInfo:
             return "/user"
+        case .fetchFriendList:
+            return "/user/friendship"
         case .sendInvitationCode(let code, _):
             return "/user/friendship/\(code)"
         }
@@ -46,7 +49,7 @@ extension LifePoopLocalTarget: TargetType {
     
     public var method: HTTPMethod {
         switch self {
-        case .fetchStoolLog, .fetchUserInfo:
+        case .fetchStoolLog, .fetchUserInfo, .fetchFriendList:
             return .get
         case .postStoolLog, .login, .signup, .updateAccessToken, .sendInvitationCode:
             return .post
@@ -55,7 +58,11 @@ extension LifePoopLocalTarget: TargetType {
     
     public var headers: [String: String]? {
         switch self {
-        case .postStoolLog(let accessToken), .fetchUserInfo(let accessToken), .sendInvitationCode(_, let accessToken):
+        case .postStoolLog(let accessToken),
+             .fetchUserInfo(let accessToken),
+             .sendInvitationCode(_, let accessToken),
+             .fetchFriendList(let accessToken)
+            :
             return [
                 "Content-Type": "application/json",
                 "Accept": "application/json",

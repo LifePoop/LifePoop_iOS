@@ -68,7 +68,7 @@ final class FriendListCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(with friend: FriendEntity) {
-        nicknameLabel.text = friend.name
+        nicknameLabel.text = friend.nickname
         profileImageView.image = friend.profile.image
     }
 }

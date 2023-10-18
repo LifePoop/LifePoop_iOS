@@ -76,7 +76,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
             })
             .disposed(by: disposeBag)
         
-        output.shouldShowEmptyList
+        output.showEmptyList
             .withUnretained(self)
             .bind(onNext: { `self`, _ in
                 self.friendListCollectionView.isHidden = true
@@ -84,7 +84,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
             })
             .disposed(by: disposeBag)
 
-        output.shouldShowFriendList
+        output.showFriendList
             .do(onNext: { [weak self] _ in
                 self?.emptyFriendListView.isHidden = true
                 self?.friendListCollectionView.isHidden = false
@@ -98,7 +98,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
             }
             .disposed(by: disposeBag)
         
-        output.shouldShowToastMessge
+        output.showToastMessge
             .map { message in
                 let fullString = NSMutableAttributedString()
                 

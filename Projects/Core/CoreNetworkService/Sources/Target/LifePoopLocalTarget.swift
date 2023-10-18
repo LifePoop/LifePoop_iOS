@@ -13,15 +13,17 @@ public enum LifePoopLocalTarget {
     case updateAccessToken(refreshToken: String)
     case signup(provider: String)
     case fetchUserInfo(accessToken: String)
+    case fetchFriendList(accessToken: String)
     case fetchStoolLog(userID: Int)
     case postStoolLog(accessToken: String)
+    case sendInvitationCode(code: String, accessToken: String)
 }
 
 extension LifePoopLocalTarget: TargetType {
     public var baseURL: URL? {
         // MARK: 실서버 요청 확인할 경우 아래 url로 사용
-//        URL(string: "https://api.lifepoo.link")
-        URL(string: "http://localhost:3000")
+        URL(string: "https://api.lifepoo.link")
+//        URL(string: "http://localhost:3000")
     }
     
     public var path: String {
@@ -38,21 +40,29 @@ extension LifePoopLocalTarget: TargetType {
             return "/post"
         case .fetchUserInfo:
             return "/user"
+        case .fetchFriendList:
+            return "/user/friendship"
+        case .sendInvitationCode(let code, _):
+            return "/user/friendship/\(code)"
         }
     }
     
     public var method: HTTPMethod {
         switch self {
-        case .fetchStoolLog, .fetchUserInfo:
+        case .fetchStoolLog, .fetchUserInfo, .fetchFriendList:
             return .get
-        case .postStoolLog, .login, .signup, .updateAccessToken:
+        case .postStoolLog, .login, .signup, .updateAccessToken, .sendInvitationCode:
             return .post
         }
     }
     
     public var headers: [String: String]? {
         switch self {
-        case .postStoolLog(let accessToken), .fetchUserInfo(let accessToken):
+        case .postStoolLog(let accessToken),
+             .fetchUserInfo(let accessToken),
+             .sendInvitationCode(_, let accessToken),
+             .fetchFriendList(let accessToken)
+            :
             return [
                 "Content-Type": "application/json",
                 "Accept": "application/json",
@@ -61,7 +71,7 @@ extension LifePoopLocalTarget: TargetType {
         default:
             return [
                 "Content-Type": "application/json",
-                "Accept": "application/json",
+                "Accept": "application/json"
             ]
         }
     }
@@ -77,7 +87,7 @@ extension LifePoopLocalTarget: TargetType {
 
     public var parameters: [String: Any]? {
         switch self {
-        case .signup, .login, .fetchStoolLog, .postStoolLog, .updateAccessToken, .fetchUserInfo:
+        default:
             return nil
         }
     }

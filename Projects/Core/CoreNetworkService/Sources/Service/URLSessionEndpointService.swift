@@ -27,7 +27,7 @@ public final class URLSessionEndpointService: EndpointService {
             .map { $0.statusCode }
     }
     
-    public func fetchNetworkResult<E>(endpoint: TargetType, with bodyObject: E) -> Single<NetworkResult> where E : Encodable {
+    public func fetchNetworkResult<E: Encodable>(endpoint: TargetType, with bodyObject: E) -> Single<NetworkResult> {
         return performRequest(endpoint: endpoint, bodyObject: bodyObject)
     }
 }

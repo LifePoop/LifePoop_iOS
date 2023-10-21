@@ -24,13 +24,14 @@ public final class FriendListViewModel: ViewModelType {
         let viewDidLoad = PublishRelay<Void>()
         let didSelectFirend = PublishRelay<FriendEntity>()
         let didTapInvitationButton = PublishRelay<Void>()
+        let didCompleteAddingFriend = PublishRelay<Void>()
     }
     
     public struct Output {
         let navigationTitle = Observable.of(LocalizableString.friendsList)
-        let shouldShowFriendList = BehaviorRelay<[FriendEntity]>(value: [])
-        let shouldShowEmptyList = PublishRelay<Void>()
-        let shouldShowToastMessge = PublishRelay<String>()
+        let showFriendList = BehaviorRelay<[FriendEntity]>(value: [])
+        let showEmptyList = PublishRelay<Void>()
+        let showToastMessge = PublishRelay<String>()
     }
     
     @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
@@ -52,20 +53,29 @@ public final class FriendListViewModel: ViewModelType {
             .withUnretained(self)
             .bind { `self`, _ in
                 coordinator?.coordinate(
-                    by: .shouldShowFriendInvitation(toastMessageStream: self.output.shouldShowToastMessge)
+                    by: .showFriendInvitation(
+                        toastMessageStream: self.output.showToastMessge,
+                        friendListUpdateStream: self.input.didCompleteAddingFriend
+                    )
                 )
             }
             .disposed(by: disposeBag)
         
-        input.viewDidLoad
+        let updateFriendList = Observable<Void>.merge(
+            input.viewDidLoad.asObservable(),
+            input.didCompleteAddingFriend.asObservable()
+        ).share()
+        
+        updateFriendList
             .withUnretained(self)
             .flatMap { `self`, _ in self.friendListUseCase.fetchFriendList() }
+            .observe(on: MainScheduler.asyncInstance)
             .withUnretained(self)
             .bind(onNext: { `self`, friendList in
                 if friendList.isEmpty {
-                    self.output.shouldShowEmptyList.accept(())
+                    self.output.showEmptyList.accept(())
                 } else {
-                    self.output.shouldShowFriendList.accept(friendList)
+                    self.output.showFriendList.accept(friendList)
                 }
             })
             .disposed(by: disposeBag)

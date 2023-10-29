@@ -40,6 +40,8 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
         switch coordinateAction {
         case .shouldShowFirendList:
             showFriendListViewController()
+        case .shouldShowFriendsStoolLog(let friendEntity):
+            showFriendStoolLogViewController(of: friendEntity)
         case .shouldShowFriendInvitation(let toastMessageStream):
             showFriendInvitationView(with: toastMessageStream)
         case .shouldShowInvitationCodePopup(let invitationType, let toastMessageStream):
@@ -55,10 +57,19 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
 }
 
 private extension DefaultFriendListCoordinator {
-    
     func showFriendListViewController() {
         let viewModel = FriendListViewModel(coordinator: self)
         let viewController = FriendListViewController()
+        viewController.bind(viewModel: viewModel)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    func showFriendStoolLogViewController(of friendEntity: FriendEntity) {
+        let viewModel = FriendStoolLogViewModel(
+            coordinator: self,
+            friendEntity: friendEntity
+        )
+        let viewController = FriendStoolLogViewController()
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }

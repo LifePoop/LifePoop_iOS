@@ -13,9 +13,9 @@ import RxSwift
 
 import CoreEntity
 import FeatureFriendListCoordinatorInterface
-import FeatureFriendListDIContainer
-import FeatureFriendListUseCase
 import Logger
+import SharedDIContainer
+import SharedUseCase
 import Utils
 
 public final class FriendListViewModel: ViewModelType {
@@ -27,6 +27,7 @@ public final class FriendListViewModel: ViewModelType {
     }
     
     public struct Output {
+        let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
         let showFriendList = PublishRelay<[FriendEntity]>()
         let setNavigationTitle = Observable.of(LocalizableString.friendsList)
         let showEmptyList = PublishRelay<Void>()
@@ -41,31 +42,52 @@ public final class FriendListViewModel: ViewModelType {
     public let output = Output()
     public let state = State()
     
-    @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
+    @Inject(SharedDIContainer.shared) private var friendListUseCase: FriendListUseCase
     
-    private weak var coordiantor: FriendListCoordinator?
+    private weak var coordinator: FriendListCoordinator?
     private var disposeBag = DisposeBag()
     
     public init(coordinator: FriendListCoordinator?) {
-        self.coordiantor = coordinator
+        self.coordinator = coordinator
         bind(coordinator: coordinator)
     }
     
     private func bind(coordinator: FriendListCoordinator?) {
-        
         input.viewDidLoad
-            .withUnretained(self)
-            .flatMap { `self`, _ in self.friendListUseCase.fetchFriendList() }
-            .withUnretained(self)
-            .bind(onNext: { `self`, friendList in
-                if friendList.isEmpty {
-                    self.output.showEmptyList.accept(())
-                } else {
-                    self.state.friendList.accept(friendList)
-                }
-            })
+            .map { _ in true }
+            .bind(to: output.shouldLoadingIndicatorAnimating)
             .disposed(by: disposeBag)
         
+        let fetchedFriendList = input.viewDidLoad
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.friendListUseCase.fetchFriendList()
+            }
+            .share()
+        
+        fetchedFriendList
+            .compactMap { $0.element }
+            .bind(to: state.friendList)
+            .disposed(by: disposeBag)
+        
+        fetchedFriendList
+            .compactMap { $0.error }
+            .map { _ in [] }
+            .bind(to: state.friendList)
+            .disposed(by: disposeBag)
+        
+        fetchedFriendList
+            .compactMap { $0.error }
+            .toastMessageMap(to: .friendList(.fetchFriendListFail) )
+            .bind(to: output.showToastMessge)
+            .disposed(by: disposeBag)
+        
+        fetchedFriendList
+            .filter { $0.isStopEvent }
+            .map { _ in false }
+            .bind(to: output.shouldLoadingIndicatorAnimating)
+            .disposed(by: disposeBag)
+
         input.invitationButtonDidTap
             .withUnretained(self)
             .bind { `self`, _ in
@@ -75,8 +97,25 @@ public final class FriendListViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
         
+        input.friendDidSelect
+            .withLatestFrom(state.friendList) { ($0, $1) }
+            .map { indexPath, friendList in
+                friendList[indexPath.row]
+            }
+            .bind { friendEntity in
+                coordinator?.coordinate(by: .shouldShowFriendsStoolLog(friendEntity: friendEntity))
+            }
+            .disposed(by: disposeBag)
+        
         state.friendList
+            .filter { !$0.isEmpty }
             .bind(to: output.showFriendList)
+            .disposed(by: disposeBag)
+        
+        state.friendList
+            .filter { $0.isEmpty }
+            .map { _ in }
+            .bind(to: output.showEmptyList)
             .disposed(by: disposeBag)
     }
     

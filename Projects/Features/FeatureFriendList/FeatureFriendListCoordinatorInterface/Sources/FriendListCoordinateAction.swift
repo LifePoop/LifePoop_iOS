@@ -15,6 +15,7 @@ import CoreEntity
 
 public enum FriendListCoordinateAction {
     case shouldShowFirendList
+    case shouldShowFriendsStoolLog(friendEntity: FriendEntity)
     case shouldShowFriendInvitation(toastMessageStream: PublishRelay<String>)
     case shouldShowInvitationCodePopup(type: InvitationType, toastMessageStream: PublishRelay<String>)
     case shouldDismissInvitationCodePopup

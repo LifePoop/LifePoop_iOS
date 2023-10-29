@@ -18,6 +18,13 @@ import Utils
 
 public final class FriendListViewController: LifePoopViewController, ViewType {
     
+    private let loadingIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .large
+        return activityIndicator
+    }()
+    
     private let rightBarButtonItem = UIBarButtonItem(image: ImageAsset.iconAdd.original)
     
     private lazy var friendListCollectionView: UICollectionView = {
@@ -43,6 +50,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         return emptyFriendListView
     }()
     
+    // TODO: 피그마 요구사항에 있는 친구 목록에서의 Toast와 에러 처리를 위한 Toast의 UI 통합 필요
     private let toastLabel: ToastLabel = {
         let label = ToastLabel()
         label.backgroundColor = ColorAsset.gray900.color
@@ -72,6 +80,11 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
     
     public func bindOutput(from viewModel: FriendListViewModel) {
         let output = viewModel.output
+        
+        output.shouldLoadingIndicatorAnimating
+            .distinctUntilChanged()
+            .bind(to: loadingIndicator.rx.isAnimating)
+            .disposed(by: disposeBag)
         
         output.setNavigationTitle
             .withUnretained(self)
@@ -130,6 +143,15 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
     
     public override func layoutUI() {
         super.layoutUI()
+        defer {
+            view.bringSubviewToFront(loadingIndicator)
+            view.bringSubviewToFront(toastLabel)
+        }
+        
+        view.addSubview(loadingIndicator)
+        loadingIndicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         view.addSubview(friendListCollectionView)
         friendListCollectionView.snp.makeConstraints { make in

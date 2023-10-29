@@ -22,7 +22,7 @@
 "paste" = "붙여넣기";
 
 /* CheeringButtonView */
-"goCheeringFriends" = "친구들 응원하러 가기";
+"goToFriendList" = "친구 목록으로 이동하기";
 
 /* SuggestionButton */
 "select" = "선택하기";

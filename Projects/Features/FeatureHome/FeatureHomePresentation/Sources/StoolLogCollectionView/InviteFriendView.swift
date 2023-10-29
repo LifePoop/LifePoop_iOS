@@ -17,6 +17,7 @@ final class InviteFriendView: UIView {
     
     private let myProfileCharactorImageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.image = ImageAsset.profileGoodGray.original
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -88,6 +89,7 @@ final class InviteFriendView: UIView {
 }
 
 extension InviteFriendView {
+    @available(*, deprecated, message: "사용자 프로필 캐릭터가 아닌 기본 이미지(profileGoodGray)를 나타내도록 변경되어 더 이상 사용하지 않음")
     func setMyProfileCharactor(image: UIImage, name: String) {
         myProfileCharactorImageView.image = image
         nameLabel.text = name

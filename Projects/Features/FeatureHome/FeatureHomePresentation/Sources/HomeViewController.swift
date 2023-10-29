@@ -141,7 +141,6 @@ public final class HomeViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
         
         output.headerViewDidFinishLayoutSubviews
-            .debug()
             .withUnretained(self)
             .bind { `self`, _ in
                 self.changeHomeUIAlphaVisibleWithAnimation()
@@ -151,7 +150,6 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         
         output.showErrorMessage
             .asSignal()
-            .debug()
             .emit(onNext: toastMessageLabel.show(message:)) // TODO: ToastLabel을 친구 코드 복사 화면의 것과 통일하기
             .disposed(by: disposeBag)
     }

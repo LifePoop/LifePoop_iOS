@@ -24,14 +24,10 @@ public final class DefaultStoolLogUseCase: StoolLogUseCase {
     public init() { }
     
     public func fetchMyLast7DaysStoolLogs() -> Observable<[StoolLogEntity]> {
-        return
-            .just([])
-            .delay(.milliseconds(1000), scheduler: MainScheduler.asyncInstance)
         
         tempUserInfoUseCase
             .fetchUserInfo()
             .map { ($0.userId, $0.authInfo.accessToken) }
-            .debug()
             .withUnretained(self)
             .flatMap { `self`, userInfo in
                 let (userId, accessToken) = userInfo
@@ -103,9 +99,9 @@ public final class DefaultStoolLogUseCase: StoolLogUseCase {
     public func convertToStoolLogItems(from stoolLogsEntities: [StoolLogEntity]) -> [StoolLogItem] {
         let now = Date()
         var calendar = Calendar.current
-        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
+        calendar.timeZone = .koreanTimeZone ?? .current
         var stoolLogItems: [StoolLogItem] = []
-
+        
         for section in StoolLogListSection.allCases {
             let currentDate = getStartOfDayForSection(for: section.rawValue, relativeTo: now, using: calendar)
             let currentDayLogs = stoolLogsEntities.filter { calendar.isDate($0.date, inSameDayAs: currentDate) }

@@ -39,7 +39,6 @@ final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDiffableDa
     func bindStoolLogHeaderView(with viewModel: StoolLogHeaderViewModel) {
         supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
             guard let self else { return UICollectionReusableView() }
-            print(indexPath.section)
             if indexPath.section == .zero {
                 return self.dequeueCollectionReusableView(
                     for: collectionView,

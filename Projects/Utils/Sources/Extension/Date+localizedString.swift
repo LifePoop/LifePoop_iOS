@@ -12,13 +12,20 @@ public extension Date {
     /// 'yyyy-MM-dd' 형태의 `String` 타입으로 변환합니다. (시간은 포함되지 않습니다.)
     ///
     /// 예) "2023-06-21"
-    var dateString: String { // TODO: Rename
-        return LifePoopDateFormatter.shared.convertDateToString(from: self)
+    var dateString: String {
+        return LifePoopDateFormatter.shared.convertDateToString(from: self, with: .koreanTimeZone)
+    }
+    
+    /// 한국어로 현지화된 'yyyy년 MM월 dd일' 형태의 `String` 타입으로 변환합니다. (시간은 포함되지 않습니다.)
+    ///
+    /// 예) "2023년 6월 21일"
+    var koreanDateString: String {
+        return LifePoopDateFormatter.shared.convertDateToKoreanLocalizedString(from: self)
     }
     
     /// 현지화된 long 스타일의 `String` 타입으로 변환합니다. (시간은 포함되지 않습니다.)
     ///
-    /// 예) "2023년 6월 21일"
+    /// 예) 한국어: "2023년 6월 21일", 영어: "October 23, 2023"
     var localizedDateString: String {
         return LifePoopDateFormatter.shared.convertDateToLocalizedString(from: self, dateStyle: .long, timeStyle: .none)
     }

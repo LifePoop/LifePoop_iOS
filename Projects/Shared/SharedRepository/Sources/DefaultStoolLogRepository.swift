@@ -30,35 +30,12 @@ public final class DefaultStoolLogRepository: StoolLogRepository {
             let stoolLogDTO = try self.stoolLogDTOMapper.transform(stoolLogEntity)
             return self.urlSessionEndpointService
                 .fetchData(endpoint: LifePoopLocalTarget.postStoolLog(accessToken: accessToken), with: stoolLogDTO)
-//                .retry(when: { errorObservable in
-//                    errorObservable.flatMap { error in
-//                        if let error = error as? NetworkError, case .invalidAccessToken = error {
-//                            //1. 키체인에서 refreshToken 가져옴
-//                            return self.keyChainRepository.fetchRefreshToken
-//                                .flatMap {
-//                                    //2. 가져온걸로 새로운 token 요청
-//                                    self.urlSessionEndpointService
-//                                        .fetchData(endpoint: LifePoopLocalTarget.refresh(refreshToken: $0))
-//                                }
-//                                .flatMap {
-//                                    //3. 키체인 갱신
-//                                    self.keyChainRepository
-//                                        .saveToken($0)
-//                                }
-//                            // 얘가 subscribe가 안됐는데 실행이 되나..?
-//                        }
-//                    }
-//                })
                 .decodeMap(StoolLogDTO.self)
-                .do(onSuccess: {
-                    dump($0)
-                })
                 .transformMap(self.stoolLogEntityMapper)
         }
     }
     
     public func fetchUserStoolLogs(accessToken: String, userID: Int) -> Single<[StoolLogEntity]> {
-//        return .error(NetworkError.invalidResponse)
         return urlSessionEndpointService
             .fetchData(endpoint: LifePoopLocalTarget.fetchStoolLog(
                 accessToken: accessToken,

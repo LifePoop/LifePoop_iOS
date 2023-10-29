@@ -6,6 +6,8 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
+import Foundation
+
 import RxSwift
 
 import CoreEntity
@@ -17,65 +19,45 @@ import Utils
 
 public final class DefaultHomeUseCase: HomeUseCase {
     
-    @Inject(HomeDIContainer.shared) private var homeRepository: HomeRepository
-    @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
-    @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
-
+    @Inject(SharedDIContainer.shared) private var stoolLogUseCase: StoolLogUseCase
+    @Inject(SharedDIContainer.shared) private var friendListRepository: FriendListRepository
+    
     public init() { }
     
-    private var userInfo: Observable<UserInfoEntity?> {
-        keyChainRepository
-            .getObjectFromKeyChain(asTypeOf: UserInfoEntity.self, forKey: .userAuthInfo)
-            .logErrorIfDetected(category: .authentication)
-            .catchAndReturn(nil)
-            .asObservable()
-    }
-    
     public func fetchFriendList() -> Observable<[FriendEntity]> {
-        return homeRepository
+        return friendListRepository
             .fetchFriendList()
             .logErrorIfDetected(category: .network)
             .asObservable()
     }
     
     public func fetchStoolLogs() -> Observable<[StoolLogEntity]> {
-        return userInfo
-            .compactMap { $0?.userId }
-            .withUnretained(self)
-            .flatMap { `self`, userID in
-                self.homeRepository.fetchStoolLogs(of: userID)
-            }
-            .logErrorIfDetected(category: .network)
+        return stoolLogUseCase
+            .fetchMyLast7DaysStoolLogs()
     }
     
-    public func fetchUserCharacter() -> Observable<ProfileCharacter?> {
-        return userDefaultsRepository
-            .getValue(for: .profileCharacter)
-            .logErrorIfDetected(category: .userDefaults)
-            .asObservable()
-    }
-    
+    // TODO: 삭제 또는 수정 예정
     public func fetchStoolLogsOfSelectedFriend(_ friend: FriendEntity) -> Observable<[StoolStoryLogEntity]> {
-        return homeRepository
-            .fetchStoolLogsOfSelectedFriend(friend)
-            .asObservable()
-            .logErrorIfDetected(category: .network)
-            .compactMap { [weak self] in self?.convertToStoryLogs($0) }
+        return stoolLogUseCase
+            .fetchAllUserStoolLogs(userID: friend.userID)
+            .withUnretained(self)
+            .compactMap { `self`, friendStoolLogs in
+                self.convertToStoryLogs(friendStoolLogs)
+            }
     }
     
     public func postStoolLog(_ stoolLogEntity: StoolLogEntity) -> Observable<StoolLogEntity> {
-        return userInfo
-            .compactMap { $0?.authInfo.accessToken }
-            .withUnretained(self)
-            .flatMap { `self`, accessToken in
-                self.homeRepository.postStoolLog(stoolLogEntity, accessToken: accessToken)
-            }
-            .map { StoolLogEntity(postID: $0.postID, stoolLogEntity: stoolLogEntity) }
-            .logErrorIfDetected(category: .network)
+        return stoolLogUseCase
+            .postStoolLog(stoolLogEntity: stoolLogEntity)
+    }
+    
+    public func convertToStoolLogItems(from stoolLogsEntities: [StoolLogEntity]) -> [StoolLogItem] {
+        return stoolLogUseCase.convertToStoolLogItems(from: stoolLogsEntities)
     }
 }
 
 private extension DefaultHomeUseCase {
+    // TODO: 삭제 예정
     func convertToStoryLogs(_ stoolLogs: [StoolLogEntity]) -> [StoolStoryLogEntity] {
         let sortedStoolLogs = stoolLogs.sorted { $0.date < $1.date }
         // TODO: 추후 서버에서 DTO 내려줄 때, '힘주기' 여부가 포함되야 하고, 아래 isFirst 조건과 함께 고려해서 isCheeringUpAvailable값이 결정되야 함

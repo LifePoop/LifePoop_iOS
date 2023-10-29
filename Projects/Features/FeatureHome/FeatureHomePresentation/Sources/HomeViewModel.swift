@@ -88,7 +88,7 @@ public final class HomeViewModel: ViewModelType {
         
         fetchedFriends
             .compactMap { $0.error }
-            .toastMessageMap(to: .home(.fetchFriendListFail))
+            .toastMessageMap(to: .friendList(.fetchFriendListFail))
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
         

@@ -85,16 +85,11 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     public func bindInput(to viewModel: HomeViewModel) {
         let input = viewModel.input
         
-        rx.viewWillAppear
-            .bind(to: input.viewWillAppear)
-            .disposed(by: disposeBag)
-        
         rx.viewDidLoad
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)
         
         stoolLogRefreshControl.rx.controlEvent(.valueChanged)
-            .delay(.milliseconds(1000), scheduler: MainScheduler.asyncInstance) // FIXME: 서버 UseCase 연결 후 삭제
             .bind(to: input.viewDidRefresh)
             .disposed(by: disposeBag)
         

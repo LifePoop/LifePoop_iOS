@@ -20,8 +20,7 @@ public final class HomeViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
-        let viewWillAppear = PublishRelay<Void>()
-        let viewDidRefresh = PublishRelay<Void>() // TODO: 로직 구현 필요
+        let viewDidRefresh = PublishRelay<Void>()
         let settingButtonDidTap = PublishRelay<Void>()
         let reportButtonDidTap = PublishRelay<Void>()
         let stoolLogButtonDidTap = PublishRelay<Void>()
@@ -30,13 +29,11 @@ public final class HomeViewModel: ViewModelType {
     public struct Output {
         let shouldStartRefreshIndicatorAnimation = PublishRelay<Bool>()
         let updateStoolLogs = PublishRelay<[StoolLogItem]>()
-        let isFriendEmpty = PublishRelay<Bool>()
         let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
         let showErrorMessage = PublishRelay<String>()
     }
     
     public struct State {
-        let userProfileCharacter = BehaviorRelay<FriendEntity?>(value: nil)
         let friends = BehaviorRelay<[FriendEntity]>(value: [])
         let stoolLogs = BehaviorRelay<[StoolLogEntity]>(value: [])
         let headerViewModel = BehaviorRelay<StoolLogHeaderViewModel?>(value: nil)
@@ -135,18 +132,6 @@ public final class HomeViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
         
-        state.friends
-            .map { $0.isEmpty }
-            .distinctUntilChanged()
-            .bind(to: output.isFriendEmpty)
-            .disposed(by: disposeBag)
-        
-        state.friends
-            .map { !$0.isEmpty }
-            .distinctUntilChanged()
-            .bind(to: output.shouldLayoutCheeringButton)
-            .disposed(by: disposeBag)
-        
         state.stoolLogs
             .withUnretained(self)
             .map { `self`, stoolLogEntities in
@@ -170,10 +155,6 @@ private extension HomeViewModel {
     func bind(stoolLogHeaderViewModel: StoolLogHeaderViewModel) {
         input.viewDidRefresh
             .bind(to: stoolLogHeaderViewModel.input.viewDidRefresh)
-            .disposed(by: disposeBag)
-        
-        state.userProfileCharacter
-            .bind(to: stoolLogHeaderViewModel.state.userProfileCharacter)
             .disposed(by: disposeBag)
         
         state.friends

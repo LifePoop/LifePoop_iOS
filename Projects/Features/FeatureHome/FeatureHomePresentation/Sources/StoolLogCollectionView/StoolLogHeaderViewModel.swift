@@ -29,7 +29,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     }
     
     public struct Output {
-        let toggleFriendListCollectionView = PublishRelay<Bool>()
+        let isFriendEmpty = PublishRelay<Bool>()
         let updateUserProfileCharacter = PublishRelay<FriendEntity>()
         let updateFriends = PublishRelay<[FriendEntity]>()
         let setDateDescription = PublishRelay<String>()
@@ -38,7 +38,6 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     }
     
     public struct State {
-        let userProfileCharacter = BehaviorRelay<FriendEntity?>(value: nil)
         let friends = BehaviorRelay<[FriendEntity]>(value: [])
     }
     
@@ -67,7 +66,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
-            .map { Date().localizedDateString }
+            .compactMap { Date().koreanDateString }
             .map { LocalizableString.stoolDiaryFor($0) }
             .bind(to: output.setDateDescription)
             .disposed(by: disposeBag)
@@ -80,13 +79,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         viewDidLoadOrRefresh
             .withLatestFrom(state.friends)
             .map { $0.isEmpty }
-            .bind(to: output.toggleFriendListCollectionView)
-            .disposed(by: disposeBag)
-        
-        viewDidLoadOrRefresh
-            .withLatestFrom(state.userProfileCharacter)
-            .compactMap { $0 }
-            .bind(to: output.updateUserProfileCharacter)
+            .bind(to: output.isFriendEmpty)
             .disposed(by: disposeBag)
         
         let friendListCellIndex = input.friendListCellDidTap
@@ -121,12 +114,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         
         state.friends
             .map { $0.isEmpty }
-            .bind(to: output.toggleFriendListCollectionView)
-            .disposed(by: disposeBag)
-        
-        state.userProfileCharacter
-            .compactMap { $0 }
-            .bind(to: output.updateUserProfileCharacter)
+            .bind(to: output.isFriendEmpty)
             .disposed(by: disposeBag)
     }
     

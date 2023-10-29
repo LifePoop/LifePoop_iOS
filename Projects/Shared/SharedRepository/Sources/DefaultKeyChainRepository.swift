@@ -11,6 +11,7 @@ import Security
 
 import RxSwift
 
+import Logger
 import SharedUseCase
 
 public final class DefaultKeyChainRepository: KeyChainRepository {
@@ -36,14 +37,19 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
     
     public func getObjectFromKeyChain<T: Decodable>(
         asTypeOf targetType: T.Type,
-        forKey key: ItemKey
+        forKey key: ItemKey,
+        handleExceptionWhenValueNotFound: Bool = true
     ) -> Single<T?> {
         Single.create { [weak self] observer in
             
             do {
                 guard let self = self else { throw KeyChainError.nilData(status: -999) }
                 
-                let targetObject: T? = try self.getObjectFromKeyChain(asTypeOf: targetType, forKey: key)
+                let targetObject: T? = try self.getObjectFromKeyChain(
+                    asTypeOf: targetType,
+                    forKey: key,
+                    handleExceptionWhenValueNotFound: handleExceptionWhenValueNotFound
+                )
                 observer(.success(targetObject))
             } catch let error {
                 observer(.failure(error))
@@ -53,11 +59,33 @@ public final class DefaultKeyChainRepository: KeyChainRepository {
         }
     }
     
-    public func removeObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) -> Completable {
+    public func getBinaryDataFromKeyChain(
+        forKey key: ItemKey,
+        handleExceptionWhenValueNotFound: Bool = true
+    ) -> Single<Data?> {
+        Single.create { [weak self] observer in
+            
+            do {
+                guard let self = self else { throw KeyChainError.nilData(status: -999) }
+                
+                let targetData: Data? = try self.getBinaryDataFromKeyChain(
+                    forKey: key,
+                    handleExceptionWhenValueNotFound: handleExceptionWhenValueNotFound
+                )
+                observer(.success(targetData))
+            } catch let error {
+                observer(.failure(error))
+            }
+            
+            return Disposables.create { }
+        }
+    }
+    
+    public func removeObjectFromKeyChain(forKey key: ItemKey) -> Completable {
         Completable.create { [weak self] observer in
             
             do {
-                try self?.removeExistingObjectFromKeyChain(object, forKey: key)
+                try self?.removeExistingObjectFromKeyChain(forKey: key)
                 observer(.completed)
             } catch let error {
                 observer(.error(error))
@@ -94,9 +122,14 @@ private extension DefaultKeyChainRepository {
         let encodedData = try JSONEncoder().encode(object)
         
         let keychainQuery = keychainQuery(for: .save, key: key, value: encodedData)
-        let isObjectAlreadyExists = (try? getObjectFromKeyChain(asTypeOf: T.self, forKey: key)) != nil
+        let alreadyExistingItem: T? = try getObjectFromKeyChain(
+            asTypeOf: T.self,
+            forKey: key,
+            handleExceptionWhenValueNotFound: false
+        )
+        let isObjectAlreadyExists = alreadyExistingItem != nil
         if isObjectAlreadyExists {
-            try removeExistingObjectFromKeyChain(object, forKey: key)
+            try removeExistingObjectFromKeyChain(forKey: key)
         }
                 
         let addStatus = SecItemAdd(keychainQuery as CFDictionary, nil)
@@ -105,9 +138,40 @@ private extension DefaultKeyChainRepository {
         }
     }
     
+    func getBinaryDataFromKeyChain(
+        forKey key: ItemKey,
+        handleExceptionWhenValueNotFound: Bool = true
+    ) throws -> Data? {
+        
+        let keychainQuery = keychainQuery(for: .get, key: key)
+        var result: AnyObject?
+        let loadStatus = SecItemCopyMatching(keychainQuery, &result)
+        
+        switch loadStatus {
+        case errSecSuccess:
+            break
+        case errSecItemNotFound:
+            if handleExceptionWhenValueNotFound {
+                throw KeyChainError.gettingDataFailed(status: loadStatus)
+            } else {
+                Logger.log(
+                    message: "Value with key of \(key) not exists in KeyChain",
+                    category: .default,
+                    type: .debug
+                )
+                return nil
+            }
+        default:
+            break
+        }
+                
+        return result as? Data
+    }
+
     func getObjectFromKeyChain<T: Decodable>(
         asTypeOf targetType: T.Type,
-        forKey key: ItemKey
+        forKey key: ItemKey,
+        handleExceptionWhenValueNotFound: Bool = true
     ) throws -> T? {
         
         let keychainQuery = keychainQuery(for: .get, key: key)
@@ -115,9 +179,21 @@ private extension DefaultKeyChainRepository {
         let loadStatus = SecItemCopyMatching(keychainQuery, &result)
         
         switch loadStatus {
-        case errSecSuccess: break
-        case errSecItemNotFound: throw KeyChainError.gettingDataFailed(status: loadStatus)
-        default: throw KeyChainError.gettingDataFailed(status: loadStatus)
+        case errSecSuccess: 
+            break
+        case errSecItemNotFound:
+            if handleExceptionWhenValueNotFound {
+                throw KeyChainError.gettingDataFailed(status: loadStatus)
+            } else {
+                Logger.log(
+                    message: "Value with key of \(key) not exists in KeyChain",
+                    category: .default,
+                    type: .debug
+                )
+                return nil
+            }
+        default:
+            break
         }
         
         guard let loadedData = result as? Data else {
@@ -127,7 +203,7 @@ private extension DefaultKeyChainRepository {
         return try JSONDecoder().decode(targetType, from: loadedData)
     }
     
-    func removeExistingObjectFromKeyChain<T: Encodable>(_ object: T, forKey key: ItemKey) throws {
+    func removeExistingObjectFromKeyChain(forKey key: ItemKey) throws {
 
         let keychainQuery = keychainQuery(for: .remove, key: key)
         let removalStatus = SecItemDelete(keychainQuery)

@@ -11,24 +11,34 @@ import Foundation
 // FIXME: LifePoopTarget에 구현하는 것으로 수정
 
 public enum LifePoopLocalTarget {
-    case login(accessToken: String, provider: String)
+    case login(provider: String)
+    case updateAccessToken(refreshToken: String)
+    case signup(provider: String)
+    case fetchUserInfo(accessToken: String)
+    case fetchFriendList(accessToken: String)
     case fetchStoolLog(accessToken: String, userID: Int)
     case fetchStoolLogAtDate(accessToken: String, userID: Int, date: String)
     case postStoolLog(accessToken: String)
     case fetchFriendsWithStories(accessToken: String)
     case fetchCheeringInfo(accessToken: String, userID: Int, date: String)
+    case sendInvitationCode(code: String, accessToken: String)
 }
 
 extension LifePoopLocalTarget: TargetType {
     public var baseURL: URL? {
-//        return URL(string: "http://localhost:3000")
-        return URL(string: "https://api.lifepoo.link")
+        // MARK: 실서버 요청 확인할 경우 아래 url로 사용
+        URL(string: "https://api.lifepoo.link")
+//        URL(string: "http://localhost:3000")
     }
     
     public var path: String {
         switch self {
-        case .login:
-            return "/auth/*/login"
+        case .updateAccessToken:
+            return "/auth/refresh"
+        case .signup(let provider):
+            return "/auth/\(provider)/register"
+        case .login(let provider):
+            return "/auth/\(provider)/login"
         case .fetchStoolLog(_, let userID):
             return "/post/\(userID)"
         case .fetchStoolLogAtDate(_, let userID, let date):
@@ -39,52 +49,64 @@ extension LifePoopLocalTarget: TargetType {
             return "/story"
         case .fetchCheeringInfo(_, let userID, let date):
             return "/user/\(userID)/cheer/\(date)"
+        case .fetchUserInfo:
+            return "/user"
+        case .fetchFriendList:
+            return "/user/friendship"
+        case .sendInvitationCode(let code, _):
+            return "/user/friendship/\(code)"
         }
     }
     
     public var method: HTTPMethod {
         switch self {
-        case .login:
-            return .post
         case .fetchStoolLog,
                 .fetchStoolLogAtDate,
                 .fetchFriendsWithStories,
-                .fetchCheeringInfo:
+                .fetchCheeringInfo,
+                .fetchUserInfo,
+                .fetchFriendList:
             return .get
-        case .postStoolLog:
+        case .postStoolLog, .login, .signup, .updateAccessToken, .sendInvitationCode:
             return .post
         }
     }
     
     public var headers: [String: String]? {
         switch self {
-        case .login:
-            return nil
         case .fetchStoolLog(let accessToken, _),
                 .fetchStoolLogAtDate(let accessToken, _, _),
                 .postStoolLog(let accessToken),
                 .fetchFriendsWithStories(let accessToken),
-                .fetchCheeringInfo(let accessToken, _, _):
+                .fetchCheeringInfo(let accessToken, _, _),
+                .fetchUserInfo(let accessToken),
+                .sendInvitationCode(_, let accessToken),
+                .fetchFriendList(let accessToken):
             return [
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "Authorization": "Bearer \(accessToken)"
             ]
+        default:
+            return [
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            ]
         }
     }
-    
+
+    public var cookies: [String: String] {
+        switch self {
+        case .updateAccessToken(let refreshToken):
+            return ["refresh_token": refreshToken]
+        default:
+            return [:]
+        }
+    }
+
     public var parameters: [String: Any]? {
         switch self {
-        case .login(let accessToken, let provider):
-            return [
-                "accessToken": accessToken,
-                "provider": provider
-            ]
-        case .fetchStoolLog,
-                .fetchStoolLogAtDate,
-                .postStoolLog,
-                .fetchFriendsWithStories,
-                .fetchCheeringInfo:
+        default:
             return nil
         }
     }

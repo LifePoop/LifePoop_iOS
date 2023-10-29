@@ -18,15 +18,15 @@ import Utils
 public final class DefaultStoolLogUseCase: StoolLogUseCase {
     
     @Inject(SharedDIContainer.shared) private var stoolLogRepository: StoolLogRepository
-    // FIXME: 실제 서버와 통신하는 구현부로 변경 & 의존성 주입 방식으로 변경 예정
-    private let tempUserInfoUseCase: UserInfoUseCase = TempUserInfoUseCase()
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     
     public init() { }
     
     public func fetchMyLast7DaysStoolLogs() -> Observable<[StoolLogEntity]> {
-        return tempUserInfoUseCase
-            .fetchUserInfo()
-            .map { ($0.userId, $0.authInfo.accessToken) }
+        return userInfoUseCase
+            .userInfo
+            .map { ($0?.userId, $0?.authInfo.accessToken) }
+            .unwrapPairTuple()
             .withUnretained(self)
             .flatMap { `self`, userInfo in
                 let (userId, accessToken) = userInfo
@@ -43,9 +43,9 @@ public final class DefaultStoolLogUseCase: StoolLogUseCase {
     }
     
     public func fetchAllUserStoolLogs(userID: Int) -> Observable<[StoolLogEntity]> {
-        return tempUserInfoUseCase
-            .fetchUserInfo()
-            .map { $0.authInfo.accessToken }
+        return userInfoUseCase
+            .userInfo
+            .compactMap { $0?.authInfo.accessToken }
             .withUnretained(self)
             .flatMap { `self`, accessToken in
                 self.stoolLogRepository.fetchUserStoolLogs(
@@ -58,9 +58,9 @@ public final class DefaultStoolLogUseCase: StoolLogUseCase {
     }
     
     public func fetchUserStoolLogs(userID: Int, date: String) -> Observable<[StoolLogEntity]> {
-        return tempUserInfoUseCase
-            .fetchUserInfo()
-            .map { $0.authInfo.accessToken }
+        return userInfoUseCase
+            .userInfo
+            .compactMap { $0?.authInfo.accessToken }
             .withUnretained(self)
             .flatMap { `self`, accessToken in
                 self.stoolLogRepository
@@ -75,9 +75,9 @@ public final class DefaultStoolLogUseCase: StoolLogUseCase {
     }
     
     public func postStoolLog(stoolLogEntity: StoolLogEntity) -> Observable<StoolLogEntity> {
-        return tempUserInfoUseCase
-            .fetchUserInfo()
-            .map { $0.authInfo.accessToken }
+        return userInfoUseCase
+            .userInfo
+            .compactMap { $0?.authInfo.accessToken }
             .withUnretained(self)
             .flatMap { `self`, accessToken in
                 self.stoolLogRepository

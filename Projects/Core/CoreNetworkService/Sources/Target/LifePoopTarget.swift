@@ -40,6 +40,13 @@ extension LifePoopTarget: TargetType {
         }
     }
     
+    public var cookies: [String: String] {
+        switch self {
+        default:
+            return [:]
+        }
+    }
+    
     public var headers: [String: String]? {
         switch self {
         case .fetchTempCode:

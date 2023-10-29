@@ -18,7 +18,10 @@ import Utils
 
 public final class InvitationCodeViewController: LifePoopViewController, ViewType {
     
-    private let alertView = LifePoopTextFieldAlertView(type: .invitationCode, placeholder: "ex) vMXxaOXq")
+    private let textFieldAlertView = LifePoopTextFieldAlertView(
+        type: .invitationCode,
+        placeholder: "ex) vMXxaOXq"
+    )
     
     private var disposeBag = DisposeBag()
     public var viewModel: InvitationCodeViewModel?
@@ -40,15 +43,15 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
             .bind(to: input.viewDidAppear)
             .disposed(by: disposeBag)
         
-        alertView.cancelButton.rx.tap
+        textFieldAlertView.cancelButton.rx.tap
             .bind(to: input.didTapCancelButton)
             .disposed(by: disposeBag)
         
-        alertView.confirmButton.rx.tap
+        textFieldAlertView.confirmButton.rx.tap
             .bind(to: input.didTapConfirmButton)
             .disposed(by: disposeBag)
         
-        alertView.rx.text
+        textFieldAlertView.rx.text
             .bind(to: input.didEnterInvitationCode)
             .disposed(by: disposeBag)
     }
@@ -56,30 +59,33 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
     public func bindOutput(from viewModel: InvitationCodeViewModel) {
         let output = viewModel.output
         
-        output.shouldDismissAlertView
-            .bind(with: self, onNext: { `self`, _ in
+        output.dismissAlertView
+            .asSignal()
+            .emit(with: self, onNext: { `self`, _ in
                 self.dismissEnteringCodePopup()
             })
             .disposed(by: disposeBag)
         
-        output.shouldShowInvitationCodePopup
-            .bind(with: self, onNext: { `self`, _ in
+        output.showInvitationCodePopup
+            .asSignal()
+            .emit(with: self, onNext: { `self`, _ in
                 self.showEnteringCodePopup()
             })
             .disposed(by: disposeBag)
         
         output.enableConfirmButton
-            .bind(to: alertView.rx.isConfirmButtonEnabled)
+            .asSignal()
+            .emit(to: textFieldAlertView.rx.isConfirmButtonEnabled)
             .disposed(by: disposeBag)
         
         output.hideWarningLabel
-            .bind(to: alertView.rx.isWarningLabelhidden)
+            .asSignal()
+            .emit(to: textFieldAlertView.rx.isWarningLabelhidden)
             .disposed(by: disposeBag)
         
-        // TODO: 우선은 클립보드에 초대코드 복사된 것만 확인
-        // 추후 서버에서 초대코드 생성되면 UseCase 거쳐서 textToShare 초기화하도록 수정할 예정
-        output.shouldShowSharingActivityView
-            .bind(with: self, onNext: { `self`, _ in
+        output.showSharingActivityView
+            .asSignal()
+            .emit(with: self, onNext: { `self`, _ in
                 self.showSharingPopup()
             })
             .disposed(by: disposeBag)
@@ -96,21 +102,30 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
 private extension InvitationCodeViewController {
     
     func showEnteringCodePopup() {
-        alertView.show(in: view) { [weak self] in
+        textFieldAlertView.show(in: view) { [weak self] in
             self?.view.layoutIfNeeded()
         }
-        alertView.becomeFirstResponder()
+        textFieldAlertView.becomeFirstResponder()
     }
     
     func dismissEnteringCodePopup() {
-        alertView.dismiss { [weak self] in
+        textFieldAlertView.dismiss { [weak self] in
             self?.viewModel?.input.didCloseInvitationCodePopup.accept(())
         }
     }
     
     func showSharingPopup() {
-        let textToShare = "Invitation Code"
-        let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
+        
+        // FIXME: TODO 주석에 따라 invitationCode가 비어있을 경우 크래쉬 발생!! 수정 필요
+        
+        // TODO: 초대코드 존재하지 않을 경우 별도 표시해야 함
+        guard let invitationCode = viewModel?.invitationCode,
+              !invitationCode.isEmpty else { return }
+        
+        let activityViewController = UIActivityViewController(
+            activityItems: [invitationCode],
+            applicationActivities: nil
+        )
         
         // MARK: 우선적으로 필요없는 타입 제외
         activityViewController.excludedActivityTypes = [
@@ -124,7 +139,10 @@ private extension InvitationCodeViewController {
         
         activityViewController.completionWithItemsHandler = { [weak self] activity, success, _, error in
             if let error = error {
-                self?.viewModel?.input.didCloseSharingPopup.accept(.failure(error: error))
+                self?.viewModel?.input.didCloseSharingPopup.accept(.failure(
+                    activity: (activity == .copyToPasteboard) ? .copying : .sharing,
+                    error: error
+                ))
                 return
             }
             
@@ -133,11 +151,9 @@ private extension InvitationCodeViewController {
                 self?.dismissViewControllerIfNeeded()
                 return
             }
-            if activity == .copyToPasteboard {
-                self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity: .copying))
-            } else {
-                self?.viewModel?.input.didCloseSharingPopup.accept(.success(activity: .sharing))
-            }
+            self?.viewModel?.input.didCloseSharingPopup.accept(.success(
+                activity: (activity == .copyToPasteboard) ? .copying : .sharing
+            ))
         }
         
         present(activityViewController, animated: true)
@@ -174,19 +190,19 @@ private extension InvitationCodeViewController {
         guard let keyboardHeight = keyboardView?.cgRectValue.height else { return }
         
         let keyboardTopY = view.frame.maxY - keyboardHeight
-        let alertViewBottomY = alertView.frame.maxY
+        let alertViewBottomY = textFieldAlertView.frame.maxY
         
         if alertViewBottomY > keyboardTopY {
             let extraSpace: CGFloat = 10.0
             let offsetY = alertViewBottomY - keyboardTopY + extraSpace
             
             UIView.animate(withDuration: 0.3, animations: {
-                self.alertView.transform = CGAffineTransform(translationX: 0, y: -offsetY)
+                self.textFieldAlertView.transform = CGAffineTransform(translationX: 0, y: -offsetY)
             })
         }
     }
     
     @objc func keyboardWillDismiss(_ notification: NSNotification) {
-        self.alertView.transform = .identity
+        self.textFieldAlertView.transform = .identity
     }
 }

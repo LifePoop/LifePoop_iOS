@@ -83,7 +83,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                     self.getTimeDifference(fromDateOf: stoolStoryLogs[currentIndex].stoolLog.date)
                 )
                 self.output.updateFriendStoolLogSummary.accept(
-                    LocalizableString.bowelMovementCountOfFriend(friend.name, totalCount)
+                    LocalizableString.bowelMovementCountOfFriend(friend.nickname, totalCount)
                 )
             })
             .disposed(by: disposeBag)

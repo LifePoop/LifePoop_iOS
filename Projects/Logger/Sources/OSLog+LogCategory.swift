@@ -21,6 +21,7 @@ public extension OSLog {
         case bundle
         case network
         case database
+        case keyChain
         case authentication
         
         var value: String {
@@ -37,6 +38,8 @@ public extension OSLog {
                 return Constant.OSLogCategory.network
             case .database:
                 return Constant.OSLogCategory.database
+            case .keyChain:
+                return Constant.OSLogCategory.keyChain
             case .authentication:
                 return Constant.OSLogCategory.authentication
             }

@@ -19,14 +19,19 @@ import Utils
 
 public final class DefaultHomeUseCase: HomeUseCase {
     
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     @Inject(SharedDIContainer.shared) private var stoolLogUseCase: StoolLogUseCase
     @Inject(SharedDIContainer.shared) private var friendListRepository: FriendListRepository
     
     public init() { }
     
     public func fetchFriendList() -> Observable<[FriendEntity]> {
-        return friendListRepository
-            .fetchFriendList()
+        return userInfoUseCase.userInfo
+            .compactMap { $0?.authInfo.accessToken }
+            .withUnretained(self)
+            .flatMapLatest { `self`, accessToken in
+                self.friendListRepository.fetchFriendList(accessToken: accessToken)
+            }
             .logErrorIfDetected(category: .network)
             .asObservable()
     }
@@ -36,10 +41,10 @@ public final class DefaultHomeUseCase: HomeUseCase {
             .fetchMyLast7DaysStoolLogs()
     }
     
-    // TODO: 삭제 또는 수정 예정
+    // FIXME: 선택된 친구의 스토리 불러오는 코드 - 삭제 또는 수정 필요
     public func fetchStoolLogsOfSelectedFriend(_ friend: FriendEntity) -> Observable<[StoolStoryLogEntity]> {
         return stoolLogUseCase
-            .fetchAllUserStoolLogs(userID: friend.userID)
+            .fetchAllUserStoolLogs(userID: friend.id)
             .withUnretained(self)
             .compactMap { `self`, friendStoolLogs in
                 self.convertToStoryLogs(friendStoolLogs)
@@ -47,8 +52,7 @@ public final class DefaultHomeUseCase: HomeUseCase {
     }
     
     public func postStoolLog(_ stoolLogEntity: StoolLogEntity) -> Observable<StoolLogEntity> {
-        return stoolLogUseCase
-            .postStoolLog(stoolLogEntity: stoolLogEntity)
+        return stoolLogUseCase.postStoolLog(stoolLogEntity: stoolLogEntity)
     }
     
     public func convertToStoolLogItems(from stoolLogsEntities: [StoolLogEntity]) -> [StoolLogItem] {
@@ -57,7 +61,7 @@ public final class DefaultHomeUseCase: HomeUseCase {
 }
 
 private extension DefaultHomeUseCase {
-    // TODO: 삭제 예정
+    // FIXME: 선택된 친구의 스토리 불러오는 코드 - 삭제 또는 수정 필요
     func convertToStoryLogs(_ stoolLogs: [StoolLogEntity]) -> [StoolStoryLogEntity] {
         let sortedStoolLogs = stoolLogs.sorted { $0.date < $1.date }
         // TODO: 추후 서버에서 DTO 내려줄 때, '힘주기' 여부가 포함되야 하고, 아래 isFirst 조건과 함께 고려해서 isCheeringUpAvailable값이 결정되야 함

@@ -19,11 +19,46 @@ import Utils
 
 public final class DefaultSignupUseCase: SignupUseCase {
     
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
+    
+    @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
+    @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
+    @Inject(LoginDIContainer.shared) private var signupRepository: SignupRepository
     
     public init() { }
     
     private var essentialConditions: Set<AgreementCondition> = []
+    
+    /** 사용자 입력 회원가입 정보로 서버에 새로운 회원정보 추가 요청 **/
+    public func requestSignup(_ signupInfo: SignupInput) -> Observable<Bool> {
+        
+        Logger.log(
+            message: """
+            회원 가입 요청
+            nickname: \(signupInfo.nickname)
+            gender: \(signupInfo.gender.description)
+            loginType: \(signupInfo.provider.description)
+            """,
+            category: .authentication,
+            type: .debug
+        )
+        
+        return signupRepository.requestSignup(with: signupInfo)
+            .asObservable()
+            .withUnretained(self)
+            .flatMapLatest { `self`, authInfo in
+                self.userInfoUseCase.fetchUserInfo(with: authInfo)
+                    .do(onNext: {
+                        Logger.log(
+                            message: "회원 가입 성공 : \($0)",
+                            category: .authentication,
+                            type: .debug
+                        )
+                    })
+            }
+            .catchAndReturn(false)
+    }
     
     // TODO: Repository로 이동
     private let conditionEntities: [AgreementCondition] = [
@@ -84,6 +119,19 @@ public final class DefaultSignupUseCase: SignupUseCase {
         case false:
             return Observable.just(.init(isValid: isValid, status: .impossible))
         }
+    }
+    
+    // TODO: 추후에 Utils에 구현된 부분으로 대체 가능한 지 확인 후 제거
+    public func createFormattedDateString(with dateString: String) -> String? {
+        
+        let inputDateFormatter = DateFormatter()
+        inputDateFormatter.dateFormat = "yyMMdd"
+        
+        let outputDateFormatter = DateFormatter()
+        outputDateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        guard let inputDate = inputDateFormatter.date(from: dateString) else { return nil }
+        return outputDateFormatter.string(from: inputDate)
     }
     
     private func isLeapYear(_ year: Int) -> Bool {

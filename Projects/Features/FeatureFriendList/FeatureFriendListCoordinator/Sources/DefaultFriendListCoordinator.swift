@@ -33,21 +33,30 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
     }
     
     public func start() {
-        coordinate(by: .shouldShowFirendList)
+        coordinate(by: .showFirendList)
     }
     
     public func coordinate(by coordinateAction: FriendListCoordinateAction) {
-        switch coordinateAction {
-        case .shouldShowFirendList:
-            showFriendListViewController()
-        case .shouldShowFriendsStoolLog(let friendEntity):
-            showFriendStoolLogViewController(of: friendEntity)
-        case .shouldShowFriendInvitation(let toastMessageStream):
-            showFriendInvitationView(with: toastMessageStream)
-        case .shouldShowInvitationCodePopup(let invitationType, let toastMessageStream):
-            showInvitationCodePopup(invitationType: invitationType, toastMessageStream: toastMessageStream)
-        case .shouldDismissInvitationCodePopup:
-            dismissViewController()
+        DispatchQueue.main.async { [weak self] in
+            switch coordinateAction {
+            case .showFriendsStoolLog(let friendEntity):
+                self?.showFriendStoolLogViewController(of: friendEntity)
+            case .showFirendList:
+                self?.showFriendListViewController()
+            case .showFriendInvitation(let toastMessageStream, let friendListUpdateStream):
+                self?.showFriendInvitationView(
+                    toastMessageStream: toastMessageStream,
+                    friendListUpdateStream: friendListUpdateStream
+                )
+            case .showInvitationCodePopup(let invitationType, let toastMessageStream, let friendListUpdateStream):
+                self?.showInvitationCodePopup(
+                    invitationType: invitationType,
+                    toastMessageStream: toastMessageStream,
+                    friendListUpdateStream: friendListUpdateStream
+                )
+            case .dismissInvitationCodePopup:
+                self?.dismissViewController()
+            }
         }
     }
     
@@ -74,10 +83,16 @@ private extension DefaultFriendListCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func showFriendInvitationView(with toastMessageStream: PublishRelay<String>) {
-        
+    func showFriendInvitationView(
+        toastMessageStream: PublishRelay<String>,
+        friendListUpdateStream: PublishRelay<Void>
+    ) {
         let invitationViewController = FrinedInvitationViewController()
-        let invitationViewModel = FriendInvitationViewModel(coordinator: self, toastMessageStream: toastMessageStream)
+        let invitationViewModel = FriendInvitationViewModel(
+            coordinator: self,
+            toastMessageStream: toastMessageStream,
+            friendListUpdateStream: friendListUpdateStream
+        )
         invitationViewController.bind(viewModel: invitationViewModel)
         
         let parentViewController = navigationController
@@ -88,14 +103,19 @@ private extension DefaultFriendListCoordinator {
         self.bottomSheetController = bottomSheetController
     }
     
-    func showInvitationCodePopup(invitationType: InvitationType, toastMessageStream: PublishRelay<String>) {
+    func showInvitationCodePopup(
+        invitationType: InvitationType,
+        toastMessageStream: PublishRelay<String>,
+        friendListUpdateStream: PublishRelay<Void>
+    ) {
         closeBottomSheet()
         
         let invitationCodeViewController = InvitationCodeViewController()
         let invitationCodeViewModel = InvitationCodeViewModel(
             coordinator: self,
             invitationType: invitationType,
-            toastMessageStream: toastMessageStream
+            toastMessageStream: toastMessageStream,
+            friendListUpdateStream: friendListUpdateStream
         )
         invitationCodeViewController.bind(viewModel: invitationCodeViewModel)
         

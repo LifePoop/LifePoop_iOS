@@ -16,6 +16,18 @@ public struct NetworkResult {
         return response.statusCode
     }
     
+    public var cookies: [String: String]? {
+        guard let allHeaderFields = response.allHeaderFields as? [String: String],
+              let url = response.url else { return nil }
+
+        var cookies: [String: String] = [:]
+        HTTPCookie.cookies(withResponseHeaderFields: allHeaderFields, for: url).forEach {
+            cookies[$0.name] = $0.value
+        }
+        
+        return cookies
+    }
+    
     public init(data: Data?, response: HTTPURLResponse) {
         self.data = data
         self.response = response

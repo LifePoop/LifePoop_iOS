@@ -24,12 +24,12 @@ public final class FriendListViewModel: ViewModelType {
         let viewDidLoad = PublishRelay<Void>()
         let friendDidSelect = PublishRelay<IndexPath>()
         let invitationButtonDidTap = PublishRelay<Void>()
+        let addingFriendDidComplete = PublishRelay<Void>()
     }
     
     public struct Output {
         let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
         let showFriendList = PublishRelay<[FriendEntity]>()
-        let setNavigationTitle = Observable.of(LocalizableString.friendsList)
         let showEmptyList = PublishRelay<Void>()
         let showToastMessge = PublishRelay<String>()
     }
@@ -53,12 +53,18 @@ public final class FriendListViewModel: ViewModelType {
     }
     
     private func bind(coordinator: FriendListCoordinator?) {
+        
         input.viewDidLoad
             .map { _ in true }
             .bind(to: output.shouldLoadingIndicatorAnimating)
             .disposed(by: disposeBag)
         
-        let fetchedFriendList = input.viewDidLoad
+        let updateFriendList = Observable<Void>.merge(
+            input.viewDidLoad.asObservable(),
+            input.addingFriendDidComplete.asObservable()
+        ).share()
+        
+        let fetchedFriendList = updateFriendList
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
                 self.friendListUseCase.fetchFriendList()
@@ -67,6 +73,7 @@ public final class FriendListViewModel: ViewModelType {
         
         fetchedFriendList
             .compactMap { $0.element }
+            .debug()
             .bind(to: state.friendList)
             .disposed(by: disposeBag)
         
@@ -87,12 +94,15 @@ public final class FriendListViewModel: ViewModelType {
             .map { _ in false }
             .bind(to: output.shouldLoadingIndicatorAnimating)
             .disposed(by: disposeBag)
-
+        
         input.invitationButtonDidTap
             .withUnretained(self)
             .bind { `self`, _ in
                 coordinator?.coordinate(
-                    by: .shouldShowFriendInvitation(toastMessageStream: self.output.showToastMessge)
+                    by: .showFriendInvitation(
+                        toastMessageStream: self.output.showToastMessge,
+                        friendListUpdateStream: self.input.addingFriendDidComplete
+                    )
                 )
             }
             .disposed(by: disposeBag)
@@ -103,7 +113,7 @@ public final class FriendListViewModel: ViewModelType {
                 friendList[indexPath.row]
             }
             .bind { friendEntity in
-                coordinator?.coordinate(by: .shouldShowFriendsStoolLog(friendEntity: friendEntity))
+                coordinator?.coordinate(by: .showFriendsStoolLog(friendEntity: friendEntity))
             }
             .disposed(by: disposeBag)
         

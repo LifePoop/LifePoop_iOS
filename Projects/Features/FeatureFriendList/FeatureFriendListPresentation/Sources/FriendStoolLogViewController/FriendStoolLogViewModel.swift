@@ -61,7 +61,7 @@ public final class FriendStoolLogViewModel: ViewModelType {
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
                 self.stoolLogUseCase.fetchUserStoolLogs(
-                    userID: friendEntity.userID,
+                    userID: friendEntity.id,
                     date: Date().dateString
                 )
             }
@@ -71,7 +71,7 @@ public final class FriendStoolLogViewModel: ViewModelType {
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
                 self.cheeringInfoUseCase.fetchCheeringInfo(
-                    userId: friendEntity.userID,
+                    userId: friendEntity.id,
                     date: Date().dateString
                 )
             }

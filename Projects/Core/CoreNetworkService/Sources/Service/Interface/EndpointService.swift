@@ -25,7 +25,7 @@ public extension EndpointService {
         fetchStatusCode(endpoint: endpoint, with: EmptyBody())
     }
     
-    func fetchResult(endpoint: TargetType) -> Single<NetworkResult> {
+    func fetchNetworkResult(endpoint: TargetType) -> Single<NetworkResult> {
         fetchNetworkResult(endpoint: endpoint, with: EmptyBody())
     }
 }

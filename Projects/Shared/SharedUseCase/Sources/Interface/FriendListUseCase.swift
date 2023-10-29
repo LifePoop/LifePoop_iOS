@@ -14,4 +14,6 @@ import CoreEntity
 
 public protocol FriendListUseCase {
     func fetchFriendList() -> Observable<[FriendEntity]>
+    func requestAddingFriend(with invitationCode: String) -> Observable<Bool>
+    var invitationCode: Observable<String> { get }
 }

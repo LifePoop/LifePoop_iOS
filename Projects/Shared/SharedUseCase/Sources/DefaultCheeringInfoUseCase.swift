@@ -22,15 +22,14 @@ public protocol CheeringInfoUseCase {
 public final class DefaultCheeringInfoUseCase: CheeringInfoUseCase {
     
     @Inject(SharedDIContainer.shared) private var cheeringInfoRepository: CheeringInfoRepository
-    // FIXME: 의존성 주입 방식으로 변경
-    private let tempUserInfoUseCase: UserInfoUseCase = TempUserInfoUseCase()
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     
     public init() { }
     
     public func fetchCheeringInfo(userId: Int, date: String) -> Observable<CheeringInfoEntity> {
-        return tempUserInfoUseCase
-            .fetchUserInfo()
-            .map { $0.authInfo.accessToken }
+        return userInfoUseCase
+            .userInfo
+            .compactMap { $0?.authInfo.accessToken }
             .withUnretained(self)
             .flatMap { `self`, accessToken in
                 self.cheeringInfoRepository.fetchUserCheeringInfo(

@@ -87,6 +87,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .map { $0.item }
             .share()
         
+        // FIXME: 선택된 친구의 스토리 불러오는 코드 - 삭제 또는 수정 필요
         friendListCellIndex
             .withLatestFrom(output.updateFriends) { index, friendEntities in
                 friendEntities[index]

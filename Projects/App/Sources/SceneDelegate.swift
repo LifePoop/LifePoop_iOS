@@ -92,6 +92,7 @@ private extension SceneDelegate {
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(StoolLogEntityMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(StoolLogDTOMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(CheeringInfoEntityMapper()) }
+        CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(FriendEntityMapper()) }
         CoreDIContainer.shared.register(service: EndpointService.self) { URLSessionEndpointService.shared }
         CoreDIContainer.shared.register(service: DiskCacheStorage.self) { FileManagerDiskCacheStorage.shared }
         CoreDIContainer.shared.register(service: MemoryCacheStorage.self) { NSCacheMemoryCacheStorage.shared }
@@ -110,16 +111,18 @@ private extension SceneDelegate {
         SharedDIContainer.shared.register(service: StoolLogRepository.self) { DefaultStoolLogRepository() }
         SharedDIContainer.shared.register(service: CheeringInfoUseCase.self) { DefaultCheeringInfoUseCase() }
         SharedDIContainer.shared.register(service: CheeringInfoRepository.self) { DefaultCheeringInfoRepository() }
-        SharedDIContainer.shared.register(service: UserInfoUseCase.self) { TempUserInfoUseCase() } // FIXME: TempUseCase -> 실제 UseCase 주입하도록 변경
         SharedDIContainer.shared.register(service: BundleResourceRepository.self) { DefaultBundleResourceRepository() }
         SharedDIContainer.shared.register(service: UserDefaultsRepository.self) { DefaultUserDefaultsRepository() }
         SharedDIContainer.shared.register(service: KeyChainRepository.self) { DefaultKeyChainRepository() }
+        SharedDIContainer.shared.register(service: UserInfoUseCase.self) { DefaultUserInfoUseCase() }
+        SharedDIContainer.shared.register(service: UserInfoRepository.self) { DefaultUserInfoRepository() }
     }
     
     func registerLoginDependencies() {
         LoginDIContainer.shared.register(service: LoginUseCase.self) { DefaultLoginUseCase() }
         LoginDIContainer.shared.register(service: SignupUseCase.self) { DefaultSignupUseCase() }
         LoginDIContainer.shared.register(service: LoginRepository.self) { DefaultLoginRepository() }
+        LoginDIContainer.shared.register(service: SignupRepository.self) { DefaultSignupRepository() }
     }
     
     func registerHomeDependencies() {
@@ -128,14 +131,18 @@ private extension SceneDelegate {
     
     func registerSettingDependencies() {
         SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
-        SettingDIContainer.shared.register(service: ProfileEditUseCase.self) { MockProfileEditUseCase() } // FIXME: MockUseCase -> 실제 UseCase 주입하도록 변경
+        
+        // FIXME: MockUseCase -> 실제 UseCase 주입하도록 변경
+        SettingDIContainer.shared.register(service: ProfileEditUseCase.self) { MockProfileEditUseCase() }
+        
     }
     
     func registerReportDependencies() {
         ReportDIContainer.shared.register(service: ReportUseCase.self) { DefaultReportUseCase() }
-        ReportDIContainer.shared.register(service: ReportRepository.self) { MockReportRepository() }  // // FIXME: MockRepository -> 실제 Repository 주입하도록 변경
+        
+        // FIXME: MockRepository -> 실제 Repository 주입하도록 변경
+        ReportDIContainer.shared.register(service: ReportRepository.self) { MockReportRepository() }
     }
-    
 }
 
 // MARK: - UI Setup

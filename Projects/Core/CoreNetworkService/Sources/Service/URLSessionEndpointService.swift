@@ -63,6 +63,18 @@ private extension URLSessionEndpointService {
             }
         }
         
+        // MARK: 필요 시 요청 헤더에 쿠키 추가
+        let cookies: [HTTPCookie] = endpoint.cookies.compactMap { key, value in
+            HTTPCookie(properties: [
+                .name: key,
+                .value: value,
+                .domain: finalUrl.host ?? "api.lifepoo.link",
+                .path: "/",
+            ])
+        }
+        let cookieHeaderValue = HTTPCookie.requestHeaderFields(with: cookies)["Cookie"]
+        request.setValue(cookieHeaderValue, forHTTPHeaderField: "Cookie")
+        
         if bodyObject is EmptyBody {
             return request
         }

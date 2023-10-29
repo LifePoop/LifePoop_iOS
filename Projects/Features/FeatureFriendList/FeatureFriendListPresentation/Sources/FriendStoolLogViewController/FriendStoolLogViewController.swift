@@ -93,6 +93,7 @@ public final class FriendStoolLogViewController: LifePoopViewController, ViewTyp
             .disposed(by: disposeBag)
         
         
+        // FIXME: CheeringInfo에 따른 UI 적용 바인딩 필요
 //        cheeringFriendView.setCheeringFriendProfileCharacter(
 //            images: ImageAsset.profileCheeringGoodRed.original,
 //            ImageAsset.profileCheeringGoodBlack.original

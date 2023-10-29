@@ -9,19 +9,23 @@
 import Foundation
 
 public struct FriendEntity {
-    public let userID: Int
-    public let name: String
+    public let id: Int
+    public let nickname: String
+    // TODO: 스토리 API 최종 구현 후 해당 속성 어떻게 할 지 다시 확인
     public var isActivated: Bool
     public let profile: ProfileCharacter
     
-    public init(
-        userID: Int,
-        name: String,
-        isActivated: Bool,
-        profile: ProfileCharacter
-    ) {
-        self.userID = userID
-        self.name = name
+    public init(id: Int = 0, nickname: String, isActivated: Bool, profile: ProfileCharacter) {
+        self.id = id
+        self.nickname = nickname
+        self.isActivated = isActivated
+        self.profile = profile
+    }
+    
+    // FIXME: API 연동 후 더미데이터 제거해야 함
+    public init(nickname: String, isActivated: Bool, profile: ProfileCharacter) {
+        self.id = 0
+        self.nickname = nickname
         self.isActivated = isActivated
         self.profile = profile
     }
@@ -32,21 +36,21 @@ extension FriendEntity: Hashable { }
 extension FriendEntity {
     public static var dummyData: [FriendEntity] {
         return [
-            FriendEntity(userID: 0, name: "김유빈", isActivated: true, profile: .init(color: .brown, shape: .soft)),
-            FriendEntity(userID: 1, name: "이화정", isActivated: false, profile: .init(color: .brown, shape: .good)),
-            FriendEntity(userID: 2, name: "이준우", isActivated: true, profile: .init(color: .brown, shape: .hard)),
-            FriendEntity(userID: 3, name: "강시온", isActivated: false, profile: .init(color: .black, shape: .soft)),
-            FriendEntity(userID: 4, name: "손혜정", isActivated: true, profile: .init(color: .black, shape: .good)),
-            FriendEntity(userID: 5, name: "김상혁", isActivated: false, profile: .init(color: .black, shape: .hard)),
-            FriendEntity(userID: 6, name: "강시온가나", isActivated: true, profile: .init(color: .pink, shape: .soft)),
-            FriendEntity(userID: 7, name: "김상혁다라", isActivated: false, profile: .init(color: .pink, shape: .good)),
-            FriendEntity(userID: 8, name: "손혜정마바", isActivated: true, profile: .init(color: .pink, shape: .hard)),
-            FriendEntity(userID: 9, name: "김유빈사아", isActivated: false, profile: .init(color: .green, shape: .soft)),
-            FriendEntity(userID: 10, name: "이준우자차", isActivated: true, profile: .init(color: .green, shape: .good)),
-            FriendEntity(userID: 11, name: "이화정카타", isActivated: false, profile: .init(color: .green, shape: .hard)),
-            FriendEntity(userID: 12, name: "라이푸12", isActivated: false, profile: .init(color: .yellow, shape: .soft)),
-            FriendEntity(userID: 13, name: "LFPOO", isActivated: true, profile: .init(color: .yellow, shape: .good)),
-            FriendEntity(userID: 14, name: "12345", isActivated: true, profile: .init(color: .yellow, shape: .hard))
+            FriendEntity(nickname: "김유빈", isActivated: true, profile: .init(color: .brown, shape: .soft)),
+            FriendEntity(nickname: "이화정", isActivated: false, profile: .init(color: .brown, shape: .good)),
+            FriendEntity(nickname: "이준우", isActivated: true, profile: .init(color: .brown, shape: .hard)),
+            FriendEntity(nickname: "강시온", isActivated: false, profile: .init(color: .black, shape: .soft)),
+            FriendEntity(nickname: "손혜정", isActivated: true, profile: .init(color: .black, shape: .good)),
+            FriendEntity(nickname: "김상혁", isActivated: false, profile: .init(color: .black, shape: .hard)),
+            FriendEntity(nickname: "강시온가나", isActivated: true, profile: .init(color: .pink, shape: .soft)),
+            FriendEntity(nickname: "김상혁다라", isActivated: false, profile: .init(color: .pink, shape: .good)),
+            FriendEntity(nickname: "손혜정마바", isActivated: true, profile: .init(color: .pink, shape: .hard)),
+            FriendEntity(nickname: "김유빈사아", isActivated: false, profile: .init(color: .green, shape: .soft)),
+            FriendEntity(nickname: "이준우자차", isActivated: true, profile: .init(color: .green, shape: .good)),
+            FriendEntity(nickname: "이화정카타", isActivated: false, profile: .init(color: .green, shape: .hard)),
+            FriendEntity(nickname: "라이푸12", isActivated: false, profile: .init(color: .yellow, shape: .soft)),
+            FriendEntity(nickname: "LFPOO", isActivated: true, profile: .init(color: .yellow, shape: .good)),
+            FriendEntity(nickname: "12345", isActivated: true, profile: .init(color: .yellow, shape: .hard))
         ]
     }
 }

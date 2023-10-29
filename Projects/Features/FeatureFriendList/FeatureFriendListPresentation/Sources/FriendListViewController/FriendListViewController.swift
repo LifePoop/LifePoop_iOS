@@ -82,26 +82,22 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         let output = viewModel.output
         
         output.shouldLoadingIndicatorAnimating
+            .asSignal()
             .distinctUntilChanged()
-            .bind(to: loadingIndicator.rx.isAnimating)
-            .disposed(by: disposeBag)
-        
-        output.setNavigationTitle
-            .withUnretained(self)
-            .bind(onNext: { `self`, title in
-                self.navigationItem.title = title
-            })
+            .emit(to: loadingIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
         
         output.showEmptyList
+            .asSignal()
             .withUnretained(self)
-            .bind(onNext: { `self`, _ in
+            .emit(onNext: { `self`, _ in
                 self.friendListCollectionView.isHidden = true
                 self.emptyFriendListView.isHidden = false
             })
             .disposed(by: disposeBag)
-
+        
         output.showFriendList
+            .observe(on: MainScheduler.asyncInstance)
             .do(onNext: { [weak self] _ in
                 self?.emptyFriendListView.isHidden = true
                 self?.friendListCollectionView.isHidden = false
@@ -110,12 +106,12 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
                 cellIdentifier: FriendListCollectionViewCell.identifier,
                 cellType: FriendListCollectionViewCell.self)
             ) { _, friend, cell in
-
                 cell.configure(with: friend)
             }
             .disposed(by: disposeBag)
         
         output.showToastMessge
+            .asSignal()
             .map { message in
                 let fullString = NSMutableAttributedString()
                 
@@ -128,15 +124,14 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
                 fullString.append(NSAttributedString(string: message))
                 return fullString
             }
-            .bind(onNext: toastLabel.show(message:))
+            .emit(onNext: toastLabel.show(message:))
             .disposed(by: disposeBag)
     }
     
     public override func configureUI() {
         super.configureUI()
-        
+        title = LocalizableString.friendsList
         navigationController?.setNavigationBarHidden(false, animated: false)
-        
         let spacer = UIBarButtonItem.fixedSpace(14)
         navigationItem.rightBarButtonItems = [spacer, rightBarButtonItem]
     }

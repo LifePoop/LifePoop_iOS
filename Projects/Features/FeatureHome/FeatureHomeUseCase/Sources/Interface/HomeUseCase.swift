@@ -13,7 +13,10 @@ import CoreEntity
 public protocol HomeUseCase {
     func fetchFriendList() -> Observable<[FriendEntity]>
     func fetchStoolLogs() -> Observable<[StoolLogEntity]>
+    
+    // FIXME: 선택된 친구의 스토리 불러오는 코드 - 삭제 또는 수정 필요
     func fetchStoolLogsOfSelectedFriend(_ friend: FriendEntity) -> Observable<[StoolStoryLogEntity]>
+    
     func postStoolLog(_ stoolLogEntity: StoolLogEntity) -> Observable<StoolLogEntity>
     func convertToStoolLogItems(from stoolLogsEntities: [StoolLogEntity]) -> [StoolLogItem]
 }

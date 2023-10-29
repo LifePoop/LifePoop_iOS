@@ -8,28 +8,37 @@
 
 import Foundation
 
+// FIXME: LifePoopTarget에 구현하는 것으로 수정
+
 public enum LifePoopLocalTarget {
     case login(accessToken: String, provider: String)
-    case fetchStoolLog(userID: Int)
+    case fetchStoolLog(accessToken: String, userID: Int)
+    case fetchStoolLogAtDate(accessToken: String, userID: Int, date: String)
     case postStoolLog(accessToken: String)
+    case fetchFriendsWithStories(accessToken: String)
+    case fetchCheeringInfo(accessToken: String, userID: Int, date: String)
 }
 
 extension LifePoopLocalTarget: TargetType {
     public var baseURL: URL? {
-        switch self {
-        case .login, .fetchStoolLog, .postStoolLog:
-            return URL(string: "http://localhost:3000")
-        }
+//        return URL(string: "http://localhost:3000")
+        return URL(string: "https://api.lifepoo.link")
     }
     
     public var path: String {
         switch self {
         case .login:
             return "/auth/*/login"
-        case .fetchStoolLog(let userID):
+        case .fetchStoolLog(_, let userID):
             return "/post/\(userID)"
+        case .fetchStoolLogAtDate(_, let userID, let date):
+            return "/post/\(userID)/\(date)"
         case .postStoolLog:
             return "/post"
+        case .fetchFriendsWithStories:
+            return "/story"
+        case .fetchCheeringInfo(_, let userID, let date):
+            return "/user/\(userID)/cheer/\(date)"
         }
     }
     
@@ -37,7 +46,10 @@ extension LifePoopLocalTarget: TargetType {
         switch self {
         case .login:
             return .post
-        case .fetchStoolLog:
+        case .fetchStoolLog,
+                .fetchStoolLogAtDate,
+                .fetchFriendsWithStories,
+                .fetchCheeringInfo:
             return .get
         case .postStoolLog:
             return .post
@@ -48,9 +60,11 @@ extension LifePoopLocalTarget: TargetType {
         switch self {
         case .login:
             return nil
-        case .fetchStoolLog:
-            return nil
-        case .postStoolLog(let accessToken):
+        case .fetchStoolLog(let accessToken, _),
+                .fetchStoolLogAtDate(let accessToken, _, _),
+                .postStoolLog(let accessToken),
+                .fetchFriendsWithStories(let accessToken),
+                .fetchCheeringInfo(let accessToken, _, _):
             return [
                 "Content-Type": "application/json",
                 "Accept": "application/json",
@@ -66,7 +80,11 @@ extension LifePoopLocalTarget: TargetType {
                 "accessToken": accessToken,
                 "provider": provider
             ]
-        case .fetchStoolLog, .postStoolLog:
+        case .fetchStoolLog,
+                .fetchStoolLogAtDate,
+                .postStoolLog,
+                .fetchFriendsWithStories,
+                .fetchCheeringInfo:
             return nil
         }
     }

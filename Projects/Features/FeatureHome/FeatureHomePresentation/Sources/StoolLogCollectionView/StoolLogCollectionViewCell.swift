@@ -16,7 +16,9 @@ import EntityUIMapper
 
 final class StoolLogCollectionViewCell: UICollectionViewCell {
     
-    private let containerView: ShadowView = {
+    private let containerView = UIView()
+    
+    private let shadowView: ShadowView = {
         let shadowView = ShadowView()
         shadowView.layer.borderWidth = 1
         shadowView.layer.borderColor = ColorAsset.gray300.color.cgColor
@@ -51,6 +53,14 @@ final class StoolLogCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        backgroundColor = nil
+        timeDescriptionLabel.text = nil
+        stoolCharactorImageView.image = nil
+        backgroundImageView.image = nil
+    }
 }
 
 // MARK: - Supporting Methods
@@ -73,12 +83,18 @@ extension StoolLogCollectionViewCell {
 private extension StoolLogCollectionViewCell {
     func layoutUI() {
         contentView.addSubview(containerView)
-        containerView.addSubview(backgroundImageView)
+        containerView.addSubview(shadowView)
+        shadowView.addSubview(backgroundImageView)
         backgroundImageView.addSubview(timeDescriptionLabel)
         backgroundImageView.addSubview(stoolCharactorImageView)
         
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        
+        shadowView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         backgroundImageView.snp.makeConstraints { make in

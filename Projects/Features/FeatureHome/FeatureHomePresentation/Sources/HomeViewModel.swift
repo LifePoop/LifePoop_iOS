@@ -148,26 +148,11 @@ public final class HomeViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         state.stoolLogs
-            .filter { $0.isEmpty }
-            .map { _ in [StoolLogItem(itemState: .empty)] }
-            .bind(to: output.updateStoolLogs)
-            .disposed(by: disposeBag)
-        
-        state.stoolLogs
-            .filter { !$0.isEmpty }
-            .map { $0.map { StoolLogItem(itemState: .stoolLog($0)) } }
-            .bind(to: output.updateStoolLogs)
-            .disposed(by: disposeBag)
-        
-        state.stoolLogs
-            .map { !$0.isEmpty }
-            .withLatestFrom(state.userProfileCharacter) { ($0, $1) }
-            .compactMap { (isStoolLogEmpty, userProfileCharacter) in
-                var newProfileCharacter = userProfileCharacter
-                newProfileCharacter?.isActivated = isStoolLogEmpty
-                return newProfileCharacter
+            .withUnretained(self)
+            .map { `self`, stoolLogEntities in
+                self.homeUseCase.convertToStoolLogItems(from: stoolLogEntities)
             }
-            .bind(to: state.userProfileCharacter)
+            .bind(to: output.updateStoolLogs)
             .disposed(by: disposeBag)
         
         state.headerViewModel

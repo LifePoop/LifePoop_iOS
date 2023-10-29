@@ -53,8 +53,14 @@ public final class HomeViewController: LifePoopViewController, ViewType {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: StoolLogHeaderView.identifier
         )
+        collectionView.register(
+            StoolLogDateHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: StoolLogDateHeaderView.identifier
+        )
         collectionView.contentInset = UIEdgeInsets(top: .zero, left: .zero, bottom: 80, right: .zero)
         collectionView.refreshControl = stoolLogRefreshControl
+        collectionView.backgroundColor = ColorAsset.gray200.color
         collectionView.delegate = self
         return collectionView
     }()

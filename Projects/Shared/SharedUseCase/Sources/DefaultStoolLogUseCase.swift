@@ -24,8 +24,7 @@ public final class DefaultStoolLogUseCase: StoolLogUseCase {
     public init() { }
     
     public func fetchMyLast7DaysStoolLogs() -> Observable<[StoolLogEntity]> {
-        
-        tempUserInfoUseCase
+        return tempUserInfoUseCase
             .fetchUserInfo()
             .map { ($0.userId, $0.authInfo.accessToken) }
             .withUnretained(self)

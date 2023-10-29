@@ -90,6 +90,10 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
         
         input.viewDidLoad.accept(())
         
+        rx.finishLayoutSubviews
+            .bind(to: input.viewDidFinishLayoutSubviews)
+            .disposed(by: disposeBag)
+        
         cheeringButtonView.rx.tap
             .bind(to: input.cheeringButtonDidTap)
             .disposed(by: disposeBag)

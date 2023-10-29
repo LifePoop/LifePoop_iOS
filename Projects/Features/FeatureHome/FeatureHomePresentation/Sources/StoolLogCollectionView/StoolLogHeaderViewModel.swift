@@ -23,6 +23,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     public struct Input {
         let viewDidRefresh = PublishRelay<Void>()
         let viewDidLoad = PublishRelay<Void>()
+        let viewDidFinishLayoutSubviews = PublishRelay<Void>()
         let inviteFriendButtonDidTap = PublishRelay<Void>()
         let cheeringButtonDidTap = PublishRelay<Void>()
         let friendListCellDidTap = PublishRelay<IndexPath>()

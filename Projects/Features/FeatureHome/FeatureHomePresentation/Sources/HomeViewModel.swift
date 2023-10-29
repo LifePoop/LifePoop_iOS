@@ -6,6 +6,8 @@
 //  Copyright © 2023 LifePoop. All rights reserved.
 //
 
+import Foundation
+
 import RxRelay
 import RxSwift
 
@@ -27,9 +29,11 @@ public final class HomeViewModel: ViewModelType {
     }
     
     public struct Output {
+        let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
         let shouldStartRefreshIndicatorAnimation = PublishRelay<Bool>()
         let updateStoolLogs = PublishRelay<[StoolLogItem]>()
         let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
+        let headerViewDidFinishLayoutSubviews = PublishRelay<Void>()
         let showErrorMessage = PublishRelay<String>()
     }
     
@@ -53,6 +57,11 @@ public final class HomeViewModel: ViewModelType {
         
         // MARK: - Bind Input
         
+        input.viewDidLoad
+            .map { _ in true }
+            .bind(to: output.shouldLoadingIndicatorAnimating)
+            .disposed(by: disposeBag)
+        
         let viewDidLoadOrRefresh = Observable.merge(
             input.viewDidLoad.asObservable(),
             input.viewDidRefresh.asObservable()
@@ -68,6 +77,12 @@ public final class HomeViewModel: ViewModelType {
         
         fetchedFriends
             .compactMap { $0.element }
+            .bind(to: state.friends)
+            .disposed(by: disposeBag)
+        
+        fetchedFriends
+            .compactMap { $0.error }
+            .map { _ in [] }
             .bind(to: state.friends)
             .disposed(by: disposeBag)
         
@@ -91,16 +106,22 @@ public final class HomeViewModel: ViewModelType {
         
         fetchedStoolLogs
             .compactMap { $0.error }
+            .map { _ in [] }
+            .bind(to: state.stoolLogs)
+            .disposed(by: disposeBag)
+        
+        fetchedStoolLogs
+            .compactMap { $0.error }
             .toastMessageMap(to: .stoolLog(.fetchStoolLogFail))
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
         
-        Observable.merge(
+        Observable.zip(
             fetchedFriends.filter { $0.isStopEvent }.map { _ in },
             fetchedStoolLogs.filter { $0.isStopEvent }.map { _ in }
         )
         .map { _ in false }
-        .bind(to: output.shouldStartRefreshIndicatorAnimation)
+        .bind(to: output.shouldStartRefreshIndicatorAnimation, output.shouldLoadingIndicatorAnimating)
         .disposed(by: disposeBag)
         
         input.viewDidLoad
@@ -159,6 +180,10 @@ private extension HomeViewModel {
         
         state.friends
             .bind(to: stoolLogHeaderViewModel.state.friends)
+            .disposed(by: disposeBag)
+        
+        stoolLogHeaderViewModel.input.viewDidFinishLayoutSubviews
+            .bind(to: output.headerViewDidFinishLayoutSubviews)
             .disposed(by: disposeBag)
     }
 }

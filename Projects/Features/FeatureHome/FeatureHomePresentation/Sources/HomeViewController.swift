@@ -17,6 +17,13 @@ import Utils
 
 public final class HomeViewController: LifePoopViewController, ViewType {
     
+    private let loadingIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .large
+        return activityIndicator
+    }()
+    
     private let settingBarButtonItem = UIBarButtonItem(image: ImageAsset.iconSetting.original)
     private let reportBarButtonItem = UIBarButtonItem(image: ImageAsset.iconReport.original)
     
@@ -27,6 +34,7 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     }()
     
     private let stoolLogRefreshControl = UIRefreshControl()
+    
     private lazy var stoolLogCollectionViewDiffableDataSource = StoolLogCollectionViewDiffableDataSource(
         collectionView: stoolLogCollectionView
     )
@@ -62,11 +70,13 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         collectionView.refreshControl = stoolLogRefreshControl
         collectionView.backgroundColor = ColorAsset.gray200.color
         collectionView.delegate = self
+        collectionView.alpha = .zero
         return collectionView
     }()
     
     private let stoolLogButton: LifePoopButton = {
         let button = LifePoopButton()
+        button.alpha = .zero
         button.setTitle(LocalizableString.logStoolDiary, for: .normal)
         return button
     }()
@@ -76,6 +86,8 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         label.text = LocalizableString.checkedLast7DaysStoolLogs
         return label
     }()
+    
+    private let toastMessageLabel = ToastLabel()
     
     public var viewModel: HomeViewModel?
     private let disposeBag = DisposeBag()
@@ -109,10 +121,13 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: HomeViewModel) {
         let output = viewModel.output
         
-        output.shouldStartRefreshIndicatorAnimation
-            .bind(to: stoolLogRefreshControl.rx.isRefreshing)
+        output.shouldLoadingIndicatorAnimating
+            .distinctUntilChanged()
+            .bind(to: loadingIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
         
+        output.shouldStartRefreshIndicatorAnimation
+            .bind(to: stoolLogRefreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
         
         output.updateStoolLogs
@@ -123,6 +138,21 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         output.bindStoolLogHeaderViewModel
             .asSignal()
             .emit(onNext: stoolLogCollectionViewDiffableDataSource.bindStoolLogHeaderView)
+            .disposed(by: disposeBag)
+        
+        output.headerViewDidFinishLayoutSubviews
+            .debug()
+            .withUnretained(self)
+            .bind { `self`, _ in
+                self.changeHomeUIAlphaVisibleWithAnimation()
+                self.stoolLogCollectionViewDiffableDataSource.reapplyCurrentSnapshot()
+            }
+            .disposed(by: disposeBag)
+        
+        output.showErrorMessage
+            .asSignal()
+            .debug()
+            .emit(onNext: toastMessageLabel.show(message:)) // TODO: ToastLabel을 친구 코드 복사 화면의 것과 통일하기
             .disposed(by: disposeBag)
     }
     
@@ -137,9 +167,20 @@ public final class HomeViewController: LifePoopViewController, ViewType {
     
     public override func layoutUI() {
         super.layoutUI()
+        defer {
+            view.bringSubviewToFront(loadingIndicator)
+            view.bringSubviewToFront(toastMessageLabel)
+        }
+        
+        view.addSubview(loadingIndicator)
         view.addSubview(stoolLogCollectionView)
         view.addSubview(stoolLogButton)
         view.addSubview(footerLabel)
+        view.addSubview(toastMessageLabel)
+        
+        loadingIndicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         stoolLogCollectionView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
@@ -156,6 +197,13 @@ public final class HomeViewController: LifePoopViewController, ViewType {
              make.leading.trailing.equalToSuperview()
              make.bottom.equalTo(stoolLogButton.snp.top).offset(-24)
          }
+        
+        toastMessageLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(stoolLogButton.snp.top).offset(-16)
+        }
+    }
+}
 
 // MARK: - UICollectionViewDelegate Methods
 
@@ -170,5 +218,11 @@ extension HomeViewController: UICollectionViewDelegate {
 }
 
 private extension HomeViewController {
+    func changeHomeUIAlphaVisibleWithAnimation() {
+        UIView.animate(withDuration: 0.175) {
+            self.stoolLogCollectionView.alpha = 1.0
+            self.stoolLogButton.alpha = 1.0
+            self.view.layoutIfNeeded()
+        }
     }
 }

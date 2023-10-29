@@ -13,8 +13,6 @@ import RxSwift
 
 import CoreEntity
 import FeatureFriendListCoordinatorInterface
-import FeatureFriendListDIContainer
-import FeatureFriendListUseCase
 import Logger
 import Utils
 

@@ -11,12 +11,7 @@ import CoreAuthentication
 import CoreDIContainer
 import CoreNetworkService
 import CoreStorageService
-
-import FeatureFriendListDIContainer
-import FeatureFriendListRepository
-import FeatureFriendListUseCase
 import FeatureHomeDIContainer
-import FeatureHomeRepository
 import FeatureHomeUseCase
 import FeatureLoginDIContainer
 import FeatureLoginRepository
@@ -27,13 +22,9 @@ import FeatureReportUseCase
 import FeatureSettingDIContainer
 import FeatureSettingRepository
 import FeatureSettingUseCase
-import FeatureStoolLogDIContainer
-import FeatureStoolLogRepository
-import FeatureStoolLogUseCase
 import SharedDIContainer
 import SharedRepository
 import SharedUseCase
-
 import Utils
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -85,7 +76,6 @@ private extension SceneDelegate {
     }
 }
 
-
 // MARK: - Dependency Registration
 
 private extension SceneDelegate {
@@ -96,8 +86,6 @@ private extension SceneDelegate {
         registerHomeDependencies()
         registerSettingDependencies()
         registerReportDependencies()
-        registerFriendListDependencies()
-        registerStoolLogDependencies()
     }
     
     func registerCoreDependencies() {
@@ -133,16 +121,6 @@ private extension SceneDelegate {
     
     func registerSettingDependencies() {
         SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
-        SettingDIContainer.shared.register(service: ProfileEditUseCase.self) { MockProfileEditUseCase() }
-    }
-    
-    func registerFriendListDependencies() {
-        FriendListDIContainer.shared.register(service: FriendListUseCase.self) {
-            DefaultFriendListUseCase()
-        }
-        FriendListDIContainer.shared.register(service: FriendListRepository.self) {
-            DefaultFriendListRepository()
-        }
     }
     
     func registerReportDependencies() {
@@ -150,10 +128,6 @@ private extension SceneDelegate {
         ReportDIContainer.shared.register(service: ReportRepository.self) { MockReportRepository() }
     }
     
-    func registerStoolLogDependencies() {
-        StoolLogDIContainer.shared.register(service: StoolLogUseCase.self) { DefaultStoolLogUseCase() }
-        StoolLogDIContainer.shared.register(service: StoolLogRepository.self) { MockStoolLogRepository() }
-    }
 }
 
 // MARK: - UI Setup

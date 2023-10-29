@@ -112,12 +112,6 @@ public final class HomeViewController: LifePoopViewController, ViewType {
             .bind(to: stoolLogRefreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
         
-        output.shouldLayoutCheeringButton
-            .asSignal()
-            .withUnretained(self)
-            .emit { `self`, shouldLayoutCheeringButton in
-                self.updateStoolLogCollectionViewLayout(shouldLayoutCheeringButton: shouldLayoutCheeringButton)
-            }
             .disposed(by: disposeBag)
         
         output.updateStoolLogs
@@ -175,14 +169,5 @@ extension HomeViewController: UICollectionViewDelegate {
 }
 
 private extension HomeViewController {
-    func updateStoolLogCollectionViewLayout(shouldLayoutCheeringButton: Bool) {
-        let configuration = UICollectionViewCompositionalLayoutConfiguration()
-        let sectionLayout = StoolLogCollectionViewSectionLayout(shouldLayoutCheeringButton: shouldLayoutCheeringButton)
-        let compositionalLayout = UICollectionViewCompositionalLayout(
-            sectionProvider: sectionLayout.sectionProvider,
-            configuration: configuration
-        )
-        self.stoolLogCollectionView.collectionViewLayout = compositionalLayout
-        self.stoolLogCollectionView.contentOffset = .zero
     }
 }

@@ -31,7 +31,6 @@ public final class HomeViewModel: ViewModelType {
         let shouldStartRefreshIndicatorAnimation = PublishRelay<Bool>()
         let updateStoolLogs = PublishRelay<[StoolLogItem]>()
         let isFriendEmpty = PublishRelay<Bool>()
-        let shouldLayoutCheeringButton = PublishRelay<Bool>()
         let bindStoolLogHeaderViewModel = PublishRelay<StoolLogHeaderViewModel>()
         let showErrorMessage = PublishRelay<String>()
     }

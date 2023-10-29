@@ -65,7 +65,7 @@
 "whyAreYouDissatisfied" = "불만족한 이유를 알려주세요!";
 "yesSatisfied" = "네, 만족해요";
 "noDissatisfied" = "아니요, 불만족해요";
-
+"checkedLast7DaysStoolLogs" = "최근 7일간의 변 기록을 모두 확인했어요!";
 
 /* 친구 목록 */
 "friendsList" = "친구 목록";
@@ -107,7 +107,6 @@
 "doneCheeringWithBoost" = "친구에게 응원을 전달했어요!";
 "boost" = "힘주기";
 "doneBoost" = "힘주기 완료";
-
 
 
 /* 설정 */

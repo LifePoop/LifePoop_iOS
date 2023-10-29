@@ -55,6 +55,7 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         )
         collectionView.contentInset = UIEdgeInsets(top: .zero, left: .zero, bottom: 80, right: .zero)
         collectionView.refreshControl = stoolLogRefreshControl
+        collectionView.delegate = self
         return collectionView
     }()
     
@@ -62,6 +63,12 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         let button = LifePoopButton()
         button.setTitle(LocalizableString.logStoolDiary, for: .normal)
         return button
+    }()
+    
+    private let footerLabel: AlphaChangingFooterLabel = {
+        let label = AlphaChangingFooterLabel()
+        label.text = LocalizableString.checkedLast7DaysStoolLogs
+        return label
     }()
     
     public var viewModel: HomeViewModel?
@@ -137,6 +144,7 @@ public final class HomeViewController: LifePoopViewController, ViewType {
         super.layoutUI()
         view.addSubview(stoolLogCollectionView)
         view.addSubview(stoolLogButton)
+        view.addSubview(footerLabel)
         
         stoolLogCollectionView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
@@ -148,6 +156,21 @@ public final class HomeViewController: LifePoopViewController, ViewType {
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-12)
         }
+        
+        footerLabel.snp.makeConstraints { make in
+             make.leading.trailing.equalToSuperview()
+             make.bottom.equalTo(stoolLogButton.snp.top).offset(-24)
+         }
+
+// MARK: - UICollectionViewDelegate Methods
+
+extension HomeViewController: UICollectionViewDelegate {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let frameHeight = scrollView.frame.height
+        
+        footerLabel.adjustAlphaBasedOnOffset(offsetY, contentHeight: contentHeight, frameHeight: frameHeight)
     }
 }
 

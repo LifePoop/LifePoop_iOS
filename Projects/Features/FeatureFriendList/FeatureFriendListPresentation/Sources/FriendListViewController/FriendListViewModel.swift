@@ -13,9 +13,9 @@ import RxSwift
 
 import CoreEntity
 import FeatureFriendListCoordinatorInterface
+import FeatureFriendListDIContainer
+import FeatureFriendListUseCase
 import Logger
-import SharedDIContainer
-import SharedUseCase
 import Utils
 
 public final class FriendListViewModel: ViewModelType {
@@ -42,7 +42,7 @@ public final class FriendListViewModel: ViewModelType {
     public let output = Output()
     public let state = State()
     
-    @Inject(SharedDIContainer.shared) private var friendListUseCase: FriendListUseCase
+    @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
     
     private weak var coordinator: FriendListCoordinator?
     private var disposeBag = DisposeBag()

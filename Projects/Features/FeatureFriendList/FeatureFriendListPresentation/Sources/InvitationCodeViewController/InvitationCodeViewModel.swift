@@ -13,9 +13,9 @@ import RxSwift
 
 import CoreEntity
 import FeatureFriendListCoordinatorInterface
+import FeatureFriendListDIContainer
+import FeatureFriendListUseCase
 import Logger
-import SharedDIContainer
-import SharedUseCase
 import Utils
 
 public final class InvitationCodeViewModel: ViewModelType {
@@ -71,7 +71,7 @@ public final class InvitationCodeViewModel: ViewModelType {
     
     private (set)var invitationCode: String = ""
     
-    @Inject(SharedDIContainer.shared) private var friendListUseCase: FriendListUseCase
+    @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
     
     private var disposeBag = DisposeBag()
     

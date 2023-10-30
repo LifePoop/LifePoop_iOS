@@ -11,14 +11,16 @@ import Foundation
 import RxSwift
 
 import CoreEntity
+import FeatureFriendListDIContainer
 import Logger
 import SharedDIContainer
+import SharedUseCase
 import Utils
 
 public final class DefaultFriendListUseCase: FriendListUseCase {
     
     @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
-    @Inject(SharedDIContainer.shared) private var friendListRepository: FriendListRepository
+    @Inject(FriendListDIContainer.shared) private var friendListRepository: FriendListRepository
     
     public init() { }
     

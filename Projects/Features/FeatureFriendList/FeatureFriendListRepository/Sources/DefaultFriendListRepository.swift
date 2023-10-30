@@ -13,8 +13,8 @@ import RxSwift
 import CoreDIContainer
 import CoreEntity
 import CoreNetworkService
+import FeatureFriendListUseCase
 import Logger
-import SharedUseCase
 import Utils
 
 public final class DefaultFriendListRepository: NSObject, FriendListRepository {

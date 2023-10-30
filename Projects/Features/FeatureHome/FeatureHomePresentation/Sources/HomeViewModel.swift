@@ -38,6 +38,7 @@ public final class HomeViewModel: ViewModelType {
     }
     
     public struct State {
+        let cheeringInfo = BehaviorRelay<CheeringInfoEntity?>(value: nil)
         let friends = BehaviorRelay<[FriendEntity]>(value: [])
         let stoolLogs = BehaviorRelay<[StoolLogEntity]>(value: [])
         let headerViewModel = BehaviorRelay<StoolLogHeaderViewModel?>(value: nil)
@@ -67,6 +68,24 @@ public final class HomeViewModel: ViewModelType {
             input.viewDidRefresh.asObservable()
         )
         .share()
+        
+        let cheeringInfo = viewDidLoadOrRefresh
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.homeUseCase.fetchCheeringInfo(at: Date().dateString)
+            }
+            .share()
+        
+        cheeringInfo
+            .compactMap { $0.element }
+            .bind(to: state.cheeringInfo)
+            .disposed(by: disposeBag)
+        
+        cheeringInfo
+            .compactMap { $0.error }
+            .toastMessageMap(to: .cheeringInfo(.fetchCheeringInfoFail))
+            .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
         
         let fetchedFriends = viewDidLoadOrRefresh
             .withUnretained(self)
@@ -117,6 +136,7 @@ public final class HomeViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         Observable.zip(
+            cheeringInfo.filter { $0.isStopEvent }.map { _ in },
             fetchedFriends.filter { $0.isStopEvent }.map { _ in },
             fetchedStoolLogs.filter { $0.isStopEvent }.map { _ in }
         )
@@ -176,6 +196,10 @@ private extension HomeViewModel {
     func bind(stoolLogHeaderViewModel: StoolLogHeaderViewModel) {
         input.viewDidRefresh
             .bind(to: stoolLogHeaderViewModel.input.viewDidRefresh)
+            .disposed(by: disposeBag)
+        
+        state.cheeringInfo
+            .bind(to: stoolLogHeaderViewModel.state.cheeringInfo)
             .disposed(by: disposeBag)
         
         state.friends

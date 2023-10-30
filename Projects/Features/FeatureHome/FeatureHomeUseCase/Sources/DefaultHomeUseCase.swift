@@ -21,7 +21,7 @@ public final class DefaultHomeUseCase: HomeUseCase {
     
     @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     @Inject(SharedDIContainer.shared) private var stoolLogUseCase: StoolLogUseCase
-    @Inject(SharedDIContainer.shared) private var friendListRepository: FriendListRepository
+    @Inject(HomeDIContainer.shared) private var friendListRepository: HomeRepository
     
     public init() { }
     

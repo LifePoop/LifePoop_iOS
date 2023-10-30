@@ -13,8 +13,8 @@ import RxSwift
 
 import CoreEntity
 import FeatureStoolLogCoordinatorInterface
-import FeatureStoolLogDIContainer
-import FeatureStoolLogUseCase
+import SharedDIContainer
+import SharedUseCase
 import Logger
 import Utils
 
@@ -50,7 +50,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
     public let output = Output()
     public let state: State
     
-    @Inject(StoolLogDIContainer.shared) private var stoolLogUseCase: StoolLogUseCase
+    @Inject(SharedDIContainer.shared) private var stoolLogUseCase: StoolLogUseCase
     
     private weak var coordinator: StoolLogCoordinator?
     private var disposeBag = DisposeBag()
@@ -139,8 +139,9 @@ public final class SatisfactionDetailViewModel: ViewModelType {
         
         let stoolLogPostResult = newStoolLog
             .withUnretained(self)
-            .flatMapCompletableMaterialized { `self`, newStoolLog in
-                self.stoolLogUseCase.post(stoolLog: newStoolLog)
+            .flatMapMaterialized { `self`, newStoolLog in
+                dump(newStoolLog)
+                return self.stoolLogUseCase.postStoolLog(stoolLogEntity: newStoolLog)
             }
             .share()
         
@@ -157,8 +158,7 @@ public final class SatisfactionDetailViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         stoolLogPostResult
-            .filter { $0.isCompleted }
-            .withLatestFrom(newStoolLog)
+            .compactMap { $0.element }
             .withLatestFrom(state.stoolLogs) { ($0, $1) }
             .map { (newStoolLog, existingStoolLogs) -> [StoolLogEntity] in
                 var newStoolLogs = existingStoolLogs

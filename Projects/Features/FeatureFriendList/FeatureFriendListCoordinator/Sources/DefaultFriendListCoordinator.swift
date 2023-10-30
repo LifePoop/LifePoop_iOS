@@ -39,6 +39,8 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
     public func coordinate(by coordinateAction: FriendListCoordinateAction) {
         DispatchQueue.main.async { [weak self] in
             switch coordinateAction {
+            case .showFriendsStoolLog(let friendEntity):
+                self?.showFriendStoolLogViewController(of: friendEntity)
             case .showFirendList:
                 self?.showFriendListViewController()
             case .showFriendInvitation(let toastMessageStream, let friendListUpdateStream):
@@ -64,10 +66,19 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
 }
 
 private extension DefaultFriendListCoordinator {
-    
     func showFriendListViewController() {
         let viewModel = FriendListViewModel(coordinator: self)
         let viewController = FriendListViewController()
+        viewController.bind(viewModel: viewModel)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    func showFriendStoolLogViewController(of friendEntity: FriendEntity) {
+        let viewModel = FriendStoolLogViewModel(
+            coordinator: self,
+            friendEntity: friendEntity
+        )
+        let viewController = FriendStoolLogViewController()
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
     }
@@ -76,7 +87,6 @@ private extension DefaultFriendListCoordinator {
         toastMessageStream: PublishRelay<String>,
         friendListUpdateStream: PublishRelay<Void>
     ) {
-        
         let invitationViewController = FrinedInvitationViewController()
         let invitationViewModel = FriendInvitationViewModel(
             coordinator: self,

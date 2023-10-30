@@ -13,13 +13,13 @@ public struct UserAuthInfoEntity: Codable {
     public let loginType: LoginType?
     public let accessToken: String
     public let refreshToken: String
-
+    
     enum CodingKeys: String, CodingKey {
         case loginType
         case accessToken
         case refreshToken
     }
-
+    
     public init(loginType: LoginType, accessToken: String, refreshToken: String) {
         self.loginType = loginType
         self.accessToken = accessToken
@@ -37,10 +37,9 @@ public struct UserAuthInfoEntity: Codable {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
+        
         try container.encode(loginType?.rawValue ?? "", forKey: .loginType)
         try container.encode(accessToken, forKey: .accessToken)
         try container.encode(refreshToken, forKey: .refreshToken)
     }
-
 }

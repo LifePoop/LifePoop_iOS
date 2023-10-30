@@ -15,7 +15,6 @@ public enum LifePoopTarget {
 }
 
 extension LifePoopTarget: TargetType {
-    
     public var baseURL: URL? {
         switch self {
         case .fetchTempCode, .fetchAccessToken:

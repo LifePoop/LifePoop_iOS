@@ -31,9 +31,9 @@ public struct StoolLogEntity {
         self.size = size
     }
     
-    public init(postID: Int?, stoolLogEntity: StoolLogEntity) {
+    public init(postID: Int?, date: Date, stoolLogEntity: StoolLogEntity) {
         self.postID = postID
-        self.date = stoolLogEntity.date
+        self.date = date
         self.isSatisfied = stoolLogEntity.isSatisfied
         self.color = stoolLogEntity.color
         self.shape = stoolLogEntity.shape

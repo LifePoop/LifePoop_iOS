@@ -10,7 +10,7 @@ import Foundation
 
 public enum ToastMessage {
     case auth(Auth)
-    case home(Home)
+    case friendList(FriendList)
     case stoolLog(StoolLog)
     case setting(Setting)
     case invitation(Invitation)
@@ -24,19 +24,19 @@ public enum ToastMessage {
             case .fetchAccessTokenFail:
                 return LocalizableString.toastFetchAccessTokenFail
             }
-        case .home(let home):
-            switch home {
+        case .friendList(let friendList):
+            switch friendList {
             case .fetchFriendListSuccess:
                 return LocalizableString.toastFetchFriendListSuccess
             case .fetchFriendListFail:
                 return LocalizableString.toastFetchFriendListFail
+            }
+        case .stoolLog(let stoolLog):
+            switch stoolLog {
             case .fetchStoolLogSuccess:
                 return LocalizableString.toastFetchStoolLogSuccess
             case .fetchStoolLogFail:
                 return LocalizableString.toastFetchStoolLogFail
-            }
-        case .stoolLog(let stoolLog):
-            switch stoolLog {
             case .postStoolLogSuccess:
                 return LocalizableString.toastPostStoolLogSuccess
             case .postStoolLogFail:
@@ -86,16 +86,16 @@ public extension ToastMessage {
 }
 
 public extension ToastMessage {
-    enum Home {
+    enum FriendList {
         case fetchFriendListSuccess
         case fetchFriendListFail
-        case fetchStoolLogSuccess
-        case fetchStoolLogFail
     }
 }
 
 public extension ToastMessage {
     enum StoolLog {
+        case fetchStoolLogSuccess
+        case fetchStoolLogFail
         case postStoolLogSuccess
         case postStoolLogFail
     }

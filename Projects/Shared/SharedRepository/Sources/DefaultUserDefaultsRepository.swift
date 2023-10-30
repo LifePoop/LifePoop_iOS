@@ -8,10 +8,10 @@
 
 import Foundation
 
+import RxSwift
+
 import SharedUseCase
 import Utils
-
-import RxSwift
 
 public final class DefaultUserDefaultsRepository: UserDefaultsRepository {
     

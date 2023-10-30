@@ -16,6 +16,8 @@ let project = Project.makeModule(
         .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.Features(.FriendList, .DIContainer)).dependency,
         .Project.module(.Logger).dependency,
+        .Project.module(.Shared(.SharedDIContainer)).dependency,
+        .Project.module(.Shared(.SharedUseCase)).dependency,
         .Project.module(.Utils).dependency,
         .SPM.RxSwift.dependency
     ]

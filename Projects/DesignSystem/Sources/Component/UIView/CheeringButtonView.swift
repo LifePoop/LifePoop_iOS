@@ -12,7 +12,7 @@ import SnapKit
 
 public final class CheeringButtonView: ShadowView {
     
-    private let imageView: UIImageView = {
+    private let cheeringFriendImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = ImageAsset.cheeringFriends.original
         imageView.contentMode = .scaleAspectFit
@@ -28,7 +28,7 @@ public final class CheeringButtonView: ShadowView {
     
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = DesignSystemStrings.goCheeringFriends
+        label.text = DesignSystemStrings.goToFriendList
         label.adjustsFontSizeToFitWidth = true
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
@@ -47,6 +47,7 @@ public final class CheeringButtonView: ShadowView {
         stackView.axis = .vertical
         stackView.spacing = 6
         stackView.alignment = .leading
+        stackView.distribution = .equalSpacing
         return stackView
     }()
     
@@ -62,9 +63,14 @@ public final class CheeringButtonView: ShadowView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    public func configureLabel(text: String) {
-        titleLabel.text = text
+}
+
+// MARK: - Public Methods
+
+public extension CheeringButtonView {
+    func toggleCheeringFriendImage(by isCheeringFriendEmpty: Bool) {
+        let image = isCheeringFriendEmpty ? ImageAsset.cheeringFriends.original : ImageAsset.emptyThreeDots.original
+        cheeringFriendImageView.image = image
     }
 }
 
@@ -82,25 +88,20 @@ private extension CheeringButtonView {
 
 private extension CheeringButtonView {
     func layoutUI() {
-        addSubview(imageView)
+        addSubview(cheeringFriendImageView)
         addSubview(titleStackView)
         addSubview(expandRightImageView)
         addSubview(containerButton)
         
-        snp.makeConstraints { make in
-            make.height.equalTo(80)
-        }
-        
-        imageView.snp.makeConstraints { make in
+        cheeringFriendImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
-            make.centerY.equalTo(titleLabel)
-            make.width.equalTo(42)
-            make.height.equalTo(24)
+            make.top.equalTo(titleStackView)
         }
         
         titleStackView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalTo(imageView.snp.trailing).offset(12)
+            make.top.equalToSuperview().offset(17.5)
+            make.bottom.equalToSuperview().inset(20.5)
+            make.leading.equalTo(cheeringFriendImageView.snp.trailing).offset(12)
             make.trailing.equalToSuperview().inset(20)
         }
         

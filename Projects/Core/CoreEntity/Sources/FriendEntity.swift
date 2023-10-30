@@ -15,8 +15,8 @@ public struct FriendEntity {
     public var isActivated: Bool
     public let profile: ProfileCharacter
     
-    public init(id: Int, nickname: String, isActivated: Bool, profile: ProfileCharacter) {
-        self.id = 1
+    public init(id: Int = 0, nickname: String, isActivated: Bool, profile: ProfileCharacter) {
+        self.id = id
         self.nickname = nickname
         self.isActivated = isActivated
         self.profile = profile
@@ -24,7 +24,7 @@ public struct FriendEntity {
     
     // FIXME: API 연동 후 더미데이터 제거해야 함
     public init(nickname: String, isActivated: Bool, profile: ProfileCharacter) {
-        self.id = 1
+        self.id = 0
         self.nickname = nickname
         self.isActivated = isActivated
         self.profile = profile

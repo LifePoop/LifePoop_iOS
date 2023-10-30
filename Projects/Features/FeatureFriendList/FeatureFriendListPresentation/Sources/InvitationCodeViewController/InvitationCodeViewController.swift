@@ -60,27 +60,32 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
         let output = viewModel.output
         
         output.dismissAlertView
-            .bind(with: self, onNext: { `self`, _ in
+            .asSignal()
+            .emit(with: self, onNext: { `self`, _ in
                 self.dismissEnteringCodePopup()
             })
             .disposed(by: disposeBag)
         
         output.showInvitationCodePopup
-            .bind(with: self, onNext: { `self`, _ in
+            .asSignal()
+            .emit(with: self, onNext: { `self`, _ in
                 self.showEnteringCodePopup()
             })
             .disposed(by: disposeBag)
         
         output.enableConfirmButton
-            .bind(to: textFieldAlertView.rx.isConfirmButtonEnabled)
+            .asSignal()
+            .emit(to: textFieldAlertView.rx.isConfirmButtonEnabled)
             .disposed(by: disposeBag)
         
         output.hideWarningLabel
-            .bind(to: textFieldAlertView.rx.isWarningLabelhidden)
+            .asSignal()
+            .emit(to: textFieldAlertView.rx.isWarningLabelhidden)
             .disposed(by: disposeBag)
         
         output.showSharingActivityView
-            .bind(with: self, onNext: { `self`, _ in
+            .asSignal()
+            .emit(with: self, onNext: { `self`, _ in
                 self.showSharingPopup()
             })
             .disposed(by: disposeBag)
@@ -110,6 +115,9 @@ private extension InvitationCodeViewController {
     }
     
     func showSharingPopup() {
+        
+        // FIXME: TODO 주석에 따라 invitationCode가 비어있을 경우 크래쉬 발생!! 수정 필요
+        
         // TODO: 초대코드 존재하지 않을 경우 별도 표시해야 함
         guard let invitationCode = viewModel?.invitationCode,
               !invitationCode.isEmpty else { return }

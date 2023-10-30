@@ -82,6 +82,30 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .bind(to: output.isFriendEmpty)
             .disposed(by: disposeBag)
         
+        viewDidLoadOrRefresh
+            .withLatestFrom(state.cheeringInfo)
+            .compactMap { $0 }
+            .filter { $0.count > .zero }
+            .map { ($0.firstFriendProfileCharacter, $0.secondFriendProfileCharacter) }
+            .bind(to: output.updateCheeringProfileCharacters)
+            .disposed(by: disposeBag)
+        
+        viewDidLoadOrRefresh
+            .withLatestFrom(state.cheeringInfo)
+            .compactMap { $0 }
+            .filter { $0.count > .zero }
+            .map { (name: $0.friendName ?? "", count: $0.extraCount) }
+            .bind(to: output.updateCheeringFriendNameAndCount)
+            .disposed(by: disposeBag)
+        
+        viewDidLoadOrRefresh
+            .withLatestFrom(state.cheeringInfo)
+            .compactMap { $0 }
+            .filter { $0.count == .zero }
+            .map { _ in }
+            .bind(to: output.showEmptyCheeringInfo)
+            .disposed(by: disposeBag)
+        
         let friendListCellIndex = input.friendListCellDidTap
             .map { $0.item }
             .share()
@@ -107,37 +131,6 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         )
         .bind { coordinator?.coordinate(by: .cheeringButtonDidTap) }
         .disposed(by: disposeBag)
-        
-        state.cheeringInfo
-            .compactMap { $0 }
-            .filter { $0.count > .zero }
-            .map { ($0.firstFriendProfileCharacter, $0.secondFriendProfileCharacter) }
-            .bind(to: output.updateCheeringProfileCharacters)
-            .disposed(by: disposeBag)
-        
-        state.cheeringInfo
-            .compactMap { $0 }
-            .filter { $0.count > .zero }
-            .map { (name: $0.friendName ?? "", count: $0.extraCount) }
-            .bind(to: output.updateCheeringFriendNameAndCount)
-            .disposed(by: disposeBag)
-        
-        state.cheeringInfo
-            .compactMap { $0 }
-            .filter { $0.count == .zero }
-            .map { _ in }
-            .bind(to: output.showEmptyCheeringInfo)
-            .disposed(by: disposeBag)
-        
-        state.friends
-            .compactMap { $0 }
-            .bind(to: output.updateFriends)
-            .disposed(by: disposeBag)
-        
-        state.friends
-            .map { $0.isEmpty }
-            .bind(to: output.isFriendEmpty)
-            .disposed(by: disposeBag)
     }
     
     deinit {

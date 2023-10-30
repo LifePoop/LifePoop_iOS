@@ -11,8 +11,12 @@ import CoreAuthentication
 import CoreDIContainer
 import CoreNetworkService
 import CoreStorageService
+import FeatureFriendListDIContainer
+import FeatureFriendListRepository
+import FeatureFriendListUseCase
 import FeatureHomeDIContainer
 import FeatureHomeUseCase
+import FeatureHomeRepository
 import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
@@ -86,6 +90,7 @@ private extension SceneDelegate {
         registerHomeDependencies()
         registerSettingDependencies()
         registerReportDependencies()
+        registerFriendListDependencies()
     }
     
     func registerCoreDependencies() {
@@ -105,8 +110,6 @@ private extension SceneDelegate {
         SharedDIContainer.shared.register(service: AutoLoginUseCase.self) { DefaultAutoLoginUseCase() }
         SharedDIContainer.shared.register(service: FeedVisibilityUseCase.self) { DefaultFeedVisibilityUseCase() }
         SharedDIContainer.shared.register(service: ProfileCharacterUseCase.self) { DefaultProfileCharacterUseCase() }
-        SharedDIContainer.shared.register(service: FriendListUseCase.self) { DefaultFriendListUseCase() }
-        SharedDIContainer.shared.register(service: FriendListRepository.self) { DefaultFriendListRepository() }
         SharedDIContainer.shared.register(service: StoolLogUseCase.self) { DefaultStoolLogUseCase() }
         SharedDIContainer.shared.register(service: StoolLogRepository.self) { DefaultStoolLogRepository() }
         SharedDIContainer.shared.register(service: CheeringInfoUseCase.self) { DefaultCheeringInfoUseCase() }
@@ -127,6 +130,7 @@ private extension SceneDelegate {
     
     func registerHomeDependencies() {
         HomeDIContainer.shared.register(service: HomeUseCase.self) { DefaultHomeUseCase() }
+        HomeDIContainer.shared.register(service: HomeRepository.self) { DefaultHomeRepository() }
     }
     
     func registerSettingDependencies() {
@@ -142,6 +146,11 @@ private extension SceneDelegate {
         
         // FIXME: MockRepository -> 실제 Repository 주입하도록 변경
         ReportDIContainer.shared.register(service: ReportRepository.self) { MockReportRepository() }
+    }
+    
+    func registerFriendListDependencies() {
+        FriendListDIContainer.shared.register(service: FriendListUseCase.self) { DefaultFriendListUseCase() }
+        FriendListDIContainer.shared.register(service: FriendListRepository.self) { DefaultFriendListRepository() }
     }
 }
 

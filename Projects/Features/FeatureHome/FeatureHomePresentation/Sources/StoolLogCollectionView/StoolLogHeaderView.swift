@@ -147,6 +147,11 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
             .asSignal()
             .emit(onNext: cheeringButtonView.updateCheeringFriend)
             .disposed(by: disposeBag)
+        
+        output.showEmptyCheeringInfo
+            .asSignal()
+            .emit(onNext: cheeringButtonView.showEmptyCheeringFriendImage)
+            .disposed(by: disposeBag)
     }
 }
 

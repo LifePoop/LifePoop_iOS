@@ -11,6 +11,11 @@ import Foundation
 import CoreEntity
 import RxSwift
 
+public enum UserInfoError: Error {
+    case refreshingTokenFailed
+    case refreshingUserInfoFailed
+}
+
 public protocol UserInfoUseCase: AnyObject {
     
     /** 기기에 저장된 사용자 정보 조회*/
@@ -19,4 +24,8 @@ public protocol UserInfoUseCase: AnyObject {
     func refreshAuthInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool>
     /** 기존 사용자 정보 업데이트(서버 동기화)*/
     func fetchUserInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool>
+    /** 로그아웃 요청 */
+    func requestLogout() -> Observable<Bool>
+    /** 애플 탈퇴 요청*/
+    func requestAccountWithdrawl(for loginType: LoginType) -> Observable<Bool>
 }

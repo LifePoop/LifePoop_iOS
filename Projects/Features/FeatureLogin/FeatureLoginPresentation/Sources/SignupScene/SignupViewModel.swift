@@ -54,9 +54,9 @@ public final class SignupViewModel: ViewModelType {
             descriptionText: LocalizableString.agreeToAllTerms,
             descriptionTextSize: .large
         ))
-        let shouldSelectGender = PublishRelay<GenderType>()
-        let shouldShowDetailView = PublishRelay<DocumentType>()
-        let shouldSelectAllConditions = PublishRelay<Bool>()
+        let selectGender = PublishRelay<GenderType>()
+        let showDetailView = PublishRelay<DocumentType>()
+        let selectAllConditions = PublishRelay<Bool>()
         let activateNextButton = BehaviorRelay<Bool>(value: false)
     }
     
@@ -101,7 +101,11 @@ public final class SignupViewModel: ViewModelType {
             .map { `self`, entities in
                 entities.map {
                     let cellViewModel = ConditionSelectionCellViewModel(entity: $0)
-                    self.bindCellViewModelToParent(cellViewModel, with: self.disposeBag)
+                    self.bindCellViewModelToParent(
+                        cellViewModel,
+                        numberOfConditions: entities.count,
+                        disposeBag: self.disposeBag
+                    )
                     
                     return cellViewModel
                 }
@@ -138,22 +142,22 @@ public final class SignupViewModel: ViewModelType {
                 (isSelected: !$0, cellViewModels: $1)
             }
             .bind(onNext: { [weak self] isSelected, cellViewModels in
-                self?.output.shouldSelectAllConditions.accept(isSelected)
+                self?.output.selectAllConditions.accept(isSelected)
                 
                 cellViewModels.forEach {
-                    $0.output.shouldSelectCheckBox.accept(isSelected)
+                    $0.output.selectCheckBox.accept(isSelected)
                 }
             })
             .disposed(by: disposeBag)
         
         input.didTapGenderButton
             .map { GenderType.allCases[$0] }
-            .bind(to: output.shouldSelectGender)
+            .bind(to: output.selectGender)
             .disposed(by: disposeBag)
 
         input.didTapLeftBarbutton
             .bind(onNext: { _ in
-                coordinator.coordinate(by: .shouldPopCurrentScene)
+                coordinator.coordinate(by: .popCurrentScene)
             })
             .disposed(by: disposeBag)
         
@@ -161,7 +165,7 @@ public final class SignupViewModel: ViewModelType {
             .combineLatest(
                 input.didEnterNickname,
                 input.didEnterBirthDate,
-                output.shouldSelectGender,
+                output.selectGender,
                 state.selectedConditions
             )
             .map {(nickname: $0, birthDate: $1, gender: $2, conditions: $3)}
@@ -202,14 +206,15 @@ public final class SignupViewModel: ViewModelType {
             }
             .bind(onNext: { isSuccess in
                 guard isSuccess else { return }
-                coordinator.coordinate(by: .shouldFinishLoginFlow)
+                coordinator.coordinate(by: .finishLoginFlow)
             })
             .disposed(by: disposeBag)
     }
     
     private func bindCellViewModelToParent(
         _ cellViewModel: ConditionSelectionCellViewModel,
-        with disposeBag: DisposeBag
+        numberOfConditions: Int,
+        disposeBag: DisposeBag
     ) {
         
         cellViewModel.input.didTapDetailButton
@@ -229,18 +234,18 @@ public final class SignupViewModel: ViewModelType {
             }
             .bind(onNext: { [weak self] title, detailText in
                 let coordinator = self?.coordinator
-                coordinator?.coordinate(by: .shouldShowDetailForm(title: title, detailText: detailText))
+                coordinator?.coordinate(by: .showDetailForm(title: title, detailText: detailText))
             })
             .disposed(by: disposeBag)
 
         cellViewModel.input.didTapCheckBox
-            .withLatestFrom(cellViewModel.output.shouldSelectCheckBox)
+            .withLatestFrom(cellViewModel.output.selectCheckBox)
             .map { !$0 }
-            .bind(to: cellViewModel.output.shouldSelectCheckBox)
+            .bind(to: cellViewModel.output.selectCheckBox)
             .disposed(by: self.disposeBag)
         
-        let selectedConditions = cellViewModel.output.shouldSelectCheckBox
-            .withLatestFrom(state.selectedConditions) { ($0, $1)}
+        let selectedConditions = cellViewModel.output.selectCheckBox
+            .withLatestFrom(state.selectedConditions) { ($0, $1) }
             .map { shouldSelect, selectedConditions in
                 let condition = cellViewModel.entity
                 var selectedConditions = selectedConditions
@@ -261,8 +266,8 @@ public final class SignupViewModel: ViewModelType {
         
         selectedConditions
             .bind(onNext: { [weak self] selectedConditions in
-                let isEveryConditionsSelected = selectedConditions.count == 4
-                self?.output.shouldSelectAllConditions.accept(isEveryConditionsSelected)
+                let isEveryConditionsSelected = selectedConditions.count == numberOfConditions
+                self?.output.selectAllConditions.accept(isEveryConditionsSelected)
             })
             .disposed(by: disposeBag)
     }

@@ -11,6 +11,11 @@ import Foundation
 import CoreEntity
 import RxSwift
 
+public enum UserInfoError: Error {
+    case refreshingTokenFailed
+    case refreshingUserInfoFailed
+}
+
 public protocol UserInfoUseCase: AnyObject {
     
     /** 기기에 저장된 사용자 정보 조회*/

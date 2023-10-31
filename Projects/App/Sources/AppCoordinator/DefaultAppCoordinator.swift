@@ -29,6 +29,7 @@ public final class DefaultAppCoordinator: AppCoordinator {
     
     public func start() {
         coordinate(by: .appDidStart)
+        addNotificationObservers()
     }
     
     public func coordinate(by coordinateAction: AppCoordinateAction) {
@@ -92,7 +93,20 @@ extension DefaultAppCoordinator: HomeCoordinatorCompletionDelegate {
     }
 }
 
+// MARK: NotificationCenter
+
 private extension DefaultAppCoordinator {
+    
+    func addNotificationObservers() {
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resetAllChildCoordinators),
+            name: .resetLogin,
+            object: nil
+        )
+    }
+    
     @objc func resetAllChildCoordinators() {
         if childCoordinatorMap.keys.contains(.login) {
             return

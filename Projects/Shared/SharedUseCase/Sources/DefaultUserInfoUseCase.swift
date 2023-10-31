@@ -16,11 +16,6 @@ import Utils
 
 public final class DefaultUserInfoUseCase: UserInfoUseCase {
     
-    enum UserInfoError: Error {
-        case refreshingTokenFailed
-        case refreshingUserInfoFailed
-    }
-    
     @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
     @Inject(SharedDIContainer.shared) private var userInfoRepository: UserInfoRepository
@@ -47,7 +42,7 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
                 )
             })
     }
-    
+
     public func refreshAuthInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool> {
         userInfoRepository.requestRefreshingUserAuthInfo(with: authInfo)
             .do(onSuccess: { updatedAuthInfo in
@@ -83,7 +78,7 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
                 )
             }
             .withUnretained(self)
-            .flatMap { `self`, updatedUserInfo in
+            .concatMap { `self`, updatedUserInfo in
                 self.saveUserInfo(updatedUserInfo)
                     .andThen(Observable.just(true))
                     .catchAndReturn(false)
@@ -92,8 +87,10 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
                 guard let `self` = self else {
                     return Observable.just(false)
                 }
+
+                NotificationCenter.default.post(name: .resetLogin, object: nil)
                 
-                return self.clearUserInfoIfNeeded()
+                return self.removeUserInfo().andThen(Observable.just(false))
             }
     }
     
@@ -202,21 +199,15 @@ private extension DefaultUserInfoUseCase {
             .logErrorIfDetected(category: .authentication)
     }
     
-    func removeUserInfo(_ userInfo: UserInfoEntity?) -> Completable {
-        guard let userInfo = userInfo else {
-            return .empty()
-        }
+    func removeUserInfo() -> Completable {
         
         Logger.log(
             message: """
             기존 사용자정보 제거
-            nickname: \(userInfo.nickname)
-            loginType: \(userInfo.authInfo.loginType?.description ?? "")
             """,
             category: .authentication,
             type: .debug
         )
-        
         return keyChainRepository
             .removeObjectFromKeyChain(forKey: .userAuthInfo)
             .concat(userDefaultsRepository.removeValue(for: .userNickname))

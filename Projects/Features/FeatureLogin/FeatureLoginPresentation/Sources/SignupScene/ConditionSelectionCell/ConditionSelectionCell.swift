@@ -72,11 +72,11 @@ final class ConditionSelectionCell: UICollectionViewCell {
     func bind(to viewModel: ConditionSelectionCellViewModel, withIndexOf index: Int) {
         disposeBag = DisposeBag()
         
-        viewModel.output.shouldHideDetailViewButton
+        viewModel.output.hideDetailViewButton
             .bind(to: detailViewButton.rx.isHidden)
             .disposed(by: disposeBag)
         
-        viewModel.output.shouldSelectCheckBox
+        viewModel.output.selectCheckBox
             .bind(to: conditionSelectionView.rx.isChecked)
             .disposed(by: disposeBag)
         

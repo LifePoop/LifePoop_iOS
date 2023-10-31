@@ -157,7 +157,7 @@ public final class SignupViewModel: ViewModelType {
 
         input.didTapLeftBarbutton
             .bind(onNext: { _ in
-                coordinator.coordinate(by: .shouldPopCurrentScene)
+                coordinator.coordinate(by: .popCurrentScene)
             })
             .disposed(by: disposeBag)
         
@@ -206,7 +206,7 @@ public final class SignupViewModel: ViewModelType {
             }
             .bind(onNext: { isSuccess in
                 guard isSuccess else { return }
-                coordinator.coordinate(by: .shouldFinishLoginFlow)
+                coordinator.coordinate(by: .finishLoginFlow)
             })
             .disposed(by: disposeBag)
     }
@@ -234,7 +234,7 @@ public final class SignupViewModel: ViewModelType {
             }
             .bind(onNext: { [weak self] title, detailText in
                 let coordinator = self?.coordinator
-                coordinator?.coordinate(by: .shouldShowDetailForm(title: title, detailText: detailText))
+                coordinator?.coordinate(by: .showDetailForm(title: title, detailText: detailText))
             })
             .disposed(by: disposeBag)
 

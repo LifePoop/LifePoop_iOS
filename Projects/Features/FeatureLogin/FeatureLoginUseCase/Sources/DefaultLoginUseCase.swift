@@ -129,9 +129,8 @@ public final class DefaultLoginUseCase: LoginUseCase {
                     )
                     .do(onSuccess: { data in
                         var message: String
-                        if let data = data,
-                           let dataString = String(data: data, encoding: .utf8) {
-                            message = "KeyChain 내 사용자 정보: \(dataString)"
+                        if let data = data {
+                            message = "KeyChain 내 사용자 정보 존재"
                         } else {
                             message = "KeyChain 내 사용자 정보 없음(nil)"
                         }

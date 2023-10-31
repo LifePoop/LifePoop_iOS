@@ -48,15 +48,15 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
                 self?.skipFlow()
             case .showLoginScene:
                 self?.showLoginViewController(animated: false)
-            case .shouldShowDetailForm(let title, let detailText):
+            case .showDetailForm(let title, let detailText):
                 self?.showDocumentViewController(title: title, detailText: detailText)
             case .didTapKakaoLoginButton(let authInfo):
                 self?.showNicknameViewController(with: authInfo)
             case .didTapAppleLoginButton(let authInfo):
                 self?.showNicknameViewController(with: authInfo)
-            case .shouldFinishLoginFlow:
+            case .finishLoginFlow:
                 self?.finishFlow()
-            case .shouldPopCurrentScene:
+            case .popCurrentScene:
                 self?.popCurrentViewController()
             }
         }

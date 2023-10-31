@@ -6,7 +6,7 @@
 //  Copyright © 2023 Lifepoo. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 import DesignSystem
 import SnapKit

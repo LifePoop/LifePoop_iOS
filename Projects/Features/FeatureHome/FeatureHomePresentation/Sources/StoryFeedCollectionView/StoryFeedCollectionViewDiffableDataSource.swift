@@ -1,5 +1,5 @@
 //
-//  FriendListCollectionViewDiffableDataSource.swift
+//  StoryFeedCollectionViewDiffableDataSource.swift
 //  FeatureHomePresentation
 //
 //  Created by 김상혁 on 2023/05/01.
@@ -10,17 +10,17 @@ import UIKit
 
 import CoreEntity
 
-public final class FriendListCollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<FriendListSection, FriendEntity> {
+public final class StoryFeedCollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<StoryFeedSection, StoryFeedEntity> {
     
-    private typealias Snapshot = NSDiffableDataSourceSnapshot<FriendListSection, FriendEntity>
+    private typealias Snapshot = NSDiffableDataSourceSnapshot<StoryFeedSection, StoryFeedEntity>
     
     private let cellProvider = { (collectionView: UICollectionView,
                                   indexPath: IndexPath,
-                                  friendEntity: FriendEntity) -> UICollectionViewCell in
+                                  friendEntity: StoryFeedEntity) -> UICollectionViewCell in
         guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: FriendListCollectionViewCell.identifier,
+            withReuseIdentifier: StoryFeedCollectionViewCell.identifier,
             for: indexPath
-        ) as? FriendListCollectionViewCell else { return UICollectionViewCell() }
+        ) as? StoryFeedCollectionViewCell else { return UICollectionViewCell() }
         cell.configure(with: friendEntity)
         return cell
     }
@@ -31,7 +31,7 @@ public final class FriendListCollectionViewDiffableDataSource: UICollectionViewD
     
     // MARK: - DiffableDataSource Methods
     
-    public func update(friendEntities: [FriendEntity]) {
+    public func update(friendEntities: [StoryFeedEntity]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.friend])
         snapshot.appendItems(friendEntities)

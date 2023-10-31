@@ -15,7 +15,7 @@ import Utils
 
 final class InviteFriendView: UIView {
     
-    private let myProfileCharactorImageView: UIImageView = {
+    private let emptyProfileCharactorImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = ImageAsset.profileGoodGray.original
         imageView.contentMode = .scaleAspectFit
@@ -31,7 +31,7 @@ final class InviteFriendView: UIView {
     }()
     
     private lazy var profileStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [myProfileCharactorImageView, nameLabel])
+        let stackView = UIStackView(arrangedSubviews: [emptyProfileCharactorImageView, nameLabel])
         stackView.axis = .vertical
         stackView.spacing = 6
         return stackView
@@ -76,7 +76,7 @@ final class InviteFriendView: UIView {
         }
         
         descriptionLabel.snp.makeConstraints { make in
-            make.leading.equalTo(myProfileCharactorImageView.snp.trailing).offset(26)
+            make.leading.equalTo(emptyProfileCharactorImageView.snp.trailing).offset(26)
             make.trailing.equalTo(expandRightImageView.snp.leading).offset(-8)
             make.centerY.equalToSuperview()
         }
@@ -91,7 +91,56 @@ final class InviteFriendView: UIView {
 extension InviteFriendView {
     @available(*, deprecated, message: "사용자 프로필 캐릭터가 아닌 기본 이미지(profileGoodGray)를 나타내도록 변경되어 더 이상 사용하지 않음")
     func setMyProfileCharactor(image: UIImage, name: String) {
-        myProfileCharactorImageView.image = image
+        emptyProfileCharactorImageView.image = image
         nameLabel.text = name
+    }
+}
+
+
+final class NoFriendStoolLogYetView: UIView {
+    
+    private let emptyProfileCharactorImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = ImageAsset.profileGoodGray.original
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private let descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.text = LocalizableString.noFriendStoolLogYet
+        label.numberOfLines = 2
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.textColor = ColorAsset.gray800.color
+        label.adjustsFontSizeToFitWidth = true
+        return label
+    }()
+    
+    init() {
+        super.init(frame: .zero)
+        layoutUI()
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - UI Setup
+    
+    private func layoutUI() {
+        addSubview(emptyProfileCharactorImageView)
+        addSubview(descriptionLabel)
+        
+        emptyProfileCharactorImageView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(24)
+            make.centerY.equalToSuperview()
+        }
+        
+        descriptionLabel.snp.makeConstraints { make in
+            make.leading.equalTo(emptyProfileCharactorImageView.snp.trailing).offset(26)
+            make.trailing.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
     }
 }

@@ -17,7 +17,13 @@
 "cancel" = "취소";
 "me" = "나";
 "inviteFriendsAndEncourageBowelMovements" = "친구를 초대하고,\n변 활동을 응원해보세요!";
-
+"brown" = "갈색";
+"black" = "검정색";
+"pink" = "빨간색";
+"green" = "초록색";
+"yellow" = "노란색";
+"soft" = "물렁";
+"good" = "매끈";
 
 /* 온보딩 */
 "logYourStools" = "나의 변을 기록하고";
@@ -102,9 +108,9 @@
 
 
 /* 스토리 */
-"bowelMovementCountOfFriend" = "%@님이 %d번 변 했어요";
-"cheeringWithBoost" = "힘주기로 응원해보세요!";
-"doneCheeringWithBoost" = "친구에게 응원을 전달했어요!";
+"stoolLogDescription" = "%@ %@ 변을 보았어요";
+"cheeringWithBoost" = "힘주기로 친구를 응원해보세요!";
+"doneCheeringWithBoost" = "오늘 친구를 응원했어요!";
 "boost" = "힘주기";
 "doneBoost" = "힘주기 완료";
 

@@ -82,9 +82,6 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 self.output.updateStoolLogTime.accept(
                     self.getTimeDifference(fromDateOf: stoolStoryLogs[currentIndex].stoolLog.date)
                 )
-                self.output.updateFriendStoolLogSummary.accept(
-                    LocalizableString.bowelMovementCountOfFriend(friend.nickname, totalCount)
-                )
             })
             .disposed(by: disposeBag)
         
@@ -118,55 +115,62 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 let shouldUpdateStoolLogTime = self.getTimeDifference(fromDateOf: stoolLog.date)
                 
                 return (
-                    shouldUpdateShownStoolLog: stoolLog,
-                    shouldEnableCheeringButton: isCheeringUpAvailable,
-                    shouldHideCheeringLabel: shouldHideCheeringLabel,
-                    shouldHideCheeringButton: shouldHideCheeringButton,
-                    shouldUpdateStoolLogTime: shouldUpdateStoolLogTime
+                    updateShownStoolLog: stoolLog,
+                    enableCheeringButton: isCheeringUpAvailable,
+                    hideCheeringLabel: shouldHideCheeringLabel,
+                    hideCheeringButton: shouldHideCheeringButton,
+                    updateStoolLogTime: shouldUpdateStoolLogTime
                 )
             }
             .share()
         
         updateResult
-            .map { $0.shouldUpdateShownStoolLog }
+            .map { $0.updateShownStoolLog }
             .bind(to: output.updateShownStoolLog)
             .disposed(by: disposeBag)
-
+        
         updateResult
-            .map { $0.shouldHideCheeringLabel }
+            .map { $0.updateShownStoolLog }
+            .map { (color: $0.color.description, shape: $0.shape.description) }
+            .map { LocalizableString.stoolLogDescription($0.color, $0.shape) }
+            .bind(to: output.updateFriendStoolLogSummary)
+            .disposed(by: disposeBag)
+            
+        updateResult
+            .map { $0.hideCheeringLabel }
             .bind(to: output.hideCheeringLabel)
             .disposed(by: disposeBag)
         
         updateResult
-            .map { $0.shouldHideCheeringButton }
+            .map { $0.hideCheeringButton }
             .bind(to: output.hideCheeringButton)
             .disposed(by: disposeBag)
         
         updateResult
-            .map { $0.shouldEnableCheeringButton }
+            .map { $0.enableCheeringButton }
             .bind(to: output.enableCheeringButton)
             .disposed(by: disposeBag)
         
         updateResult
-            .filter { !$0.shouldHideCheeringLabel }
+            .filter { !$0.hideCheeringLabel }
             .map {
-                $0.shouldEnableCheeringButton ? LocalizableString.cheeringWithBoost
-                                              : LocalizableString.doneCheeringWithBoost
+                $0.enableCheeringButton ? LocalizableString.cheeringWithBoost
+                                        : LocalizableString.doneCheeringWithBoost
             }
             .bind(to: output.updateCheeringLabelText)
             .disposed(by: disposeBag)
         
         updateResult
-            .filter { !$0.shouldHideCheeringButton }
+            .filter { !$0.hideCheeringButton }
             .map {
-                $0.shouldEnableCheeringButton ? LocalizableString.boost
-                                              : LocalizableString.doneBoost
+                $0.enableCheeringButton ? LocalizableString.boost
+                                        : LocalizableString.doneBoost
             }
             .bind(to: output.updateCheeringButtonText)
             .disposed(by: disposeBag)
 
         updateResult
-            .map { $0.shouldUpdateStoolLogTime }
+            .map { $0.updateStoolLogTime }
             .bind(to: output.updateStoolLogTime)
             .disposed(by: disposeBag)
         

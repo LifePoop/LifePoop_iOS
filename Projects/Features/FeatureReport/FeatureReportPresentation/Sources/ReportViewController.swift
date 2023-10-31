@@ -20,6 +20,13 @@ import Utils
 
 public final class ReportViewController: LifePoopViewController, ViewType {
     
+    private let loadingIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .large
+        return activityIndicator
+    }()
+    
     private let scrollView = UIScrollView()
     private let scrollContentView = UIView()
     
@@ -70,6 +77,8 @@ public final class ReportViewController: LifePoopViewController, ViewType {
         )
     }()
     
+    private let toastMessageLabel = ToastLabel()
+    
     public var viewModel: ReportViewModel?
     private let disposeBag = DisposeBag()
     
@@ -96,6 +105,11 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: ReportViewModel) {
         let output = viewModel.output
         
+        output.shouldLoadingIndicatorAnimating
+            .distinctUntilChanged()
+            .bind(to: loadingIndicator.rx.isAnimating, scrollView.rx.isHidden)
+            .disposed(by: disposeBag)
+        
         output.updatePeriodSegmentTitles
             .asSignal()
             .emit(onNext: periodSegmentControl.setTitles(_:))
@@ -121,9 +135,24 @@ public final class ReportViewController: LifePoopViewController, ViewType {
             .emit(onNext: reportTotalSatisfactionView.update(dissatisfactionCount:))
             .disposed(by: disposeBag)
         
-        output.totalStoolColor
+        output.totalStoolColorReport
             .asSignal()
             .emit(onNext: reportTotalColorView.updateColorBars(with:))
+            .disposed(by: disposeBag)
+        
+        output.totalStoolShapeCountMap
+            .asSignal()
+            .emit(onNext: reportTotalShapeView.updateTotalShape(by:))
+            .disposed(by: disposeBag)
+        
+        output.totalStoolSizeCountMap
+            .asSignal()
+            .emit(onNext: reportTotalSizeView.updateCountLabels(with:))
+            .disposed(by: disposeBag)
+        
+        output.showErrorMessage
+            .asSignal()
+            .emit(onNext: toastMessageLabel.show(message:))
             .disposed(by: disposeBag)
     }
     
@@ -136,7 +165,14 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     
     public override func layoutUI() {
         super.layoutUI()
+        defer {
+            view.bringSubviewToFront(loadingIndicator)
+            view.bringSubviewToFront(toastMessageLabel)
+        }
+        
         view.addSubview(scrollView)
+        view.addSubview(loadingIndicator)
+        view.addSubview(toastMessageLabel)
         scrollView.addSubview(scrollContentView)
         scrollContentView.addSubview(periodSegmentControl)
         scrollContentView.addSubview(totalStoolCountContainerView)
@@ -148,6 +184,10 @@ public final class ReportViewController: LifePoopViewController, ViewType {
         scrollView.snp.makeConstraints {
             $0.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             $0.bottom.equalToSuperview()
+        }
+        
+        loadingIndicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
         
         scrollView.contentLayoutGuide.snp.makeConstraints {
@@ -188,6 +228,11 @@ public final class ReportViewController: LifePoopViewController, ViewType {
         totalSizeContainerView.snp.makeConstraints { make in
             make.top.equalTo(totalShapeContainerView.snp.bottom).offset(28)
             make.leading.trailing.equalToSuperview().inset(24)
+        }
+        
+        toastMessageLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-24)
         }
     }
 }

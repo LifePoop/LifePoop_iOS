@@ -12,6 +12,7 @@ import RxCocoa
 import RxSwift
 import SnapKit
 
+import CoreEntity
 import DesignSystem
 import Utils
 
@@ -23,48 +24,39 @@ final class ReportTotalShapeView: UIView {
         return imageView
     }()
     
-    private lazy var softStoolImageView: UIImageView = {
-        let imageView = UIImageView(image: ImageAsset.stoolSmallSoftBlue.original)
+    private lazy var firstStoolImageView: UIImageView = {
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
-    private lazy var goodStoolImageView: UIImageView = {
-        let imageView = UIImageView(image: ImageAsset.stoolSmallGoodBlue.original)
+    private lazy var secondStoolImageView: UIImageView = {
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
-    private lazy var hardStoolImageView: UIImageView = {
-        let imageView = UIImageView(image: ImageAsset.stoolSmallHardBlue.original)
+    private lazy var thirdtoolImageView: UIImageView = {
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
-    private lazy var softTextLabel: UILabel = {
+    private lazy var firstTextLabel: UILabel = {
         let label = UILabel()
-        label.text = LocalizableString.wateryCount(5) // TODO: UseCase 처리
         label.font = .systemFont(ofSize: 16, weight: .bold)
-        let shapeStringRange = label.rangeOfString(target: LocalizableString.watery)
-        label.applyFont(.systemFont(ofSize: 16, weight: .medium), range: shapeStringRange)
         return label
     }()
     
-    private lazy var goodTextLabel: UILabel = {
+    private lazy var secondTextLabel: UILabel = {
         let label = UILabel()
-        label.text = LocalizableString.smoothCount(10) // TODO: UseCase 처리
         label.font = .systemFont(ofSize: 16, weight: .bold)
-        let shapeStringRange = label.rangeOfString(target: LocalizableString.smooth)
-        label.applyFont(.systemFont(ofSize: 16, weight: .medium), range: shapeStringRange)
         return label
     }()
     
-    private lazy var hardTextLabel: UILabel = {
+    private lazy var thirdTextLabel: UILabel = {
         let label = UILabel()
-        label.text = LocalizableString.hardCount(2) // TODO: UseCase 처리
         label.font = .systemFont(ofSize: 16, weight: .bold)
-        let shapeStringRange = label.rangeOfString(target: LocalizableString.hard)
-        label.applyFont(.systemFont(ofSize: 16, weight: .medium), range: shapeStringRange)
         return label
     }()
     
@@ -80,46 +72,96 @@ final class ReportTotalShapeView: UIView {
     
     private func layoutUI() {
         addSubview(tableImageView)
-        addSubview(softStoolImageView)
-        addSubview(goodStoolImageView)
-        addSubview(hardStoolImageView)
-        addSubview(softTextLabel)
-        addSubview(goodTextLabel)
-        addSubview(hardTextLabel)
+        addSubview(firstStoolImageView)
+        addSubview(secondStoolImageView)
+        addSubview(thirdtoolImageView)
+        addSubview(firstTextLabel)
+        addSubview(secondTextLabel)
+        addSubview(thirdTextLabel)
         
         tableImageView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
         }
         
-        softStoolImageView.snp.makeConstraints { make in
-            make.bottom.equalTo(tableImageView.snp.top).offset(15)
-            make.centerX.equalToSuperview().multipliedBy(0.35)
-        }
-        
-        goodStoolImageView.snp.makeConstraints { make in
+        firstStoolImageView.snp.makeConstraints { make in
             make.bottom.equalTo(tableImageView.snp.top).offset(-1)
             make.centerX.equalToSuperview()
         }
         
-        hardStoolImageView.snp.makeConstraints { make in
+        secondStoolImageView.snp.makeConstraints { make in
+            make.bottom.equalTo(tableImageView.snp.top).offset(15)
+            make.centerX.equalToSuperview().multipliedBy(0.35)
+        }
+        
+        thirdtoolImageView.snp.makeConstraints { make in
             make.bottom.equalTo(tableImageView.snp.top).offset(25)
             make.centerX.equalToSuperview().multipliedBy(1.65)
         }
         
-        softTextLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(softStoolImageView.snp.top).offset(-11)
-            make.centerX.equalTo(softStoolImageView)
-        }
-        
-        goodTextLabel.snp.makeConstraints { make in
+        firstTextLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.bottom.equalTo(goodStoolImageView.snp.top).offset(-11)
-            make.centerX.equalTo(goodStoolImageView)
+            make.bottom.equalTo(firstStoolImageView.snp.top).offset(-11)
+            make.centerX.equalTo(firstStoolImageView)
         }
         
-        hardTextLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(hardStoolImageView.snp.top).offset(-11)
-            make.centerX.equalTo(hardStoolImageView)
+        secondTextLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(secondStoolImageView.snp.top).offset(-11)
+            make.centerX.equalTo(secondStoolImageView)
+        }
+        
+        thirdTextLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(thirdtoolImageView.snp.top).offset(-11)
+            make.centerX.equalTo(thirdtoolImageView)
+        }
+    }
+}
+
+extension ReportTotalShapeView {
+    func updateTotalShape(by stoolShapeCountMap: [StoolShape: Int]) {
+        let sortedShapes = stoolShapeCountMap.sorted { $0.value > $1.value }
+        let stoolShapeTypeCount = StoolShape.allCases.count
+        
+        guard sortedShapes.count >= stoolShapeTypeCount else { return }
+        
+        let imageViews = [firstStoolImageView, secondStoolImageView, thirdtoolImageView]
+        let labels = [firstTextLabel, secondTextLabel, thirdTextLabel]
+        
+        for index in 0..<stoolShapeTypeCount {
+            let shape = sortedShapes[index].key
+            let count = sortedShapes[index].value
+            setImageViewAndLabel(for: shape, count: count, imageView: imageViews[index], label: labels[index])
+        }
+    }
+}
+
+// MARK: - Supporting Methods
+ 
+private extension ReportTotalShapeView {
+    private func setImageViewAndLabel(for shape: StoolShape, count: Int, imageView: UIImageView, label: UILabel) {
+        var imageAsset: UIImage?
+        var localizableString: String?
+        var countString: (Int) -> String
+        
+        switch shape {
+        case .soft:
+            imageAsset = ImageAsset.stoolSmallSoftBlue.original
+            localizableString = LocalizableString.watery
+            countString = LocalizableString.wateryCount
+        case .good:
+            imageAsset = ImageAsset.stoolSmallGoodBlue.original
+            localizableString = LocalizableString.smooth
+            countString = LocalizableString.smoothCount
+        case .hard:
+            imageAsset = ImageAsset.stoolSmallHardBlue.original
+            localizableString = LocalizableString.hard
+            countString = LocalizableString.hardCount
+        }
+        
+        imageView.image = imageAsset
+        label.text = countString(count)
+        
+        if let shapeString = localizableString, let shapeStringRange = label.rangeOfString(target: shapeString) {
+            label.applyFont(.systemFont(ofSize: 16, weight: .medium), range: shapeStringRange)
         }
     }
 }

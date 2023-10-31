@@ -10,12 +10,24 @@ import Foundation
 
 import Utils
 
-// MARK: - 서버 DTO 구성되기 전 임의로 사용하는 Entity
 public enum ReportPeriod: Int, CaseIterable {
     case week
     case month
     case threeMonths
     case year
+    
+    public var days: Int {
+        switch self {
+        case .week:
+            return 7
+        case .month:
+            return 30
+        case .threeMonths:
+            return 90
+        case .year:
+            return 365
+        }
+    }
     
     public var title: String {
         switch self {

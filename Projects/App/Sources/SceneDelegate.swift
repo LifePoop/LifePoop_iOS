@@ -15,13 +15,12 @@ import FeatureFriendListDIContainer
 import FeatureFriendListRepository
 import FeatureFriendListUseCase
 import FeatureHomeDIContainer
-import FeatureHomeUseCase
 import FeatureHomeRepository
+import FeatureHomeUseCase
 import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
 import FeatureReportDIContainer
-import FeatureReportRepository
 import FeatureReportUseCase
 import FeatureSettingDIContainer
 import FeatureSettingRepository
@@ -138,14 +137,10 @@ private extension SceneDelegate {
         
         // FIXME: MockUseCase -> 실제 UseCase 주입하도록 변경
         SettingDIContainer.shared.register(service: ProfileEditUseCase.self) { MockProfileEditUseCase() }
-        
     }
     
     func registerReportDependencies() {
         ReportDIContainer.shared.register(service: ReportUseCase.self) { DefaultReportUseCase() }
-        
-        // FIXME: MockRepository -> 실제 Repository 주입하도록 변경
-        ReportDIContainer.shared.register(service: ReportRepository.self) { MockReportRepository() }
     }
     
     func registerFriendListDependencies() {

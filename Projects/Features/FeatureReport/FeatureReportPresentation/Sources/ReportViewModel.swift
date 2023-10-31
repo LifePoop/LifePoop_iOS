@@ -14,8 +14,6 @@ import FeatureReportCoordinatorInterface
 import FeatureReportDIContainer
 import FeatureReportUseCase
 import Logger
-import SharedDIContainer
-import SharedUseCase
 import Utils
 
 public final class ReportViewModel: ViewModelType {
@@ -26,14 +24,15 @@ public final class ReportViewModel: ViewModelType {
     }
     
     public struct Output {
+        let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
         let updatePeriodSegmentTitles = PublishRelay<[String]>()
         let selectPeriodSegmentIndexAt = PublishRelay<Int>()
         let updateStoolCountInfo = PublishRelay<(nickname: String, periodText: String, count: Int)>()
         let totalSatisfaction = PublishRelay<Int>()
         let totalDissatisfaction = PublishRelay<Int>()
-        let totalStoolColor = PublishRelay<[(report: StoolColorReport, barWidthRatio: Double)]>()
-        let totalStoolShape = PublishRelay<[StoolShapeReport]>()
-        let totalStoolSize = PublishRelay<[StoolSizeReport]>()
+        let totalStoolColorReport = PublishRelay<[StoolColorReport]>()
+        let totalStoolShapeCountMap = PublishRelay<[StoolShape: Int]>()
+        let totalStoolSizeCountMap = PublishRelay<[StoolShapeSize: Int]>()
         let showErrorMessage = PublishRelay<String>()
     }
     
@@ -47,7 +46,6 @@ public final class ReportViewModel: ViewModelType {
     public let state = State()
     
     @Inject(ReportDIContainer.shared) private var reportUseCase: ReportUseCase
-    @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
     
     private weak var coordinator: ReportCoordinator?
     private let disposeBag = DisposeBag()
@@ -56,6 +54,11 @@ public final class ReportViewModel: ViewModelType {
         self.coordinator = coordinator
         
         // MARK: - Bind Input
+        
+        input.viewDidLoad
+            .map { _ in true }
+            .bind(to: output.shouldLoadingIndicatorAnimating)
+            .disposed(by: disposeBag)
         
         input.viewDidLoad
             .map { ReportPeriod.titles }
@@ -70,7 +73,7 @@ public final class ReportViewModel: ViewModelType {
         let fetchedUserNickname = input.viewDidLoad
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
-                self.nicknameUseCase.nickname
+                self.reportUseCase.fetchUserNickname()
             }
             .share()
         
@@ -91,13 +94,17 @@ public final class ReportViewModel: ViewModelType {
             .bind(to: state.userStoolReportMap)
             .disposed(by: disposeBag)
         
-        // TODO: 에러 처리 로직 구현
         fetchedUserStoolReports
             .compactMap { $0.error }
+            .toastMessageMap(to: .stoolLog(.fetchStoolLogFail))
+            .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
         
-        // TODO: 서버 응답시간 고려하여 Indicator 등 구현
         fetchedUserStoolReports
             .filter { $0.isStopEvent }
+            .map { _ in false }
+            .bind(to: output.shouldLoadingIndicatorAnimating)
+            .disposed(by: disposeBag)
         
         input.periodDidSelect
             .compactMap { $0 }
@@ -107,21 +114,21 @@ public final class ReportViewModel: ViewModelType {
         
         // MARK: - Bind State
         
-        let userStoolReport = Observable.combineLatest(
+        let userStoolReportForSelectedPeriod = Observable.combineLatest(
             state.selectedPeriod.compactMap { $0 },
             state.userStoolReportMap
         )
-        .compactMap { selectedPeriod, userStoolReportMap in
-            userStoolReportMap[selectedPeriod]
-        }
-        .share()
+            .compactMap { selectedPeriod, userStoolReportMap in
+                userStoolReportMap[selectedPeriod]
+            }
+            .share()
         
         let userNickname = fetchedUserNickname
             .compactMap { $0.element }
-            .compactMap { $0 }
+            .map { $0 }
             .share()
         
-        let stoolCountInfo = userStoolReport
+        let stoolCountInfo = userStoolReportForSelectedPeriod
             .map { ($0.period.description, $0.totalStoolCount) }
             .share()
         
@@ -133,37 +140,33 @@ public final class ReportViewModel: ViewModelType {
             .bind(to: output.updateStoolCountInfo)
             .disposed(by: disposeBag)
         
-        userStoolReport
+        userStoolReportForSelectedPeriod
             .map { $0.totalSatisfaction }
             .bind(to: output.totalSatisfaction)
             .disposed(by: disposeBag)
         
-        userStoolReport
+        userStoolReportForSelectedPeriod
             .map { $0.totalDissatisfaction }
             .bind(to: output.totalDissatisfaction)
             .disposed(by: disposeBag)
         
-        userStoolReport
-            .map { $0.totalStoolColor.filter { $0.count > 0 } }
+        userStoolReportForSelectedPeriod
             .withUnretained(self)
-            .map { `self`, reports in
-                self.sortMaxCount(for: reports)
+            .map { `self`, report in
+                let (stoolColorCountMap, count) = (report.totalStoolColorCountMap, report.totalStoolCount)
+                return self.sortedColorCountsAndRatios(from: stoolColorCountMap, totalCount: count)
             }
-            .withUnretained(self)
-            .map { `self`, reports in
-                self.calculateRatioFromMaxCount(reports: reports)
-            }
-            .bind(to: output.totalStoolColor)
+            .bind(to: output.totalStoolColorReport)
             .disposed(by: disposeBag)
         
-        userStoolReport
-            .map { $0.totalStoolShape }
-            .bind(to: output.totalStoolShape)
+        userStoolReportForSelectedPeriod
+            .map { $0.totalStoolShapeCountMap }
+            .bind(to: output.totalStoolShapeCountMap)
             .disposed(by: disposeBag)
         
-        userStoolReport
-            .map { $0.totalStoolSize }
-            .bind(to: output.totalStoolSize)
+        userStoolReportForSelectedPeriod
+            .map { $0.totalStoolShapeSizeCountMap }
+            .bind(to: output.totalStoolSizeCountMap)
             .disposed(by: disposeBag)
     }
     
@@ -172,15 +175,16 @@ public final class ReportViewModel: ViewModelType {
     }
 }
 
-// FIXME: Calculating Methods - 해당 연산 작업은 서버에서 수행하므로 삭제 예정
-
 private extension ReportViewModel {
-    func calculateRatioFromMaxCount(reports: [StoolColorReport]) -> [(StoolColorReport, Double)] {
-        guard let maxCount = reports.max(by: { $0.count < $1.count })?.count else { return [] }
-        return reports.map { ($0, Double($0.count) / Double(maxCount)) }
-    }
-    
-    func sortMaxCount(for reports: [StoolColorReport]) -> [StoolColorReport] {
-        return reports.sorted { $0.count > $1.count }
+    func sortedColorCountsAndRatios(from colorCounts: [StoolColor: Int], totalCount: Int) -> [StoolColorReport] {
+        let sortedCounts = colorCounts
+            .filter { $0.value > .zero }
+            .sorted { $0.value > $1.value }
+        
+        let maxCount = sortedCounts.first?.value ?? 1
+        
+        return sortedCounts.map {
+            StoolColorReport(color: $0.key, count: $0.value, barWidthRatio: Double($0.value) / Double(maxCount))
+        }
     }
 }

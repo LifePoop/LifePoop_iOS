@@ -195,12 +195,19 @@ public final class SettingViewModel: ViewModelType {
         .disposed(by: disposeBag)
         
         input.logoutConfirmButtonDidTap
-            .bind {
-                // TODO: Execute Logout UseCase
-                coordinator?.coordinate(by: .logOutConfirmButtonDidTap)
+            .withUnretained(self)
+            .flatMapLatest { `self`, _ in
+                self.userInfoUseCase.requestLogout()
             }
+            .bind(onNext: { isSuccess in
+                if isSuccess {
+                    coordinator?.coordinate(by: .logOutConfirmButtonDidTap)
+                } else {
+                    print("로그아웃 실패 모달 띄우기")
+                }
+            })
             .disposed(by: disposeBag)
-        
+
         input.withdrawButtonDidTap
             .bind(to: output.showWithdrawAlert)
             .disposed(by: disposeBag)
@@ -212,7 +219,6 @@ public final class SettingViewModel: ViewModelType {
         .bind(to: output.dismissWithdrawAlert)
         .disposed(by: disposeBag)
         
-        // MARK:  애플 탈퇴 구현을 위해 임시로 authorization code 가져오는 코드 적용
         input.withdrawConfirmButtonDidTap
             .withUnretained(self)
             .flatMap { `self`, _ in
@@ -222,6 +228,8 @@ public final class SettingViewModel: ViewModelType {
             .bind { `self`, isSuccess in
                 if isSuccess {
                     self.coordinator?.coordinate(by: .withdrawConfirmButtonDidTap)
+                } else {
+                    print("탈퇴 실패 모달 띄우기")
                 }
             }
             .disposed(by: disposeBag)

@@ -31,19 +31,23 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
         self.flowCompletionDelegate = flowCompletionDelegate
     }
     
-    public func start() {
-        coordinate(by: .shouldShowLaunchScreen)
+    public func start(showLaunchScreen: Bool) {
+        coordinate(by: .startLoginFlow(showLaunchScreen: showLaunchScreen))
     }
     
     public func coordinate(by coordinateAction: LoginCoordinateAction) {
         DispatchQueue.main.async { [weak self] in
             switch coordinateAction {
-            case .shouldShowLaunchScreen:
-                self?.showLaunchScreenViewController()
+            case .startLoginFlow(let showLaunchScreen):
+                if showLaunchScreen {
+                    self?.showLaunchScreenViewController()
+                } else {
+                    self?.showLoginViewController(animated: true)
+                }
             case .skipLoginFlow:
                 self?.skipFlow()
             case .showLoginScene:
-                self?.showLoginViewController()
+                self?.showLoginViewController(animated: false)
             case .shouldShowDetailForm(let title, let detailText):
                 self?.showDocumentViewController(title: title, detailText: detailText)
             case .didTapKakaoLoginButton(let authInfo):
@@ -74,11 +78,11 @@ private extension DefaultLoginCoordinator {
         navigationController.setViewControllers([viewController], animated: true)
     }
     
-    func showLoginViewController() {
+    func showLoginViewController(animated: Bool) {
         let viewController = LoginViewController()
         let viewModel = LoginViewModel(coordinator: self)
         viewController.bind(viewModel: viewModel)
-        navigationController.pushViewController(viewController, animated: false)
+        navigationController.pushViewController(viewController, animated: animated)
     }
     
     func showNicknameViewController(with authInfo: OAuthTokenInfo) {

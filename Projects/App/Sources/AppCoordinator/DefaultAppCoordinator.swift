@@ -34,7 +34,9 @@ public final class DefaultAppCoordinator: AppCoordinator {
     public func coordinate(by coordinateAction: AppCoordinateAction) {
         switch coordinateAction {
         case .appDidStart:
-            startLoginCoordinatorFlow()
+            startLoginCoordinatorFlow(showLaunchScreen: true)
+        case .authenticationDidReset:
+            startLoginCoordinatorFlow(showLaunchScreen: false)
         case .accessTokenDidfetch:
             startHomeCoordinatorFlow(animated: false)
         case .authenticationProcessDidFinish:
@@ -50,13 +52,13 @@ public final class DefaultAppCoordinator: AppCoordinator {
 // MARK: - Coordinating Methods
 
 private extension DefaultAppCoordinator {
-    func startLoginCoordinatorFlow() {
+    func startLoginCoordinatorFlow(showLaunchScreen: Bool) {
         let loginCoordinator = DefaultLoginCoordinator(
             navigationController: navigationController,
             flowCompletionDelegate: self
         )
         add(childCoordinator: loginCoordinator)
-        loginCoordinator.start()
+        loginCoordinator.start(showLaunchScreen: showLaunchScreen)
     }
     
     func startHomeCoordinatorFlow(animated: Bool) {
@@ -86,6 +88,20 @@ extension DefaultAppCoordinator: LoginCoordinatorCompletionDelegate {
 extension DefaultAppCoordinator: HomeCoordinatorCompletionDelegate {
     public func finishFlow() {
         remove(childCoordinator: .home)
-        coordinate(by: .appDidStart)
+        coordinate(by: .authenticationDidReset)
+    }
+}
+
+private extension DefaultAppCoordinator {
+    @objc func resetAllChildCoordinators() {
+        if childCoordinatorMap.keys.contains(.login) {
+            return
+        }
+        
+        childCoordinatorMap.keys.forEach { key in
+            remove(childCoordinator: key)
+        }
+        
+        coordinate(by: .authenticationDidReset)
     }
 }

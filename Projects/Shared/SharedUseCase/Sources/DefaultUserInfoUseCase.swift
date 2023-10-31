@@ -112,40 +112,77 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             }
     }
     
+    public func requestLogout() -> Observable<Bool> {
+        userInfo.compactMap { $0?.authInfo.accessToken }
+            .withUnretained(self)
+            .flatMapLatest { `self`, accessToken in
+                self.userInfoRepository.requestLogout(accessToken: accessToken)
+                    .catchAndReturn(false)
+            }
+            .withUnretained(self)
+            .concatMap { `self`, isSuccess in
+                if isSuccess {
+                    return self.removeUserInfo().andThen(Observable.just(true))
+                } else {
+                    return Observable.just(false)
+                }
+            }
+            .asObservable()
+    }
+    
     public func requestAccountWithdrawl(for loginType: LoginType) -> Observable<Bool> {
+        
+        var observable: Observable<Bool>
         switch loginType {
         case .apple:
-            return requestAppleAccountWithdrawl()
+            observable = requestAppleAccountWithdrawl()
         case .kakao:
-            break
+            observable = requestKakaoAccountWithdrawl()
         }
         
-        return .just(false)
+        return observable
+            .withUnretained(self)
+            .concatMap { `self`, isSuccess in
+                if isSuccess {
+                    return self.removeUserInfo().andThen(Observable.just(true))
+                } else {
+                    return Observable.just(false)
+                }
+            }
     }
 }
 
 private extension DefaultUserInfoUseCase {
     
     func requestAppleAccountWithdrawl() -> Observable<Bool> {
-        userInfoRepository
-            .fetchAppleAuthorizationCode()
-            .do(onSuccess: { value in
-                print(value)
-            })
-            .map { _ in true }
+        userInfoRepository.fetchAppleAuthorizationCode()
             .asObservable()
-            .catchAndReturn(true)
-    }
-    
-    func clearUserInfoIfNeeded() -> Observable<Bool> {
-        userInfo
-            .withUnretained(self)
-            .flatMap { `self`, userInfo in
-                self.removeUserInfo(userInfo)
-                    .andThen(Observable.just(false))
+            .withLatestFrom(userInfo) {
+                (authorizationCode: $0, accessToken: $1?.authInfo.accessToken)
             }
+            .withUnretained(self)
+            .flatMapLatest {
+                let `self` = $0.0
+                let authorizationCode = $0.1.authorizationCode
+                let accessToken = $0.1.accessToken ?? "" // accessToken nil 처리 필요
+                // TODO: 추후 예외처리 구체적으로
+                return self.userInfoRepository.requestAppleWithdrawl(authorizationCode: authorizationCode, accessToken: accessToken)
+            }
+            .asObservable()
+            .catchAndReturn(false)
     }
-    
+
+    func requestKakaoAccountWithdrawl() -> Observable<Bool> {
+        userInfo.compactMap { $0?.authInfo.accessToken }
+            .withUnretained(self)
+            .flatMapLatest { `self`, accessToken in
+                // TODO: 추후 예외처리 구체적으로
+                self.userInfoRepository.requestKakaoWithdrawl(accessToken: accessToken)
+            }
+            .asObservable()
+            .catchAndReturn(false)
+    }
+
     func saveUserInfo(_ userInfo: UserInfoEntity) -> Completable {
         
         Logger.log(

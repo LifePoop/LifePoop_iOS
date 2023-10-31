@@ -10,6 +10,7 @@ import Foundation
 
 public enum LifePoopLocalTarget {
     case login(provider: String)
+    case logout(accessToken: String)
     case updateAccessToken(refreshToken: String)
     case signup(provider: String)
     case fetchUserInfo(accessToken: String)
@@ -17,6 +18,8 @@ public enum LifePoopLocalTarget {
     case fetchStoolLog(userID: Int)
     case postStoolLog(accessToken: String)
     case sendInvitationCode(code: String, accessToken: String)
+    case withdrawAppleAccount(accessToken: String)
+    case withdrawKakaoAccount(accessToken: String)
 }
 
 extension LifePoopLocalTarget: TargetType {
@@ -34,6 +37,8 @@ extension LifePoopLocalTarget: TargetType {
             return "/auth/\(provider)/register"
         case .login(let provider):
             return "/auth/\(provider)/login"
+        case .logout:
+            return "/auth/logout"
         case .fetchStoolLog(let userID):
             return "/post/\(userID)"
         case .postStoolLog:
@@ -44,6 +49,10 @@ extension LifePoopLocalTarget: TargetType {
             return "/user/friendship"
         case .sendInvitationCode(let code, _):
             return "/user/friendship/\(code)"
+        case .withdrawAppleAccount:
+            return "/auth/APPLE/withdraw"
+        case .withdrawKakaoAccount:
+            return "/auth/KAKAO/withdraw"
         }
     }
     
@@ -51,7 +60,7 @@ extension LifePoopLocalTarget: TargetType {
         switch self {
         case .fetchStoolLog, .fetchUserInfo, .fetchFriendList:
             return .get
-        case .postStoolLog, .login, .signup, .updateAccessToken, .sendInvitationCode:
+        case .postStoolLog, .login, .logout, .signup, .updateAccessToken, .sendInvitationCode, .withdrawAppleAccount, .withdrawKakaoAccount:
             return .post
         }
     }
@@ -61,7 +70,10 @@ extension LifePoopLocalTarget: TargetType {
         case .postStoolLog(let accessToken),
              .fetchUserInfo(let accessToken),
              .sendInvitationCode(_, let accessToken),
-             .fetchFriendList(let accessToken)
+             .fetchFriendList(let accessToken),
+             .withdrawAppleAccount(let accessToken),
+             .withdrawKakaoAccount(let accessToken),
+             .logout(let accessToken)
             :
             return [
                 "Content-Type": "application/json",

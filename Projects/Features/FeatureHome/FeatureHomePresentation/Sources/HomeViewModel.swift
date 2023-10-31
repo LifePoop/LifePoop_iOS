@@ -40,6 +40,7 @@ public final class HomeViewModel: ViewModelType {
     public struct State {
         let cheeringInfo = BehaviorRelay<CheeringInfoEntity?>(value: nil)
         let friends = BehaviorRelay<[FriendEntity]>(value: [])
+        let storyFeeds = BehaviorRelay<[StoryFeedEntity]>(value: [])
         let stoolLogs = BehaviorRelay<[StoolLogEntity]>(value: [])
         let headerViewModel = BehaviorRelay<StoolLogHeaderViewModel?>(value: nil)
     }
@@ -93,19 +94,43 @@ public final class HomeViewModel: ViewModelType {
                 self.homeUseCase.fetchFriendList()
             }
             .share()
-        
+
         fetchedFriends
             .compactMap { $0.element }
             .bind(to: state.friends)
             .disposed(by: disposeBag)
-        
+
         fetchedFriends
             .compactMap { $0.error }
             .map { _ in [] }
             .bind(to: state.friends)
             .disposed(by: disposeBag)
-        
+
         fetchedFriends
+            .compactMap { $0.error }
+            .toastMessageMap(to: .friendList(.fetchFriendListFail))
+            .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
+        
+        let fetchedStoryFeeds = viewDidLoadOrRefresh
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.homeUseCase.fetchStoryFeeds()
+            }
+            .share()
+        
+        fetchedStoryFeeds
+            .compactMap { $0.element }
+            .bind(to: state.storyFeeds)
+            .disposed(by: disposeBag)
+        
+        fetchedStoryFeeds
+            .compactMap { $0.error }
+            .map { _ in [] }
+            .bind(to: state.storyFeeds)
+            .disposed(by: disposeBag)
+        
+        fetchedStoryFeeds
             .compactMap { $0.error }
             .toastMessageMap(to: .friendList(.fetchFriendListFail))
             .bind(to: output.showErrorMessage)
@@ -138,6 +163,7 @@ public final class HomeViewModel: ViewModelType {
         Observable.zip(
             cheeringInfo.filter { $0.isStopEvent }.map { _ in },
             fetchedFriends.filter { $0.isStopEvent }.map { _ in },
+            fetchedStoryFeeds.filter { $0.isStopEvent }.map { _ in },
             fetchedStoolLogs.filter { $0.isStopEvent }.map { _ in }
         )
         .map { _ in false }
@@ -204,6 +230,10 @@ private extension HomeViewModel {
         
         state.friends
             .bind(to: stoolLogHeaderViewModel.state.friends)
+            .disposed(by: disposeBag)
+        
+        state.storyFeeds
+            .bind(to: stoolLogHeaderViewModel.state.storyFeeds)
             .disposed(by: disposeBag)
         
         stoolLogHeaderViewModel.input.viewDidFinishLayoutSubviews

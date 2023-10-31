@@ -13,10 +13,10 @@ import RxSwift
 
 import CoreEntity
 import FeatureFriendListCoordinatorInterface
-import FeatureFriendListDIContainer
-import FeatureFriendListUseCase
 import Logger
 import Utils
+
+// FIXME: 앱 배포 후, 리팩토링할 때 해당 뷰모델, 뷰컨트롤러를 FriendListViewController, ViewModel로 통합해야 함
 
 public final class FriendInvitationViewModel: ViewModelType {
     
@@ -34,15 +34,31 @@ public final class FriendInvitationViewModel: ViewModelType {
     
     private var disposeBag = DisposeBag()
     
-    public init(coordinator: FriendListCoordinator?, toastMessageStream: PublishRelay<String>) {
-        bind(coordinator: coordinator, toastMessageStream: toastMessageStream)
+    public init(
+        coordinator: FriendListCoordinator?,
+        toastMessageStream: PublishRelay<String>,
+        friendListUpdateStream: PublishRelay<Void>
+    ) {
+        bind(
+            coordinator: coordinator,
+            toastMessageStream: toastMessageStream,
+            friendListUpdateStream: friendListUpdateStream
+        )
     }
     
-    private func bind(coordinator: FriendListCoordinator?, toastMessageStream: PublishRelay<String>) {
-        
+    private func bind(
+        coordinator: FriendListCoordinator?,
+        toastMessageStream: PublishRelay<String>,
+        friendListUpdateStream: PublishRelay<Void>
+    ) {
         input.didSelectInvitationType
             .bind(onNext: { invitationType in
-                coordinator?.coordinate(by: .shouldShowInvitationCodePopup(type: invitationType, toastMessageStream: toastMessageStream))
+                coordinator?.coordinate(by:
+                        .showInvitationCodePopup(
+                            type: invitationType,
+                            toastMessageStream: toastMessageStream,
+                            friendListUpdateStream: friendListUpdateStream
+                        ))
             })
             .disposed(by: disposeBag)
     }

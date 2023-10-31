@@ -14,8 +14,16 @@ import RxSwift
 import CoreEntity
 
 public enum FriendListCoordinateAction {
-    case shouldShowFirendList
-    case shouldShowFriendInvitation(toastMessageStream: PublishRelay<String>)
-    case shouldShowInvitationCodePopup(type: InvitationType, toastMessageStream: PublishRelay<String>)
-    case shouldDismissInvitationCodePopup
+    case showFriendsStoolLog(friendEntity: FriendEntity)
+    case showFirendList
+    case showFriendInvitation(
+        toastMessageStream: PublishRelay<String>,
+        friendListUpdateStream: PublishRelay<Void>
+    )
+    case showInvitationCodePopup(
+        type: InvitationType,
+        toastMessageStream: PublishRelay<String>,
+        friendListUpdateStream: PublishRelay<Void>
+    )
+    case dismissInvitationCodePopup
 }

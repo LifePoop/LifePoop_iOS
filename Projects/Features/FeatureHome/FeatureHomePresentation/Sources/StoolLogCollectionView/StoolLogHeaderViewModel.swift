@@ -23,14 +23,17 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     public struct Input {
         let viewDidRefresh = PublishRelay<Void>()
         let viewDidLoad = PublishRelay<Void>()
+        let viewDidFinishLayoutSubviews = PublishRelay<Void>()
         let inviteFriendButtonDidTap = PublishRelay<Void>()
         let cheeringButtonDidTap = PublishRelay<Void>()
         let friendListCellDidTap = PublishRelay<IndexPath>()
     }
     
     public struct Output {
-        let toggleFriendListCollectionView = PublishRelay<Bool>()
-        let updateUserProfileCharacter = PublishRelay<FriendEntity>()
+        let isFriendEmpty = PublishRelay<Bool>()
+        let updateCheeringProfileCharacters = PublishRelay<(ProfileCharacter?, ProfileCharacter?)>()
+        let updateCheeringFriendNameAndCount = PublishRelay<(name: String, count: Int)>()
+        let showEmptyCheeringInfo = PublishRelay<Void>()
         let updateFriends = PublishRelay<[FriendEntity]>()
         let setDateDescription = PublishRelay<String>()
         let setFriendsCheeringDescription = PublishRelay<String>()
@@ -38,7 +41,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     }
     
     public struct State {
-        let userProfileCharacter = BehaviorRelay<FriendEntity?>(value: nil)
+        let cheeringInfo = BehaviorRelay<CheeringInfoEntity?>(value: nil)
         let friends = BehaviorRelay<[FriendEntity]>(value: [])
     }
     
@@ -49,6 +52,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     private weak var coordinator: HomeCoordinator?
     private let disposeBag = DisposeBag()
     
+    // FIXME: 선택된 친구의 스토리 불러오는 코드 구현 이후 삭제
     @Inject(HomeDIContainer.shared) private var homeUseCase: HomeUseCase
     
     public init(coordinator: HomeCoordinator?) {
@@ -67,32 +71,46 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
-            .map { Date().localizedDateString }
+            .compactMap { Date().koreanDateString }
             .map { LocalizableString.stoolDiaryFor($0) }
             .bind(to: output.setDateDescription)
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
-            .map { "강시온님 외 33명이 응원하고 있어요!" } // FIXME: UseCase 구현하여 변경
-            .bind(to: output.setFriendsCheeringDescription)
-            .disposed(by: disposeBag)
-        
-        viewDidLoadOrRefresh
             .withLatestFrom(state.friends)
             .map { $0.isEmpty }
-            .bind(to: output.toggleFriendListCollectionView)
+            .bind(to: output.isFriendEmpty)
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
-            .withLatestFrom(state.userProfileCharacter)
+            .withLatestFrom(state.cheeringInfo)
             .compactMap { $0 }
-            .bind(to: output.updateUserProfileCharacter)
+            .filter { $0.count > .zero }
+            .map { ($0.firstFriendProfileCharacter, $0.secondFriendProfileCharacter) }
+            .bind(to: output.updateCheeringProfileCharacters)
+            .disposed(by: disposeBag)
+        
+        viewDidLoadOrRefresh
+            .withLatestFrom(state.cheeringInfo)
+            .compactMap { $0 }
+            .filter { $0.count > .zero }
+            .map { (name: $0.friendName ?? "", count: $0.extraCount) }
+            .bind(to: output.updateCheeringFriendNameAndCount)
+            .disposed(by: disposeBag)
+        
+        viewDidLoadOrRefresh
+            .withLatestFrom(state.cheeringInfo)
+            .compactMap { $0 }
+            .filter { $0.count == .zero }
+            .map { _ in }
+            .bind(to: output.showEmptyCheeringInfo)
             .disposed(by: disposeBag)
         
         let friendListCellIndex = input.friendListCellDidTap
             .map { $0.item }
             .share()
         
+        // FIXME: 선택된 친구의 스토리 불러오는 코드 - 삭제 또는 수정 필요
         friendListCellIndex
             .withLatestFrom(output.updateFriends) { index, friendEntities in
                 friendEntities[index]
@@ -113,21 +131,6 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         )
         .bind { coordinator?.coordinate(by: .cheeringButtonDidTap) }
         .disposed(by: disposeBag)
-        
-        state.friends
-            .compactMap { $0 }
-            .bind(to: output.updateFriends)
-            .disposed(by: disposeBag)
-        
-        state.friends
-            .map { $0.isEmpty }
-            .bind(to: output.toggleFriendListCollectionView)
-            .disposed(by: disposeBag)
-        
-        state.userProfileCharacter
-            .compactMap { $0 }
-            .bind(to: output.updateUserProfileCharacter)
-            .disposed(by: disposeBag)
     }
     
     deinit {

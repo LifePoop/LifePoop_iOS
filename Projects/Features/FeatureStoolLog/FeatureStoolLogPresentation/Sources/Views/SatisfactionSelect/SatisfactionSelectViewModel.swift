@@ -11,8 +11,6 @@ import RxSwift
 
 import CoreEntity
 import FeatureStoolLogCoordinatorInterface
-import FeatureStoolLogDIContainer
-import FeatureStoolLogUseCase
 import Logger
 import Utils
 

@@ -116,4 +116,39 @@ public extension ProfileCharacter {
             return ImageAsset.profileSoftYellowLarge.original
         }
     }
+    
+    var cheeringImage: UIImage {
+        switch (shape, color) {
+        case (.good, .black):
+            return ImageAsset.profileCheeringGoodBlack.original
+        case (.good, .pink):
+            return ImageAsset.profileCheeringGoodRed.original
+        case (.good, .brown):
+            return ImageAsset.profileCheeringGoodBrown.original
+        case (.good, .green):
+            return ImageAsset.profileCheeringGoodGreen.original
+        case (.good, .yellow):
+            return ImageAsset.profileCheeringGoodYellow.original
+        case (.hard, .black):
+            return ImageAsset.profileCheeringHardBlack.original
+        case (.hard, .brown):
+            return ImageAsset.profileCheeringHardBrown.original
+        case (.hard, .green):
+            return ImageAsset.profileCheeringHardGreen.original
+        case (.hard, .pink):
+            return ImageAsset.profileCheeringHardRed.original
+        case (.hard, .yellow):
+            return ImageAsset.profileCheeringHardYellow.original
+        case (.soft, .black):
+            return ImageAsset.profileCheeringSoftBlack.original
+        case (.soft, .brown):
+            return ImageAsset.profileCheeringSoftBrown.original
+        case (.soft, .green):
+            return ImageAsset.profileCheeringSoftGreen.original
+        case (.soft, .pink):
+            return ImageAsset.profileCheeringSoftRed.original
+        case (.soft, .yellow):
+            return ImageAsset.profileCheeringSoftYellow.original
+        }
+    }
 }

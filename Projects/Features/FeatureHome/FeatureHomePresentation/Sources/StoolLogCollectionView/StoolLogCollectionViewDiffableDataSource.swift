@@ -8,6 +8,8 @@
 
 import UIKit
 
+import DesignSystem
+
 import CoreEntity
 
 final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<StoolLogListSection, StoolLogItem> {
@@ -22,6 +24,11 @@ final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDiffableDa
             for: indexPath
         ) as? StoolLogCollectionViewCell else { return UICollectionViewCell() }
         cell.configure(with: stoolLogItem)
+        
+        if indexPath.section == .zero {
+            cell.backgroundColor = .systemBackground
+        }
+        
         return cell
     }
     
@@ -30,14 +37,29 @@ final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDiffableDa
     }
     
     func bindStoolLogHeaderView(with viewModel: StoolLogHeaderViewModel) {
-        supplementaryViewProvider = { collectionView, kind, indexPath in
-            guard let headerView = collectionView.dequeueReusableSupplementaryView(
-                ofKind: kind,
-                withReuseIdentifier: StoolLogHeaderView.identifier,
-                for: indexPath
-            ) as? StoolLogHeaderView else { return UICollectionReusableView() }
-            headerView.bind(viewModel: viewModel)
-            return headerView
+        supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
+            guard let self else { return UICollectionReusableView() }
+            if indexPath.section == .zero {
+                return self.dequeueCollectionReusableView(
+                    for: collectionView,
+                    kind: kind,
+                    identifier: StoolLogHeaderView.identifier,
+                    indexPath: indexPath,
+                    configureAction: { (headerView: StoolLogHeaderView) in
+                        headerView.bind(viewModel: viewModel)
+                    }
+                )
+            } else {
+                return self.dequeueCollectionReusableView(
+                    for: collectionView,
+                    kind: kind,
+                    identifier: StoolLogDateHeaderView.identifier,
+                    indexPath: indexPath,
+                    configureAction: { (headerView: StoolLogDateHeaderView) in
+                        headerView.setDate(from: indexPath.section)
+                    }
+                )
+            }
         }
     }
     
@@ -45,8 +67,17 @@ final class StoolLogCollectionViewDiffableDataSource: UICollectionViewDiffableDa
     
     func update(with stoolLogEntities: [StoolLogItem]) {
         var snapshot = Snapshot()
-        snapshot.appendSections([.log])
-        snapshot.appendItems(stoolLogEntities)
+        for stoolLogListSection in StoolLogListSection.allCases {
+            snapshot.appendSections([stoolLogListSection])
+        }
+        for stoolLogEntity in stoolLogEntities {
+            snapshot.appendItems([stoolLogEntity], toSection: stoolLogEntity.section)
+        }
         apply(snapshot, animatingDifferences: true)
+    }
+    
+    func reapplyCurrentSnapshot() {
+        var currentSnapshot = self.snapshot()
+        apply(currentSnapshot, animatingDifferences: true)
     }
 }

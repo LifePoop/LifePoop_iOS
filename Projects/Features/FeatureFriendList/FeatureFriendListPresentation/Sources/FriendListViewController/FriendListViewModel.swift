@@ -22,52 +22,110 @@ public final class FriendListViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
-        let didSelectFirend = PublishRelay<FriendEntity>()
-        let didTapInvitationButton = PublishRelay<Void>()
+        let friendDidSelect = PublishRelay<IndexPath>()
+        let invitationButtonDidTap = PublishRelay<Void>()
+        let addingFriendDidComplete = PublishRelay<Void>()
     }
     
     public struct Output {
-        let navigationTitle = Observable.of(LocalizableString.friendsList)
-        let shouldShowFriendList = BehaviorRelay<[FriendEntity]>(value: [])
-        let shouldShowEmptyList = PublishRelay<Void>()
-        let shouldShowToastMessge = PublishRelay<String>()
+        let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
+        let showFriendList = PublishRelay<[FriendEntity]>()
+        let showEmptyList = PublishRelay<Void>()
+        let showToastMessge = PublishRelay<String>()
     }
     
-    @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
-    private weak var coordiantor: FriendListCoordinator?
-    
-    private var disposeBag = DisposeBag()
-    
-    public init(coordinator: FriendListCoordinator?) {
-        self.coordiantor = coordinator
-        bind(coordinator: coordinator)
+    public struct State {
+        let friendList = BehaviorRelay<[FriendEntity]>(value: [])
     }
     
     public let input = Input()
     public let output = Output()
+    public let state = State()
+    
+    @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
+    
+    private weak var coordinator: FriendListCoordinator?
+    private var disposeBag = DisposeBag()
+    
+    public init(coordinator: FriendListCoordinator?) {
+        self.coordinator = coordinator
+        bind(coordinator: coordinator)
+    }
     
     private func bind(coordinator: FriendListCoordinator?) {
         
-        input.didTapInvitationButton
+        input.viewDidLoad
+            .map { _ in true }
+            .bind(to: output.shouldLoadingIndicatorAnimating)
+            .disposed(by: disposeBag)
+        
+        let updateFriendList = Observable<Void>.merge(
+            input.viewDidLoad.asObservable(),
+            input.addingFriendDidComplete.asObservable()
+        ).share()
+        
+        let fetchedFriendList = updateFriendList
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.friendListUseCase.fetchFriendList()
+            }
+            .share()
+        
+        fetchedFriendList
+            .compactMap { $0.element }
+            .debug()
+            .bind(to: state.friendList)
+            .disposed(by: disposeBag)
+        
+        fetchedFriendList
+            .compactMap { $0.error }
+            .map { _ in [] }
+            .bind(to: state.friendList)
+            .disposed(by: disposeBag)
+        
+        fetchedFriendList
+            .compactMap { $0.error }
+            .toastMessageMap(to: .friendList(.fetchFriendListFail) )
+            .bind(to: output.showToastMessge)
+            .disposed(by: disposeBag)
+        
+        fetchedFriendList
+            .filter { $0.isStopEvent }
+            .map { _ in false }
+            .bind(to: output.shouldLoadingIndicatorAnimating)
+            .disposed(by: disposeBag)
+        
+        input.invitationButtonDidTap
             .withUnretained(self)
             .bind { `self`, _ in
                 coordinator?.coordinate(
-                    by: .shouldShowFriendInvitation(toastMessageStream: self.output.shouldShowToastMessge)
+                    by: .showFriendInvitation(
+                        toastMessageStream: self.output.showToastMessge,
+                        friendListUpdateStream: self.input.addingFriendDidComplete
+                    )
                 )
             }
             .disposed(by: disposeBag)
         
-        input.viewDidLoad
-            .withUnretained(self)
-            .flatMap { `self`, _ in self.friendListUseCase.fetchFriendList() }
-            .withUnretained(self)
-            .bind(onNext: { `self`, friendList in
-                if friendList.isEmpty {
-                    self.output.shouldShowEmptyList.accept(())
-                } else {
-                    self.output.shouldShowFriendList.accept(friendList)
-                }
-            })
+        input.friendDidSelect
+            .withLatestFrom(state.friendList) { ($0, $1) }
+            .map { indexPath, friendList in
+                friendList[indexPath.row]
+            }
+            .bind { friendEntity in
+                coordinator?.coordinate(by: .showFriendsStoolLog(friendEntity: friendEntity))
+            }
+            .disposed(by: disposeBag)
+        
+        state.friendList
+            .filter { !$0.isEmpty }
+            .bind(to: output.showFriendList)
+            .disposed(by: disposeBag)
+        
+        state.friendList
+            .filter { $0.isEmpty }
+            .map { _ in }
+            .bind(to: output.showEmptyList)
             .disposed(by: disposeBag)
     }
     

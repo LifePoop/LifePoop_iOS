@@ -83,7 +83,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                     self.getTimeDifference(fromDateOf: stoolStoryLogs[currentIndex].stoolLog.date)
                 )
                 self.output.updateFriendStoolLogSummary.accept(
-                    LocalizableString.bowelMovementCountOfFriend(friend.name, totalCount)
+                    LocalizableString.bowelMovementCountOfFriend(friend.nickname, totalCount)
                 )
             })
             .disposed(by: disposeBag)
@@ -175,7 +175,6 @@ public final class FriendStoolStoryViewModel: ViewModelType {
             .do(onNext: { [weak self] _ in
                 self?.output.showLoadingIndicator.accept(true)
             })
-            .delay(.seconds(1), scheduler: MainScheduler.instance)
             .do(onNext: { [weak self] _ in
                 guard let lastLog = stoolStoryLogs.popLast() else { return }
                 let newLog = StoolStoryLogEntity(stoolLog: lastLog.stoolLog, isCheeringUpAvailable: false)

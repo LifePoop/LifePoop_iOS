@@ -18,6 +18,13 @@ import Utils
 
 public final class FriendListViewController: LifePoopViewController, ViewType {
     
+    private let loadingIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .medium)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .large
+        return activityIndicator
+    }()
+    
     private let rightBarButtonItem = UIBarButtonItem(image: ImageAsset.iconAdd.original)
     
     private lazy var friendListCollectionView: UICollectionView = {
@@ -43,6 +50,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         return emptyFriendListView
     }()
     
+    // TODO: 피그마 요구사항에 있는 친구 목록에서의 Toast와 에러 처리를 위한 Toast의 UI 통합 필요
     private let toastLabel: ToastLabel = {
         let label = ToastLabel()
         label.backgroundColor = ColorAsset.gray900.color
@@ -62,29 +70,34 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
         
         rightBarButtonItem.rx.tap
-            .bind(to: input.didTapInvitationButton)
+            .bind(to: input.invitationButtonDidTap)
+            .disposed(by: disposeBag)
+        
+        friendListCollectionView.rx.itemSelected
+            .bind(to: input.friendDidSelect)
             .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: FriendListViewModel) {
         let output = viewModel.output
         
-        output.navigationTitle
-            .withUnretained(self)
-            .bind(onNext: { `self`, title in
-                self.navigationItem.title = title
-            })
+        output.shouldLoadingIndicatorAnimating
+            .asSignal()
+            .distinctUntilChanged()
+            .emit(to: loadingIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
         
-        output.shouldShowEmptyList
+        output.showEmptyList
+            .asSignal()
             .withUnretained(self)
-            .bind(onNext: { `self`, _ in
+            .emit(onNext: { `self`, _ in
                 self.friendListCollectionView.isHidden = true
                 self.emptyFriendListView.isHidden = false
             })
             .disposed(by: disposeBag)
-
-        output.shouldShowFriendList
+        
+        output.showFriendList
+            .observe(on: MainScheduler.asyncInstance)
             .do(onNext: { [weak self] _ in
                 self?.emptyFriendListView.isHidden = true
                 self?.friendListCollectionView.isHidden = false
@@ -93,12 +106,12 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
                 cellIdentifier: FriendListCollectionViewCell.identifier,
                 cellType: FriendListCollectionViewCell.self)
             ) { _, friend, cell in
-
                 cell.configure(with: friend)
             }
             .disposed(by: disposeBag)
         
-        output.shouldShowToastMessge
+        output.showToastMessge
+            .asSignal()
             .map { message in
                 let fullString = NSMutableAttributedString()
                 
@@ -111,21 +124,29 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
                 fullString.append(NSAttributedString(string: message))
                 return fullString
             }
-            .bind(onNext: toastLabel.show(message:))
+            .emit(onNext: toastLabel.show(message:))
             .disposed(by: disposeBag)
     }
     
     public override func configureUI() {
         super.configureUI()
-        
+        title = LocalizableString.friendsList
         navigationController?.setNavigationBarHidden(false, animated: false)
-        
         let spacer = UIBarButtonItem.fixedSpace(14)
         navigationItem.rightBarButtonItems = [spacer, rightBarButtonItem]
     }
     
     public override func layoutUI() {
         super.layoutUI()
+        defer {
+            view.bringSubviewToFront(loadingIndicator)
+            view.bringSubviewToFront(toastLabel)
+        }
+        
+        view.addSubview(loadingIndicator)
+        loadingIndicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         view.addSubview(friendListCollectionView)
         friendListCollectionView.snp.makeConstraints { make in

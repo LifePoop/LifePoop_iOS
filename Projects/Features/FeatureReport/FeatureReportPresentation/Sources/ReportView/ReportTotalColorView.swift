@@ -38,10 +38,14 @@ final class ReportTotalColorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateColorBars(with colorBarData: [(report: StoolColorReport, barWidthRatio: Double)]) {
+    func updateColorBars(with stoolColorReports: [StoolColorReport]) {
         clearColorBars()
-        colorBarData.forEach { report, barWidthRatio in
-            updateColorBar(color: report.color.color, count: report.count, barWidthRatio: barWidthRatio)
+        stoolColorReports.forEach {
+            updateColorBar(
+                color: $0.color.color,
+                count: $0.count,
+                barWidthRatio: $0.barWidthRatio
+            )
         }
     }
     

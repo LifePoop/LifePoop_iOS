@@ -9,7 +9,7 @@
 import Foundation
 
 public struct StoryFeedEntity {
-    public let hassId: UUID = UUID()
+    public let hashId: UUID = UUID()
     
     public let user: CheeringFriendInfoEntity
     public let stories: [StoryEntity]
@@ -22,10 +22,10 @@ public struct StoryFeedEntity {
 
 extension StoryFeedEntity: Hashable {
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        return lhs.hassId == rhs.hassId
+        return lhs.hashId == rhs.hashId
     }
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(hassId)
+        hasher.combine(hashId)
     }
 }

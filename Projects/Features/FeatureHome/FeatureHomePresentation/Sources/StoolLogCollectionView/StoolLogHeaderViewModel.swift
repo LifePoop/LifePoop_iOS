@@ -30,11 +30,12 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     }
     
     public struct Output {
-        let isFriendEmpty = PublishRelay<Bool>()
+        let showInviteFriendUI = PublishRelay<Void>()
+        let isStoryFeedEmpty = PublishRelay<Bool>()
         let updateCheeringProfileCharacters = PublishRelay<(ProfileCharacter?, ProfileCharacter?)>()
         let updateCheeringFriendNameAndCount = PublishRelay<(name: String, count: Int)>()
         let showEmptyCheeringInfo = PublishRelay<Void>()
-        let updateFriends = PublishRelay<[FriendEntity]>()
+        let updateStoryFeeds = PublishRelay<[StoryFeedEntity]>()
         let setDateDescription = PublishRelay<String>()
         let setFriendsCheeringDescription = PublishRelay<String>()
         let showErrorMessage = PublishRelay<String>()
@@ -43,6 +44,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     public struct State {
         let cheeringInfo = BehaviorRelay<CheeringInfoEntity?>(value: nil)
         let friends = BehaviorRelay<[FriendEntity]>(value: [])
+        let storyFeeds = BehaviorRelay<[StoryFeedEntity]>(value: [])
     }
     
     public let input = Input()
@@ -65,9 +67,9 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         .share()
         
         viewDidLoadOrRefresh
-            .withLatestFrom(state.friends)
+            .withLatestFrom(state.storyFeeds)
             .compactMap { $0 }
-            .bind(to: output.updateFriends)
+            .bind(to: output.updateStoryFeeds)
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
@@ -77,9 +79,16 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
-            .withLatestFrom(state.friends)
+            .withLatestFrom(state.storyFeeds)
             .map { $0.isEmpty }
-            .bind(to: output.isFriendEmpty)
+            .bind(to: output.isStoryFeedEmpty)
+            .disposed(by: disposeBag)
+        
+        viewDidLoadOrRefresh
+            .withLatestFrom(state.friends)
+            .filter { $0.isEmpty }
+            .map { _ in }
+            .bind(to: output.showInviteFriendUI)
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
@@ -99,30 +108,15 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         viewDidLoadOrRefresh
+            .withUnretained(self)
+            .filter { `self`, _ in
+                !self.state.friends.value.isEmpty
+            }
             .withLatestFrom(state.cheeringInfo)
             .compactMap { $0 }
             .filter { $0.count == .zero }
             .map { _ in }
             .bind(to: output.showEmptyCheeringInfo)
-            .disposed(by: disposeBag)
-        
-        let friendListCellIndex = input.friendListCellDidTap
-            .map { $0.item }
-            .share()
-        
-        // FIXME: 선택된 친구의 스토리 불러오는 코드 - 삭제 또는 수정 필요
-        friendListCellIndex
-            .withLatestFrom(output.updateFriends) { index, friendEntities in
-                friendEntities[index]
-            }
-            .withUnretained(self)
-            .flatMapLatest { `self`, friend in
-                self.homeUseCase.fetchStoolLogsOfSelectedFriend(friend)
-                    .map { (friend: friend, stoolLogs: $0) }
-            }
-            .bind(onNext: { friend, stoolLogs in
-                coordinator?.coordinate(by: .friendButtonDidTap(friend: friend, stoolLogs: stoolLogs))
-            })
             .disposed(by: disposeBag)
         
         Observable.merge(

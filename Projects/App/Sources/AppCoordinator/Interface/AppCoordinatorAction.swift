@@ -10,6 +10,7 @@ import Foundation
 
 public enum AppCoordinateAction {
     case appDidStart
+    case authenticationDidReset
     case accessTokenDidfetch
     case authenticationProcessDidFinish
 }

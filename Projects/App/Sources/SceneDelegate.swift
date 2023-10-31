@@ -15,13 +15,12 @@ import FeatureFriendListDIContainer
 import FeatureFriendListRepository
 import FeatureFriendListUseCase
 import FeatureHomeDIContainer
-import FeatureHomeUseCase
 import FeatureHomeRepository
+import FeatureHomeUseCase
 import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
 import FeatureReportDIContainer
-import FeatureReportRepository
 import FeatureReportUseCase
 import FeatureSettingDIContainer
 import FeatureSettingRepository
@@ -97,6 +96,7 @@ private extension SceneDelegate {
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(StoolLogEntityMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(StoolLogDTOMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(CheeringInfoEntityMapper()) }
+        CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(StoryFeedEntityMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(FriendEntityMapper()) }
         CoreDIContainer.shared.register(service: EndpointService.self) { URLSessionEndpointService.shared }
         CoreDIContainer.shared.register(service: DiskCacheStorage.self) { FileManagerDiskCacheStorage.shared }
@@ -110,6 +110,8 @@ private extension SceneDelegate {
         SharedDIContainer.shared.register(service: AutoLoginUseCase.self) { DefaultAutoLoginUseCase() }
         SharedDIContainer.shared.register(service: FeedVisibilityUseCase.self) { DefaultFeedVisibilityUseCase() }
         SharedDIContainer.shared.register(service: ProfileCharacterUseCase.self) { DefaultProfileCharacterUseCase() }
+        SharedDIContainer.shared.register(service: StoryFeedUseCase.self) { DefaultStoryFeedUseCase() }
+        SharedDIContainer.shared.register(service: StoryFeedRepository.self) { DefaultStoryFeedRepository() }
         SharedDIContainer.shared.register(service: StoolLogUseCase.self) { DefaultStoolLogUseCase() }
         SharedDIContainer.shared.register(service: StoolLogRepository.self) { DefaultStoolLogRepository() }
         SharedDIContainer.shared.register(service: CheeringInfoUseCase.self) { DefaultCheeringInfoUseCase() }
@@ -138,14 +140,10 @@ private extension SceneDelegate {
         
         // FIXME: MockUseCase -> 실제 UseCase 주입하도록 변경
         SettingDIContainer.shared.register(service: ProfileEditUseCase.self) { MockProfileEditUseCase() }
-        
     }
     
     func registerReportDependencies() {
         ReportDIContainer.shared.register(service: ReportUseCase.self) { DefaultReportUseCase() }
-        
-        // FIXME: MockRepository -> 실제 Repository 주입하도록 변경
-        ReportDIContainer.shared.register(service: ReportRepository.self) { MockReportRepository() }
     }
     
     func registerFriendListDependencies() {

@@ -23,8 +23,8 @@ final class ConditionSelectionCellViewModel: ViewModelType {
     
     struct Output {
         let conditionDescription = BehaviorRelay<String>(value: "")
-        let shouldHideDetailViewButton = BehaviorRelay<Bool>(value: true)
-        let shouldSelectCheckBox = BehaviorRelay<Bool>(value: false)
+        let hideDetailViewButton = BehaviorRelay<Bool>(value: true)
+        let selectCheckBox = BehaviorRelay<Bool>(value: false)
     }
 
     let input = Input()
@@ -34,6 +34,6 @@ final class ConditionSelectionCellViewModel: ViewModelType {
     init(entity: AgreementCondition) {
         self.entity = entity
         output.conditionDescription.accept(entity.descriptionText)
-        output.shouldHideDetailViewButton.accept(!entity.containsDetailView)
+        output.hideDetailViewButton.accept(!entity.containsDetailView)
     }
 }

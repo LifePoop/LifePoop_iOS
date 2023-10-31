@@ -208,11 +208,11 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             }
             .disposed(by: disposeBag)
         
-        output.shouldSelectAllConditions
+        output.selectAllConditions
             .bind(to: selectAllConditionView.rx.isChecked)
             .disposed(by: disposeBag)
         
-        output.shouldSelectGender
+        output.selectGender
             .map { $0.index }
             .withUnretained(self)
             .bind(onNext: { `self`, targetIndex in
@@ -305,7 +305,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             make.top.equalTo(selectAllConditionView.snp.bottom).offset(10)
             sumOfVerticalMargins += 10
             make.leading.trailing.equalToSuperview().inset(frameWidth*0.06)
-            make.height.equalTo(173)
+            make.height.equalTo(135)
         }
         
         nextButton.snp.makeConstraints { make in

@@ -64,6 +64,8 @@ public final class SettingViewModel: ViewModelType {
     private let state = State()
     
     @Inject(SettingDIContainer.shared) private var userSettingUseCase: UserSettingUseCase
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
+
     @Inject(SharedDIContainer.shared) private var bundleResourceUseCase: BundleResourceUseCase
     
     private weak var coordinator: SettingCoordinator?
@@ -193,12 +195,19 @@ public final class SettingViewModel: ViewModelType {
         .disposed(by: disposeBag)
         
         input.logoutConfirmButtonDidTap
-            .bind {
-                // TODO: Execute Logout UseCase
-                coordinator?.coordinate(by: .logOutConfirmButtonDidTap)
+            .withUnretained(self)
+            .flatMapLatest { `self`, _ in
+                self.userInfoUseCase.requestLogout()
             }
+            .bind(onNext: { isSuccess in
+                if isSuccess {
+                    coordinator?.coordinate(by: .logOutConfirmButtonDidTap)
+                } else {
+                    print("로그아웃 실패 모달 띄우기")
+                }
+            })
             .disposed(by: disposeBag)
-        
+
         input.withdrawButtonDidTap
             .bind(to: output.showWithdrawAlert)
             .disposed(by: disposeBag)
@@ -211,9 +220,17 @@ public final class SettingViewModel: ViewModelType {
         .disposed(by: disposeBag)
         
         input.withdrawConfirmButtonDidTap
-            .bind {
-                // TODO: Execute Withdraw UseCase
-                coordinator?.coordinate(by: .withdrawConfirmButtonDidTap)
+            .withUnretained(self)
+            .flatMap { `self`, _ in
+                self.userInfoUseCase.requestAccountWithdrawl(for: .apple)
+            }
+            .withUnretained(self)
+            .bind { `self`, isSuccess in
+                if isSuccess {
+                    self.coordinator?.coordinate(by: .withdrawConfirmButtonDidTap)
+                } else {
+                    print("탈퇴 실패 모달 띄우기")
+                }
             }
             .disposed(by: disposeBag)
         

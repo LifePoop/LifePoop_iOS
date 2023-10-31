@@ -67,7 +67,7 @@ public final class LoginViewModel: ViewModelType {
             .bind(onNext: { [weak self] oAuthTokenInfo, loginResult in
                 switch loginResult {
                 case .success(let isSuccess):
-                    isSuccess ? coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                    isSuccess ? coordinator?.coordinate(by: .finishLoginFlow)
                               : coordinator?.coordinate(
                                     by: .didTapKakaoLoginButton(userAuthInfo: oAuthTokenInfo)
                                 )
@@ -101,7 +101,7 @@ public final class LoginViewModel: ViewModelType {
             .bind(onNext: { [weak self] oAuthTokenInfo, loginResult in
                 switch loginResult {
                 case .success(let isSuccess):
-                    isSuccess ? coordinator?.coordinate(by: .shouldFinishLoginFlow)
+                    isSuccess ? coordinator?.coordinate(by: .finishLoginFlow)
                               : coordinator?.coordinate(
                                     by: .didTapAppleLoginButton(userAuthInfo: oAuthTokenInfo)
                                 )

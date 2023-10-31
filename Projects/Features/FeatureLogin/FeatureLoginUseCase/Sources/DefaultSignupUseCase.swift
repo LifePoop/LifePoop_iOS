@@ -60,36 +60,30 @@ public final class DefaultSignupUseCase: SignupUseCase {
             .catchAndReturn(false)
     }
     
-    // TODO: Repository로 이동
-    private let conditionEntities: [AgreementCondition] = [
-        .init(
-            descriptionText: LocalizableString.overFourteenYearsOld,
-            descriptionTextSize: .normal,
-            containsDetailView: false,
-            selectionType: .essential
-        ),
-        .init(
-            descriptionText: LocalizableString.termsOfService,
-            descriptionTextSize: .normal,
-            containsDetailView: true,
-            selectionType: .essential
-        ),
-        .init(
-            descriptionText: LocalizableString.privacyPolicyEssential,
-            descriptionTextSize: .normal,
-            containsDetailView: true,
-            selectionType: .essential
-        ),
-        .init(
-            descriptionText: LocalizableString.receiveEventAndPromotionNotificationsOptional,
-            descriptionTextSize: .normal,
-            containsDetailView: false,
-            selectionType: .optional
-        )
-    ]
-    
     public func fetchSelectableConditions() -> Observable<[AgreementCondition]> {
-        Observable.just(conditionEntities)
+        
+        let conditionEntities: [AgreementCondition] = [
+            .init(
+                descriptionText: LocalizableString.overFourteenYearsOld,
+                descriptionTextSize: .normal,
+                containsDetailView: false,
+                selectionType: .essential
+            ),
+            .init(
+                descriptionText: LocalizableString.termsOfServiceEssential,
+                descriptionTextSize: .normal,
+                containsDetailView: true,
+                selectionType: .essential
+            ),
+            .init(
+                descriptionText: LocalizableString.privacyPolicyEssential,
+                descriptionTextSize: .normal,
+                containsDetailView: true,
+                selectionType: .essential
+            )
+        ]
+        
+        return Observable.just(conditionEntities)
             .do(onNext: { [weak self] conditions in
                 let essentialConditions = conditions.filter { $0.selectionType == .essential }
                 self?.essentialConditions = Set(essentialConditions)

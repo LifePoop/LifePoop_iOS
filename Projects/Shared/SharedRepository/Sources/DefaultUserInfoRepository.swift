@@ -8,6 +8,7 @@
 
 import Foundation
 
+import CoreAuthentication
 import CoreDIContainer
 import CoreEntity
 import CoreNetworkService
@@ -97,6 +98,82 @@ public final class DefaultUserInfoRepository: UserInfoRepository {
                 )
             }
             .logErrorIfDetected(category: .network, type: .error)
+    }
+
+    /** 로그아웃 요청 */
+    public func requestLogout(accessToken: String) -> Single<Bool> {
+        urlSessionEndpointService
+            .fetchStatusCode(
+                endpoint: LifePoopLocalTarget.logout(
+                    accessToken: accessToken
+                )
+            )
+            .map { statusCode in
+                switch statusCode {
+                case 204:
+                    return true
+                case 444:
+                    throw NetworkError.invalidAccessToken
+                default:
+                    throw NetworkError.invalidStatusCode(code: statusCode)
+                }
+            }
+    }
+
+    
+    public func fetchAppleAuthorizationCode() -> Single<String> {
+        let appleAuthManager = AppleAuthManager()
+        return appleAuthManager.fetchAuthorizationCode()
+    }
+    
+    /** Apple  계정 탈퇴 요청 */
+    public func requestAppleWithdrawl(authorizationCode: String, accessToken: String) -> Single<Bool> {
+        self.urlSessionEndpointService
+            .fetchStatusCode(
+                endpoint: LifePoopLocalTarget.withdrawAppleAccount(
+                    accessToken: accessToken
+                ),
+                // TODO: 추후 인코딩 가능한 객체로 변경
+                with: [
+                    "authorizationCode": authorizationCode
+                ]
+            )
+            .asObservable()
+            .withUnretained(self)
+            .map { `self`, statusCode in
+                switch statusCode {
+                case 204:
+                    return true
+                case 444:
+                    throw NetworkError.invalidAccessToken
+                default:
+                    throw NetworkError.invalidStatusCode(code: statusCode)
+                }
+            }
+            .asSingle()
+    }
+
+    /** Kakao  계정 탈퇴 요청 */
+    public func requestKakaoWithdrawl(accessToken: String) -> Single<Bool> {
+        self.urlSessionEndpointService
+            .fetchStatusCode(
+                endpoint: LifePoopLocalTarget.withdrawKakaoAccount(
+                    accessToken: accessToken
+                )
+            )
+            .asObservable()
+            .withUnretained(self)
+            .map { `self`, statusCode in
+                switch statusCode {
+                case 204:
+                    return true
+                case 444:
+                    throw NetworkError.invalidAccessToken
+                default:
+                    throw NetworkError.invalidStatusCode(code: statusCode)
+                }
+            }
+            .asSingle()
     }
 }
 

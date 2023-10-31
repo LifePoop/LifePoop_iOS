@@ -23,26 +23,26 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
     private let collectionViewTopSeparatorView = SeparatorView()
     private let collectionViewBottonSeparatorView = SeparatorView()
     
-    private lazy var friendListCollectionViewDiffableDataSource = FriendListCollectionViewDiffableDataSource(
-        collectionView: friendListCollectionView
+    private lazy var storyFeedCollectionViewDiffableDataSource = StoryFeedCollectionViewDiffableDataSource(
+        collectionView: storyFeedCollectionView
     )
-    private let friendListCollectionViewSectionLayout = FriendListCollectionViewSectionLayout()
-    private lazy var friendListCollectionViewLayout: UICollectionViewCompositionalLayout = {
+    private let storyFeedCollectionViewSectionLayout = StoryFeedCollectionViewSectionLayout()
+    private lazy var storyFeedCollectionViewLayout: UICollectionViewCompositionalLayout = {
         let configuration = UICollectionViewCompositionalLayoutConfiguration()
         let compositionalLayout = UICollectionViewCompositionalLayout(
-            sectionProvider: friendListCollectionViewSectionLayout.sectionProvider,
+            sectionProvider: storyFeedCollectionViewSectionLayout.sectionProvider,
             configuration: configuration
         )
         return compositionalLayout
     }()
-    private lazy var friendListCollectionView: UICollectionView = {
+    private lazy var storyFeedCollectionView: UICollectionView = {
         let collectionView = UICollectionView(
             frame: .zero,
-            collectionViewLayout: friendListCollectionViewLayout
+            collectionViewLayout: storyFeedCollectionViewLayout
         )
         collectionView.register(
-            FriendListCollectionViewCell.self,
-            forCellWithReuseIdentifier: FriendListCollectionViewCell.identifier
+            StoryFeedCollectionViewCell.self,
+            forCellWithReuseIdentifier: StoryFeedCollectionViewCell.identifier
         )
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.bounces = false
@@ -60,6 +60,12 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
     private lazy var inviteFriendView: InviteFriendView = {
         let view = InviteFriendView()
         view.addGestureRecognizer(inviteFriendViewTapGesture)
+        return view
+    }()
+    
+    private let noFriendStoolLogYetView: NoFriendStoolLogYetView = {
+        let view = NoFriendStoolLogYetView()
+        view.isHidden = true
         return view
     }()
     
@@ -111,7 +117,7 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
             .bind(to: input.inviteFriendButtonDidTap)
             .disposed(by: disposeBag)
         
-        friendListCollectionView.rx.itemSelected
+        storyFeedCollectionView.rx.itemSelected
             .bind(to: input.friendListCellDidTap)
             .disposed(by: disposeBag)
     }
@@ -119,17 +125,25 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
     func bindOutput(from viewModel: StoolLogHeaderViewModel) {
         let output = viewModel.output
         
-        output.isFriendEmpty
+        output.showInviteFriendUI
             .asSignal()
             .withUnretained(self)
-            .emit { `self`, isEmpty in
-                self.toggleFriendListCollectionView(by: isEmpty)
+            .emit { `self`, _ in
+                self.showInviteFriendUI()
             }
             .disposed(by: disposeBag)
         
-        output.updateFriends
+        output.isStoryFeedEmpty
             .asSignal()
-            .emit(onNext: friendListCollectionViewDiffableDataSource.update)
+            .withUnretained(self)
+            .emit { `self`, isEmpty in
+                self.showStoryFeedUI(by: isEmpty)
+            }
+            .disposed(by: disposeBag)
+        
+        output.updateStoryFeeds
+            .asSignal()
+            .emit(onNext: storyFeedCollectionViewDiffableDataSource.update)
             .disposed(by: disposeBag)
         
         output.setDateDescription
@@ -160,8 +174,9 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
 private extension StoolLogHeaderView {
     func layoutUI() {
         addSubview(collectionViewTopSeparatorView)
-        addSubview(friendListCollectionView)
+        addSubview(storyFeedCollectionView)
         addSubview(inviteFriendView)
+        addSubview(noFriendStoolLogYetView)
         addSubview(collectionViewBottonSeparatorView)
         addSubview(cheeringButtonTodayLabelStackView)
         
@@ -171,7 +186,7 @@ private extension StoolLogHeaderView {
             make.trailing.equalToSuperview()
         }
         
-        friendListCollectionView.snp.makeConstraints { make in
+        storyFeedCollectionView.snp.makeConstraints { make in
             make.top.equalTo(collectionViewTopSeparatorView.snp.bottom)
             make.bottom.equalTo(collectionViewBottonSeparatorView.snp.top)
             make.leading.trailing.equalToSuperview()
@@ -179,6 +194,13 @@ private extension StoolLogHeaderView {
         }
 
         inviteFriendView.snp.makeConstraints { make in
+            make.top.equalTo(collectionViewTopSeparatorView.snp.bottom)
+            make.bottom.equalTo(collectionViewBottonSeparatorView.snp.top)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(102)
+        }
+        
+        noFriendStoolLogYetView.snp.makeConstraints { make in
             make.top.equalTo(collectionViewTopSeparatorView.snp.bottom)
             make.bottom.equalTo(collectionViewBottonSeparatorView.snp.top)
             make.leading.trailing.equalToSuperview()
@@ -199,9 +221,17 @@ private extension StoolLogHeaderView {
 }
 
 private extension StoolLogHeaderView {
-    func toggleFriendListCollectionView(by isHidden: Bool) {
-        friendListCollectionView.isHidden = isHidden
-        inviteFriendView.isHidden = !isHidden
-        cheeringButtonView.isHidden = isHidden
+    func showInviteFriendUI() {
+        inviteFriendView.isHidden = false
+        storyFeedCollectionView.isHidden = true
+        cheeringButtonView.isHidden = true
+        noFriendStoolLogYetView.isHidden = true
+    }
+    
+    func showStoryFeedUI(by isStoryFeedEmpty: Bool) {
+        noFriendStoolLogYetView.isHidden = !isStoryFeedEmpty
+        storyFeedCollectionView.isHidden = isStoryFeedEmpty
+        inviteFriendView.isHidden = true
+        cheeringButtonView.isHidden = false
     }
 }

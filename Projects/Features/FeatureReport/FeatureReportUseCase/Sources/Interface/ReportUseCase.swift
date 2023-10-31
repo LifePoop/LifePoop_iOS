@@ -13,5 +13,6 @@ import RxSwift
 import CoreEntity
 
 public protocol ReportUseCase {
-    func fetchAllUserStoolReports() ->  Observable<[StoolReport]>
+    func fetchAllUserStoolReports() -> Observable<[StoolReport]>
+    func fetchUserNickname() -> Observable<String>
 }

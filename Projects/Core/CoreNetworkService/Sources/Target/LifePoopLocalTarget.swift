@@ -12,16 +12,20 @@ import Foundation
 
 public enum LifePoopLocalTarget {
     case login(provider: String)
+    case logout(accessToken: String)
     case updateAccessToken(refreshToken: String)
     case signup(provider: String)
     case fetchUserInfo(accessToken: String)
     case fetchFriendList(accessToken: String)
+    case fetchStoryFeed(accessToken: String)
     case fetchStoolLog(accessToken: String, userID: Int)
     case fetchStoolLogAtDate(accessToken: String, userID: Int, date: String)
     case postStoolLog(accessToken: String)
     case fetchFriendsWithStories(accessToken: String)
     case fetchCheeringInfo(accessToken: String, userID: Int, date: String)
     case sendInvitationCode(code: String, accessToken: String)
+    case withdrawAppleAccount(accessToken: String)
+    case withdrawKakaoAccount(accessToken: String)
 }
 
 extension LifePoopLocalTarget: TargetType {
@@ -39,6 +43,8 @@ extension LifePoopLocalTarget: TargetType {
             return "/auth/\(provider)/register"
         case .login(let provider):
             return "/auth/\(provider)/login"
+        case .logout:
+            return "/auth/logout"
         case .fetchStoolLog(_, let userID):
             return "/post/\(userID)"
         case .fetchStoolLogAtDate(_, let userID, let date):
@@ -53,8 +59,14 @@ extension LifePoopLocalTarget: TargetType {
             return "/user"
         case .fetchFriendList:
             return "/user/friendship"
+        case .fetchStoryFeed:
+            return "/story"
         case .sendInvitationCode(let code, _):
             return "/user/friendship/\(code)"
+        case .withdrawAppleAccount:
+            return "/auth/APPLE/withdraw"
+        case .withdrawKakaoAccount:
+            return "/auth/KAKAO/withdraw"
         }
     }
     
@@ -65,9 +77,17 @@ extension LifePoopLocalTarget: TargetType {
                 .fetchFriendsWithStories,
                 .fetchCheeringInfo,
                 .fetchUserInfo,
-                .fetchFriendList:
+                .fetchFriendList,
+                .fetchStoryFeed:
             return .get
-        case .postStoolLog, .login, .signup, .updateAccessToken, .sendInvitationCode:
+        case .postStoolLog,
+                .login,
+                .logout,
+                .signup,
+                .updateAccessToken,
+                .sendInvitationCode,
+                .withdrawAppleAccount,
+                .withdrawKakaoAccount:
             return .post
         }
     }
@@ -75,13 +95,17 @@ extension LifePoopLocalTarget: TargetType {
     public var headers: [String: String]? {
         switch self {
         case .fetchStoolLog(let accessToken, _),
-                .fetchStoolLogAtDate(let accessToken, _, _),
-                .postStoolLog(let accessToken),
-                .fetchFriendsWithStories(let accessToken),
-                .fetchCheeringInfo(let accessToken, _, _),
-                .fetchUserInfo(let accessToken),
-                .sendInvitationCode(_, let accessToken),
-                .fetchFriendList(let accessToken):
+             .fetchStoolLogAtDate(let accessToken, _, _),
+             .postStoolLog(let accessToken),
+             .fetchFriendsWithStories(let accessToken),
+             .fetchCheeringInfo(let accessToken, _, _),
+             .fetchUserInfo(let accessToken),
+             .sendInvitationCode(_, let accessToken),
+             .fetchFriendList(let accessToken),
+             .fetchStoryFeed(let accessToken),
+             .withdrawAppleAccount(let accessToken),
+             .withdrawKakaoAccount(let accessToken),
+             .logout(let accessToken):
             return [
                 "Content-Type": "application/json",
                 "Accept": "application/json",

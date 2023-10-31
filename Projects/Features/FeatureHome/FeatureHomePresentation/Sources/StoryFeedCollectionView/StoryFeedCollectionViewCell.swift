@@ -1,5 +1,5 @@
 //
-//  FriendListCollectionViewCell.swift
+//  StoryFeedCollectionViewCell.swift
 //  FeatureHomePresentation
 //
 //  Created by 김상혁 on 2023/05/01.
@@ -14,7 +14,7 @@ import CoreEntity
 import DesignSystem
 import EntityUIMapper
 
-public final class FriendListCollectionViewCell: UICollectionViewCell {
+public final class StoryFeedCollectionViewCell: UICollectionViewCell {
     
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
@@ -40,16 +40,16 @@ public final class FriendListCollectionViewCell: UICollectionViewCell {
     }
 }
 
-public extension FriendListCollectionViewCell {
-    func configure(with friendEntity: FriendEntity) {
-        profileImageView.image = friendEntity.feedImage
-        nameLabel.text = friendEntity.nickname
+public extension StoryFeedCollectionViewCell {
+    func configure(with storyFeed: StoryFeedEntity) {
+        profileImageView.image = storyFeed.user.profileCharacter.image
+        nameLabel.text = storyFeed.user.nickname
     }
 }
 
 // MARK: - UI Layout
 
-private extension FriendListCollectionViewCell {
+private extension StoryFeedCollectionViewCell {
     func layoutUI() {
         contentView.addSubview(profileImageView)
         contentView.addSubview(nameLabel)

@@ -9,9 +9,10 @@
 import Foundation
 import Security
 
+import RxSwift
+
 import Logger
 import SharedUseCase
-import RxSwift
 
 public final class DefaultKeyChainRepository: KeyChainRepository {
     

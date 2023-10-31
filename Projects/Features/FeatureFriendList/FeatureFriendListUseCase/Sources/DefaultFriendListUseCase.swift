@@ -22,13 +22,13 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
     @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     @Inject(FriendListDIContainer.shared) private var friendListRepository: FriendListRepository
     
+    public init() { }
+    
     public var invitationCode: Observable<String> {
         userInfoUseCase.userInfo
             .map { $0?.invitationCode ?? "" }
             .asObservable()
     }
-    
-    public init() { }
     
     public func fetchFriendList() -> Observable<[FriendEntity]> {
         userInfoUseCase.userInfo
@@ -74,7 +74,7 @@ private extension DefaultFriendListUseCase {
             category: .authentication,
             type: .debug
         )
-
+        
         return originalAuthInfo
             .withUnretained(self)
             .flatMap {`self`, authInfo -> Observable<Bool> in

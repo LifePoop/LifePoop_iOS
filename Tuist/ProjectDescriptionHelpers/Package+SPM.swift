@@ -15,7 +15,7 @@ public extension Package {
         public var package: Package {
             switch self {
             case .Lottie:
-                return .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.2.0")
+                return .package(url: "https://github.com/airbnb/lottie-ios.git", .upToNextMajor(from: "4.2.0"))
             case .SnapKit:
                 return .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.6.0"))
             }

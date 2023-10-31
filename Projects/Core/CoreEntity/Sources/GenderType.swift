@@ -19,11 +19,11 @@ public enum GenderType: Int, CaseIterable, CustomStringConvertible, Codable {
     public var description: String {
         switch self {
         case .female:
-            "FEMALE"
+            return "FEMALE"
         case .male:
-            "MALE"
+            return "MALE"
         case .other:
-            "OTHER"
+            return "OTHER"
         }
     }
     

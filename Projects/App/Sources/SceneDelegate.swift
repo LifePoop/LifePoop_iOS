@@ -11,13 +11,12 @@ import CoreAuthentication
 import CoreDIContainer
 import CoreNetworkService
 import CoreStorageService
-
 import FeatureFriendListDIContainer
 import FeatureFriendListRepository
 import FeatureFriendListUseCase
 import FeatureHomeDIContainer
-import FeatureHomeRepository
 import FeatureHomeUseCase
+import FeatureHomeRepository
 import FeatureLoginDIContainer
 import FeatureLoginRepository
 import FeatureLoginUseCase
@@ -27,13 +26,9 @@ import FeatureReportUseCase
 import FeatureSettingDIContainer
 import FeatureSettingRepository
 import FeatureSettingUseCase
-import FeatureStoolLogDIContainer
-import FeatureStoolLogRepository
-import FeatureStoolLogUseCase
 import SharedDIContainer
 import SharedRepository
 import SharedUseCase
-
 import Utils
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -85,7 +80,6 @@ private extension SceneDelegate {
     }
 }
 
-
 // MARK: - Dependency Registration
 
 private extension SceneDelegate {
@@ -97,12 +91,12 @@ private extension SceneDelegate {
         registerSettingDependencies()
         registerReportDependencies()
         registerFriendListDependencies()
-        registerStoolLogDependencies()
     }
     
     func registerCoreDependencies() {
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(StoolLogEntityMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(StoolLogDTOMapper()) }
+        CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(CheeringInfoEntityMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(FriendEntityMapper()) }
         CoreDIContainer.shared.register(service: EndpointService.self) { URLSessionEndpointService.shared }
         CoreDIContainer.shared.register(service: DiskCacheStorage.self) { FileManagerDiskCacheStorage.shared }
@@ -116,6 +110,10 @@ private extension SceneDelegate {
         SharedDIContainer.shared.register(service: AutoLoginUseCase.self) { DefaultAutoLoginUseCase() }
         SharedDIContainer.shared.register(service: FeedVisibilityUseCase.self) { DefaultFeedVisibilityUseCase() }
         SharedDIContainer.shared.register(service: ProfileCharacterUseCase.self) { DefaultProfileCharacterUseCase() }
+        SharedDIContainer.shared.register(service: StoolLogUseCase.self) { DefaultStoolLogUseCase() }
+        SharedDIContainer.shared.register(service: StoolLogRepository.self) { DefaultStoolLogRepository() }
+        SharedDIContainer.shared.register(service: CheeringInfoUseCase.self) { DefaultCheeringInfoUseCase() }
+        SharedDIContainer.shared.register(service: CheeringInfoRepository.self) { DefaultCheeringInfoRepository() }
         SharedDIContainer.shared.register(service: BundleResourceRepository.self) { DefaultBundleResourceRepository() }
         SharedDIContainer.shared.register(service: UserDefaultsRepository.self) { DefaultUserDefaultsRepository() }
         SharedDIContainer.shared.register(service: KeyChainRepository.self) { DefaultKeyChainRepository() }
@@ -137,26 +135,22 @@ private extension SceneDelegate {
     
     func registerSettingDependencies() {
         SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
+        
+        // FIXME: MockUseCase -> 실제 UseCase 주입하도록 변경
         SettingDIContainer.shared.register(service: ProfileEditUseCase.self) { MockProfileEditUseCase() }
-    }
-    
-    func registerFriendListDependencies() {
-        FriendListDIContainer.shared.register(service: FriendListUseCase.self) {
-            DefaultFriendListUseCase()
-        }
-        FriendListDIContainer.shared.register(service: FriendListRepository.self) {
-            DefaultFriendListRepository()
-        }
+        
     }
     
     func registerReportDependencies() {
         ReportDIContainer.shared.register(service: ReportUseCase.self) { DefaultReportUseCase() }
+        
+        // FIXME: MockRepository -> 실제 Repository 주입하도록 변경
         ReportDIContainer.shared.register(service: ReportRepository.self) { MockReportRepository() }
     }
     
-    func registerStoolLogDependencies() {
-        StoolLogDIContainer.shared.register(service: StoolLogUseCase.self) { DefaultStoolLogUseCase() }
-        StoolLogDIContainer.shared.register(service: StoolLogRepository.self) { MockStoolLogRepository() }
+    func registerFriendListDependencies() {
+        FriendListDIContainer.shared.register(service: FriendListUseCase.self) { DefaultFriendListUseCase() }
+        FriendListDIContainer.shared.register(service: FriendListRepository.self) { DefaultFriendListRepository() }
     }
 }
 

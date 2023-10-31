@@ -143,7 +143,7 @@ public final class InvitationCodeViewModel: ViewModelType {
                 self?.output.dismissAlertView.accept(())
             })
             .map { isSuccess -> String in
-                let actionResult: ActionResult = isSuccess ? 
+                let actionResult: ActionResult = isSuccess ?
                     .success(activity: .addingFriend) :
                     .failure(activity: .addingFriend, error: nil)
                 return actionResult.description

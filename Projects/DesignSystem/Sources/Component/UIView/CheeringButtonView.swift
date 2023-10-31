@@ -1,6 +1,6 @@
 //
 //  CheeringButtonView.swift
-//  FeatureHomePresentation
+//  DesignSystem
 //
 //  Created by 김상혁 on 2023/05/03.
 //  Copyright © 2023 LifePoop. All rights reserved.
@@ -12,23 +12,26 @@ import SnapKit
 
 public final class CheeringButtonView: ShadowView {
     
-    private let imageView: UIImageView = {
+    private let emptyCheeringFriendImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = ImageAsset.cheeringFriends.original
+        imageView.image = ImageAsset.emptyThreeDots.original
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
+    private let cheeringFriendProfileCharacterView = CheeringFriendProfileCharacterView()
+    
     public let titleLabel: UILabel = {
         let label = UILabel()
         label.adjustsFontSizeToFitWidth = true
+        label.text = DesignSystemStrings.noCheeringYet
         label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         return label
     }()
     
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.text = DesignSystemStrings.goCheeringFriends
+        label.text = DesignSystemStrings.goToFriendList
         label.adjustsFontSizeToFitWidth = true
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
@@ -47,6 +50,7 @@ public final class CheeringButtonView: ShadowView {
         stackView.axis = .vertical
         stackView.spacing = 6
         stackView.alignment = .leading
+        stackView.distribution = .equalSpacing
         return stackView
     }()
     
@@ -61,10 +65,6 @@ public final class CheeringButtonView: ShadowView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    public func configureLabel(text: String) {
-        titleLabel.text = text
     }
 }
 
@@ -82,25 +82,26 @@ private extension CheeringButtonView {
 
 private extension CheeringButtonView {
     func layoutUI() {
-        addSubview(imageView)
+        addSubview(emptyCheeringFriendImageView)
+        addSubview(cheeringFriendProfileCharacterView)
         addSubview(titleStackView)
         addSubview(expandRightImageView)
         addSubview(containerButton)
         
-        snp.makeConstraints { make in
-            make.height.equalTo(80)
+        emptyCheeringFriendImageView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(20)
+            make.top.equalTo(titleStackView).offset(10.5)
         }
         
-        imageView.snp.makeConstraints { make in
+        cheeringFriendProfileCharacterView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
-            make.centerY.equalTo(titleLabel)
-            make.width.equalTo(42)
-            make.height.equalTo(24)
+            make.top.equalTo(titleStackView)
         }
         
         titleStackView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalTo(imageView.snp.trailing).offset(12)
+            make.top.equalToSuperview().offset(17.5)
+            make.bottom.equalToSuperview().inset(20.5)
+            make.leading.equalTo(emptyCheeringFriendImageView.snp.trailing).offset(12)
             make.trailing.equalToSuperview().inset(20)
         }
         
@@ -111,6 +112,47 @@ private extension CheeringButtonView {
         
         containerButton.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+}
+
+// MARK: - Public Methods
+
+public extension CheeringButtonView {
+    func updateCheeringFriend(name: String, extraCount: Int) {
+        if extraCount >= 1 {
+            titleLabel.text = DesignSystemStrings.multipleFriendsAreCheeringYou(name, extraCount)
+        } else {
+            titleLabel.text = DesignSystemStrings.friendIsCheeringYou(name)
+        }
+    }
+    
+    func showCheeringFriendImage(firstImage: UIImage?, secondImage: UIImage? = nil) {
+        emptyCheeringFriendImageView.isHidden = true
+        cheeringFriendProfileCharacterView.isHidden = false
+        cheeringFriendProfileCharacterView.setCheeringFriendProfileCharacter(
+            firstImage: firstImage,
+            secondImage: secondImage
+        )
+        
+        titleStackView.snp.remakeConstraints { make in
+            make.top.equalToSuperview().offset(17.5)
+            make.bottom.equalToSuperview().inset(20.5)
+            make.leading.equalTo(cheeringFriendProfileCharacterView.snp.trailing).offset(12)
+            make.trailing.equalToSuperview().inset(20)
+        }
+    }
+    
+    func showEmptyCheeringFriendImage() {
+        emptyCheeringFriendImageView.isHidden = false
+        cheeringFriendProfileCharacterView.isHidden = true
+        titleLabel.text = DesignSystemStrings.noCheeringYet
+        
+        titleStackView.snp.remakeConstraints { make in
+            make.top.equalToSuperview().offset(17.5)
+            make.bottom.equalToSuperview().inset(20.5)
+            make.leading.equalTo(emptyCheeringFriendImageView.snp.trailing).offset(12)
+            make.trailing.equalToSuperview().inset(20)
         }
     }
 }

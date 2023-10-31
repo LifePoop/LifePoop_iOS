@@ -28,5 +28,4 @@ public extension EndpointService {
     func fetchNetworkResult(endpoint: TargetType) -> Single<NetworkResult> {
         fetchNetworkResult(endpoint: endpoint, with: EmptyBody())
     }
-
 }

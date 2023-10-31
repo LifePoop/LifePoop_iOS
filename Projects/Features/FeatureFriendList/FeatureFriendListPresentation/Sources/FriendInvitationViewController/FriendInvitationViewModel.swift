@@ -13,8 +13,6 @@ import RxSwift
 
 import CoreEntity
 import FeatureFriendListCoordinatorInterface
-import FeatureFriendListDIContainer
-import FeatureFriendListUseCase
 import Logger
 import Utils
 
@@ -41,7 +39,11 @@ public final class FriendInvitationViewModel: ViewModelType {
         toastMessageStream: PublishRelay<String>,
         friendListUpdateStream: PublishRelay<Void>
     ) {
-        bind(coordinator: coordinator, toastMessageStream: toastMessageStream, friendListUpdateStream: friendListUpdateStream)
+        bind(
+            coordinator: coordinator,
+            toastMessageStream: toastMessageStream,
+            friendListUpdateStream: friendListUpdateStream
+        )
     }
     
     private func bind(
@@ -49,10 +51,9 @@ public final class FriendInvitationViewModel: ViewModelType {
         toastMessageStream: PublishRelay<String>,
         friendListUpdateStream: PublishRelay<Void>
     ) {
-        
         input.didSelectInvitationType
             .bind(onNext: { invitationType in
-                coordinator?.coordinate(by: 
+                coordinator?.coordinate(by:
                         .showInvitationCodePopup(
                             type: invitationType,
                             toastMessageStream: toastMessageStream,

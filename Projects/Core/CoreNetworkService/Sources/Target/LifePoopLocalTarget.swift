@@ -8,6 +8,8 @@
 
 import Foundation
 
+// FIXME: LifePoopTarget에 구현하는 것으로 수정
+
 public enum LifePoopLocalTarget {
     case login(provider: String)
     case logout(accessToken: String)
@@ -15,8 +17,11 @@ public enum LifePoopLocalTarget {
     case signup(provider: String)
     case fetchUserInfo(accessToken: String)
     case fetchFriendList(accessToken: String)
-    case fetchStoolLog(userID: Int)
+    case fetchStoolLog(accessToken: String, userID: Int)
+    case fetchStoolLogAtDate(accessToken: String, userID: Int, date: String)
     case postStoolLog(accessToken: String)
+    case fetchFriendsWithStories(accessToken: String)
+    case fetchCheeringInfo(accessToken: String, userID: Int, date: String)
     case sendInvitationCode(code: String, accessToken: String)
     case withdrawAppleAccount(accessToken: String)
     case withdrawKakaoAccount(accessToken: String)
@@ -39,10 +44,16 @@ extension LifePoopLocalTarget: TargetType {
             return "/auth/\(provider)/login"
         case .logout:
             return "/auth/logout"
-        case .fetchStoolLog(let userID):
+        case .fetchStoolLog(_, let userID):
             return "/post/\(userID)"
+        case .fetchStoolLogAtDate(_, let userID, let date):
+            return "/post/\(userID)/\(date)"
         case .postStoolLog:
             return "/post"
+        case .fetchFriendsWithStories:
+            return "/story"
+        case .fetchCheeringInfo(_, let userID, let date):
+            return "/user/\(userID)/cheer/\(date)"
         case .fetchUserInfo:
             return "/user"
         case .fetchFriendList:
@@ -58,7 +69,12 @@ extension LifePoopLocalTarget: TargetType {
     
     public var method: HTTPMethod {
         switch self {
-        case .fetchStoolLog, .fetchUserInfo, .fetchFriendList:
+        case .fetchStoolLog,
+                .fetchStoolLogAtDate,
+                .fetchFriendsWithStories,
+                .fetchCheeringInfo,
+                .fetchUserInfo,
+                .fetchFriendList:
             return .get
         case .postStoolLog, .login, .logout, .signup, .updateAccessToken, .sendInvitationCode, .withdrawAppleAccount, .withdrawKakaoAccount:
             return .post
@@ -67,14 +83,17 @@ extension LifePoopLocalTarget: TargetType {
     
     public var headers: [String: String]? {
         switch self {
-        case .postStoolLog(let accessToken),
+        case .fetchStoolLog(let accessToken, _),
+             .fetchStoolLogAtDate(let accessToken, _, _),
+             .postStoolLog(let accessToken),
+             .fetchFriendsWithStories(let accessToken),
+             .fetchCheeringInfo(let accessToken, _, _),
              .fetchUserInfo(let accessToken),
              .sendInvitationCode(_, let accessToken),
              .fetchFriendList(let accessToken),
              .withdrawAppleAccount(let accessToken),
              .withdrawKakaoAccount(let accessToken),
-             .logout(let accessToken)
-            :
+             .logout(let accessToken):
             return [
                 "Content-Type": "application/json",
                 "Accept": "application/json",

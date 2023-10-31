@@ -15,6 +15,7 @@ import SnapKit
 import CoreEntity
 import DesignSystem
 import DesignSystemReactive
+import EntityUIMapper
 import Utils
 
 final class StoolLogHeaderView: UICollectionReusableView, ViewType {
@@ -58,18 +59,25 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
     private let inviteFriendViewTapGesture = UITapGestureRecognizer()
     private lazy var inviteFriendView: InviteFriendView = {
         let view = InviteFriendView()
-        view.isHidden = true
         view.addGestureRecognizer(inviteFriendViewTapGesture)
         return view
     }()
     
     private let cheeringButtonView = CheeringButtonView()
     
+    private lazy var cheeringButtonTodayLabelStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [todayStoolLogLabel, cheeringButtonView])
+        stackView.axis = .vertical
+        stackView.spacing = 18
+        return stackView
+    }()
+    
     var viewModel: StoolLogHeaderViewModel?
     private var disposeBag = DisposeBag()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        backgroundColor = .systemBackground
         layoutUI()
     }
     
@@ -90,6 +98,10 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
         
         input.viewDidLoad.accept(())
         
+        rx.finishLayoutSubviews
+            .bind(to: input.viewDidFinishLayoutSubviews)
+            .disposed(by: disposeBag)
+        
         cheeringButtonView.rx.tap
             .bind(to: input.cheeringButtonDidTap)
             .disposed(by: disposeBag)
@@ -107,18 +119,12 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
     func bindOutput(from viewModel: StoolLogHeaderViewModel) {
         let output = viewModel.output
         
-        output.toggleFriendListCollectionView
+        output.isFriendEmpty
             .asSignal()
             .withUnretained(self)
-            .emit { `self`, isHidden in
-                self.toggleFriendListCollectionView(isHidden: isHidden)
+            .emit { `self`, isEmpty in
+                self.toggleFriendListCollectionView(by: isEmpty)
             }
-            .disposed(by: disposeBag)
-        
-        output.updateUserProfileCharacter
-            .asSignal()
-            .map { ($0.feedImage, $0.nickname) }
-            .emit(onNext: inviteFriendView.setMyProfileCharactor(image:name:))
             .disposed(by: disposeBag)
         
         output.updateFriends
@@ -127,11 +133,24 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
             .disposed(by: disposeBag)
         
         output.setDateDescription
-            .bind(to: todayStoolLogLabel.rx.text)
+            .asSignal()
+            .emit(to: todayStoolLogLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.setFriendsCheeringDescription
-            .bind(to: cheeringButtonView.rx.titleText)
+        output.updateCheeringProfileCharacters
+            .asSignal()
+            .map { ($0.0?.cheeringImage, $0.1?.cheeringImage) }
+            .emit(onNext: cheeringButtonView.showCheeringFriendImage)
+            .disposed(by: disposeBag)
+        
+        output.updateCheeringFriendNameAndCount
+            .asSignal()
+            .emit(onNext: cheeringButtonView.updateCheeringFriend)
+            .disposed(by: disposeBag)
+        
+        output.showEmptyCheeringInfo
+            .asSignal()
+            .emit(onNext: cheeringButtonView.showEmptyCheeringFriendImage)
             .disposed(by: disposeBag)
     }
 }
@@ -141,19 +160,13 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
 private extension StoolLogHeaderView {
     func layoutUI() {
         addSubview(collectionViewTopSeparatorView)
-        addSubview(collectionViewBottonSeparatorView)
         addSubview(friendListCollectionView)
-        addSubview(todayStoolLogLabel)
         addSubview(inviteFriendView)
-        addSubview(cheeringButtonView)
+        addSubview(collectionViewBottonSeparatorView)
+        addSubview(cheeringButtonTodayLabelStackView)
         
         collectionViewTopSeparatorView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
-        }
-        
-        collectionViewBottonSeparatorView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
         }
@@ -164,30 +177,31 @@ private extension StoolLogHeaderView {
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(102)
         }
-        
-        todayStoolLogLabel.snp.makeConstraints { make in
-            make.top.equalTo(collectionViewBottonSeparatorView.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(24)
-        }
-        
-        cheeringButtonView.snp.makeConstraints { make in
-            make.top.equalTo(todayStoolLogLabel.snp.bottom).offset(18)
-            make.leading.trailing.equalToSuperview().inset(24)
-        }
-        
+
         inviteFriendView.snp.makeConstraints { make in
             make.top.equalTo(collectionViewTopSeparatorView.snp.bottom)
             make.bottom.equalTo(collectionViewBottonSeparatorView.snp.top)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(102)
         }
+        
+        collectionViewBottonSeparatorView.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
+        }
+        
+        cheeringButtonTodayLabelStackView.snp.makeConstraints { make in
+            make.top.equalTo(collectionViewBottonSeparatorView.snp.bottom).offset(20)
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.bottom.equalToSuperview()
+        }
     }
 }
 
 private extension StoolLogHeaderView {
-    func toggleFriendListCollectionView(isHidden: Bool) {
+    func toggleFriendListCollectionView(by isHidden: Bool) {
         friendListCollectionView.isHidden = isHidden
-        cheeringButtonView.isHidden = isHidden
         inviteFriendView.isHidden = !isHidden
+        cheeringButtonView.isHidden = isHidden
     }
 }

@@ -22,7 +22,10 @@
 "paste" = "붙여넣기";
 
 /* CheeringButtonView */
-"goCheeringFriends" = "친구들 응원하러 가기";
+"friendIsCheeringYou" = "%@님이 응원하고 있어요!";
+"multipleFriendsAreCheeringYou" = "%@님 외 %d명이 응원하고 있어요!";
+"noCheeringYet" = "아직 받은 응원이 없어요";
+"goToFriendList" = "친구 목록으로 이동하기";
 
 /* SuggestionButton */
 "select" = "선택하기";

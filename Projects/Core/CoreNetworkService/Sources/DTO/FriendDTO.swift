@@ -17,4 +17,3 @@ public struct FriendDTO: Codable {
     public let characterColor: Int
     public let characterShape: Int
 }
-

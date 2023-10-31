@@ -220,9 +220,11 @@ public final class SettingViewModel: ViewModelType {
         .disposed(by: disposeBag)
         
         input.withdrawConfirmButtonDidTap
+            .withLatestFrom(state.userLoginType)
+            .compactMap { $0 }
             .withUnretained(self)
-            .flatMap { `self`, _ in
-                self.userInfoUseCase.requestAccountWithdrawl(for: .apple)
+            .flatMap { `self`, loginType in
+                self.userInfoUseCase.requestAccountWithdrawl(for: loginType)
             }
             .withUnretained(self)
             .bind { `self`, isSuccess in

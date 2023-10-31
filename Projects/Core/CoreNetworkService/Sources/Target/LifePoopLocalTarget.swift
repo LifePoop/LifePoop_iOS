@@ -17,6 +17,7 @@ public enum LifePoopLocalTarget {
     case signup(provider: String)
     case fetchUserInfo(accessToken: String)
     case fetchFriendList(accessToken: String)
+    case fetchStoryFeed(accessToken: String)
     case fetchStoolLog(accessToken: String, userID: Int)
     case fetchStoolLogAtDate(accessToken: String, userID: Int, date: String)
     case postStoolLog(accessToken: String)
@@ -58,6 +59,8 @@ extension LifePoopLocalTarget: TargetType {
             return "/user"
         case .fetchFriendList:
             return "/user/friendship"
+        case .fetchStoryFeed:
+            return "/story"
         case .sendInvitationCode(let code, _):
             return "/user/friendship/\(code)"
         case .withdrawAppleAccount:
@@ -74,9 +77,17 @@ extension LifePoopLocalTarget: TargetType {
                 .fetchFriendsWithStories,
                 .fetchCheeringInfo,
                 .fetchUserInfo,
-                .fetchFriendList:
+                .fetchFriendList,
+                .fetchStoryFeed:
             return .get
-        case .postStoolLog, .login, .logout, .signup, .updateAccessToken, .sendInvitationCode, .withdrawAppleAccount, .withdrawKakaoAccount:
+        case .postStoolLog,
+                .login,
+                .logout,
+                .signup,
+                .updateAccessToken,
+                .sendInvitationCode,
+                .withdrawAppleAccount,
+                .withdrawKakaoAccount:
             return .post
         }
     }
@@ -91,6 +102,7 @@ extension LifePoopLocalTarget: TargetType {
              .fetchUserInfo(let accessToken),
              .sendInvitationCode(_, let accessToken),
              .fetchFriendList(let accessToken),
+             .fetchStoryFeed(let accessToken),
              .withdrawAppleAccount(let accessToken),
              .withdrawKakaoAccount(let accessToken),
              .logout(let accessToken):

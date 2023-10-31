@@ -1,5 +1,5 @@
 //
-//  FriendListCollectionViewSectionLayout.swift
+//  StoryFeedCollectionViewSectionLayout.swift
 //  FeatureHomePresentation
 //
 //  Created by 김상혁 on 2023/05/07.
@@ -10,7 +10,7 @@ import UIKit
 
 import DesignSystem
 
-public final class FriendListCollectionViewSectionLayout: CollectionViewSectionProvidable {
+public final class StoryFeedCollectionViewSectionLayout: CollectionViewSectionProvidable {
     private lazy var layoutItem: NSCollectionLayoutItem = {
         let layoutSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),

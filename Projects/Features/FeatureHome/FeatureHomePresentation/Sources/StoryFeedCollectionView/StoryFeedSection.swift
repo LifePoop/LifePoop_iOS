@@ -1,5 +1,5 @@
 //
-//  FriendListSection.swift
+//  StoryFeedSection.swift
 //  FeatureHomePresentation
 //
 //  Created by 김상혁 on 2023/05/02.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-public enum FriendListSection {
+public enum StoryFeedSection {
     case friend
 }

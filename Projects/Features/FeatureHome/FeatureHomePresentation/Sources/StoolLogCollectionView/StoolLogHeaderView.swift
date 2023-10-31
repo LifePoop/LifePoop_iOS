@@ -15,6 +15,7 @@ import SnapKit
 import CoreEntity
 import DesignSystem
 import DesignSystemReactive
+import EntityUIMapper
 import Utils
 
 final class StoolLogHeaderView: UICollectionReusableView, ViewType {
@@ -136,9 +137,20 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
             .emit(to: todayStoolLogLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.setFriendsCheeringDescription
+        output.updateCheeringProfileCharacters
             .asSignal()
-            .emit(to: cheeringButtonView.rx.titleText)
+            .map { ($0.0?.cheeringImage, $0.1?.cheeringImage) }
+            .emit(onNext: cheeringButtonView.showCheeringFriendImage)
+            .disposed(by: disposeBag)
+        
+        output.updateCheeringFriendNameAndCount
+            .asSignal()
+            .emit(onNext: cheeringButtonView.updateCheeringFriend)
+            .disposed(by: disposeBag)
+        
+        output.showEmptyCheeringInfo
+            .asSignal()
+            .emit(onNext: cheeringButtonView.showEmptyCheeringFriendImage)
             .disposed(by: disposeBag)
     }
 }

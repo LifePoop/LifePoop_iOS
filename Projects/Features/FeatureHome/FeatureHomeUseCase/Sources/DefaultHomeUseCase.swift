@@ -20,10 +20,22 @@ import Utils
 public final class DefaultHomeUseCase: HomeUseCase {
     
     @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
+    @Inject(SharedDIContainer.shared) private var cheeringInfoUseCase: CheeringInfoUseCase
     @Inject(SharedDIContainer.shared) private var stoolLogUseCase: StoolLogUseCase
     @Inject(HomeDIContainer.shared) private var friendListRepository: HomeRepository
     
     public init() { }
+    
+    public func fetchCheeringInfo(at date: String) -> Observable<CheeringInfoEntity> {
+        return userInfoUseCase.userInfo
+            .compactMap { $0?.userId }
+            .debug()
+            .withUnretained(self)
+            .flatMapLatest { `self`, userId in
+                self.cheeringInfoUseCase.fetchCheeringInfo(userId: userId, date: date)
+            }
+            .asObservable()
+    }
     
     public func fetchFriendList() -> Observable<[FriendEntity]> {
         return userInfoUseCase.userInfo

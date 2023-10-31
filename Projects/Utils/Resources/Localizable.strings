@@ -153,6 +153,9 @@
 "toastFetchStoolLogSuccess" = "변 기록을 성공적으로 불러왔습니다.";
 "toastFetchStoolLogFail" = "변 기록을 불러오는 데 실패했습니다.";
 
+"toastFetchCheeringInfoSuccess" = "응원 정보를 성공적으로 불러왔습니다.";
+"toastFetchCheeringInfoFail" = "응원 정보를 불러오는 데 실패했습니다.";
+
 "toastPostStoolLogSuccess" = "새로운 변 기록이 등록했습니다.";
 "toastPostStoolLogFail" = "변 기록을 등록하는 데 실패했습니다.";
 

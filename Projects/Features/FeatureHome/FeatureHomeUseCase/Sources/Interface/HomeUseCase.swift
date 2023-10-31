@@ -11,6 +11,7 @@ import RxSwift
 import CoreEntity
 
 public protocol HomeUseCase {
+    func fetchCheeringInfo(at date: String) -> Observable<CheeringInfoEntity>
     func fetchFriendList() -> Observable<[FriendEntity]>
     func fetchStoolLogs() -> Observable<[StoolLogEntity]>
     

@@ -18,3 +18,21 @@ public struct CheeringInfoEntity {
     public let count: Int
     public let friends: [CheeringFriendInfoEntity]
 }
+
+public extension CheeringInfoEntity {
+    var extraCount: Int {
+        return count - 1
+    }
+    
+    var friendName: String? {
+        return friends.first?.nickname
+    }
+    
+    var firstFriendProfileCharacter: ProfileCharacter? {
+        return friends.first?.profileCharacter
+    }
+    
+    var secondFriendProfileCharacter: ProfileCharacter? {
+        return friends.indices.contains(1) ? friends[1].profileCharacter : nil
+    }
+}

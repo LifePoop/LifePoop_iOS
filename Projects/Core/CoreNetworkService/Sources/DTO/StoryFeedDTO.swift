@@ -10,10 +10,10 @@ import Foundation
 
 public struct StoryFeedDTO: Decodable {
     
-    public let user: CheeringFriendInfoDTO
+    public let user: UserProfileDTO
     public let stories: [StoryDTO]
     
-    public init(user: CheeringFriendInfoDTO, stories: [StoryDTO]) {
+    public init(user: UserProfileDTO, stories: [StoryDTO]) {
         self.user = user
         self.stories = stories
     }

@@ -10,5 +10,5 @@ import Foundation
 
 public struct CheeringInfoDTO: Decodable {
     let count: Int
-    let thumbs: [CheeringFriendInfoDTO]
+    let thumbs: [UserProfileDTO]
 }

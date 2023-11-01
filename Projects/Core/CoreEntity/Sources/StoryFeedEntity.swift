@@ -11,10 +11,10 @@ import Foundation
 public struct StoryFeedEntity {
     public let hashId: UUID = UUID()
     
-    public let user: CheeringFriendInfoEntity
+    public let user: UserProfileEntity
     public let stories: [StoryEntity]
     
-    public init(user: CheeringFriendInfoEntity, stories: [StoryEntity]) {
+    public init(user: UserProfileEntity, stories: [StoryEntity]) {
         self.user = user
         self.stories = stories
     }

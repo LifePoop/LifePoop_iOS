@@ -23,7 +23,7 @@ public struct CheeringInfoEntityMapper: DataMapper {
                     throw NetworkError.dataMappingError
                 }
                 
-                return CheeringFriendInfoEntity(
+                return UserProfileEntity(
                     nickname: $0.nickname,
                     profileCharacter: ProfileCharacter(
                         color: color,

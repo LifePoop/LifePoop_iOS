@@ -1,5 +1,5 @@
 //
-//  CheeringFriendInfoEntity.swift
+//  UserProfileEntity.swift
 //  CoreEntity
 //
 //  Created by 김상혁 on 2023/10/29.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct CheeringFriendInfoEntity {
+public struct UserProfileEntity {
     
     public init(nickname: String, profileCharacter: ProfileCharacter) {
         self.nickname = nickname

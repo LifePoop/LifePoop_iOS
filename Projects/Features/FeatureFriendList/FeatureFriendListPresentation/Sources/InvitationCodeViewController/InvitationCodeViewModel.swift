@@ -119,12 +119,18 @@ public final class InvitationCodeViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.didEnterInvitationCode
-            .map { $0.count >= 8 }
+            .withUnretained(self)
+            .flatMap { `self`, invitationCode in
+                self.friendListUseCase.checkInvitationCodeValidation(invitationCode)
+            }
             .bind(to: output.enableConfirmButton)
             .disposed(by: disposeBag)
 
         input.didEnterInvitationCode
-            .map { $0.count <= 8 }
+            .withUnretained(self)
+            .flatMap { `self`, invitationCode in
+                self.friendListUseCase.checkInvitationCodeLengthValidation(invitationCode)
+            }
             .bind(to: output.hideWarningLabel)
             .disposed(by: disposeBag)
         

@@ -121,7 +121,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
                     type: .debug
                 )
             })
-            .flatMapLatest { `self`, _ in
+            .concatMap { `self`, _ in
                 self.keyChainRepository
                     .getBinaryDataFromKeyChain(
                         forKey: .userAuthInfo,
@@ -129,7 +129,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
                     )
                     .do(onSuccess: { data in
                         var message: String
-                        if let data = data {
+                        if let _ = data {
                             message = "KeyChain 내 사용자 정보 존재"
                         } else {
                             message = "KeyChain 내 사용자 정보 없음(nil)"
@@ -142,10 +142,14 @@ public final class DefaultLoginUseCase: LoginUseCase {
                         )
                     })
             }
-            .compactMap { $0 }
+            .map { $0 }
             .withUnretained(self)
-            .flatMapLatest { `self`, _ in
-                self.keyChainRepository
+            .concatMap { `self`, userAuthInfo in
+                guard let _ = userAuthInfo else {
+                    return Completable.empty()
+                }
+                
+                return self.keyChainRepository
                     .removeObjectFromKeyChain(forKey: .userAuthInfo)
                     .do(onCompleted: {
                         Logger.log(
@@ -154,12 +158,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
                             type: .debug
                         )
                     })
-                    .concat(self.userDefaultsRepository
-                        .updateValue(
-                            for: .isAppFirstlyLaunched,
-                            with: false
-                        )
-                    )
+                    .concat(self.userDefaultsRepository.updateValue(for: .isAppFirstlyLaunched, with: false))
             }
             .asCompletable()
     }

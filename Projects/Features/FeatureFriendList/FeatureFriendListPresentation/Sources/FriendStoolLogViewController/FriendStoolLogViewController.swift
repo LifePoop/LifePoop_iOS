@@ -24,17 +24,6 @@ public final class FriendStoolLogViewController: LifePoopViewController, ViewTyp
         return activityIndicator
     }()
     
-    private let friendStoolLogTitleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        label.text = "이길동님의 변 기록이에요\n아직 이길동님이 변하지 않았어요"
-        label.adjustsFontSizeToFitWidth = true
-        label.numberOfLines = 2
-        return label
-    }()
-    
-//    private let cheeringFriendView = CheeringProfileCharacterView()
-    
     private lazy var friendstoolLogCollectionViewDiffableDataSource = FriendStoolLogCollectionViewDiffableDataSource(
         collectionView: stoolLogCollectionView
     )
@@ -56,7 +45,12 @@ public final class FriendStoolLogViewController: LifePoopViewController, ViewTyp
             FriendStoolLogCollectionViewCell.self,
             forCellWithReuseIdentifier: FriendStoolLogCollectionViewCell.identifier
         )
-        collectionView.contentInset = UIEdgeInsets(top: .zero, left: .zero, bottom: 24, right: .zero)
+        collectionView.register(
+            FriendStoolLogHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: FriendStoolLogHeaderView.identifier
+        )
+        collectionView.contentInset = UIEdgeInsets(top: 28, left: .zero, bottom: 24, right: .zero)
         collectionView.backgroundColor = .systemBackground
         return collectionView
     }()
@@ -82,33 +76,20 @@ public final class FriendStoolLogViewController: LifePoopViewController, ViewTyp
             .bind(to: loadingIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
         
-        output.updateStoolLogs // FIXME: updateStoolLogs 이벤트가 전달되지 않을 경우 홈 화면에 아무것도 나오지 않는 문제 수정
+        output.updateStoolLogs
             .asSignal()
             .emit(onNext: friendstoolLogCollectionViewDiffableDataSource.update)
             .disposed(by: disposeBag)
         
         output.showErrorMessage
             .asSignal()
-            .emit(onNext: toastMessageLabel.show(message:)) // TODO: ToastLabel을 친구 코드 복사 화면의 것과 통일하기
+            .emit(onNext: toastMessageLabel.show(message:))
             .disposed(by: disposeBag)
         
-        
-        // FIXME: CheeringInfo에 따른 UI 적용 바인딩 필요
-//        cheeringFriendView.setCheeringFriendProfileCharacter(
-//            images: ImageAsset.profileCheeringGoodRed.original,
-//            ImageAsset.profileCheeringGoodBlack.original
-//        )
-
-//        output.showCheeringInfo
-//            .asSignal()
-//            .withUnretained(self)
-//            .emit { `self`, cheeringInfo in
-//                self.cheeringFriendView.setCheeringFriendProfileCharacter(images: [
-//                    ImageAsset.profileCheeringGoodRed,
-//                    ImageAsset.profileCheeringGoodBlack,
-//                ])
-//            }
-//            .disposed(by: disposeBag)
+        output.updateFriendStoolLogheaderViewModel
+            .asSignal()
+            .emit(onNext: friendstoolLogCollectionViewDiffableDataSource.configureHeaderView(with:))
+            .disposed(by: disposeBag)
     }
     
     // MARK: - UI Setup
@@ -126,7 +107,6 @@ public final class FriendStoolLogViewController: LifePoopViewController, ViewTyp
         }
         
         view.addSubview(loadingIndicator)
-        view.addSubview(friendStoolLogTitleLabel)
         view.addSubview(stoolLogCollectionView)
         view.addSubview(toastMessageLabel)
         
@@ -134,13 +114,8 @@ public final class FriendStoolLogViewController: LifePoopViewController, ViewTyp
             make.edges.equalToSuperview()
         }
         
-        friendStoolLogTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).offset(28)
-            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(24)
-        }
-        
         stoolLogCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(friendStoolLogTitleLabel.snp.bottom).offset(22)
+            make.top.equalTo(view.safeAreaLayoutGuide)
             make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             make.bottom.equalToSuperview()
         }

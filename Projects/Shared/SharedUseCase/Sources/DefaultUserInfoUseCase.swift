@@ -23,24 +23,71 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
     public init() { }
     
     public var userInfo: Observable<UserInfoEntity?> {
-        keyChainRepository
+        let userAuthInfo = keyChainRepository
             .getObjectFromKeyChain(
-                asTypeOf: UserInfoEntity.self,
+                asTypeOf: UserAuthInfoEntity.self,
                 forKey: .userAuthInfo,
                 handleExceptionWhenValueNotFound: false
             )
             .logErrorIfDetected(category: .authentication)
             .catchAndReturn(nil)
+            .map { $0 }
             .asObservable()
-            .do(onNext: { userInfo in
-                let nickname = userInfo?.nickname ?? "nil"
-                let loginType = userInfo?.authInfo.loginType?.rawValue ?? "nil"
-                Logger.log(
-                    message: "KeyChain 사용자 정보 확인: \(nickname), 로그인 유형: \(loginType)",
-                    category: .authentication,
-                    type: .debug
-                )
-            })
+        
+        let userId: Observable<Int> = userDefaultsRepository
+            .getValue(for: .userId)
+            .map { $0 ?? -1 }
+            .asObservable()
+        
+        let nickname: Observable<String> = userDefaultsRepository
+            .getValue(for: .userNickname)
+            .map { $0 ?? "" }
+            .asObservable()
+        
+        let birthDate: Observable<String> = userDefaultsRepository
+            .getValue(for: .birthDate)
+            .map { $0 ?? "" }
+            .asObservable()
+        
+        let genderType: Observable<GenderType> = userDefaultsRepository
+            .getValue(for: .genderType)
+            .map { $0 ?? .other }
+            .asObservable()
+
+        let invitationCode: Observable<String> = userDefaultsRepository
+            .getValue(for: .invitationCode)
+            .map { $0 ?? "" }
+            .asObservable()
+        
+        let profileCharacter: Observable<ProfileCharacter?> = userDefaultsRepository
+            .getValue(for: .profileCharacter)
+            .map { $0 }
+            .asObservable()
+        
+        return Observable.combineLatest(
+            userAuthInfo,
+            userId,
+            nickname,
+            birthDate,
+            genderType,
+            invitationCode,
+            profileCharacter
+        )
+        .map { authInfo, userId, nickname, birthDate, genderType, invitationCode, profileCharacter in
+            guard let authInfo = authInfo else { return nil }
+            guard let profileCharacter = profileCharacter else { return nil }
+            
+            return UserInfoEntity(
+                userId: userId,
+                nickname: nickname,
+                birthDate: birthDate,
+                genderType: genderType,
+                profileCharacter: profileCharacter,
+                invitationCode: invitationCode,
+                authInfo: authInfo
+            )
+        }
+        .asObservable()
     }
 
     public func refreshAuthInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool> {
@@ -184,7 +231,7 @@ private extension DefaultUserInfoUseCase {
         
         Logger.log(
             message: """
-            업데이트된 사용자 정보 KeyChain에 저장
+            업데이트된 사용자 정보 KeyChain, UserDefaults에 저장
             nickname: \(userInfo.nickname), loginType: \(userInfo.authInfo.loginType?.description ?? "")
             """,
             category: .authentication,
@@ -192,10 +239,13 @@ private extension DefaultUserInfoUseCase {
         )
         
         return keyChainRepository
-            .saveObjectToKeyChain(userInfo, forKey: .userAuthInfo)
+            .saveObjectToKeyChain(userInfo.authInfo, forKey: .userAuthInfo)
             .concat(userDefaultsRepository.updateValue(for: .userNickname, with: userInfo.nickname))
             .concat(userDefaultsRepository.updateValue(for: .userLoginType, with: userInfo.authInfo.loginType))
             .concat(userDefaultsRepository.updateValue(for: .profileCharacter, with: userInfo.profileCharacter))
+            .concat(userDefaultsRepository.updateValue(for: .userId, with: userInfo.userId))
+            .concat(userDefaultsRepository.updateValue(for: .birthDate, with: userInfo.birthDate))
+            .concat(userDefaultsRepository.updateValue(for: .invitationCode, with: userInfo.invitationCode))
             .logErrorIfDetected(category: .authentication)
     }
     
@@ -213,5 +263,8 @@ private extension DefaultUserInfoUseCase {
             .concat(userDefaultsRepository.removeValue(for: .userNickname))
             .concat(userDefaultsRepository.removeValue(for: .userLoginType))
             .concat(userDefaultsRepository.removeValue(for: .profileCharacter))
+            .concat(userDefaultsRepository.removeValue(for: .invitationCode))
+            .concat(userDefaultsRepository.removeValue(for: .birthDate))
+            .concat(userDefaultsRepository.removeValue(for: .genderType))
     }
 }

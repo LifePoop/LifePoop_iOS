@@ -80,6 +80,7 @@ private extension LifePoopButton {
     
     func restoreTitle() {
         setAttributedTitle(storedTitle, for: .disabled)
+        setAttributedTitle(storedTitle, for: .normal)
     }
     
     func removeTitle() {

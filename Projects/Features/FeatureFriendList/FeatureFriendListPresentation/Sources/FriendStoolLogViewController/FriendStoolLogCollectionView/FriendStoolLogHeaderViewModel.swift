@@ -12,17 +12,20 @@ import CoreEntity
 
 struct FriendStoolLogHeaderViewModel {
     let friendNickname: String
+    let isStoolLogEmpty: Bool
     let cheeringFriendCount: Int
     let firstCheeringCharacter: ProfileCharacter?
     let secondCheeringCharacter: ProfileCharacter?
     
     init(
         friendNickname: String,
+        isStoolLogEmpty: Bool,
         cheeringFriendCount: Int,
-        firstCheeringCharacter: ProfileCharacter? = nil,
-        secondCheeringCharacter: ProfileCharacter? = nil
+        firstCheeringCharacter: ProfileCharacter?,
+        secondCheeringCharacter: ProfileCharacter?
     ) {
         self.friendNickname = friendNickname
+        self.isStoolLogEmpty = isStoolLogEmpty
         self.cheeringFriendCount = cheeringFriendCount
         self.firstCheeringCharacter = firstCheeringCharacter
         self.secondCheeringCharacter = secondCheeringCharacter

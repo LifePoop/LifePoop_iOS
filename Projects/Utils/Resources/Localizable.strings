@@ -75,6 +75,10 @@
 "enterInvitationCodeYouReceivedFromYourFriend" = "친구에게 받은 초대 코드를 입력해주세요";
 "doneEntering" = "입력 완료";
 
+/* 친구 목록 - 친구의 변 기록*/
+"stoolDiaryForFriend" = "%@님의 변 기록이에요";
+"cheeringCount" = "%d명이 응원하고 있어요!";
+"friendStoolDiaryEmpty" = "아직 %@님이 변하지 않았어요";
 
 /* 리포트 */
 "stoolLogReport" = "변 기록 리포트";

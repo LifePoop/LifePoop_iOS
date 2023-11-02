@@ -9,10 +9,14 @@
 import Foundation
 
 public enum UserDefaultsKeys: String {
+    case userId = "UserId"
     case userLoginType = "UserLoginType"
     case userNickname = "UserNickname"
     case feedVisibility = "FeedVisibility"
     case isAutoLoginActivated = "IsAutoLoginActivated"
+    case birthDate = "UserBirthDate"
+    case genderType = "UserGenderType"
+    case invitationCode = "UserInvitationCode"
     case profileCharacter = "ProfileCharacter"
     
     case isAppFirstlyLaunched = "IsAppFirstlyLaunched"

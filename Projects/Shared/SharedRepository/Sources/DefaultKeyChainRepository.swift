@@ -122,7 +122,7 @@ private extension DefaultKeyChainRepository {
         let encodedData = try JSONEncoder().encode(object)
         
         let keychainQuery = keychainQuery(for: .save, key: key, value: encodedData)
-        let alreadyExistingData: Data? = try getBinaryDataFromKeyChain(forKey: key)
+        let alreadyExistingData: Data? = try? getBinaryDataFromKeyChain(forKey: key)
         let isObjectAlreadyExists = alreadyExistingData != nil
 
         if isObjectAlreadyExists {

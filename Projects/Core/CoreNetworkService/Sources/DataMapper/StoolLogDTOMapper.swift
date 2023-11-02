@@ -16,7 +16,7 @@ public struct StoolLogDTOMapper: DataMapper {
 
     public func transform(_ entity: StoolLogEntity) throws -> StoolLogDTO {
         return StoolLogDTO(
-            postID: entity.postID,
+            id: entity.postID,
             isGood: entity.isSatisfied,
             color: entity.color.rawValue,
             size: entity.size.rawValue,

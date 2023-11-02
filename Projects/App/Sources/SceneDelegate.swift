@@ -93,6 +93,7 @@ private extension SceneDelegate {
     }
     
     func registerCoreDependencies() {
+        CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(UserProfileDTOMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(StoolLogEntityMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(StoolLogDTOMapper()) }
         CoreDIContainer.shared.register(service: AnyDataMapper.self) { AnyDataMapper(CheeringInfoEntityMapper()) }
@@ -110,6 +111,10 @@ private extension SceneDelegate {
         SharedDIContainer.shared.register(service: AutoLoginUseCase.self) { DefaultAutoLoginUseCase() }
         SharedDIContainer.shared.register(service: FeedVisibilityUseCase.self) { DefaultFeedVisibilityUseCase() }
         SharedDIContainer.shared.register(service: ProfileCharacterUseCase.self) { DefaultProfileCharacterUseCase() }
+        SharedDIContainer.shared.register(service: UserProfileEditUseCase.self) { DefaultUserProfileEditUseCase() }
+        SharedDIContainer.shared.register(service: UserProfileEditRepository.self) {
+            DefaultUserProfileEditRepository()
+        }
         SharedDIContainer.shared.register(service: StoryFeedUseCase.self) { DefaultStoryFeedUseCase() }
         SharedDIContainer.shared.register(service: StoryFeedRepository.self) { DefaultStoryFeedRepository() }
         SharedDIContainer.shared.register(service: StoolLogUseCase.self) { DefaultStoolLogUseCase() }
@@ -137,6 +142,7 @@ private extension SceneDelegate {
     
     func registerSettingDependencies() {
         SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
+        SettingDIContainer.shared.register(service: ProfileEditUseCase.self) { DefaultProfileEditUseCase() }
     }
     
     func registerReportDependencies() {

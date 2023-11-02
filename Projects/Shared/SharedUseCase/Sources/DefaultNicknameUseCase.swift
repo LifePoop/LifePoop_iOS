@@ -59,6 +59,8 @@ public final class DefaultNicknameUseCase: NicknameUseCase {
     }
 }
 
+// MARK: - Supporting Methods
+
 private extension DefaultNicknameUseCase {
     
     func isEmpty(input text: String) -> Observable<Bool> {

@@ -40,8 +40,6 @@ public final class ProfileCharacterEditViewModel: ViewModelType {
     public let output = Output()
     public let state: State
     
-    @Inject(SharedDIContainer.shared) private var profileCharacterUseCase: ProfileCharacterUseCase
-    
     private weak var coordinator: SettingCoordinator?
     private let disposeBag = DisposeBag()
     

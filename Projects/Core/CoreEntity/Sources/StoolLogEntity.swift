@@ -24,6 +24,7 @@ public struct StoolLogEntity {
         shape: StoolShape,
         size: StoolSize
     ) {
+        self.postID = postID
         self.date = date
         self.isSatisfied = isSatisfied
         self.color = color

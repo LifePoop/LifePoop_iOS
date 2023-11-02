@@ -8,9 +8,9 @@
 
 import Foundation
 
-import CoreEntity
-
 import RxSwift
+
+import CoreEntity
 
 public protocol NicknameUseCase {
     var nickname: Observable<String?> { get }

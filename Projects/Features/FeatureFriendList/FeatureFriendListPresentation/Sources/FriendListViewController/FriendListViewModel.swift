@@ -73,7 +73,6 @@ public final class FriendListViewModel: ViewModelType {
         
         fetchedFriendList
             .compactMap { $0.element }
-            .debug()
             .bind(to: state.friendList)
             .disposed(by: disposeBag)
         

@@ -37,6 +37,5 @@ public final class DefaultStoryFeedUseCase: StoryFeedUseCase {
             }
             .logErrorIfDetected(category: .network)
             .asObservable()
-            .debug("story >")
     }
 }

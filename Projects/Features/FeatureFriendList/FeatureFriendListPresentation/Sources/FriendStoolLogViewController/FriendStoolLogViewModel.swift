@@ -80,25 +80,14 @@ public final class FriendStoolLogViewModel: ViewModelType {
         
         cheeringInfo
             .compactMap { $0.element }
-            .filter { $0.count > .zero }
-            .map {
+            .withLatestFrom(fetchedStoolLogs.compactMap { $0.element }) { ($0, $1) }
+            .map { cheeringInfo, stoolLogs in
                 FriendStoolLogHeaderViewModel(
                     friendNickname: friendEntity.nickname,
-                    cheeringFriendCount: $0.count,
-                    firstCheeringCharacter: $0.firstFriendProfileCharacter,
-                    secondCheeringCharacter: $0.secondFriendProfileCharacter
-                )
-            }
-            .bind(to: state.friendStoolLogheaderViewModel)
-            .disposed(by: disposeBag)
-        
-        cheeringInfo
-            .compactMap { $0.element }
-            .filter { $0.count == .zero }
-            .map {
-                FriendStoolLogHeaderViewModel(
-                    friendNickname: friendEntity.nickname,
-                    cheeringFriendCount: $0.count
+                    isStoolLogEmpty: stoolLogs.isEmpty,
+                    cheeringFriendCount: cheeringInfo.count,
+                    firstCheeringCharacter: cheeringInfo.firstFriendProfileCharacter,
+                    secondCheeringCharacter: cheeringInfo.secondFriendProfileCharacter
                 )
             }
             .bind(to: state.friendStoolLogheaderViewModel)

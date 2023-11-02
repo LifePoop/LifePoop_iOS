@@ -67,9 +67,12 @@ final class FriendStoolLogHeaderView: UICollectionReusableView {
     func configureView(with viewModel: FriendStoolLogHeaderViewModel) {
         set(friendName: viewModel.friendNickname)
         
-        if viewModel.cheeringFriendCount == .zero {
+        if viewModel.isStoolLogEmpty {
             showEmptyCheeringView(with: viewModel.friendNickname)
-        } else {
+            return
+        }
+        
+        if viewModel.cheeringFriendCount > .zero {
             showCheeringInfoView(
                 cheeringCount: viewModel.cheeringFriendCount,
                 firstImage: viewModel.firstCheeringCharacter?.cheeringImage,

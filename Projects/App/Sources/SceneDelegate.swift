@@ -137,9 +137,6 @@ private extension SceneDelegate {
     
     func registerSettingDependencies() {
         SettingDIContainer.shared.register(service: UserSettingUseCase.self) { DefaultUserSettingUseCase() }
-        
-        // FIXME: MockUseCase -> 실제 UseCase 주입하도록 변경
-        SettingDIContainer.shared.register(service: ProfileEditUseCase.self) { MockProfileEditUseCase() }
     }
     
     func registerReportDependencies() {

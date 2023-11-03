@@ -26,6 +26,7 @@ public enum LifePoopLocalTarget {
     case sendInvitationCode(code: String, accessToken: String)
     case withdrawAppleAccount(accessToken: String)
     case withdrawKakaoAccount(accessToken: String)
+    case editProfileInfo(accessToken: String)
 }
 
 extension LifePoopLocalTarget: TargetType {
@@ -67,6 +68,8 @@ extension LifePoopLocalTarget: TargetType {
             return "/auth/APPLE/withdraw"
         case .withdrawKakaoAccount:
             return "/auth/KAKAO/withdraw"
+        case .editProfileInfo:
+            return "/user"
         }
     }
     
@@ -89,6 +92,8 @@ extension LifePoopLocalTarget: TargetType {
                 .withdrawAppleAccount,
                 .withdrawKakaoAccount:
             return .post
+        case .editProfileInfo:
+            return .put
         }
     }
     
@@ -105,7 +110,8 @@ extension LifePoopLocalTarget: TargetType {
              .fetchStoryFeed(let accessToken),
              .withdrawAppleAccount(let accessToken),
              .withdrawKakaoAccount(let accessToken),
-             .logout(let accessToken):
+             .logout(let accessToken),
+             .editProfileInfo(let accessToken):
             return [
                 "Content-Type": "application/json",
                 "Accept": "application/json",

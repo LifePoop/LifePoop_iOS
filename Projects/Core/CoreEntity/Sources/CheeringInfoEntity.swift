@@ -10,13 +10,13 @@ import Foundation
 
 public struct CheeringInfoEntity {
     
-    public init(count: Int, friends: [CheeringFriendInfoEntity]) {
+    public init(count: Int, friends: [UserProfileEntity]) {
         self.count = count
         self.friends = friends
     }
     
     public let count: Int
-    public let friends: [CheeringFriendInfoEntity]
+    public let friends: [UserProfileEntity]
 }
 
 public extension CheeringInfoEntity {

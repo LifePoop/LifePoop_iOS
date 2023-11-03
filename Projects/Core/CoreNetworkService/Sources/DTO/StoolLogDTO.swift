@@ -9,7 +9,7 @@
 import Foundation
 
 public struct StoolLogDTO: Codable {
-    public let postID: Int?
+    public let id: Int?
     public let isGood: Bool
     public let color: Int
     public let size: Int

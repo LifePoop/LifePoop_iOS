@@ -1,5 +1,5 @@
 //
-//  CheeringFriendInfoDTO.swift
+//  UserProfileDTO.swift
 //  CoreNetworkService
 //
 //  Created by 김상혁 on 2023/10/29.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct CheeringFriendInfoDTO: Decodable {
+public struct UserProfileDTO: Codable {
     let nickname: String
     let characterColor, characterShape: Int
 }

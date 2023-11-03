@@ -81,9 +81,8 @@ public final class DefaultUserInfoRepository: UserInfoRepository {
             .decodeMap(UserInfoDTO.self)
             .map { dto in
                 guard let genderType = GenderType(stringValue: dto.sex),
-                      let profileColor = StoolColor(rawValue: dto.characterColor - 1),
-                      let profileShape = StoolShape(rawValue: dto.characterShape - 1) else {
-                    
+                      let profileColor = StoolColor(rawValue: dto.characterColor),
+                      let profileShape = StoolShape(rawValue: dto.characterShape) else {
                     throw NetworkError.dataMappingError
                 }
                 // TODO: Mapper 사용하도록 수정

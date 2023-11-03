@@ -8,9 +8,8 @@
 
 import UIKit
 
-import DesignSystem
-
 import CoreEntity
+import DesignSystem
 
 final class FriendStoolLogCollectionViewDiffableDataSource: UICollectionViewDiffableDataSource<StoolLogListSection, StoolLogItem> {
     
@@ -29,6 +28,18 @@ final class FriendStoolLogCollectionViewDiffableDataSource: UICollectionViewDiff
     
     init(collectionView: UICollectionView) {
         super.init(collectionView: collectionView, cellProvider: cellProvider)
+    }
+    
+    func configureHeaderView(with viewModel: FriendStoolLogHeaderViewModel) {
+        supplementaryViewProvider = { collectionView, kind, indexPath in
+            guard let headerView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: FriendStoolLogHeaderView.identifier,
+                for: indexPath
+            ) as? FriendStoolLogHeaderView else { return UICollectionReusableView() }
+            headerView.configureView(with: viewModel)
+            return headerView
+        }
     }
     
     // MARK: - DiffableDataSource Methods

@@ -62,6 +62,18 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
             }
             .asObservable()
     }
+    
+    public func checkInvitationCodeLengthValidation(_ input: String) -> Observable<Bool> {
+        Observable.just( input.count == 8)
+    }
+    
+    public func checkInvitationCodeValidation(_ input: String) -> Observable<Bool> {
+        Observable.zip(
+            checkInvitationCodeLengthValidation(input),
+            checkInvitationCodeDuplicatoin(input)
+        )
+        .map { $0 && !$1 }
+    }
 }
 
 private extension DefaultFriendListUseCase {
@@ -114,5 +126,9 @@ private extension DefaultFriendListUseCase {
                 )
             }
             .asObservable()
+    }
+    
+    func checkInvitationCodeDuplicatoin(_ input: String) -> Observable<Bool> {
+        invitationCode.map( { $0 == input})
     }
 }

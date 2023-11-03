@@ -21,7 +21,7 @@ public struct StoryFeedEntityMapper: DataMapper {
         }
         let nickname = dto.user.nickname
         return StoryFeedEntity(
-            user: CheeringFriendInfoEntity(nickname: nickname, profileCharacter: ProfileCharacter(
+            user: UserProfileEntity(nickname: nickname, profileCharacter: ProfileCharacter(
                 color: color,
                 shape: shape
             )),

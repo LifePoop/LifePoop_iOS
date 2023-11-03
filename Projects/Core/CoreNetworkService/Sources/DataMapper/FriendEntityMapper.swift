@@ -15,8 +15,8 @@ public struct FriendEntityMapper: DataMapper {
     public init() { }
     
     public func transform(_ dto: FriendDTO) throws -> FriendEntity {
-        guard let profileColor = StoolColor(rawValue: dto.characterColor - 1),
-              let profileShape = StoolShape(rawValue: dto.characterShape - 1) else {
+        guard let profileColor = StoolColor(rawValue: dto.characterColor),
+              let profileShape = StoolShape(rawValue: dto.characterShape) else {
             throw NetworkError.dataMappingError
         }
         

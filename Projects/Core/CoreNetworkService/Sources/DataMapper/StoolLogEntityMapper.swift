@@ -21,9 +21,9 @@ public struct StoolLogEntityMapper: DataMapper {
               let date = dto.date.iso8601Date else {
             throw NetworkError.dataMappingError
         }
-
+        
         return StoolLogEntity(
-            postID: dto.postID,
+            postID: dto.id,
             date: date,
             isSatisfied: dto.isGood,
             color: color,

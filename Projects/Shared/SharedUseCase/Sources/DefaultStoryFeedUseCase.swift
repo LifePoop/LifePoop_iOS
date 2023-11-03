@@ -16,10 +16,6 @@ import Logger
 import SharedDIContainer
 import Utils
 
-public protocol StoryFeedUseCase {
-    func fetchStoryFeeds() -> Observable<[StoryFeedEntity]>
-}
-
 public final class DefaultStoryFeedUseCase: StoryFeedUseCase {
     
     @Inject(SharedDIContainer.shared) private var storyFeedRepository: StoryFeedRepository
@@ -37,6 +33,5 @@ public final class DefaultStoryFeedUseCase: StoryFeedUseCase {
             }
             .logErrorIfDetected(category: .network)
             .asObservable()
-            .debug("story >")
     }
 }

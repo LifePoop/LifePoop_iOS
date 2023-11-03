@@ -140,7 +140,6 @@ public final class SatisfactionDetailViewModel: ViewModelType {
         let stoolLogPostResult = newStoolLog
             .withUnretained(self)
             .flatMapMaterialized { `self`, newStoolLog in
-                dump(newStoolLog)
                 return self.stoolLogUseCase.postStoolLog(stoolLogEntity: newStoolLog)
             }
             .share()

@@ -80,7 +80,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                     stoolStoryLogs[currentIndex].isCheeringUpAvailable
                 )
                 self.output.updateStoolLogTime.accept(
-                    self.getTimeDifference(fromDateOf: stoolStoryLogs[currentIndex].stoolLog.date)
+                    stories[currentIndex].date.localizedTimeDifferenceSinceCurrentDateString
                 )
             })
             .disposed(by: disposeBag)
@@ -112,7 +112,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 let isCheeringUpAvailable = stoolStoryLogs[index].isCheeringUpAvailable
                 let shouldHideCheeringLabel = index < stoolStoryLogs.count - 1
                 let shouldHideCheeringButton = index < stoolStoryLogs.count - 1
-                let shouldUpdateStoolLogTime = self.getTimeDifference(fromDateOf: stoolLog.date)
+                let updateStoolLogTime = story.date.localizedTimeDifferenceSinceCurrentDateString
                 
                 return (
                     updateShownStoolLog: stoolLog,
@@ -191,14 +191,5 @@ public final class FriendStoolStoryViewModel: ViewModelType {
             .map { _ in false }
             .bind(to: output.enableCheeringButton)
             .disposed(by: disposeBag)
-    }
-}
-
-private extension FriendStoolStoryViewModel {
-    
-    // MARK: 추후 서버에서 내려주는 값 맞춰서 로직 수정해야 함, 다국어 맞춰서 LocalizedString 형식으로 수정, Locale 수정
-    func getTimeDifference(fromDateOf logDate: Date) -> String {
-        // FIXME: date 타입이 String에서 Date로 변경된 것에 대한 로직 반영
-        return "Temp Text"
     }
 }

@@ -25,6 +25,9 @@
 "yellow" = "노란색";
 "soft" = "물렁";
 "good" = "매끈";
+"hours" = "시간";
+"minutes" = "분";
+"ago" = "전";
 
 /* 온보딩 */
 "logYourStools" = "나의 변을 기록하고";

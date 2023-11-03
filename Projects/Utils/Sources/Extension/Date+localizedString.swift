@@ -43,4 +43,18 @@ public extension Date {
     var iso8601FormatDateString: String {
         return LifePoopDateFormatter.shared.convertDateToISO8601FormatString(from: self)
     }
+    
+    /// 현재 시간 기준 시간 차이를 N시간  N분 전 형태의 `String` 타입으로 변환합니다.
+    ///
+    /// 시간 차이가 1시간 이내일 경우 N분 전, 1시간 이상일 경우 N시간 전으로 자동 변환합니다.
+    ///
+    /// 예) "1시간 전", "1분 전"
+    var localizedTimeDifferenceSinceCurrentDateString: String {
+        let currentDate = Date()
+        let timeDifference = currentDate.timeIntervalSince(self)
+        
+        return timeDifference >= 60 * 60
+        ? "\(Int(timeDifference / (60 * 60)))\(LocalizableString.hour) 전"
+        : "\(Int(timeDifference / 60))\(LocalizableString.minute) 전"
+    }
 }

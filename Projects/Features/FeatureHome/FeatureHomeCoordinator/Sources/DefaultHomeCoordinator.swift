@@ -17,7 +17,7 @@ import FeatureFriendListCoordinator
 import FeatureFriendListCoordinatorInterface
 import FeatureHomeCoordinatorInterface
 import FeatureHomePresentation
-import FeatureReportCoordinator
+import FeatureReportPresentation
 import FeatureSettingCoordinator
 import FeatureSettingCoordinatorInterface
 import FeatureStoolLogCoordinator
@@ -125,11 +125,11 @@ private extension DefaultHomeCoordinator {
         settingCoordinator.start()
     }
     
-    func startReportCoordinatorFlow() {
-        let reportCoordinator = DefaultReportCoordinator(
-            navigationController: navigationController
-        )
-        reportCoordinator.start()
+    func pushReportViewController() {
+        let viewController = ReportViewController()
+        let viewModel = ReportViewModel(coordinator: self)
+        viewController.bind(viewModel: viewModel)
+        navigationController.pushViewController(viewController, animated: true)
     }
     
     func startFriendListCoordinatorFlow() {

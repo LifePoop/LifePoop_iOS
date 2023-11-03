@@ -13,6 +13,7 @@ import FeatureReportPresentation
 import Logger
 import Utils
 
+@available(*, deprecated, message: "리포트는 단일 화면이므로 코디네이터가 불필요함, 추후 리포트 화면의 전환 관리가 필요해질 경우 사용")
 public final class DefaultReportCoordinator: ReportCoordinator {
     
     public var childCoordinatorMap: [CoordinatorType: Coordinator] = [:]
@@ -28,24 +29,15 @@ public final class DefaultReportCoordinator: ReportCoordinator {
     }
     
     public func coordinate(by coordinateAction: ReportCoordinateAction) {
-        switch coordinateAction {
-        case .flowDidStart:
-            pushReportViewController()
+        DispatchQueue.main.async { [weak self] in
+            switch coordinateAction {
+            case .flowDidStart:
+                break
+            }
         }
     }
     
     deinit {
         Logger.logDeallocation(object: self)
-    }
-}
-
-// MARK: - Coordinating Methods
-
-private extension DefaultReportCoordinator {
-    func pushReportViewController() {
-        let viewController = ReportViewController()
-        let viewModel = ReportViewModel(coordinator: self)
-        viewController.bind(viewModel: viewModel)
-        navigationController.pushViewController(viewController, animated: true)
     }
 }

@@ -10,7 +10,6 @@ import UIKit
 
 import SnapKit
 
-
 public final class CheeringFriendProfileCharacterView: UIView {
     
     private let insetBetweenImages: CGFloat = 6.0

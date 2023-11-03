@@ -26,11 +26,12 @@ public final class FriendStoolLogViewModel: ViewModelType {
     public struct Output {
         let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
         let updateStoolLogs = PublishRelay<[StoolLogItem]>()
-        let showCheeringInfo = PublishRelay<CheeringInfoEntity>()
+        let updateFriendStoolLogheaderViewModel = PublishRelay<FriendStoolLogHeaderViewModel>()
         let showErrorMessage = PublishRelay<String>()
     }
     
     public struct State {
+        let friendStoolLogheaderViewModel = BehaviorRelay<FriendStoolLogHeaderViewModel?>(value: nil)
         let stoolLogs = BehaviorRelay<[StoolLogEntity]>(value: [])
     }
     
@@ -79,8 +80,17 @@ public final class FriendStoolLogViewModel: ViewModelType {
         
         cheeringInfo
             .compactMap { $0.element }
-            .filter { $0.count > .zero }
-            .bind(to: output.showCheeringInfo)
+            .withLatestFrom(fetchedStoolLogs.compactMap { $0.element }) { ($0, $1) }
+            .map { cheeringInfo, stoolLogs in
+                FriendStoolLogHeaderViewModel(
+                    friendNickname: friendEntity.nickname,
+                    isStoolLogEmpty: stoolLogs.isEmpty,
+                    cheeringFriendCount: cheeringInfo.count,
+                    firstCheeringCharacter: cheeringInfo.firstFriendProfileCharacter,
+                    secondCheeringCharacter: cheeringInfo.secondFriendProfileCharacter
+                )
+            }
+            .bind(to: state.friendStoolLogheaderViewModel)
             .disposed(by: disposeBag)
         
         fetchedStoolLogs
@@ -106,9 +116,12 @@ public final class FriendStoolLogViewModel: ViewModelType {
             .bind(to: output.shouldLoadingIndicatorAnimating)
             .disposed(by: disposeBag)
         
-        // TODO: 친구 이름, 변했는지 여부 분기 처리, 응원 뷰 output 로직 필요
-        
         // MARK: - Bind State
+        
+        state.friendStoolLogheaderViewModel
+            .compactMap { $0 }
+            .bind(to: output.updateFriendStoolLogheaderViewModel)
+            .disposed(by: disposeBag)
         
         state.stoolLogs
             .filter { $0.isEmpty }

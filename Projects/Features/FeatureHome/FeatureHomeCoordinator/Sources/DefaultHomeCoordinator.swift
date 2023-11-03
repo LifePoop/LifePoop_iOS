@@ -45,24 +45,29 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
     }
         
     public func coordinate(by coordinateAction: HomeCoordinateAction) {
-        switch coordinateAction {
-        case .flowDidStart(let animated):
-            pushHomeViewController(animated: animated)
-        case .flowDidFinish:
-            flowCompletionDelegate?.finishFlow()
-        case .cheeringButtonDidTap:
-            startFriendListCoordinatorFlow()
-        case .stoolLogButtonDidTap(let stoolLogsRelay):
-            startStoolLogCoordinatorFlow(stoolLogsRelay: stoolLogsRelay)
-        case .settingButtonDidTap:
-            startSettingCoordinatorFlow()
-        case .reportButtonDidTap:
-            startReportCoordinatorFlow()
-        case .friendButtonDidTap(let friend, let stoolStoryLogs):
-            presentFriendStoolStoryViewController(friend: friend, stoolStoryLogs: stoolStoryLogs, animated: true)
-        case .storyCloseButtonDidTap:
-            dismissFriendStoolStoryViewController(animated: true)
-            
+        DispatchQueue.main.async { [weak self] in
+            switch coordinateAction {
+            case .flowDidStart(let animated):
+                self?.pushHomeViewController(animated: animated)
+            case .flowDidFinish:
+                self?.flowCompletionDelegate?.finishFlow()
+            case .cheeringButtonDidTap:
+                self?.startFriendListCoordinatorFlow()
+            case .stoolLogButtonDidTap(let stoolLogsRelay):
+                self?.startStoolLogCoordinatorFlow(stoolLogsRelay: stoolLogsRelay)
+            case .settingButtonDidTap:
+                self?.startSettingCoordinatorFlow()
+            case .reportButtonDidTap:
+                self?.pushReportViewController()
+            case .friendButtonDidTap(let friend, let stoolStoryLogs):
+                self?.presentFriendStoolStoryViewController(
+                    friend: friend,
+                    stoolStoryLogs: stoolStoryLogs,
+                    animated: true
+                )
+            case .storyCloseButtonDidTap:
+                self?.dismissFriendStoolStoryViewController(animated: true)
+            }
         }
     }
     

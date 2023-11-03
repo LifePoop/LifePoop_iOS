@@ -83,7 +83,7 @@ private extension DefaultHomeCoordinator {
         let viewController = HomeViewController()
         let viewModel = HomeViewModel(coordinator: self)
         viewController.bind(viewModel: viewModel)
-        navigationController.setViewControllers([viewController], animated: animated)
+        navigationController.pushViewController(viewController, animated: animated)
     }
     
     func presentFriendStoolStoryViewController(

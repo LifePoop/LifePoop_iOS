@@ -122,6 +122,7 @@ private extension DefaultHomeCoordinator {
             navigationController: navigationController,
             completionDelegate: self
         )
+        add(childCoordinator: settingCoordinator)
         settingCoordinator.start()
     }
     

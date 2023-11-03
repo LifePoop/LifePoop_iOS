@@ -37,7 +37,7 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
         flowCompletionDelegate: HomeCoordinatorCompletionDelegate?
     ) {
         self.navigationController = navigationController
-        self.flowCompletionDelegate =  flowCompletionDelegate
+        self.flowCompletionDelegate = flowCompletionDelegate
     }
     
     public func start(animated: Bool) {
@@ -146,7 +146,7 @@ private extension DefaultHomeCoordinator {
     
     func presentBottomSheetController(contentViewController: UIViewController) -> BottomSheetController {
         let parentViewController = navigationController
-        let bottomSheetController =  BottomSheetController(
+        let bottomSheetController = BottomSheetController(
             bottomSheetHeight: 420
         )
         

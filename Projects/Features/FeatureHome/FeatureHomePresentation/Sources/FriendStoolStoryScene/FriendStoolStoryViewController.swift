@@ -87,7 +87,7 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         
         segmentedProgressView.rx.progressDidEnd
             .filter { $0 }
-            .map { _ in Void() }
+            .mapToVoid()
             .bind(to: input.closeButtonDidTap)
             .disposed(by: disposeBag)
         
@@ -99,7 +99,7 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
     public func bindOutput(from viewModel: FriendStoolStoryViewModel) {
         let output = viewModel.output
         
-        output.stoolStoryLogs
+        output.stories
             .map { $0.count }
             .bind(to: segmentedProgressView.rx.numberOfSegments)
             .disposed(by: disposeBag)
@@ -109,25 +109,17 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .bind(onNext: segmentedProgressView.manuallyTrackSegment(forIndexOf:))
             .disposed(by: disposeBag)
         
-        output.updateShownStoolLog
+        output.updateShownStory
             .map { $0.stoolImage }
             .bind(to: stoolImageView.rx.image)
             .disposed(by: disposeBag)
-        
-        output.hideCheeringButton
-            .bind(to: cheeringButton.rx.isHidden)
-            .disposed(by: disposeBag)
-        
+                
         output.enableCheeringButton
             .bind(to: cheeringButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
         output.updateCheeringLabelText
             .bind(to: cheeringLabel.rx.text)
-            .disposed(by: disposeBag)
-        
-        output.hideCheeringLabel
-            .bind(to: cheeringLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
         output.updateFriendStoolLogSummary

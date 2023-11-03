@@ -19,6 +19,6 @@ public enum HomeCoordinateAction {
     case stoolLogButtonDidTap(stoolLogsRelay: BehaviorRelay<[StoolLogEntity]>)
     case settingButtonDidTap
     case reportButtonDidTap
-    case friendButtonDidTap(friend: FriendEntity, stoolLogs: [StoolStoryLogEntity])
+    case storyFeedButtonDidTap(stories: [StoryEntity])
     case storyCloseButtonDidTap
 }

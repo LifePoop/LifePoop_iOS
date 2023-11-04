@@ -72,7 +72,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
             .withUnretained(self)
             .bind(onNext: { `self`, firstStory in
                 self.output.updateShownStory.accept(firstStory)
-                self.output.updateCheeringLabelText.accept(LocalizableString.doneCheeringWithBoost)
+                self.output.updateCheeringLabelText.accept(LocalizableString.cheeringWithBoost)
                 self.output.updateStoolLogTime.accept(
                     firstStory.date.localizedTimeDifferenceSinceCurrentDateString
                 )
@@ -152,7 +152,7 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 
                 let cheeringButtonText = isSuccess ? LocalizableString.doneBoost
                                                    : LocalizableString.boost
-                self.output.updateCheeringLabelText.accept(cheeringButtonText)
+                self.output.updateCheeringButtonText.accept(cheeringButtonText)
 
             })
             .disposed(by: disposeBag)

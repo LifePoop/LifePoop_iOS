@@ -89,6 +89,11 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
                 self.showSharingPopup()
             })
             .disposed(by: disposeBag)
+        
+        output.warningLabelText
+            .asSignal(onErrorJustReturn: "")
+            .emit(to: textFieldAlertView.rx.warningLabelText)
+            .disposed(by: disposeBag)
     }
     
     override public func configureUI() {

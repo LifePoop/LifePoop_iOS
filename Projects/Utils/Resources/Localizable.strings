@@ -74,6 +74,8 @@
 "enterInvitationCode" = "초대 코드 입력하기";
 "enterInvitationCodeYouReceivedFromYourFriend" = "친구에게 받은 초대 코드를 입력해주세요";
 "doneEntering" = "입력 완료";
+"cannotEnterCodeOfSelf" = "자기 자신의 코드를 입력할 수 없습니다";
+"shouldEnterValidLengthOfCode" = "초대 코드 8자를 정확히 입력해주세요";
 
 /* 친구 목록 - 친구의 변 기록*/
 "stoolDiaryForFriend" = "%@님의 변 기록이에요";

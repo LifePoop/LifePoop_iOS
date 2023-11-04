@@ -87,6 +87,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         let showSharingActivityView = PublishRelay<Void>()
         let enableConfirmButton = PublishRelay<Bool>()
         let hideWarningLabel = PublishRelay<Bool>()
+        let warningLabelText = BehaviorRelay<String>(value: "")
     }
     
     public let input = Input()
@@ -137,20 +138,37 @@ public final class InvitationCodeViewModel: ViewModelType {
             .bind(to: toastMessageStream)
             .disposed(by: disposeBag)
         
-        input.didEnterInvitationCode
+        let invitationCodeInputResult = input.didEnterInvitationCode
+            .skip(1)
             .withUnretained(self)
             .flatMap { `self`, invitationCode in
                 self.friendListUseCase.checkInvitationCodeValidation(invitationCode)
             }
+            .share()
+        
+        invitationCodeInputResult
+            .map { $0.isValid }
             .bind(to: output.enableConfirmButton)
             .disposed(by: disposeBag)
 
-        input.didEnterInvitationCode
-            .withUnretained(self)
-            .flatMap { `self`, invitationCode in
-                self.friendListUseCase.checkInvitationCodeLengthValidation(invitationCode)
-            }
+        invitationCodeInputResult
+            .map { $0.isValid }
             .bind(to: output.hideWarningLabel)
+            .disposed(by: disposeBag)
+        
+        invitationCodeInputResult
+            .filter { !$0.isValid }
+            .compactMap {
+                switch $0 {
+                case .codeOfSelf:
+                    return LocalizableString.cannotEnterCodeOfSelf
+                case .invalidLength:
+                    return LocalizableString.shouldEnterValidLengthOfCode
+                default:
+                    return nil
+                }
+            }
+            .bind(to: output.warningLabelText)
             .disposed(by: disposeBag)
         
         input.didTapCancelButton

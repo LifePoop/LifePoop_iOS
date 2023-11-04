@@ -68,7 +68,7 @@ public final class FriendStoolLogViewModel: ViewModelType {
             }
             .share()
         
-        let cheeringInfo = input.viewDidLoad
+        let fetchedCheeringInfo = input.viewDidLoad
             .withUnretained(self)
             .flatMapMaterialized { `self`, _ in
                 self.cheeringInfoUseCase.fetchCheeringInfo(
@@ -78,7 +78,7 @@ public final class FriendStoolLogViewModel: ViewModelType {
             }
             .share()
         
-        cheeringInfo
+        fetchedCheeringInfo
             .compactMap { $0.element }
             .withLatestFrom(fetchedStoolLogs.compactMap { $0.element }) { ($0, $1) }
             .map { cheeringInfo, stoolLogs in
@@ -104,35 +104,38 @@ public final class FriendStoolLogViewModel: ViewModelType {
             .bind(to: state.stoolLogs)
             .disposed(by: disposeBag)
         
-        fetchedStoolLogs
-            .compactMap { $0.error }
-            .toastMessageMap(to: .stoolLog(.fetchStoolLogFail))
-            .bind(to: output.showErrorMessage)
-            .disposed(by: disposeBag)
+        Observable.merge(
+            fetchedCheeringInfo.compactMap { $0.error },
+            fetchedStoolLogs.compactMap { $0.error }
+        )
+        .toastMessageMap(to: .stoolLog(.fetchStoolLogFail))
+        .bind(to: output.showErrorMessage)
+        .disposed(by: disposeBag)
         
-        fetchedStoolLogs
-            .filter { $0.isStopEvent }
-            .map { _ in false }
-            .bind(to: output.shouldLoadingIndicatorAnimating)
-            .disposed(by: disposeBag)
+        Observable.merge(
+            fetchedCheeringInfo.map { $0.isStopEvent },
+            fetchedStoolLogs.map { $0.isStopEvent }
+        )
+        .filter { $0 }
+        .map { _ in false }
+        .bind(to: output.shouldLoadingIndicatorAnimating)
+        .disposed(by: disposeBag)
         
         // MARK: - Bind State
         
-        state.friendStoolLogheaderViewModel
-            .compactMap { $0 }
-            .bind(to: output.updateFriendStoolLogheaderViewModel)
-            .disposed(by: disposeBag)
-        
-        state.stoolLogs
-            .filter { $0.isEmpty }
-            .map { _ in [StoolLogItem(itemState: .empty, section: .today)] }
-            .bind(to: output.updateStoolLogs)
-            .disposed(by: disposeBag)
-        
-        state.stoolLogs
-            .filter { !$0.isEmpty }
-            .map { $0.map { StoolLogItem(itemState: .stoolLog($0), section: .today) } }
-            .bind(to: output.updateStoolLogs)
-            .disposed(by: disposeBag)
+        Observable.combineLatest(
+            state.friendStoolLogheaderViewModel.compactMap { $0 },
+            state.stoolLogs
+        )
+        .map { headerViewModel, stoolLogs -> ([StoolLogItem], FriendStoolLogHeaderViewModel) in
+            let stoolLogItems = stoolLogs.isEmpty ? [StoolLogItem(itemState: .empty, section: .today)] :
+                stoolLogs.map { StoolLogItem(itemState: .stoolLog($0), section: .today) }
+            return (stoolLogItems, headerViewModel)
+        }
+        .bind { [weak self] stoolLogItems, headerViewModel in
+            self?.output.updateFriendStoolLogheaderViewModel.accept(headerViewModel)
+            self?.output.updateStoolLogs.accept(stoolLogItems)
+        }
+        .disposed(by: disposeBag)
     }
 }

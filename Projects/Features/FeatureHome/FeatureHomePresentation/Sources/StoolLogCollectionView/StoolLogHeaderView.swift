@@ -118,7 +118,7 @@ final class StoolLogHeaderView: UICollectionReusableView, ViewType {
             .disposed(by: disposeBag)
         
         storyFeedCollectionView.rx.itemSelected
-            .bind(to: input.friendListCellDidTap)
+            .bind(to: input.storyFeedCellDidTap)
             .disposed(by: disposeBag)
     }
     

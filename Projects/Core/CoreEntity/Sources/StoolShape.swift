@@ -8,8 +8,24 @@
 
 import Foundation
 
+import Utils
+
 public enum StoolShape: Int, Codable, CaseIterable {
     case soft
     case good
     case hard
+}
+
+extension StoolShape: CustomStringConvertible {
+
+    public var description: String {
+        switch self {
+        case .soft:
+            return LocalizableString.soft
+        case .good:
+            return LocalizableString.good
+        case .hard:
+            return LocalizableString.hard
+        }
+    }
 }

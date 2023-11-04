@@ -33,4 +33,24 @@ public final class DefaultCheeringInfoRepository: CheeringInfoRepository {
             .decodeMap(CheeringInfoDTO.self)
             .transformMap(cheeringInfoEntityMapper)
     }
+    
+    public func requestCheering(accessToken: String, userId: Int) -> Single<Bool> {
+        urlSessionEndpointService
+            .fetchStatusCode(endpoint: LifePoopLocalTarget.cheerFriend(
+                accessToken: accessToken,
+                userID: userId
+            ))
+            .map { statusCode in
+                switch statusCode {
+                case 201:
+                    return true
+                case 200, 202...299: // 201을 제외한 200번대 응답에 대해서..?
+                    return false
+                case 444:
+                    throw NetworkError.invalidAccessToken
+                default:
+                    throw NetworkError.invalidStatusCode(code: statusCode)
+                }
+            }
+    }
 }

@@ -59,12 +59,8 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
                 self?.startSettingCoordinatorFlow()
             case .reportButtonDidTap:
                 self?.pushReportViewController()
-            case .friendButtonDidTap(let friend, let stoolStoryLogs):
-                self?.presentFriendStoolStoryViewController(
-                    friend: friend,
-                    stoolStoryLogs: stoolStoryLogs,
-                    animated: true
-                )
+            case .storyFeedButtonDidTap(let stories):
+                self?.presentFriendStoolStoryViewController(stories: stories, animated: true)
             case .storyCloseButtonDidTap:
                 self?.dismissFriendStoolStoryViewController(animated: true)
             }
@@ -87,11 +83,10 @@ private extension DefaultHomeCoordinator {
     }
     
     func presentFriendStoolStoryViewController(
-        friend: FriendEntity,
-        stoolStoryLogs: [StoolStoryLogEntity],
+        stories: [StoryEntity],
         animated: Bool
     ) {
-        let viewModel = FriendStoolStoryViewModel(coordinator: self, friend: friend, stoolStoryLogs: stoolStoryLogs)
+        let viewModel = FriendStoolStoryViewModel(coordinator: self, stories: stories)
         let viewController = FriendStoolStoryViewController()
         viewController.bind(viewModel: viewModel)
         viewController.modalPresentationStyle = .overFullScreen

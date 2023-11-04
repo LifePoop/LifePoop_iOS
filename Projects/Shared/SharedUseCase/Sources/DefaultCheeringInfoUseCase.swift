@@ -17,6 +17,7 @@ import Utils
 
 public protocol CheeringInfoUseCase {
     func fetchCheeringInfo(userId: Int, date: String) -> Observable<CheeringInfoEntity>
+    func requestCheering(withIdOf id: Int) -> Observable<Bool>
 }
 
 public final class DefaultCheeringInfoUseCase: CheeringInfoUseCase {
@@ -39,6 +40,22 @@ public final class DefaultCheeringInfoUseCase: CheeringInfoUseCase {
                 )
             }
             .logErrorIfDetected(category: .network)
+            .asObservable()
+    }
+    
+    
+    public func requestCheering(withIdOf id: Int) -> Observable<Bool> {
+        userInfoUseCase.userInfo
+            .compactMap { $0?.authInfo.accessToken }
+            .withUnretained(self)
+            .flatMapLatest { `self`, accessToken in
+                self.cheeringInfoRepository.requestCheering(
+                    accessToken: accessToken,
+                    userId: id
+                )
+            }
+            .logErrorIfDetected(category: .network)
+            .catchAndReturn(false)
             .asObservable()
     }
 }

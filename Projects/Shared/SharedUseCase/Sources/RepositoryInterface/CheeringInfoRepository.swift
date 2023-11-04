@@ -14,4 +14,5 @@ import CoreEntity
 
 public protocol CheeringInfoRepository {
     func fetchUserCheeringInfo(accessToken: String, userID: Int, date: String) -> Single<CheeringInfoEntity>
+    func requestCheering(accessToken: String, userId: Int) -> Single<Bool>
 }

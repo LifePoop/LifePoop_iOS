@@ -17,7 +17,7 @@ import FeatureFriendListCoordinator
 import FeatureFriendListCoordinatorInterface
 import FeatureHomeCoordinatorInterface
 import FeatureHomePresentation
-import FeatureReportCoordinator
+import FeatureReportPresentation
 import FeatureSettingCoordinator
 import FeatureSettingCoordinatorInterface
 import FeatureStoolLogCoordinator
@@ -37,7 +37,7 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
         flowCompletionDelegate: HomeCoordinatorCompletionDelegate?
     ) {
         self.navigationController = navigationController
-        self.flowCompletionDelegate =  flowCompletionDelegate
+        self.flowCompletionDelegate = flowCompletionDelegate
     }
     
     public func start(animated: Bool) {
@@ -45,23 +45,25 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
     }
         
     public func coordinate(by coordinateAction: HomeCoordinateAction) {
-        switch coordinateAction {
-        case .flowDidStart(let animated):
-            pushHomeViewController(animated: animated)
-        case .flowDidFinish:
-            flowCompletionDelegate?.finishFlow()
-        case .cheeringButtonDidTap:
-            startFriendListCoordinatorFlow()
-        case .stoolLogButtonDidTap(let stoolLogsRelay):
-            startStoolLogCoordinatorFlow(stoolLogsRelay: stoolLogsRelay)
-        case .settingButtonDidTap:
-            startSettingCoordinatorFlow()
-        case .reportButtonDidTap:
-            startReportCoordinatorFlow()
-        case .storyFeedButtonDidTap(let stories):
-            presentFriendStoolStoryViewController(stories: stories, animated: true)
-        case .storyCloseButtonDidTap:
-            dismissFriendStoolStoryViewController(animated: true)
+        DispatchQueue.main.async { [weak self] in
+            switch coordinateAction {
+            case .flowDidStart(let animated):
+                self?.pushHomeViewController(animated: animated)
+            case .flowDidFinish:
+                self?.flowCompletionDelegate?.finishFlow()
+            case .cheeringButtonDidTap:
+                self?.startFriendListCoordinatorFlow()
+            case .stoolLogButtonDidTap(let stoolLogsRelay):
+                self?.startStoolLogCoordinatorFlow(stoolLogsRelay: stoolLogsRelay)
+            case .settingButtonDidTap:
+                self?.startSettingCoordinatorFlow()
+            case .reportButtonDidTap:
+                self?.pushReportViewController()
+            case .storyFeedButtonDidTap(let stories):
+                self?.presentFriendStoolStoryViewController(stories: stories, animated: true)
+            case .storyCloseButtonDidTap:
+                self?.dismissFriendStoolStoryViewController(animated: true)
+            }
         }
     }
     
@@ -77,7 +79,7 @@ private extension DefaultHomeCoordinator {
         let viewController = HomeViewController()
         let viewModel = HomeViewModel(coordinator: self)
         viewController.bind(viewModel: viewModel)
-        navigationController.setViewControllers([viewController], animated: animated)
+        navigationController.pushViewController(viewController, animated: animated)
     }
     
     func presentFriendStoolStoryViewController(
@@ -115,14 +117,15 @@ private extension DefaultHomeCoordinator {
             navigationController: navigationController,
             completionDelegate: self
         )
+        add(childCoordinator: settingCoordinator)
         settingCoordinator.start()
     }
     
-    func startReportCoordinatorFlow() {
-        let reportCoordinator = DefaultReportCoordinator(
-            navigationController: navigationController
-        )
-        reportCoordinator.start()
+    func pushReportViewController() {
+        let viewController = ReportViewController()
+        let viewModel = ReportViewModel(coordinator: self)
+        viewController.bind(viewModel: viewModel)
+        navigationController.pushViewController(viewController, animated: true)
     }
     
     func startFriendListCoordinatorFlow() {
@@ -138,7 +141,7 @@ private extension DefaultHomeCoordinator {
     
     func presentBottomSheetController(contentViewController: UIViewController) -> BottomSheetController {
         let parentViewController = navigationController
-        let bottomSheetController =  BottomSheetController(
+        let bottomSheetController = BottomSheetController(
             bottomSheetHeight: 420
         )
         

@@ -10,7 +10,7 @@ import RxRelay
 import RxSwift
 
 import CoreEntity
-import FeatureReportCoordinatorInterface
+import FeatureHomeCoordinatorInterface
 import FeatureReportDIContainer
 import FeatureReportUseCase
 import Logger
@@ -47,10 +47,10 @@ public final class ReportViewModel: ViewModelType {
     
     @Inject(ReportDIContainer.shared) private var reportUseCase: ReportUseCase
     
-    private weak var coordinator: ReportCoordinator?
+    private weak var coordinator: HomeCoordinator?
     private let disposeBag = DisposeBag()
     
-    public init(coordinator: ReportCoordinator?) {
+    public init(coordinator: HomeCoordinator?) {
         self.coordinator = coordinator
         
         // MARK: - Bind Input

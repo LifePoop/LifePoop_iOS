@@ -25,7 +25,7 @@ public protocol UserInfoUseCase: AnyObject {
     /** 기존 사용자 정보 업데이트(서버 동기화)*/
     func fetchUserInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool>
     /** 로그아웃 요청 */
-    func requestLogout() -> Observable<Bool>
+    func requestLogout() -> Observable<Void>
     /** 애플 탈퇴 요청*/
     func requestAccountWithdrawl(for loginType: LoginType) -> Observable<Bool>
 }

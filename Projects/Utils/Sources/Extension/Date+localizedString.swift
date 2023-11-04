@@ -54,7 +54,7 @@ public extension Date {
         let timeDifference = currentDate.timeIntervalSince(self)
         
         return timeDifference >= 60 * 60
-        ? "\(Int(timeDifference / (60 * 60)))\(LocalizableString.hour) 전"
-        : "\(Int(timeDifference / 60))\(LocalizableString.minute) 전"
+        ? "\(Int(timeDifference / (60 * 60)))\(LocalizableString.hours) 전"
+        : "\(Int(timeDifference / 60))\(LocalizableString.minutes) 전"
     }
 }

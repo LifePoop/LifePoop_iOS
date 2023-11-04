@@ -33,7 +33,10 @@ public final class DefaultFriendListRepository: NSObject, FriendListRepository {
             .transformMap(friendEntityMapper)
     }
     
-    public func requestAddingFriend(with invitationCode: String, accessToken: String) -> Single<Result<Bool, InvitationError>> {
+    public func requestAddingFriend(
+        with invitationCode: String,
+        accessToken: String
+    ) -> Single<Result<Bool, InvitationError>> {
         urlSessionEndpointService
             .fetchStatusCode(endpoint: LifePoopLocalTarget
                 .sendInvitationCode(

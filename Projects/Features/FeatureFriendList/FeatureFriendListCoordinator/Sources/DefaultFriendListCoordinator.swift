@@ -105,7 +105,7 @@ private extension DefaultFriendListCoordinator {
     
     func showInvitationCodePopup(
         invitationType: InvitationType,
-        toastMessageStream: PublishRelay<String>,
+        toastMessageStream: PublishRelay<ToastMessage>,
         friendListUpdateStream: PublishRelay<Void>
     ) {
         closeBottomSheet()

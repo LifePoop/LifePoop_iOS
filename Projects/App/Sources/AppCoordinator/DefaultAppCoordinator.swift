@@ -33,15 +33,17 @@ public final class DefaultAppCoordinator: AppCoordinator {
     }
     
     public func coordinate(by coordinateAction: AppCoordinateAction) {
-        switch coordinateAction {
-        case .appDidStart:
-            startLoginCoordinatorFlow(showLaunchScreen: true)
-        case .authenticationDidReset:
-            startLoginCoordinatorFlow(showLaunchScreen: false)
-        case .accessTokenDidfetch:
-            startHomeCoordinatorFlow(animated: false)
-        case .authenticationProcessDidFinish:
-            startHomeCoordinatorFlow(animated: true)
+        DispatchQueue.main.async { [weak self] in
+            switch coordinateAction {
+            case .appDidStart:
+                self?.startLoginCoordinatorFlow(showLaunchScreen: true)
+            case .authenticationDidReset:
+                self?.startLoginCoordinatorFlow(showLaunchScreen: false)
+            case .accessTokenDidfetch:
+                self?.startHomeCoordinatorFlow(animated: false)
+            case .authenticationProcessDidFinish:
+                self?.startHomeCoordinatorFlow(animated: true)
+            }
         }
     }
     

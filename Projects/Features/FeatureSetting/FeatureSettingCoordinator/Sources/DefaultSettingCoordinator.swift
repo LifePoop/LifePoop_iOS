@@ -38,25 +38,27 @@ public final class DefaultSettingCoordinator: SettingCoordinator {
     }
     
     public func coordinate(by coordinateAction: SettingCoordinateAction) {
-        switch coordinateAction {
-        case .flowDidStart:
-            pushSettingViewController()
-        case .flowDidFinish:
-            completionDelegate?.finishFlow()
-        case .profileInfoDidTap(let userNickname):
-            pushProfileInfoViewController(with: userNickname)
-        case .profileCharacterEditDidTap(let profileCharacter):
-            presentProfileEditViewController(with: profileCharacter)
-        case .feedVisibilityDidTap(let feedVisibility):
-            presentFeedVisibilityViewController(with: feedVisibility)
-        case .termsOfServiceDidTap(let title, let text), .privacyPolicyDidTap(let title, let text):
-            pushDocumentViewController(with: title, text: text)
-        case .sendFeedbackDidTap:
-            pushFeedbackViewController()
-        case .logOutConfirmButtonDidTap:
-            completionDelegate?.finishFlow(by: .userDidLogout)
-        case .withdrawConfirmButtonDidTap:
-            completionDelegate?.finishFlow(by: .userDidWithdraw)
+        DispatchQueue.main.async { [weak self] in
+            switch coordinateAction {
+            case .flowDidStart:
+                self?.pushSettingViewController()
+            case .flowDidFinish:
+                self?.completionDelegate?.finishFlow()
+            case .profileInfoDidTap(let userNickname):
+                self?.pushProfileInfoViewController(with: userNickname)
+            case .profileCharacterEditDidTap(let profileCharacter):
+                self?.presentProfileEditViewController(with: profileCharacter)
+            case .feedVisibilityDidTap(let feedVisibility):
+                self?.presentFeedVisibilityViewController(with: feedVisibility)
+            case .termsOfServiceDidTap(let title, let text), .privacyPolicyDidTap(let title, let text):
+                self?.pushDocumentViewController(with: title, text: text)
+            case .sendFeedbackDidTap:
+                self?.pushFeedbackViewController()
+            case .logOutConfirmButtonDidTap:
+                self?.completionDelegate?.finishFlow(by: .userDidLogout)
+            case .withdrawConfirmButtonDidTap:
+                self?.completionDelegate?.finishFlow(by: .userDidWithdraw)
+            }
         }
     }
     

@@ -75,7 +75,7 @@ private extension DefaultLoginCoordinator {
         let viewController = LaunchScreenViewController()
         let viewModel = LaunchScreenViewModel(coordinator: self)
         viewController.bind(viewModel: viewModel)
-        navigationController.setViewControllers([viewController], animated: true)
+        navigationController.pushViewController(viewController, animated: true)
     }
     
     func showLoginViewController(animated: Bool) {

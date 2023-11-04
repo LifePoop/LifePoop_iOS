@@ -156,22 +156,25 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             }
     }
     
-    public func requestLogout() -> Observable<Bool> {
+    public func requestLogout() -> Observable<Void> {
         userInfo.compactMap { $0?.authInfo.accessToken }
+            .do(onNext: { _ in
+                Logger.log(message: "로그아웃 요청", category: .authentication, type: .debug)
+            })
             .withUnretained(self)
             .flatMapLatest { `self`, accessToken in
                 self.userInfoRepository.requestLogout(accessToken: accessToken)
+                    .logErrorIfDetected(category: .authentication)
                     .catchAndReturn(false)
             }
             .withUnretained(self)
             .concatMap { `self`, isSuccess in
                 if isSuccess {
-                    return self.removeUserInfo().andThen(Observable.just(true))
+                    return self.removeUserInfo().andThen(Observable.just(Void()))
                 } else {
-                    return Observable.just(false)
+                    return Observable.just(Void())
                 }
             }
-            .asObservable()
     }
     
     public func requestAccountWithdrawl(for loginType: LoginType) -> Observable<Bool> {

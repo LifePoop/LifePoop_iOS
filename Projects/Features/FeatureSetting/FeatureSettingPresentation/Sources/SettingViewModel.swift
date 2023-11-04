@@ -199,12 +199,8 @@ public final class SettingViewModel: ViewModelType {
             .flatMapLatest { `self`, _ in
                 self.userInfoUseCase.requestLogout()
             }
-            .bind(onNext: { isSuccess in
-                if isSuccess {
-                    coordinator?.coordinate(by: .logOutConfirmButtonDidTap)
-                } else {
-                    print("로그아웃 실패 모달 띄우기")
-                }
+            .bind(onNext: { _ in
+                coordinator?.coordinate(by: .logOutConfirmButtonDidTap)
             })
             .disposed(by: disposeBag)
 

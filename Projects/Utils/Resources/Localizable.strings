@@ -182,3 +182,5 @@
 "toastInvitationCodeCopySuccess" = "초대 코드 복사 완료";
 "toastInvitationCodeSharingSuccess" = "초대 코드 공유 완료";
 "toastInvitationCodeSharingFail" = "초대 코드 공유 실패";
+"toastInvalidInvitationCode" = "유효하지 않은 초대 코드 입니다.";
+"toastAlreadyAddedFriend" = "이미 추가된 친구 입니다.";

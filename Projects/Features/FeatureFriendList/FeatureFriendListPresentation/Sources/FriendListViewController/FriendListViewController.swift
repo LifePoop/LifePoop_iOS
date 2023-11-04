@@ -121,10 +121,11 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
                 fullString.append(NSAttributedString(attachment: imageAttachment))
             
                 fullString.appendSpacing(withPointOf: 12)
-                fullString.append(NSAttributedString(string: message))
-                return fullString
+                fullString.append(NSAttributedString(string: message.localized))
+
+                return (message: fullString, backgroundColor: UIColor.toastMessage(message))
             }
-            .emit(onNext: toastLabel.show(message:))
+            .emit(onNext: toastLabel.show(message:backgroundColor:))
             .disposed(by: disposeBag)
     }
     
@@ -182,5 +183,17 @@ extension FriendListViewController: UICollectionViewDelegateFlowLayout {
         let cellHeight: CGFloat = 50
         
         return CGSize(width: cellWidth, height: cellHeight)
+    }
+}
+
+extension UIColor {
+    
+    static func toastMessage(_ toastMessage: ToastMessage) -> UIColor {
+        switch toastMessage.kind {
+        case .success:
+            return ColorAsset.gray900.color
+        case .failure:
+            return ColorAsset.toastFailure.color
+        }
     }
 }

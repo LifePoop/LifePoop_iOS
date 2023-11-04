@@ -59,6 +59,14 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
                         self.retryWhenAccessTokenIsInvalid(invitationCode: invitationCode)
                     }
                 })
+                .map { result in
+                    switch result {
+                    case .success(let isSuccess):
+                        return isSuccess
+                    case .failure(let error):
+                        throw error
+                    }
+                }
             }
             .asObservable()
     }
@@ -108,6 +116,7 @@ private extension DefaultFriendListUseCase {
                     with: invitationCode,
                     accessToken: updatedAuthInfo.accessToken
                 )
+                .map { _ in false }
             }
             .asObservable()
     }

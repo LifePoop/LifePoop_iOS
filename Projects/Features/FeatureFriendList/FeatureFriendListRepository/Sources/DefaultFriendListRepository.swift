@@ -33,8 +33,7 @@ public final class DefaultFriendListRepository: NSObject, FriendListRepository {
             .transformMap(friendEntityMapper)
     }
     
-    // MARK: 서버팀에서 정의한 상태코드에 대해서만 우선 예외 던짐 처리
-    public func requestAddingFriend(with invitationCode: String, accessToken: String) -> Single<Bool> {
+    public func requestAddingFriend(with invitationCode: String, accessToken: String) -> Single<Result<Bool, InvitationError>> {
         urlSessionEndpointService
             .fetchStatusCode(endpoint: LifePoopLocalTarget
                 .sendInvitationCode(
@@ -44,7 +43,13 @@ public final class DefaultFriendListRepository: NSObject, FriendListRepository {
             .map { statusCode in
                 switch statusCode {
                 case 201:
-                    return true
+                    return .success(true)
+                case 400:
+                    return .failure(.invalidResult)
+                case 404:
+                    return .failure(.nonExistingCode)
+                case 409:
+                    return .failure(.alreadyAddedFriend)
                 case 444:
                     throw NetworkError.invalidAccessToken
                 default:
@@ -57,7 +62,7 @@ public final class DefaultFriendListRepository: NSObject, FriendListRepository {
                         type: .error
                     )
 
-                    return false
+                    throw NetworkError.invalidStatusCode(code: statusCode)
                 }
             }
     }

@@ -84,7 +84,7 @@ private extension DefaultFriendListCoordinator {
     }
     
     func showFriendInvitationView(
-        toastMessageStream: PublishRelay<String>,
+        toastMessageStream: PublishRelay<ToastMessage>,
         friendListUpdateStream: PublishRelay<Void>
     ) {
         let invitationViewController = FrinedInvitationViewController()

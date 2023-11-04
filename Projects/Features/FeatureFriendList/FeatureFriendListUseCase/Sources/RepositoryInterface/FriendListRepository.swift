@@ -17,5 +17,5 @@ public protocol FriendListRepository {
     func requestAddingFriend(
         with invitationCode: String,
         accessToken: String
-    ) -> Single<Bool>
+    ) -> Single<Result<Bool, InvitationError>>
 }

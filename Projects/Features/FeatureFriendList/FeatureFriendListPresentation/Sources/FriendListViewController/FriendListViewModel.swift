@@ -31,7 +31,7 @@ public final class FriendListViewModel: ViewModelType {
         let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
         let showFriendList = PublishRelay<[FriendEntity]>()
         let showEmptyList = PublishRelay<Void>()
-        let showToastMessge = PublishRelay<String>()
+        let showToastMessge = PublishRelay<ToastMessage>()
     }
     
     public struct State {
@@ -84,7 +84,7 @@ public final class FriendListViewModel: ViewModelType {
         
         fetchedFriendList
             .compactMap { $0.error }
-            .toastMessageMap(to: .friendList(.fetchFriendListFail) )
+            .map { _ in ToastMessage.friendList(.fetchFriendListFail) }
             .bind(to: output.showToastMessge)
             .disposed(by: disposeBag)
         

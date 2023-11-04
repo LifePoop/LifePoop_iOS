@@ -115,10 +115,6 @@ private extension InvitationCodeViewController {
     }
     
     func showSharingPopup() {
-        
-        // FIXME: TODO 주석에 따라 invitationCode가 비어있을 경우 크래쉬 발생!! 수정 필요
-        
-        // TODO: 초대코드 존재하지 않을 경우 별도 표시해야 함
         guard let invitationCode = viewModel?.invitationCode,
               !invitationCode.isEmpty else { return }
         
@@ -139,10 +135,9 @@ private extension InvitationCodeViewController {
         
         activityViewController.completionWithItemsHandler = { [weak self] activity, success, _, error in
             if let error = error {
-                self?.viewModel?.input.didCloseSharingPopup.accept(.failure(
-                    activity: (activity == .copyToPasteboard) ? .copying : .sharing,
-                    error: error
-                ))
+                self?.viewModel?.input.didCloseSharingPopup.accept(
+                    (activity == .copyToPasteboard) ? .invitationCodeCopyFail : .invitationCodeSharingFail
+                )
                 return
             }
             
@@ -151,9 +146,9 @@ private extension InvitationCodeViewController {
                 self?.dismissViewControllerIfNeeded()
                 return
             }
-            self?.viewModel?.input.didCloseSharingPopup.accept(.success(
-                activity: (activity == .copyToPasteboard) ? .copying : .sharing
-            ))
+            self?.viewModel?.input.didCloseSharingPopup.accept(
+                (activity == .copyToPasteboard) ? .invitationCodeCopySuccess : .invitationCodeSharingSuccess
+            )
         }
         
         present(activityViewController, animated: true)

@@ -72,8 +72,9 @@ public final class FriendStoolLogViewController: LifePoopViewController, ViewTyp
         let output = viewModel.output
         
         output.shouldLoadingIndicatorAnimating
+            .asSignal()
             .distinctUntilChanged()
-            .bind(to: loadingIndicator.rx.isAnimating)
+            .emit(to: loadingIndicator.rx.isAnimating)
             .disposed(by: disposeBag)
         
         output.updateStoolLogs

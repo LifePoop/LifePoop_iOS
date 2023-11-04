@@ -47,7 +47,7 @@ final class FriendStoolLogCollectionViewDiffableDataSource: UICollectionViewDiff
     func update(with stoolLogItems: [StoolLogItem]) {
         var snapshot = Snapshot()
         snapshot.appendSections([.today])
-        snapshot.appendItems(stoolLogItems)
+        snapshot.appendItems(stoolLogItems, toSection: .today)
         apply(snapshot, animatingDifferences: true)
     }
 }

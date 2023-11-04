@@ -28,7 +28,7 @@ public final class FriendListViewModel: ViewModelType {
     }
     
     public struct Output {
-        let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
+        let setLoadingIndicatorAnimating = PublishRelay<Bool>()
         let showFriendList = PublishRelay<[FriendEntity]>()
         let showEmptyList = PublishRelay<Void>()
         let showToastMessge = PublishRelay<ToastMessage>()
@@ -56,7 +56,7 @@ public final class FriendListViewModel: ViewModelType {
         
         input.viewDidLoad
             .map { _ in true }
-            .bind(to: output.shouldLoadingIndicatorAnimating)
+            .bind(to: output.setLoadingIndicatorAnimating)
             .disposed(by: disposeBag)
         
         let updateFriendList = Observable<Void>.merge(
@@ -91,7 +91,7 @@ public final class FriendListViewModel: ViewModelType {
         fetchedFriendList
             .filter { $0.isStopEvent }
             .map { _ in false }
-            .bind(to: output.shouldLoadingIndicatorAnimating)
+            .bind(to: output.setLoadingIndicatorAnimating)
             .disposed(by: disposeBag)
         
         input.invitationButtonDidTap

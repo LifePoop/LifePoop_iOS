@@ -182,6 +182,7 @@
 "toastAddingFriendSuccess" = "친구 추가 완료";
 "toastAddingFriendFail" = "친구 추가 실패";
 "toastInvitationCodeCopySuccess" = "초대 코드 복사 완료";
+"toastInvitationCodeCopyFail" = "초대 코드 복사 실패";
 "toastInvitationCodeSharingSuccess" = "초대 코드 공유 완료";
 "toastInvitationCodeSharingFail" = "초대 코드 공유 실패";
 "toastInvalidInvitationCode" = "유효하지 않은 초대 코드 입니다.";

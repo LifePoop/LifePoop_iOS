@@ -6,6 +6,7 @@
 //  Copyright © 2023 Lifepoo. All rights reserved.
 //
 
+import AVFoundation
 import UIKit
 
 import RxCocoa
@@ -92,6 +93,9 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .disposed(by: disposeBag)
         
         cheeringButton.rx.tap
+            .do(onNext: { _ in
+                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+            })
             .bind(to: input.cheeringButtonDidTap)
             .disposed(by: disposeBag)
     }

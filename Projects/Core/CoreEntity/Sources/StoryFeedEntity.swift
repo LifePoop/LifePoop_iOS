@@ -13,10 +13,13 @@ public struct StoryFeedEntity {
     
     public let user: UserProfileEntity
     public let stories: [StoryEntity]
+    public let isCheered: Bool
+
     
-    public init(user: UserProfileEntity, stories: [StoryEntity]) {
+    public init(user: UserProfileEntity, stories: [StoryEntity], isCheered: Bool) {
         self.user = user
         self.stories = stories
+        self.isCheered = isCheered
     }
 }
 

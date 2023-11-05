@@ -119,13 +119,12 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .bind(to: output.showEmptyCheeringInfo)
             .disposed(by: disposeBag)
         
-        // TODO: 터치한 친구(유저)에 대한 힘주기 가능 여부를 최초로 알 수 있어야 함
         input.storyFeedCellDidTap
             .map { $0.item }
             .withLatestFrom(state.storyFeeds) { $1[$0] }
             .bind(onNext: { storyFeed in
                 coordinator?.coordinate(
-                    by: .storyFeedButtonDidTap(stories: storyFeed.stories)
+                    by: .storyFeedButtonDidTap(stories: storyFeed.stories, isCheered: storyFeed.isCheered)
                 )
             })
             .disposed(by: disposeBag)

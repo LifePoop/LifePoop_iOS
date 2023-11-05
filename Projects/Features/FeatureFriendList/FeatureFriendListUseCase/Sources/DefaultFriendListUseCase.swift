@@ -59,25 +59,40 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
                         self.retryWhenAccessTokenIsInvalid(invitationCode: invitationCode)
                     }
                 })
+                .map { result in
+                    switch result {
+                    case .success(let isSuccess):
+                        return isSuccess
+                    case .failure(let error):
+                        throw error
+                    }
+                }
             }
             .asObservable()
     }
-    
-    public func checkInvitationCodeLengthValidation(_ input: String) -> Observable<Bool> {
-        Observable.just( input.count == 8)
-    }
-    
-    public func checkInvitationCodeValidation(_ input: String) -> Observable<Bool> {
-        Observable.zip(
+
+    public func checkInvitationCodeValidation(_ input: String) -> Observable<InvitationCodeInputStatus> {
+        Observable.combineLatest(
             checkInvitationCodeLengthValidation(input),
-            checkInvitationCodeDuplicatoin(input)
+            checkInvitationCodeDuplication(input)
         )
-        .map { $0 && !$1 }
+        .map { isLengthValid, isDuplicate in
+            switch (isLengthValid, isDuplicate) {
+            case (true, false):
+                return .validInput
+            case (true, true):
+                return .codeOfSelf
+            case (false, false):
+                return .invalidLength
+            default:
+                return .invalidLength
+            }
+        }
     }
 }
 
 private extension DefaultFriendListUseCase {
-    
+
     func requestRefreshingAuthInfo() -> Observable<(isSuccess: Bool, userAuthInfo: UserAuthInfoEntity?)> {
         let originalAuthInfo = userInfoUseCase.userInfo.compactMap { $0?.authInfo }
       
@@ -108,6 +123,7 @@ private extension DefaultFriendListUseCase {
                     with: invitationCode,
                     accessToken: updatedAuthInfo.accessToken
                 )
+                .map { _ in false }
             }
             .asObservable()
     }
@@ -127,8 +143,12 @@ private extension DefaultFriendListUseCase {
             }
             .asObservable()
     }
-    
-    func checkInvitationCodeDuplicatoin(_ input: String) -> Observable<Bool> {
-        invitationCode.map( { $0 == input})
+
+    func checkInvitationCodeLengthValidation(_ input: String) -> Observable<Bool> {
+        Observable.just(input.count == 8)
+    }
+
+    func checkInvitationCodeDuplication(_ input: String) -> Observable<Bool> {
+        invitationCode.map { $0 == input }
     }
 }

@@ -36,7 +36,7 @@ public final class FriendInvitationViewModel: ViewModelType {
     
     public init(
         coordinator: FriendListCoordinator?,
-        toastMessageStream: PublishRelay<String>,
+        toastMessageStream: PublishRelay<ToastMessage>,
         friendListUpdateStream: PublishRelay<Void>
     ) {
         bind(
@@ -48,7 +48,7 @@ public final class FriendInvitationViewModel: ViewModelType {
     
     private func bind(
         coordinator: FriendListCoordinator?,
-        toastMessageStream: PublishRelay<String>,
+        toastMessageStream: PublishRelay<ToastMessage>,
         friendListUpdateStream: PublishRelay<Void>
     ) {
         input.didSelectInvitationType

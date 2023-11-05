@@ -16,7 +16,7 @@ public struct StoryFeedEntityMapper: DataMapper {
 
     public func transform(_ dto: StoryFeedDTO) throws -> StoryFeedEntity {
         guard let color = StoolColor(rawValue: dto.user.characterColor),
-              let shape = StoolShape(rawValue: dto.user.characterColor) else {
+              let shape = StoolShape(rawValue: dto.user.characterShape) else {
             throw NetworkError.dataMappingError
         }
         let nickname = dto.user.nickname
@@ -39,7 +39,8 @@ public struct StoryFeedEntityMapper: DataMapper {
                     shape: shape,
                     date: date
                 )
-            }
+            }, 
+            isCheered: dto.user.isCheered ?? false
         )
     }
 }

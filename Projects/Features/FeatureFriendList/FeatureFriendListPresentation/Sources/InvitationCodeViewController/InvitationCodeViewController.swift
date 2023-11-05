@@ -48,6 +48,7 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
             .disposed(by: disposeBag)
         
         textFieldAlertView.confirmButton.rx.tap
+            .throttle(.seconds(1), scheduler: MainScheduler.asyncInstance)
             .bind(to: input.didTapConfirmButton)
             .disposed(by: disposeBag)
         

@@ -8,7 +8,7 @@
 
 import UIKit
 
-public final class LoginButton: UIButton {
+public final class LoginButton: LifePoopButton {
     
     private let title: String
     private let iconImage: UIImage?
@@ -21,7 +21,7 @@ public final class LoginButton: UIButton {
         self.baseBackgroundColor = backgroundColor
         self.fontColor = fontColor
         
-        super.init(frame: .zero)
+        super.init()
 
         configure()
     }

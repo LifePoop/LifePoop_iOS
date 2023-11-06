@@ -10,7 +10,7 @@ import UIKit
 
 import SnapKit
 
-public final class LifePoopButton: PaddingButton {
+public class LifePoopButton: PaddingButton {
     
     private var loadingIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView(style: .medium)

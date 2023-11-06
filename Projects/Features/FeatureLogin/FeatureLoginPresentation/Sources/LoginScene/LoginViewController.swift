@@ -92,10 +92,12 @@ public final class LoginViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
 
         kakaoTalkLoginButon.rx.tap
+            .throttle(.seconds(1), scheduler: MainScheduler.asyncInstance)
             .bind(to: input.didTapKakaoLoginButton)
             .disposed(by: disposeBag)
         
         appleLoginButton.rx.tap
+            .throttle(.seconds(1), scheduler: MainScheduler.asyncInstance)
             .bind(to: input.didTapAppleLoginButton)
             .disposed(by: disposeBag)
         
@@ -142,6 +144,26 @@ public final class LoginViewController: LifePoopViewController, ViewType {
         
         output.subLabelText
             .bind(to: subLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.showLoadingIndicator
+            .asSignal()
+            .withUnretained(self)
+            .emit(onNext: { `self`, indicatorTarget in
+                let showLoadingIndicator = indicatorTarget.activate
+                
+                var targetButton: LoginButton
+                switch indicatorTarget.loginType {
+                case .apple: targetButton = self.appleLoginButton
+                case .kakao: targetButton = self.kakaoTalkLoginButon
+                }
+                
+                if showLoadingIndicator {
+                    targetButton.showLoadingIndicator()
+                } else {
+                    targetButton.hideLoadingIndicator()
+                }
+            })
             .disposed(by: disposeBag)
         
         output.showErrorMessage

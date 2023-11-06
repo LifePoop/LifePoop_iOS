@@ -20,6 +20,11 @@ import Utils
 
 public final class LoginViewModel: ViewModelType {
     
+    struct LoadingIndicatorTarget {
+        let loginType: LoginType
+        let activate: Bool
+    }
+    
     public struct Input {
         let didTapKakaoLoginButton = PublishRelay<Void>()
         let didTapAppleLoginButton = PublishRelay<Void>()
@@ -30,6 +35,7 @@ public final class LoginViewModel: ViewModelType {
         let bannerImages = BehaviorRelay<[Data]>(value: [])
         let subLabelText = BehaviorRelay<String>(value: "")
         let showErrorMessage = PublishRelay<String>()
+        let showLoadingIndicator = PublishRelay<LoadingIndicatorTarget>()
     }
     
     public let input = Input()
@@ -51,9 +57,15 @@ public final class LoginViewModel: ViewModelType {
         
         let fetchKakaoToken = input.didTapKakaoLoginButton
             .withUnretained(self)
+            .do(onNext: { `self`, _ in
+                self.output.showLoadingIndicator.accept(.init(loginType: .kakao, activate: true))
+            })
             .flatMapMaterialized { `self`, _ in
                 `self`.loginUseCase.fetchOAuthAccessToken(for: .kakao)
             }
+            .do(onNext: { [weak self] _ in
+                self?.output.showLoadingIndicator.accept(.init(loginType: .kakao, activate: false))
+            })
             .share()
         
         fetchKakaoToken
@@ -85,9 +97,15 @@ public final class LoginViewModel: ViewModelType {
         
         let fetchAppleToken = input.didTapAppleLoginButton
             .withUnretained(self)
+            .do(onNext: { `self`, _ in
+                self.output.showLoadingIndicator.accept(.init(loginType: .apple, activate: true))
+            })
             .flatMapMaterialized { `self`, _ in
                 `self`.loginUseCase.fetchOAuthAccessToken(for: .apple)
             }
+            .do(onNext: { [weak self] _ in
+                self?.output.showLoadingIndicator.accept(.init(loginType: .apple, activate: false))
+            })
             .share()
         
         fetchAppleToken

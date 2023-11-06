@@ -19,6 +19,7 @@ public final class DefaultProfileEditUseCase: ProfileEditUseCase {
     
     @Inject(SharedDIContainer.shared) private var keyChainRepository: KeyChainRepository
     @Inject(SharedDIContainer.shared) private var userDefaultsRepository: UserDefaultsRepository
+    @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     @Inject(SharedDIContainer.shared) private var nicknameUseCase: NicknameUseCase
     @Inject(SharedDIContainer.shared) private var profileCharacterUseCase: ProfileCharacterUseCase
     @Inject(SharedDIContainer.shared) private var userProfileEditUseCase: UserProfileEditUseCase
@@ -38,13 +39,21 @@ public final class DefaultProfileEditUseCase: ProfileEditUseCase {
     }
     
     public func updateProfileInfo(newProfileCharacter: ProfileCharacter, newNickname: String) -> Completable {
-        let newUserProfile = UserProfileEntity(
-            nickname: newNickname,
-            profileCharacter: newProfileCharacter
-        )
         
-        return userProfileEditUseCase
-            .editUserProfile(userProfileEntity: newUserProfile)
+        let newUserProfile = userInfoUseCase.userInfo
+            .compactMap { $0?.userId }
+            .map { userId in
+                UserProfileEntity(
+                    userId: userId,
+                    nickname: newNickname,
+                    profileCharacter: newProfileCharacter
+                )
+            }
+        
+        return newUserProfile
+            .withUnretained(self)
+            .flatMap { $0.userProfileEditUseCase.editUserProfile(userProfileEntity: $1) }
+            .asCompletable()
             .andThen(
                 Completable.zip(
                     nicknameUseCase.updateNickname(to: newNickname),

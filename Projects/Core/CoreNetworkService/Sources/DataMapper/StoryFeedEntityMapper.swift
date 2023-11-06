@@ -21,9 +21,12 @@ public struct StoryFeedEntityMapper: DataMapper {
         }
         let nickname = dto.user.nickname
         return StoryFeedEntity(
-            user: UserProfileEntity(nickname: nickname, profileCharacter: ProfileCharacter(
-                color: color,
-                shape: shape
+            user: UserProfileEntity(
+                userId: dto.user.userId,
+                nickname: nickname,
+                profileCharacter: ProfileCharacter(
+                    color: color,
+                    shape: shape
             )),
             stories: try dto.stories.map {
                 guard let color = StoolColor(rawValue: $0.color),

@@ -24,6 +24,7 @@ public struct CheeringInfoEntityMapper: DataMapper {
                 }
                 
                 return UserProfileEntity(
+                    userId: $0.userId,
                     nickname: $0.nickname,
                     profileCharacter: ProfileCharacter(
                         color: color,

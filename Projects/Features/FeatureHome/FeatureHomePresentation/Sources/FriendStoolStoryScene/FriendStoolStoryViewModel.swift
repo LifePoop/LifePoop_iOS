@@ -173,7 +173,10 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 let cheeringButtonText = isSuccess ? LocalizableString.doneBoost
                                                    : LocalizableString.boost
                 self.output.updateCheeringButtonText.accept(cheeringButtonText)
-
+                
+                if isSuccess {
+                    NotificationCenter.default.post(name: .updateCheering, object: friendUserId)
+                }
             })
             .disposed(by: disposeBag)
     }

@@ -140,6 +140,33 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         )
         .bind { coordinator?.coordinate(by: .cheeringButtonDidTap) }
         .disposed(by: disposeBag)
+    
+        NotificationCenter.default.rx.notification(.updateCheering)
+            .compactMap { $0.object as? Int }
+            .withLatestFrom(state.storyFeeds) {
+                (storyFeeds: $1, updatedFriendUserId: $0)
+            }
+            .map { storyFeeds, updatedFriendUserId in
+                guard let targetStoryFeed = storyFeeds.first(
+                    where: { $0.user.userId == updatedFriendUserId }
+                ) else {
+                    return storyFeeds
+                }
+
+                var updatedStoryFeeds = storyFeeds
+                let updatedStoryFeed = StoryFeedEntity(
+                    user: targetStoryFeed.user,
+                    stories: targetStoryFeed.stories,
+                    isCheered: true
+                )
+                if let targetIndex = storyFeeds.firstIndex(of: targetStoryFeed) {
+                    updatedStoryFeeds[targetIndex] = updatedStoryFeed
+                }
+                
+                return updatedStoryFeeds
+            }
+            .bind(to: state.storyFeeds)
+            .disposed(by: disposeBag)
     }
     
     deinit {

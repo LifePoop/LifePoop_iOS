@@ -9,16 +9,27 @@
 import Foundation
 
 public struct UserProfileDTO: Codable {
+    let userId: Int
     let nickname: String
     let characterColor, characterShape: Int
     let isCheered: Bool?
     
+    enum CodingKeys: String, CodingKey {
+        case userId = "id"
+        case nickname
+        case characterColor
+        case characterShape
+        case isCheered
+    }
+    
     public init(
+        userId: Int,
         nickname: String,
         characterColor: Int,
         characterShape: Int,
         isCheered: Bool? = nil
     ) {
+        self.userId = userId
         self.nickname = nickname
         self.characterColor = characterColor
         self.characterShape = characterShape

@@ -52,11 +52,16 @@ public final class FriendStoolStoryViewModel: ViewModelType {
         
     private var disposeBag = DisposeBag()
     
-    public init(coordinator: HomeCoordinator?, stories: [StoryEntity], isCheered: Bool) {
-        bind(coordinator: coordinator, stories: stories, isCheered: isCheered)
+    public init(
+        coordinator: HomeCoordinator?,
+        friendUserId: Int,
+        stories: [StoryEntity],
+        isCheered: Bool
+    ) {
+        bind(coordinator: coordinator, friendUserId: friendUserId, stories: stories, isCheered: isCheered)
     }
     
-    private func bind(coordinator: HomeCoordinator?, stories: [StoryEntity], isCheered: Bool) {
+    private func bind(coordinator: HomeCoordinator?, friendUserId: Int, stories: [StoryEntity], isCheered: Bool) {
         
         Observable.just(isCheered)
             .withUnretained(self)
@@ -147,14 +152,12 @@ public final class FriendStoolStoryViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.cheeringButtonDidTap
-            .withLatestFrom(output.updateShownStory)
-            .map { $0.id }
             .withUnretained(self)
             .do(onNext: { `self`, _ in
                 self.output.showLoadingIndicator.accept(true)
             })
-            .flatMapLatest { `self`, id in
-                self.cheeringInfoUseCase.requestCheering(withIdOf: id)
+            .flatMapLatest { `self`, _ in
+                self.cheeringInfoUseCase.requestCheering(withIdOf: friendUserId)
             }
             .withUnretained(self)
             .do(onNext: { `self`, _ in

@@ -123,8 +123,13 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .map { $0.item }
             .withLatestFrom(state.storyFeeds) { $1[$0] }
             .bind(onNext: { storyFeed in
+                
                 coordinator?.coordinate(
-                    by: .storyFeedButtonDidTap(stories: storyFeed.stories, isCheered: storyFeed.isCheered)
+                    by: .storyFeedButtonDidTap(
+                        friendUserId: storyFeed.user.userId,
+                        stories: storyFeed.stories,
+                        isCheered: storyFeed.isCheered
+                    )
                 )
             })
             .disposed(by: disposeBag)

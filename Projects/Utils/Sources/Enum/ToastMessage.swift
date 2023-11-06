@@ -77,10 +77,16 @@ public enum ToastMessage {
             switch invitation {
             case .invitationCodeCopySuccess:
                 return LocalizableString.toastInvitationCodeCopySuccess
+            case .invitationCodeCopyFail:
+                return LocalizableString.toastInvitationCodeCopyFail
             case .invitationCodeSharingSuccess:
                 return LocalizableString.toastInvitationCodeSharingSuccess
             case .invitationCodeSharingFail:
                 return LocalizableString.toastInvitationCodeSharingFail
+            case .addingFriendSuccess:
+                return LocalizableString.toastAddingFriendSuccess
+            case .addingFriendFail(let reason):
+                return reason.localized
             }
         }
     }
@@ -134,7 +140,27 @@ public extension ToastMessage {
 public extension ToastMessage {
     enum Invitation {
         case invitationCodeCopySuccess
+        case invitationCodeCopyFail
         case invitationCodeSharingSuccess
         case invitationCodeSharingFail
+        case addingFriendSuccess
+        case addingFriendFail(reason: AddingFriendFailureReason)
+        
+        public enum AddingFriendFailureReason {
+            case alreadyAddedFriend
+            case invalidInvitationCode
+            case invalidResult
+            
+            var localized: String {
+                switch self {
+                case .alreadyAddedFriend:
+                    return LocalizableString.toastAlreadyAddedFriend
+                case .invalidInvitationCode:
+                    return LocalizableString.toastInvalidInvitationCode
+                case .invalidResult:
+                    return LocalizableString.toastAddingFriendFail
+                }
+            }
+        }
     }
 }

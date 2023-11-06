@@ -30,7 +30,6 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     
     private var warningLabel: UILabel = {
         let label = UILabel()
-        label.text = DesignSystemStrings.requestCorrectInvitationCodeInput
         label.textColor = ColorAsset.pooPink.color
         label.font = UIFont.systemFont(ofSize: 14)
         return label
@@ -38,8 +37,14 @@ public final class LifePoopTextFieldAlertView: LifePoopAlertView {
     
     public var text: String? {
         didSet {
-            textField.text = text ?? ""
+            textField.text = text
             sendActions(for: .valueChanged)
+        }
+    }
+    
+    public var warningLabelText: String? {
+        didSet {
+            warningLabel.text = warningLabelText
         }
     }
     

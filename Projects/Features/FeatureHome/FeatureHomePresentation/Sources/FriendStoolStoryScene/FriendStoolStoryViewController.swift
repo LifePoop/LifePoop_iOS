@@ -6,7 +6,6 @@
 //  Copyright © 2023 Lifepoo. All rights reserved.
 //
 
-import AVFoundation
 import UIKit
 
 import RxCocoa
@@ -93,8 +92,8 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
             .disposed(by: disposeBag)
         
         cheeringButton.rx.tap
-            .do(onNext: { _ in
-                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+            .do(onNext: { [weak self] _ in
+                self?.activateHapticEffect()
             })
             .bind(to: input.cheeringButtonDidTap)
             .disposed(by: disposeBag)
@@ -213,5 +212,11 @@ public final class FriendStoolStoryViewController: LifePoopViewController, ViewT
         } else {
             viewModel?.input.screenDidTap.accept(.right)
         }
+    }
+    
+    private func activateHapticEffect() {
+        let generator = UIImpactFeedbackGenerator(style: .heavy)
+        generator.prepare()
+        generator.impactOccurred()
     }
 }

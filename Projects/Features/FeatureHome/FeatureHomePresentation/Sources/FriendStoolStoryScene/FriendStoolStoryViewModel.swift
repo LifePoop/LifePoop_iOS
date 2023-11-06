@@ -52,8 +52,32 @@ public final class FriendStoolStoryViewModel: ViewModelType {
         
     private var disposeBag = DisposeBag()
     
-    public init(coordinator: HomeCoordinator?, stories: [StoryEntity]) {
-
+    public init(
+        coordinator: HomeCoordinator?,
+        friendUserId: Int,
+        stories: [StoryEntity],
+        isCheered: Bool
+    ) {
+        bind(coordinator: coordinator, friendUserId: friendUserId, stories: stories, isCheered: isCheered)
+    }
+    
+    private func bind(coordinator: HomeCoordinator?, friendUserId: Int, stories: [StoryEntity], isCheered: Bool) {
+        
+        Observable.just(isCheered)
+            .withUnretained(self)
+            .bind(onNext: { `self`, isCheered in
+                self.output.enableCheeringButton.accept(!isCheered)
+                
+                let cheeringLabelText = isCheered ? LocalizableString.doneCheeringWithBoost
+                                                  : LocalizableString.cheeringWithBoost
+                self.output.updateCheeringLabelText.accept(cheeringLabelText)
+                
+                let cheeringButtonText = isCheered ? LocalizableString.doneBoost
+                                                   : LocalizableString.boost
+                self.output.updateCheeringButtonText.accept(cheeringButtonText)
+            })
+            .disposed(by: disposeBag)
+        
         input.closeButtonDidTap
             .bind(onNext: { _ in
                 coordinator?.coordinate(by: .storyCloseButtonDidTap)
@@ -72,7 +96,6 @@ public final class FriendStoolStoryViewModel: ViewModelType {
             .withUnretained(self)
             .bind(onNext: { `self`, firstStory in
                 self.output.updateShownStory.accept(firstStory)
-                self.output.updateCheeringLabelText.accept(LocalizableString.cheeringWithBoost)
                 self.output.updateStoolLogTime.accept(
                     firstStory.date.localizedTimeDifferenceSinceCurrentDateString
                 )
@@ -128,16 +151,13 @@ public final class FriendStoolStoryViewModel: ViewModelType {
             .bind(to: output.updateStoolLogTime)
             .disposed(by: disposeBag)
         
-        // FIXME: 응원하기 버튼 터치 후 임시로 로딩 표시 띄우기 위한 로직, 추후 제거해야 함
         input.cheeringButtonDidTap
-            .withLatestFrom(output.updateShownStory)
-            .map { $0.id }
             .withUnretained(self)
             .do(onNext: { `self`, _ in
                 self.output.showLoadingIndicator.accept(true)
             })
-            .flatMapLatest { `self`, id in
-                self.cheeringInfoUseCase.requestCheering(withIdOf: id)
+            .flatMapLatest { `self`, _ in
+                self.cheeringInfoUseCase.requestCheering(withIdOf: friendUserId)
             }
             .withUnretained(self)
             .do(onNext: { `self`, _ in
@@ -153,7 +173,10 @@ public final class FriendStoolStoryViewModel: ViewModelType {
                 let cheeringButtonText = isSuccess ? LocalizableString.doneBoost
                                                    : LocalizableString.boost
                 self.output.updateCheeringButtonText.accept(cheeringButtonText)
-
+                
+                if isSuccess {
+                    NotificationCenter.default.post(name: .updateCheering, object: friendUserId)
+                }
             })
             .disposed(by: disposeBag)
     }

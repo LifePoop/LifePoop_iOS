@@ -10,11 +10,13 @@ import Foundation
 
 public struct UserProfileEntity {
     
-    public init(nickname: String, profileCharacter: ProfileCharacter) {
+    public init(userId: Int, nickname: String, profileCharacter: ProfileCharacter) {
+        self.userId = userId
         self.nickname = nickname
         self.profileCharacter = profileCharacter
     }
     
+    public let userId: Int
     public let nickname: String
     public let profileCharacter: ProfileCharacter
 }

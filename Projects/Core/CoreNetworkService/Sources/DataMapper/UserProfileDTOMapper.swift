@@ -16,6 +16,7 @@ public struct UserProfileDTOMapper: DataMapper {
 
     public func transform(_ entity: UserProfileEntity) throws -> UserProfileDTO {
         return UserProfileDTO(
+            userId: entity.userId,
             nickname: entity.nickname,
             characterColor: entity.profileCharacter.color.rawValue,
             characterShape: entity.profileCharacter.shape.rawValue

@@ -119,13 +119,17 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .bind(to: output.showEmptyCheeringInfo)
             .disposed(by: disposeBag)
         
-        // TODO: 터치한 친구(유저)에 대한 힘주기 가능 여부를 최초로 알 수 있어야 함
         input.storyFeedCellDidTap
             .map { $0.item }
             .withLatestFrom(state.storyFeeds) { $1[$0] }
             .bind(onNext: { storyFeed in
+                
                 coordinator?.coordinate(
-                    by: .storyFeedButtonDidTap(stories: storyFeed.stories)
+                    by: .storyFeedButtonDidTap(
+                        friendUserId: storyFeed.user.userId,
+                        stories: storyFeed.stories,
+                        isCheered: storyFeed.isCheered
+                    )
                 )
             })
             .disposed(by: disposeBag)
@@ -136,6 +140,33 @@ public final class StoolLogHeaderViewModel: ViewModelType {
         )
         .bind { coordinator?.coordinate(by: .cheeringButtonDidTap) }
         .disposed(by: disposeBag)
+    
+        NotificationCenter.default.rx.notification(.updateCheering)
+            .compactMap { $0.object as? Int }
+            .withLatestFrom(state.storyFeeds) {
+                (storyFeeds: $1, updatedFriendUserId: $0)
+            }
+            .map { storyFeeds, updatedFriendUserId in
+                guard let targetStoryFeed = storyFeeds.first(
+                    where: { $0.user.userId == updatedFriendUserId }
+                ) else {
+                    return storyFeeds
+                }
+
+                var updatedStoryFeeds = storyFeeds
+                let updatedStoryFeed = StoryFeedEntity(
+                    user: targetStoryFeed.user,
+                    stories: targetStoryFeed.stories,
+                    isCheered: true
+                )
+                if let targetIndex = storyFeeds.firstIndex(of: targetStoryFeed) {
+                    updatedStoryFeeds[targetIndex] = updatedStoryFeed
+                }
+                
+                return updatedStoryFeeds
+            }
+            .bind(to: state.storyFeeds)
+            .disposed(by: disposeBag)
     }
     
     deinit {

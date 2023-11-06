@@ -12,10 +12,16 @@ import RxSwift
 
 import CoreEntity
 
+public enum InvitationError: Error {
+    
+    case alreadyAddedFriend
+    case nonExistingCode
+    case invalidResult
+}
+
 public protocol FriendListUseCase {
     var invitationCode: Observable<String> { get }
     func fetchFriendList() -> Observable<[FriendEntity]>
     func requestAddingFriend(with invitationCode: String) -> Observable<Bool>
-    func checkInvitationCodeValidation(_ invitationCode: String) -> Observable<Bool>
-    func checkInvitationCodeLengthValidation(_ invitationCode: String) -> Observable<Bool>
+    func checkInvitationCodeValidation(_ invitationCode: String) -> Observable<InvitationCodeInputStatus>
 }

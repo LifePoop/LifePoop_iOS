@@ -10,4 +10,5 @@ import Foundation
 
 public extension NSNotification.Name {
     static let resetLogin = NSNotification.Name("ResetLogin")
+    static let updateCheering = NSNotification.Name("CheeringFriend")
 }

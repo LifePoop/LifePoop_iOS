@@ -20,30 +20,53 @@ import Utils
 
 public final class InvitationCodeViewModel: ViewModelType {
     
-    enum ActionResult: CustomStringConvertible {
-        case success(activity: Activity)
-        case failure(activity: Activity, error: Error?)
+    enum ActionResult {
         
-        enum Activity {
-            case sharing
-            case copying
-            case addingFriend
-        }
-        
-        var description: String {
-            switch self {
-            case .success(let activity):
-                switch activity {
-                case .sharing:
-                    return LocalizableString.toastInvitationCodeSharingSuccess
-                case .copying:
-                    return LocalizableString.toastInvitationCodeCopySuccess
-                case .addingFriend:
-                    return LocalizableString.toastAddingFriendSuccess
+        case invitationCodeCopySuccess
+        case invitationCodeCopyFail
+        case invitationCodeSharingSuccess
+        case invitationCodeSharingFail
+        case addingFriendSuccess
+        case addingFriendFail(reason: AddingFrieldFailureReason)
+
+        enum AddingFrieldFailureReason {
+            case duplicateCode
+            case nonExistingCode
+            case invalidResult
+            
+            init(error: InvitationError) {
+                switch error {
+                case .alreadyAddedFriend:
+                    self = .duplicateCode
+                case .nonExistingCode:
+                    self = .nonExistingCode
+                case .invalidResult:
+                    self = .invalidResult
                 }
-            case .failure:
-                
-                return LocalizableString.toastInvitationCodeSharingFail
+            }
+        }
+
+        var toatMessage: ToastMessage {
+            switch self {
+            case .invitationCodeCopySuccess:
+                return .invitation(.invitationCodeCopySuccess)
+            case .invitationCodeCopyFail:
+                return .invitation(.invitationCodeCopyFail)
+            case .invitationCodeSharingSuccess:
+                return .invitation(.invitationCodeSharingSuccess)
+            case .invitationCodeSharingFail:
+                return .invitation(.invitationCodeSharingFail)
+            case .addingFriendSuccess:
+                return .invitation(.addingFriendSuccess)
+            case .addingFriendFail(let reason):
+                switch reason {
+                case .duplicateCode:
+                    return .invitation(.addingFriendFail(reason: .alreadyAddedFriend))
+                case .nonExistingCode:
+                    return .invitation(.addingFriendFail(reason: .invalidInvitationCode))
+                case .invalidResult:
+                    return .invitation(.addingFriendFail(reason: .invalidResult))
+                }
             }
         }
     }
@@ -64,6 +87,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         let showSharingActivityView = PublishRelay<Void>()
         let enableConfirmButton = PublishRelay<Bool>()
         let hideWarningLabel = PublishRelay<Bool>()
+        let warningLabelText = BehaviorRelay<String>(value: "")
     }
     
     public let input = Input()
@@ -78,15 +102,11 @@ public final class InvitationCodeViewModel: ViewModelType {
     public init(
         coordinator: FriendListCoordinator?,
         invitationType: InvitationType,
-        toastMessageStream: PublishRelay<String>,
+        toastMessageStream: PublishRelay<ToastMessage>,
         friendListUpdateStream: PublishRelay<Void>
     ) {
         
-        input.viewDidAppear
-            .withUnretained(self)
-            .flatMap { `self`, _ in
-                self.friendListUseCase.invitationCode
-            }
+        friendListUseCase.invitationCode
             .withUnretained(self)
             .bind(onNext: { `self`, invitationCode in
                 self.invitationCode = invitationCode
@@ -114,24 +134,41 @@ public final class InvitationCodeViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         input.didCloseSharingPopup
-            .compactMap { $0?.description }
+            .compactMap { $0?.toatMessage }
             .bind(to: toastMessageStream)
             .disposed(by: disposeBag)
         
-        input.didEnterInvitationCode
+        let invitationCodeInputResult = input.didEnterInvitationCode
+            .skip(1)
             .withUnretained(self)
             .flatMap { `self`, invitationCode in
                 self.friendListUseCase.checkInvitationCodeValidation(invitationCode)
             }
+            .share()
+        
+        invitationCodeInputResult
+            .map { $0.isValid }
             .bind(to: output.enableConfirmButton)
             .disposed(by: disposeBag)
 
-        input.didEnterInvitationCode
-            .withUnretained(self)
-            .flatMap { `self`, invitationCode in
-                self.friendListUseCase.checkInvitationCodeLengthValidation(invitationCode)
-            }
+        invitationCodeInputResult
+            .map { $0.isValid }
             .bind(to: output.hideWarningLabel)
+            .disposed(by: disposeBag)
+        
+        invitationCodeInputResult
+            .filter { !$0.isValid }
+            .compactMap {
+                switch $0 {
+                case .codeOfSelf:
+                    return LocalizableString.cannotEnterCodeOfSelf
+                case .invalidLength:
+                    return LocalizableString.shouldEnterValidLengthOfCode
+                default:
+                    return nil
+                }
+            }
+            .bind(to: output.warningLabelText)
             .disposed(by: disposeBag)
         
         input.didTapCancelButton
@@ -143,17 +180,26 @@ public final class InvitationCodeViewModel: ViewModelType {
             .withUnretained(self)
             .flatMapLatest { `self`, invitationCode in
                 self.friendListUseCase.requestAddingFriend(with: invitationCode)
+                    .map { isSuccess -> ActionResult in
+                        let actionResult: ActionResult = isSuccess ?
+                            .addingFriendSuccess :
+                            .addingFriendFail(reason: .invalidResult)
+                        
+                        return actionResult
+                    }
+                    .catch { error in
+                        guard let error = error as? InvitationError else {
+                            return .just(.addingFriendFail(reason: .invalidResult))
+                        }
+                        
+                        return .just(.addingFriendFail(reason: .init(error: error)))
+                    }
             }
             .observe(on: MainScheduler.asyncInstance)
             .do(onNext: { [weak self] _ in
                 self?.output.dismissAlertView.accept(())
             })
-            .map { isSuccess -> String in
-                let actionResult: ActionResult = isSuccess ?
-                    .success(activity: .addingFriend) :
-                    .failure(activity: .addingFriend, error: nil)
-                return actionResult.description
-            }
+            .map { $0.toatMessage }
             .bind(onNext: { toastMessage in
                 toastMessageStream.accept(toastMessage)
                 friendListUpdateStream.accept(())

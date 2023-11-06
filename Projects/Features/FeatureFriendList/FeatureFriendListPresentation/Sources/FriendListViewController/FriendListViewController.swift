@@ -50,7 +50,6 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         return emptyFriendListView
     }()
     
-    // TODO: 피그마 요구사항에 있는 친구 목록에서의 Toast와 에러 처리를 위한 Toast의 UI 통합 필요
     private let toastLabel: ToastLabel = {
         let label = ToastLabel()
         label.backgroundColor = ColorAsset.gray900.color
@@ -81,7 +80,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
     public func bindOutput(from viewModel: FriendListViewModel) {
         let output = viewModel.output
         
-        output.shouldLoadingIndicatorAnimating
+        output.setLoadingIndicatorAnimating
             .asSignal()
             .distinctUntilChanged()
             .emit(to: loadingIndicator.rx.isAnimating)
@@ -121,10 +120,11 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
                 fullString.append(NSAttributedString(attachment: imageAttachment))
             
                 fullString.appendSpacing(withPointOf: 12)
-                fullString.append(NSAttributedString(string: message))
-                return fullString
+                fullString.append(NSAttributedString(string: message.localized))
+
+                return (message: fullString, backgroundColor: UIColor.toastMessage(message))
             }
-            .emit(onNext: toastLabel.show(message:))
+            .emit(onNext: toastLabel.show(message:backgroundColor:))
             .disposed(by: disposeBag)
     }
     
@@ -182,5 +182,17 @@ extension FriendListViewController: UICollectionViewDelegateFlowLayout {
         let cellHeight: CGFloat = 50
         
         return CGSize(width: cellWidth, height: cellHeight)
+    }
+}
+
+extension UIColor {
+    
+    static func toastMessage(_ toastMessage: ToastMessage) -> UIColor {
+        switch toastMessage.kind {
+        case .success:
+            return ColorAsset.gray900.color
+        case .failure:
+            return ColorAsset.toastFailure.color
+        }
     }
 }

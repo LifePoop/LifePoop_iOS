@@ -25,6 +25,11 @@ public final class ToastLabel: RoundedPaddingLabel {
         sizeToFit()
         fadeIn(completion: delayedFadeOut)
     }
+    
+    public func show(message: NSMutableAttributedString, backgroundColor: UIColor? = nil) {
+        self.backgroundColor = backgroundColor
+        show(message: message)
+    }
 }
 
 // MARK: - UI Configuration

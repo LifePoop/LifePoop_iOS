@@ -21,7 +21,6 @@ public enum LifePoopLocalTarget {
     case fetchStoolLog(accessToken: String, userID: Int)
     case fetchStoolLogAtDate(accessToken: String, userID: Int, date: String)
     case postStoolLog(accessToken: String)
-    case fetchFriendsWithStories(accessToken: String)
     case fetchCheeringInfo(accessToken: String, userID: Int, date: String)
     case cheerFriend(accessToken: String, userID: Int)
     case sendInvitationCode(code: String, accessToken: String)
@@ -53,8 +52,6 @@ extension LifePoopLocalTarget: TargetType {
             return "/post/\(userID)/\(date)"
         case .postStoolLog:
             return "/post"
-        case .fetchFriendsWithStories:
-            return "/story"
         case .fetchCheeringInfo(_, let userID, let date):
             return "/user/\(userID)/cheer/\(date)"
         case .cheerFriend(_, let userID):
@@ -80,7 +77,6 @@ extension LifePoopLocalTarget: TargetType {
         switch self {
         case .fetchStoolLog,
                 .fetchStoolLogAtDate,
-                .fetchFriendsWithStories,
                 .fetchCheeringInfo,
                 .fetchUserInfo,
                 .fetchFriendList,
@@ -106,7 +102,6 @@ extension LifePoopLocalTarget: TargetType {
         case .fetchStoolLog(let accessToken, _),
              .fetchStoolLogAtDate(let accessToken, _, _),
              .postStoolLog(let accessToken),
-             .fetchFriendsWithStories(let accessToken),
              .fetchCheeringInfo(let accessToken, _, _),
              .cheerFriend(let accessToken, _),
              .fetchUserInfo(let accessToken),

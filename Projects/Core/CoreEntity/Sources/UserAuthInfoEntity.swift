@@ -8,11 +8,19 @@
 
 import Foundation
 
-public struct UserAuthInfoEntity: Codable {
+public struct UserAuthInfoEntity: Codable, CustomStringConvertible {
     
     public let loginType: LoginType?
     public let accessToken: String
     public let refreshToken: String
+    
+    public var description: String {
+        """
+        loginType: \(loginType)
+        accessTokenExists: \(!accessToken.isEmpty)
+        refreshTokenExists: \(!refreshToken.isEmpty)
+        """
+    }
     
     enum CodingKeys: String, CodingKey {
         case loginType

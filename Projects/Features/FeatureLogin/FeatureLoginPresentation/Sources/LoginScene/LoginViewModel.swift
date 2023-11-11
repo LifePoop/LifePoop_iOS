@@ -54,41 +54,20 @@ public final class LoginViewModel: ViewModelType {
     
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
-        
+
         let fetchKakaoToken = input.didTapKakaoLoginButton
             .withUnretained(self)
             .do(onNext: { `self`, _ in
                 self.output.showLoadingIndicator.accept(.init(loginType: .kakao, activate: true))
             })
-            .flatMapMaterialized { `self`, _ in
+            .flatMapLatestMaterialized { `self`, _ in
                 `self`.loginUseCase.fetchOAuthAccessToken(for: .kakao)
             }
             .do(onNext: { [weak self] _ in
                 self?.output.showLoadingIndicator.accept(.init(loginType: .kakao, activate: false))
             })
             .share()
-        
-        fetchKakaoToken
-            .compactMap { $0.element }
-            .compactMap { $0 }
-            .withUnretained(self)
-            .flatMapLatest { `self`, oAuthTokenInfo in
-                self.loginUseCase.requestLogin(with: oAuthTokenInfo)
-                    .map { (oAuthTokenInfo: oAuthTokenInfo, loginResult: $0 ) }
-            }
-            .bind(onNext: { [weak self] oAuthTokenInfo, loginResult in
-                switch loginResult {
-                case .success(let isSuccess):
-                    isSuccess ? coordinator?.coordinate(by: .finishLoginFlow)
-                              : coordinator?.coordinate(
-                                    by: .didTapKakaoLoginButton(userAuthInfo: oAuthTokenInfo)
-                                )
-                case .failure(let error):
-                    self?.output.showErrorMessage.accept(error.description)
-                }
-            })
-            .disposed(by: disposeBag)
-        
+   
         fetchKakaoToken
             .compactMap { $0.error }
             .map { $0.localizedDescription }
@@ -109,32 +88,39 @@ public final class LoginViewModel: ViewModelType {
             .share()
         
         fetchAppleToken
-            .compactMap { $0.element }
-            .compactMap { $0 }
-            .withUnretained(self)
-            .flatMapLatest { `self`, oAuthTokenInfo in
-                self.loginUseCase.requestLogin(with: oAuthTokenInfo)
-                    .map { (oAuthTokenInfo: oAuthTokenInfo, loginResult: $0 ) }
-            }
-            .bind(onNext: { [weak self] oAuthTokenInfo, loginResult in
-                switch loginResult {
-                case .success(let isSuccess):
-                    isSuccess ? coordinator?.coordinate(by: .finishLoginFlow)
-                              : coordinator?.coordinate(
-                                    by: .didTapAppleLoginButton(userAuthInfo: oAuthTokenInfo)
-                                )
-                case .failure(let error):
-                    self?.output.showErrorMessage.accept(error.description)
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        fetchAppleToken
             .compactMap { $0.error }
             .map { $0.localizedDescription }
             .bind(to: output.showErrorMessage)
             .disposed(by: disposeBag)
-   
+        
+        let loginResult = Observable.merge(
+            fetchKakaoToken.compactMap { $0.element }.compactMap { $0 },
+            fetchAppleToken.compactMap { $0.element }.compactMap { $0 }
+        )
+        .withUnretained(self)
+        .flatMapLatestMaterialized { `self`, oAuthTokenInfo in
+            self.loginUseCase.requestLogin(with: oAuthTokenInfo)
+                .map { (oAuthTokenInfo: oAuthTokenInfo, isSuccess: $0 ) }
+        }
+        .share()
+        
+        loginResult
+            .compactMap { $0.element }
+            .bind(onNext: { oAuthTokenInfo, isSuccess in
+                if isSuccess {
+                    coordinator?.coordinate(by: .finishLoginFlow)
+                } else {
+                    coordinator?.coordinate(by: .didTapLoginButton(userAuthInfo: oAuthTokenInfo))
+                }
+            })
+            .disposed(by: disposeBag)
+
+        loginResult
+            .compactMap { $0.error }
+            .map { $0.localizedDescription }
+            .bind(to: output.showErrorMessage)
+            .disposed(by: disposeBag)
+
         input.didChangeBannerImageIndex
             .withUnretained(self)
             .filter { `self`, index in

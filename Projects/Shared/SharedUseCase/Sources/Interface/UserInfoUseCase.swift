@@ -26,6 +26,10 @@ public protocol UserInfoUseCase: AnyObject {
     func fetchUserInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool>
     /** 로그아웃 요청 */
     func requestLogout() -> Observable<Void>
-    /** 애플 탈퇴 요청*/
+    /// 회원 탈퇴 요청
+    ///
+    /// 정상적으로 요청이 성공하면 true, 사용자가 탈퇴를 취소하면 false 값을 방출
+    ///
+    /// 예외의 경우에는 false가 아닌 error 이벤트가 방출되야 함
     func requestAccountWithdrawl(for loginType: LoginType) -> Observable<Bool>
 }

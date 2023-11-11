@@ -157,23 +157,18 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
     }
     
     public func requestLogout() -> Observable<Void> {
-        userInfo.compactMap { $0?.authInfo.accessToken }
-            .do(onNext: { _ in
-                Logger.log(message: "로그아웃 요청", category: .authentication, type: .debug)
-            })
+        userInfo.map { $0?.authInfo.accessToken }
             .withUnretained(self)
             .flatMapLatest { `self`, accessToken in
-                self.userInfoRepository.requestLogout(accessToken: accessToken)
-                    .logErrorIfDetected(category: .authentication)
-                    .catchAndReturn(false)
-            }
-            .withUnretained(self)
-            .concatMap { `self`, isSuccess in
-                if isSuccess {
-                    return self.removeUserInfo().andThen(Observable.just(Void()))
-                } else {
+                guard let accessToken = accessToken else {
                     return Observable.just(Void())
                 }
+                
+                return self.userInfoRepository.requestLogout(accessToken: accessToken)
+                    .log(message: "로그아웃 요청 결과", category: .authentication, printElement: true)
+                    .asObservable()
+                    .withUnretained(self)
+                    .concatMap { `self`, _ in self.removeUserInfo().andThen(Observable.just(Void())) }
             }
     }
     
@@ -203,6 +198,7 @@ private extension DefaultUserInfoUseCase {
     
     func requestAppleAccountWithdrawl() -> Observable<Bool> {
         userInfoRepository.fetchAppleAuthorizationCode()
+            .catchAndReturn("")
             .asObservable()
             .withLatestFrom(userInfo) {
                 (authorizationCode: $0, accessToken: $1?.authInfo.accessToken)
@@ -212,22 +208,25 @@ private extension DefaultUserInfoUseCase {
                 let `self` = $0.0
                 let authorizationCode = $0.1.authorizationCode
                 let accessToken = $0.1.accessToken ?? "" // accessToken nil 처리 필요
-                // TODO: 추후 예외처리 구체적으로
-                return self.userInfoRepository.requestAppleWithdrawl(authorizationCode: authorizationCode, accessToken: accessToken)
+                
+                guard !authorizationCode.isEmpty else { return Single.just(false) }
+                
+                return self.userInfoRepository
+                    .requestAppleWithdrawl(
+                        authorizationCode: authorizationCode,
+                        accessToken: accessToken
+                    )
+                    .logErrorIfDetected(category: .authentication)
             }
-            .asObservable()
-            .catchAndReturn(false)
     }
 
     func requestKakaoAccountWithdrawl() -> Observable<Bool> {
         userInfo.compactMap { $0?.authInfo.accessToken }
             .withUnretained(self)
             .flatMapLatest { `self`, accessToken in
-                // TODO: 추후 예외처리 구체적으로
                 self.userInfoRepository.requestKakaoWithdrawl(accessToken: accessToken)
+                    .logErrorIfDetected(category: .authentication)
             }
-            .asObservable()
-            .catchAndReturn(false)
     }
 
     func saveUserInfo(_ userInfo: UserInfoEntity) -> Completable {

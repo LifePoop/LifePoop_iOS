@@ -21,6 +21,7 @@ public final class LoginViewController: LifePoopViewController, ViewType {
         let pageControl = UIPageControl()
         pageControl.currentPageIndicatorTintColor = ColorAsset.primary.color
         pageControl.pageIndicatorTintColor = ColorAsset.gray300.color
+        pageControl.isUserInteractionEnabled = false
         return pageControl
     }()
     

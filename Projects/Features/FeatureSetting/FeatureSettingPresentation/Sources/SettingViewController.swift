@@ -133,6 +133,13 @@ public final class SettingViewController: LifePoopViewController, ViewType {
             .asSignal()
             .emit(onNext: withdrawAlertView.dismiss)
             .disposed(by: disposeBag)
+        
+        output.showSystemAlert
+            .asSignal()
+            .emit(with: self, onNext: { `self`, alert in
+                self.showSystemAlert(title: alert.title, message: alert.message)
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: - UI Setup

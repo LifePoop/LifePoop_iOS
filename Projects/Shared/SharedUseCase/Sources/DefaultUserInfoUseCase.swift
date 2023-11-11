@@ -217,6 +217,7 @@ private extension DefaultUserInfoUseCase {
             .concat(userDefaultsRepository.updateValue(for: .userLoginType, with: userInfo.authInfo.loginType))
             .concat(userDefaultsRepository.updateValue(for: .profileCharacter, with: userInfo.profileCharacter))
             .concat(userDefaultsRepository.updateValue(for: .userId, with: userInfo.userId))
+            .concat(userDefaultsRepository.updateValue(for: .genderType, with: userInfo.genderType))
             .concat(userDefaultsRepository.updateValue(for: .birthDate, with: userInfo.birthDate))
             .concat(userDefaultsRepository.updateValue(for: .invitationCode, with: userInfo.invitationCode))
             .logErrorIfDetected(category: .authentication)

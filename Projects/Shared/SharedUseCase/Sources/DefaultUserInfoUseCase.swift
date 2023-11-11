@@ -31,38 +31,16 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             )
             .logErrorIfDetected(category: .authentication)
             .catchAndReturn(nil)
-            .map { $0 }
             .asObservable()
         
-        let userId: Observable<Int> = userDefaultsRepository
-            .getValue(for: .userId)
-            .map { $0 ?? -1 }
-            .asObservable()
-        
-        let nickname: Observable<String> = userDefaultsRepository
-            .getValue(for: .userNickname)
-            .map { $0 ?? "" }
-            .asObservable()
-        
-        let birthDate: Observable<String> = userDefaultsRepository
-            .getValue(for: .birthDate)
-            .map { $0 ?? "" }
-            .asObservable()
-        
-        let genderType: Observable<GenderType> = userDefaultsRepository
-            .getValue(for: .genderType)
-            .map { $0 ?? .other }
-            .asObservable()
-
-        let invitationCode: Observable<String> = userDefaultsRepository
-            .getValue(for: .invitationCode)
-            .map { $0 ?? "" }
-            .asObservable()
-        
-        let profileCharacter: Observable<ProfileCharacter?> = userDefaultsRepository
-            .getValue(for: .profileCharacter)
-            .map { $0 }
-            .asObservable()
+        let userId: Observable<Int?> = userDefaultsRepository.getValue(for: .userId).asObservable()
+        let nickname: Observable<String?> = userDefaultsRepository.getValue(for: .userNickname).asObservable()
+        let birthDate: Observable<String?> = userDefaultsRepository.getValue(for: .birthDate).asObservable()
+        let genderType: Observable<GenderType?> = userDefaultsRepository.getValue(for: .genderType).asObservable()
+        let invitationCode: Observable<String?> = userDefaultsRepository.getValue(for: .invitationCode).asObservable()
+        let profileCharacter: Observable<ProfileCharacter?> = userDefaultsRepository.getValue(
+            for: .profileCharacter
+        ).asObservable()
         
         return Observable.combineLatest(
             userAuthInfo,
@@ -74,8 +52,13 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             profileCharacter
         )
         .map { authInfo, userId, nickname, birthDate, genderType, invitationCode, profileCharacter in
-            guard let authInfo = authInfo else { return nil }
-            guard let profileCharacter = profileCharacter else { return nil }
+            guard let authInfo = authInfo,
+                  let userId = userId,
+                  let nickname = nickname,
+                  let birthDate = birthDate,
+                  let genderType = genderType,
+                  let invitationCode = invitationCode,
+                  let profileCharacter = profileCharacter else { return nil }
             
             return UserInfoEntity(
                 userId: userId,
@@ -92,19 +75,7 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
 
     public func refreshAuthInfo(with authInfo: UserAuthInfoEntity) -> Observable<Bool> {
         userInfoRepository.requestRefreshingUserAuthInfo(with: authInfo)
-            .do(onSuccess: { updatedAuthInfo in
-                Logger.log(
-                    message: "서버로부터 인증정보 업데이트 성공: \(updatedAuthInfo != nil)",
-                    category: .authentication,
-                    type: .debug
-                )
-            }, onError: { error in
-                Logger.log(
-                    message: "서버로부터 인증정보 업데이트 실패 : \(error)",
-                    category: .authentication,
-                    type: .error
-                )
-            })
+            .log(message: "서버로부터 인증정보 업데이트", category: .authentication, printElement: true)
             .asObservable()
             .withLatestFrom(userInfo) { (updatedAuthInfo: $0, originalUserInfo: $1) }
             .map { updatedAuthInfo, originalUserInfo in

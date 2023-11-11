@@ -67,12 +67,6 @@ public final class LoginViewModel: ViewModelType {
                 self?.output.showLoadingIndicator.accept(.init(loginType: .kakao, activate: false))
             })
             .share()
-   
-        fetchKakaoToken
-            .compactMap { $0.error }
-            .map { $0.localizedDescription }
-            .bind(to: output.showErrorMessage)
-            .disposed(by: disposeBag)
         
         let fetchAppleToken = input.didTapAppleLoginButton
             .withUnretained(self)
@@ -86,12 +80,6 @@ public final class LoginViewModel: ViewModelType {
                 self?.output.showLoadingIndicator.accept(.init(loginType: .apple, activate: false))
             })
             .share()
-        
-        fetchAppleToken
-            .compactMap { $0.error }
-            .map { $0.localizedDescription }
-            .bind(to: output.showErrorMessage)
-            .disposed(by: disposeBag)
         
         let loginResult = Observable.merge(
             fetchKakaoToken.compactMap { $0.element }.compactMap { $0 },
@@ -114,12 +102,15 @@ public final class LoginViewModel: ViewModelType {
                 }
             })
             .disposed(by: disposeBag)
-
-        loginResult
-            .compactMap { $0.error }
-            .map { $0.localizedDescription }
-            .bind(to: output.showErrorMessage)
-            .disposed(by: disposeBag)
+        
+        Observable.merge(
+            fetchAppleToken.compactMap { $0.error },
+            fetchKakaoToken.compactMap { $0.error },
+            loginResult.compactMap { $0.error }
+        )
+        .map { $0.localizedDescription }
+        .bind(to: output.showErrorMessage)
+        .disposed(by: disposeBag)
 
         input.didChangeBannerImageIndex
             .withUnretained(self)

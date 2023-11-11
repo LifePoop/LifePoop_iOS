@@ -28,15 +28,9 @@ public final class DefaultLoginUseCase: LoginUseCase {
     /** 로컬 기기에 저장된 사용자 정보로 자동 로그인 처리 요청 */
     public func requestAutoLoginWithExistingUserInfo() -> Observable<Bool> {
         userInfoUseCase.userInfo
+            .log(message: "기기에 기존 인증정보 존재 확인", category: .authentication, printElement: true)
             .withUnretained(self)
             .flatMapLatest { `self`, userInfo in
-                
-                Logger.log(
-                    message: "기기에 기존 인증정보 존재 확인 : \(userInfo != nil)",
-                    category: .authentication,
-                    type: .debug
-                )
-                
                 if let authInfo = userInfo?.authInfo {
                     return self.userInfoUseCase.refreshAuthInfo(with: authInfo)
                 } else {
@@ -46,49 +40,32 @@ public final class DefaultLoginUseCase: LoginUseCase {
     }
 
     /** OAuth 토큰 정보로 Lifepoo Access Token, Refresh Token 획득 및 로그인 처리 요청 */
-    public func requestLogin(with oAuthTokenInfo: OAuthTokenInfo) -> Observable<Result<Bool, LoginError>> {
+    public func requestLogin(with oAuthTokenInfo: OAuthTokenInfo) -> Observable<Bool> {
         loginRepository
             .requestAuthInfoWithOAuthAccessToken(with: oAuthTokenInfo)
-            .do(onSuccess: { [weak self] loginResult in
-                self?.printConsoleLog(with: loginResult)
-            })
+            .log(message: "OAuth 로그인 요청 결과:", category: .authentication, printElement: true)
             .asObservable()
             .withLatestFrom(userInfoUseCase.userInfo) {
-                (updatedAuthInfo: $0, loginResult: $1)
+                (loginResult: $0, userInfoExists: $1 != nil)
             }
-            .flatMapLatest { [weak self] loginResult, originalUserInfo -> Observable<Result<Bool, LoginError>> in
-                guard let `self` = self else { return .just(.failure(.userNotExists)) }
+            .flatMapLatest { [weak self] loginResult, userInfoExists -> Observable<Bool> in
+                guard let `self` = self else { return .just(false) }
                 
                 switch loginResult {
                 case .success(let updatedAuthInfo):
-                    guard let updatedAuthInfo = updatedAuthInfo else {
-                        return .just(.failure(.updatedAuthInfoNil))
-                    }
-
-                    let userInfoExists = originalUserInfo != nil
-                    Logger.log(
-                        message: "KeyChain 내 회원정보 존재 확인: \(userInfoExists)",
-                        category: .authentication,
-                        type: .debug
-                    )
-
                     if userInfoExists {
-                        return .just(.success(true))
+                        return .just(true)
                     } else {
                         return self.userInfoUseCase.fetchUserInfo(with: updatedAuthInfo)
-                            .map { $0 ? .success($0) : .failure(.failedFetchingUserInfo) }
                     }
                 case .failure(let loginError):
                     switch loginError {
                     case .userNotExists:
-                        return .just(.success(false))
+                        return .just(false)
                     default:
                         return .error(loginError)
                     }
                 }
-            }
-            .catch { error in
-                Observable.just(.failure(.otherNetworkError(error: error)))
             }
     }
     
@@ -100,47 +77,20 @@ public final class DefaultLoginUseCase: LoginUseCase {
             .filter { !$0.isEmpty }
             .asObservable()
             .map { OAuthTokenInfo(loginType: loginType, accessToken: $0) }
-            .logErrorIfDetected(category: .authentication)
     }
     
     public func clearUserAuthInfoIfLaunchedFirstly() -> Completable {
         isAppFirstlyLaunched
-            .do(onNext: {
-                Logger.log(
-                    message: "앱 설치 후 최초 기동 여부 확인: \($0)",
-                    category: .authentication,
-                    type: .debug
-                )
-            })
+            .log(message: "앱 설치 후 최초 기동", category: .authentication, printElement: true)
             .filter { $0 }
             .withUnretained(self)
-            .do(onNext: { _, _ in
-                Logger.log(
-                    message: "KeyChain에서 사용자 인증 정보를 확인합니다.",
-                    category: .authentication,
-                    type: .debug
-                )
-            })
             .concatMap { `self`, _ in
                 self.keyChainRepository
                     .getBinaryDataFromKeyChain(
                         forKey: .userAuthInfo,
                         handleExceptionWhenValueNotFound: false
                     )
-                    .do(onSuccess: { data in
-                        var message: String
-                        if let _ = data {
-                            message = "KeyChain 내 사용자 정보 존재"
-                        } else {
-                            message = "KeyChain 내 사용자 정보 없음(nil)"
-                        }
-                        
-                        Logger.log(
-                            message: message,
-                            category: .authentication,
-                            type: .debug
-                        )
-                    })
+                    .log(message: "KeyChain 내 사용자 정보 존재 확인", category: .authentication, printElement: true)
             }
             .map { $0 }
             .withUnretained(self)
@@ -151,13 +101,7 @@ public final class DefaultLoginUseCase: LoginUseCase {
                 
                 return self.keyChainRepository
                     .removeObjectFromKeyChain(forKey: .userAuthInfo)
-                    .do(onCompleted: {
-                        Logger.log(
-                            message: "KeyChain에서 기존 사용자 정보 제거 완료",
-                            category: .authentication,
-                            type: .debug
-                        )
-                    })
+                    .log(message: "KeyChain에서 기존 사용자 정보 제거 완료", category: .authentication)
                     .concat(self.userDefaultsRepository.updateValue(for: .isAppFirstlyLaunched, with: false))
             }
             .asCompletable()
@@ -172,27 +116,5 @@ private extension DefaultLoginUseCase {
             .map { $0 ?? true }
             .catchAndReturn(true)
             .asObservable()
-    }
-    
-    func printConsoleLog(with loginResult: Result<UserAuthInfoEntity?, LoginError>) {
-        var message: String
-        
-        switch loginResult {
-        case .success(let authInfo):
-            let isSuccess = authInfo != nil
-            
-            message = """
-            \(authInfo?.loginType?.description ?? "N/A") OAuth 로그인 성공 여부: \(isSuccess)
-            (false일 경우 생성한 OAuth Access Token에 대한 회원 정보 없기 때문에 신규 가입 필요)
-            """
-        case .failure(let error):
-            message = error.description
-        }
-        
-        Logger.log(
-            message: message,
-            category: .authentication,
-            type: .debug
-        )
     }
 }

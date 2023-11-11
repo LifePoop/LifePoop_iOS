@@ -23,7 +23,7 @@ public final class LoginButton: UIButton {
         
         super.init(frame: .zero)
 
-        configure()
+        configureUI()
     }
     
     @available(*, unavailable)
@@ -31,20 +31,35 @@ public final class LoginButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func configure() {
+    private func configureUI() {
         var config = UIButton.Configuration.filled()
         config.image = iconImage
         config.imagePlacement = .leading
         config.imagePadding = 10
         config.contentInsets = .init(top: 17.5, leading: 17.5, bottom: 17.5, trailing: 17.5)
-        config.cornerStyle = .large
         
         var attributedTitleText = AttributedString(title)
         attributedTitleText.font = .systemFont(ofSize: 16, weight: .bold)
-        attributedTitleText.foregroundColor = fontColor
         config.attributedTitle = attributedTitleText
 
         config.baseBackgroundColor = baseBackgroundColor
+        config.baseForegroundColor = fontColor
+        config.background.cornerRadius = 12
+                
         configuration = config
+    }
+}
+
+// MARK: Loading Indicator
+
+public extension LoginButton {
+    func showLoadingIndicator() {
+        isEnabled = false
+        configuration?.showsActivityIndicator = true
+    }
+    
+    func hideLoadingIndicator() {
+        isEnabled = true
+        configuration?.showsActivityIndicator = false
     }
 }

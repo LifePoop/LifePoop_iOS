@@ -72,7 +72,7 @@ public final class LoginViewModel: ViewModelType {
                                     by: .didTapKakaoLoginButton(userAuthInfo: oAuthTokenInfo)
                                 )
                 case .failure(let error):
-                    self?.output.showErrorMessage.accept(error.localizedDescription)
+                    self?.output.showErrorMessage.accept(error.description)
                 }
             })
             .disposed(by: disposeBag)

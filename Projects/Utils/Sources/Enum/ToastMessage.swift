@@ -15,6 +15,7 @@ public enum ToastMessage {
     case stoolLog(StoolLog)
     case setting(Setting)
     case invitation(Invitation)
+    case story(Story)
     
     public var localized: String {
         switch self {
@@ -87,6 +88,13 @@ public enum ToastMessage {
                 return LocalizableString.toastAddingFriendSuccess
             case .addingFriendFail(let reason):
                 return reason.localized
+            }
+        case .story(let story):
+            switch story {
+            case .fetchStoryFeedFail:
+                return LocalizableString.toastFetchStoryFeedFail
+            case .fetchStoryFeedSuccess:
+                return LocalizableString.toastFetchStoryFeedSuccess
             }
         }
     }
@@ -162,5 +170,12 @@ public extension ToastMessage {
                 }
             }
         }
+    }
+}
+
+public extension ToastMessage {
+    enum Story {
+        case fetchStoryFeedFail
+        case fetchStoryFeedSuccess
     }
 }

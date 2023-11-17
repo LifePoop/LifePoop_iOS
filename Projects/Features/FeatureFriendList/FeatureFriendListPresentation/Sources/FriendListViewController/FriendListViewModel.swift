@@ -118,6 +118,24 @@ public final class FriendListViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
         
+        let fetchedStories = input.addingFriendDidComplete
+            .withUnretained(self)
+            .flatMapMaterialized { `self`, _ in
+                self.friendListUseCase.fetchStoryFeeds()
+            }
+            .share()
+        
+        fetchedStories
+            .compactMap { $0.element }
+            .bind(to: state.storyFeeds)
+            .disposed(by: disposeBag)
+        
+        fetchedStories
+            .compactMap { $0.error }
+            .map { _ in ToastMessage.story(.fetchStoryFeedFail) }
+            .bind(to: output.showToastMessge)
+            .disposed(by: disposeBag)
+        
         state.friendList
             .filter { !$0.isEmpty }
             .bind(to: output.showFriendList)

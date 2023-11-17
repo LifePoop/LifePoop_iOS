@@ -23,6 +23,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     public struct Input {
         let viewDidRefresh = PublishRelay<Void>()
         let viewDidLoad = PublishRelay<Void>()
+        let viewWillAppear = PublishRelay<Void>()
         let viewDidFinishLayoutSubviews = PublishRelay<Void>()
         let inviteFriendButtonDidTap = PublishRelay<Void>()
         let cheeringButtonDidTap = PublishRelay<Void>()
@@ -60,38 +61,39 @@ public final class StoolLogHeaderViewModel: ViewModelType {
     public init(coordinator: HomeCoordinator?) {
         self.coordinator = coordinator
         
-        let viewDidLoadOrRefresh = Observable.merge(
+        let viewDidLoadOrRefreshOrWillAppear = Observable.merge(
             input.viewDidLoad.asObservable(),
-            input.viewDidRefresh.asObservable()
+            input.viewDidRefresh.asObservable(),
+            input.viewWillAppear.asObservable()
         )
         .share()
         
-        viewDidLoadOrRefresh
+        viewDidLoadOrRefreshOrWillAppear
             .withLatestFrom(state.storyFeeds)
             .compactMap { $0 }
             .bind(to: output.updateStoryFeeds)
             .disposed(by: disposeBag)
         
-        viewDidLoadOrRefresh
+        viewDidLoadOrRefreshOrWillAppear
             .compactMap { Date().koreanDateString }
             .map { LocalizableString.stoolDiaryFor($0) }
             .bind(to: output.setDateDescription)
             .disposed(by: disposeBag)
         
-        viewDidLoadOrRefresh
+        viewDidLoadOrRefreshOrWillAppear
             .withLatestFrom(state.storyFeeds)
             .map { $0.isEmpty }
             .bind(to: output.isStoryFeedEmpty)
             .disposed(by: disposeBag)
         
-        viewDidLoadOrRefresh
+        viewDidLoadOrRefreshOrWillAppear
             .withLatestFrom(state.friends)
             .filter { $0.isEmpty }
             .map { _ in }
             .bind(to: output.showInviteFriendUI)
             .disposed(by: disposeBag)
         
-        viewDidLoadOrRefresh
+        viewDidLoadOrRefreshOrWillAppear
             .withLatestFrom(state.cheeringInfo)
             .compactMap { $0 }
             .filter { $0.count > .zero }
@@ -99,7 +101,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .bind(to: output.updateCheeringProfileCharacters)
             .disposed(by: disposeBag)
         
-        viewDidLoadOrRefresh
+        viewDidLoadOrRefreshOrWillAppear
             .withLatestFrom(state.cheeringInfo)
             .compactMap { $0 }
             .filter { $0.count > .zero }
@@ -107,7 +109,7 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             .bind(to: output.updateCheeringFriendNameAndCount)
             .disposed(by: disposeBag)
         
-        viewDidLoadOrRefresh
+        viewDidLoadOrRefreshOrWillAppear
             .withUnretained(self)
             .filter { `self`, _ in
                 !self.state.friends.value.isEmpty

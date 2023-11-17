@@ -22,6 +22,7 @@ public final class HomeViewModel: ViewModelType {
     
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
+        let viewWillAppear = PublishRelay<Void>()
         let viewDidRefresh = PublishRelay<Void>()
         let settingButtonDidTap = PublishRelay<Void>()
         let reportButtonDidTap = PublishRelay<Void>()
@@ -220,6 +221,10 @@ public final class HomeViewModel: ViewModelType {
 
 private extension HomeViewModel {
     func bind(stoolLogHeaderViewModel: StoolLogHeaderViewModel) {
+        input.viewWillAppear
+            .bind(to: stoolLogHeaderViewModel.input.viewWillAppear)
+            .disposed(by: disposeBag)
+        
         input.viewDidRefresh
             .bind(to: stoolLogHeaderViewModel.input.viewDidRefresh)
             .disposed(by: disposeBag)

@@ -105,8 +105,7 @@ private extension DefaultSettingCoordinator {
     
     func pushFeedbackViewController() {
         guard let feedbackURL = URL(string: Constant.LifePoopURL.feedback) else { return }
-        let feedbackWebViewController = LifePoopWebViewController(targetURL: feedbackURL)
-        navigationController.pushViewController(feedbackWebViewController, animated: true)
+        UIApplication.shared.open(feedbackURL)
     }
 }
 

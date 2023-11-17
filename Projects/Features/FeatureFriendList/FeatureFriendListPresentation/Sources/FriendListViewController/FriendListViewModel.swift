@@ -36,19 +36,21 @@ public final class FriendListViewModel: ViewModelType {
     
     public struct State {
         let friendList = BehaviorRelay<[FriendEntity]>(value: [])
+        let storyFeeds: BehaviorRelay<[StoryFeedEntity]>
     }
     
     public let input = Input()
     public let output = Output()
-    public let state = State()
+    public let state: State
     
     @Inject(FriendListDIContainer.shared) private var friendListUseCase: FriendListUseCase
     
     private weak var coordinator: FriendListCoordinator?
     private var disposeBag = DisposeBag()
     
-    public init(coordinator: FriendListCoordinator?) {
+    public init(coordinator: FriendListCoordinator?, storyFeedsStream: BehaviorRelay<[StoryFeedEntity]>) {
         self.coordinator = coordinator
+        self.state = State(storyFeeds: storyFeedsStream)
         bind(coordinator: coordinator)
     }
     

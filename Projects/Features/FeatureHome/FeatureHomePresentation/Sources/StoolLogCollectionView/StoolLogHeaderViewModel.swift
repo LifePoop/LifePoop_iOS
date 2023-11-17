@@ -138,7 +138,10 @@ public final class StoolLogHeaderViewModel: ViewModelType {
             input.inviteFriendButtonDidTap.asObservable(),
             input.cheeringButtonDidTap.asObservable()
         )
-        .bind { coordinator?.coordinate(by: .cheeringButtonDidTap) }
+        .withUnretained(self)
+        .bind { `self`, _ in
+            coordinator?.coordinate(by: .cheeringButtonDidTap(storyFeedsStream: self.state.storyFeeds))
+        }
         .disposed(by: disposeBag)
     
         NotificationCenter.default.rx.notification(.updateCheering)

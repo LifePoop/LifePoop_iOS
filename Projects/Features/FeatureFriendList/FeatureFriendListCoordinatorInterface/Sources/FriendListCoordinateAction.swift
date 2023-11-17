@@ -17,7 +17,7 @@ import Utils
 
 public enum FriendListCoordinateAction {
     case showFriendsStoolLog(friendEntity: FriendEntity)
-    case showFirendList
+    case showFirendList(storyFeedsStream: BehaviorRelay<[StoryFeedEntity]>)
     case showFriendInvitation(
         toastMessageStream: PublishRelay<ToastMessage>,
         friendListUpdateStream: PublishRelay<Void>

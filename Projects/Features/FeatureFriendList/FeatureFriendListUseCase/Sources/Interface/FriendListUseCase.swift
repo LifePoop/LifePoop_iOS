@@ -24,4 +24,5 @@ public protocol FriendListUseCase {
     func fetchFriendList() -> Observable<[FriendEntity]>
     func requestAddingFriend(with invitationCode: String) -> Observable<Bool>
     func checkInvitationCodeValidation(_ invitationCode: String) -> Observable<InvitationCodeInputStatus>
+    func fetchStoryFeeds() -> Observable<[StoryFeedEntity]>
 }

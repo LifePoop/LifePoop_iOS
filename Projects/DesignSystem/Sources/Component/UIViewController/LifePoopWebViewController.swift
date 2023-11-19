@@ -9,6 +9,7 @@
 import UIKit
 import WebKit
 
+@available(*, deprecated, message: "피드백 URL이 Safari에서 열리도록 변경되어 더 이상 사용하지 않음")
 public final class LifePoopWebViewController: UIViewController {
     
     private var webView: WKWebView?

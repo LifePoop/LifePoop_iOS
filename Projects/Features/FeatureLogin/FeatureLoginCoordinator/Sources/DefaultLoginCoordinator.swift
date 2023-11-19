@@ -50,9 +50,7 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
                 self?.showLoginViewController(animated: false)
             case .showDetailForm(let title, let detailText):
                 self?.showDocumentViewController(title: title, detailText: detailText)
-            case .didTapKakaoLoginButton(let authInfo):
-                self?.showNicknameViewController(with: authInfo)
-            case .didTapAppleLoginButton(let authInfo):
+            case .didTapLoginButton(let authInfo):
                 self?.showNicknameViewController(with: authInfo)
             case .finishLoginFlow:
                 self?.finishFlow()

@@ -101,6 +101,10 @@ public final class HomeViewController: LifePoopViewController, ViewType {
             .bind(to: input.viewDidLoad)
             .disposed(by: disposeBag)
         
+        rx.viewWillAppear
+            .bind(to: input.viewWillAppear)
+            .disposed(by: disposeBag)
+        
         stoolLogRefreshControl.rx.controlEvent(.valueChanged)
             .bind(to: input.viewDidRefresh)
             .disposed(by: disposeBag)

@@ -21,6 +21,7 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
     
     @Inject(SharedDIContainer.shared) private var userInfoUseCase: UserInfoUseCase
     @Inject(FriendListDIContainer.shared) private var friendListRepository: FriendListRepository
+    @Inject(SharedDIContainer.shared) private var storyFeedUseCase: StoryFeedUseCase
     
     public init() { }
     
@@ -88,6 +89,10 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
                 return .invalidLength
             }
         }
+    }
+    
+    public func fetchStoryFeeds() -> Observable<[StoryFeedEntity]> {
+        return storyFeedUseCase.fetchStoryFeeds()
     }
 }
 

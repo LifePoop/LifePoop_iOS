@@ -15,7 +15,7 @@ import CoreEntity
 public enum HomeCoordinateAction {
     case flowDidStart(animated: Bool)
     case flowDidFinish
-    case cheeringButtonDidTap
+    case cheeringButtonDidTap(storyFeedsStream: BehaviorRelay<[StoryFeedEntity]>)
     case stoolLogButtonDidTap(stoolLogsRelay: BehaviorRelay<[StoolLogEntity]>)
     case settingButtonDidTap
     case reportButtonDidTap

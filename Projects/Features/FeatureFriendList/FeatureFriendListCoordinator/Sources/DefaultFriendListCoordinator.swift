@@ -32,8 +32,17 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
         self.navigationController = navigationController
     }
     
+    public func start(storyFeedsStream: BehaviorRelay<[StoryFeedEntity]>) {
+        coordinate(by: .showFirendList(storyFeedsStream: storyFeedsStream))
+    }
+    
+    // TODO: start 메소드를 Coordinator 프로토콜에서 제외하는 것 고려해보기
     public func start() {
-        coordinate(by: .showFirendList)
+        Logger.log(
+            message: "FriendListCoordinator의 start 메소드는 구현되지 않음. start(storyFeedsStream:) 메소드를 사용할 것",
+            category: .default,
+            type: .default
+        )
     }
     
     public func coordinate(by coordinateAction: FriendListCoordinateAction) {
@@ -41,8 +50,8 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
             switch coordinateAction {
             case .showFriendsStoolLog(let friendEntity):
                 self?.showFriendStoolLogViewController(of: friendEntity)
-            case .showFirendList:
-                self?.showFriendListViewController()
+            case .showFirendList(let storyFeedsStream):
+                self?.showFriendListViewController(storyFeedsStream: storyFeedsStream)
             case .showFriendInvitation(let toastMessageStream, let friendListUpdateStream):
                 self?.showFriendInvitationView(
                     toastMessageStream: toastMessageStream,
@@ -66,8 +75,8 @@ public final class DefaultFriendListCoordinator: FriendListCoordinator {
 }
 
 private extension DefaultFriendListCoordinator {
-    func showFriendListViewController() {
-        let viewModel = FriendListViewModel(coordinator: self)
+    func showFriendListViewController(storyFeedsStream: BehaviorRelay<[StoryFeedEntity]>) {
+        let viewModel = FriendListViewModel(coordinator: self, storyFeedsStream: storyFeedsStream)
         let viewController = FriendListViewController()
         viewController.bind(viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)

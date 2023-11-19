@@ -28,6 +28,7 @@
 "hours" = "시간";
 "minutes" = "분";
 "ago" = "전";
+"confirm" = "확인";
 
 /* 온보딩 */
 "logYourStools" = "나의 변을 기록하고";

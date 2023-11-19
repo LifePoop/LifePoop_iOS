@@ -16,7 +16,6 @@ public enum LoginCoordinateAction {
     case showLoginScene
     case showDetailForm(title: String, detailText: String)
     case popCurrentScene
-    case didTapAppleLoginButton(userAuthInfo: OAuthTokenInfo)
-    case didTapKakaoLoginButton(userAuthInfo: OAuthTokenInfo)
+    case didTapLoginButton(userAuthInfo: OAuthTokenInfo)
     case finishLoginFlow
 }

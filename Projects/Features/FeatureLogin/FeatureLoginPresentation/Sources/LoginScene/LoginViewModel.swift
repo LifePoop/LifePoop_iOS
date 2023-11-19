@@ -20,6 +20,11 @@ import Utils
 
 public final class LoginViewModel: ViewModelType {
     
+    struct LoadingIndicatorTarget {
+        let loginType: LoginType
+        let activate: Bool
+    }
+    
     public struct Input {
         let didTapKakaoLoginButton = PublishRelay<Void>()
         let didTapAppleLoginButton = PublishRelay<Void>()
@@ -30,6 +35,7 @@ public final class LoginViewModel: ViewModelType {
         let bannerImages = BehaviorRelay<[Data]>(value: [])
         let subLabelText = BehaviorRelay<String>(value: "")
         let showErrorMessage = PublishRelay<String>()
+        let showLoadingIndicator = PublishRelay<LoadingIndicatorTarget>()
     }
     
     public let input = Input()
@@ -48,75 +54,64 @@ public final class LoginViewModel: ViewModelType {
     
     public init(coordinator: LoginCoordinator?) {
         self.coordinator = coordinator
-        
+
         let fetchKakaoToken = input.didTapKakaoLoginButton
             .withUnretained(self)
-            .flatMapMaterialized { `self`, _ in
+            .do(onNext: { `self`, _ in
+                self.output.showLoadingIndicator.accept(.init(loginType: .kakao, activate: true))
+            })
+            .flatMapLatestMaterialized { `self`, _ in
                 `self`.loginUseCase.fetchOAuthAccessToken(for: .kakao)
             }
-            .share()
-        
-        fetchKakaoToken
-            .compactMap { $0.element }
-            .compactMap { $0 }
-            .withUnretained(self)
-            .flatMapLatest { `self`, oAuthTokenInfo in
-                self.loginUseCase.requestLogin(with: oAuthTokenInfo)
-                    .map { (oAuthTokenInfo: oAuthTokenInfo, loginResult: $0 ) }
-            }
-            .bind(onNext: { [weak self] oAuthTokenInfo, loginResult in
-                switch loginResult {
-                case .success(let isSuccess):
-                    isSuccess ? coordinator?.coordinate(by: .finishLoginFlow)
-                              : coordinator?.coordinate(
-                                    by: .didTapKakaoLoginButton(userAuthInfo: oAuthTokenInfo)
-                                )
-                case .failure(let error):
-                    self?.output.showErrorMessage.accept(error.localizedDescription)
-                }
+            .do(onNext: { [weak self] _ in
+                self?.output.showLoadingIndicator.accept(.init(loginType: .kakao, activate: false))
             })
-            .disposed(by: disposeBag)
-        
-        fetchKakaoToken
-            .compactMap { $0.error }
-            .map { $0.localizedDescription }
-            .bind(to: output.showErrorMessage)
-            .disposed(by: disposeBag)
+            .share()
         
         let fetchAppleToken = input.didTapAppleLoginButton
             .withUnretained(self)
+            .do(onNext: { `self`, _ in
+                self.output.showLoadingIndicator.accept(.init(loginType: .apple, activate: true))
+            })
             .flatMapMaterialized { `self`, _ in
                 `self`.loginUseCase.fetchOAuthAccessToken(for: .apple)
             }
+            .do(onNext: { [weak self] _ in
+                self?.output.showLoadingIndicator.accept(.init(loginType: .apple, activate: false))
+            })
             .share()
         
-        fetchAppleToken
+        let loginResult = Observable.merge(
+            fetchKakaoToken.compactMap { $0.element }.compactMap { $0 },
+            fetchAppleToken.compactMap { $0.element }.compactMap { $0 }
+        )
+        .withUnretained(self)
+        .flatMapLatestMaterialized { `self`, oAuthTokenInfo in
+            self.loginUseCase.requestLogin(with: oAuthTokenInfo)
+                .map { (oAuthTokenInfo: oAuthTokenInfo, isSuccess: $0 ) }
+        }
+        .share()
+        
+        loginResult
             .compactMap { $0.element }
-            .compactMap { $0 }
-            .withUnretained(self)
-            .flatMapLatest { `self`, oAuthTokenInfo in
-                self.loginUseCase.requestLogin(with: oAuthTokenInfo)
-                    .map { (oAuthTokenInfo: oAuthTokenInfo, loginResult: $0 ) }
-            }
-            .bind(onNext: { [weak self] oAuthTokenInfo, loginResult in
-                switch loginResult {
-                case .success(let isSuccess):
-                    isSuccess ? coordinator?.coordinate(by: .finishLoginFlow)
-                              : coordinator?.coordinate(
-                                    by: .didTapAppleLoginButton(userAuthInfo: oAuthTokenInfo)
-                                )
-                case .failure(let error):
-                    self?.output.showErrorMessage.accept(error.description)
+            .bind(onNext: { oAuthTokenInfo, isSuccess in
+                if isSuccess {
+                    coordinator?.coordinate(by: .finishLoginFlow)
+                } else {
+                    coordinator?.coordinate(by: .didTapLoginButton(userAuthInfo: oAuthTokenInfo))
                 }
             })
             .disposed(by: disposeBag)
         
-        fetchAppleToken
-            .compactMap { $0.error }
-            .map { $0.localizedDescription }
-            .bind(to: output.showErrorMessage)
-            .disposed(by: disposeBag)
-   
+        Observable.merge(
+            fetchAppleToken.compactMap { $0.error },
+            fetchKakaoToken.compactMap { $0.error },
+            loginResult.compactMap { $0.error }
+        )
+        .map { $0.localizedDescription }
+        .bind(to: output.showErrorMessage)
+        .disposed(by: disposeBag)
+
         input.didChangeBannerImageIndex
             .withUnretained(self)
             .filter { `self`, index in

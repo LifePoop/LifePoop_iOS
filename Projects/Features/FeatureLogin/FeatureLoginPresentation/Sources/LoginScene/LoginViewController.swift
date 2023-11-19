@@ -21,6 +21,7 @@ public final class LoginViewController: LifePoopViewController, ViewType {
         let pageControl = UIPageControl()
         pageControl.currentPageIndicatorTintColor = ColorAsset.primary.color
         pageControl.pageIndicatorTintColor = ColorAsset.gray300.color
+        pageControl.isUserInteractionEnabled = false
         return pageControl
     }()
     
@@ -92,10 +93,12 @@ public final class LoginViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
 
         kakaoTalkLoginButon.rx.tap
+            .throttle(.seconds(1), scheduler: MainScheduler.asyncInstance)
             .bind(to: input.didTapKakaoLoginButton)
             .disposed(by: disposeBag)
         
         appleLoginButton.rx.tap
+            .throttle(.seconds(1), scheduler: MainScheduler.asyncInstance)
             .bind(to: input.didTapAppleLoginButton)
             .disposed(by: disposeBag)
         
@@ -144,9 +147,30 @@ public final class LoginViewController: LifePoopViewController, ViewType {
             .bind(to: subLabel.rx.text)
             .disposed(by: disposeBag)
         
+        output.showLoadingIndicator
+            .asSignal()
+            .withUnretained(self)
+            .emit(onNext: { `self`, indicatorTarget in
+                let showLoadingIndicator = indicatorTarget.activate
+                
+                var targetButton: LoginButton
+                switch indicatorTarget.loginType {
+                case .apple: targetButton = self.appleLoginButton
+                case .kakao: targetButton = self.kakaoTalkLoginButon
+                }
+                
+                if showLoadingIndicator {
+                    targetButton.showLoadingIndicator()
+                } else {
+                    targetButton.hideLoadingIndicator()
+                }
+            })
+            .disposed(by: disposeBag)
+        
         output.showErrorMessage
-            .bind(onNext: { error in
-                print("\(error) 확인 -> 추후 확인 후 토스트 메시지 혹은 다른 시각적 요소 출력으로 대체")
+            .asSignal()
+            .emit(with: self, onNext: { `self`, error in
+                self.showSystemAlert(title: "Login Error", message: error)
             })
             .disposed(by: disposeBag)
     }
@@ -156,24 +180,24 @@ public final class LoginViewController: LifePoopViewController, ViewType {
         
         let frameHeight = view.frame.height
         let frameWidth = view.frame.width
-
+        
         view.addSubview(bannerCollectionView)
         view.addSubview(subLabel)
         view.addSubview(pageControl)
         view.addSubview(kakaoTalkLoginButon)
         view.addSubview(appleLoginButton)
-
+        
         bannerCollectionView.snp.makeConstraints { make in
             make.bottom.equalTo(view.snp.centerY).offset(51)
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(frameWidth * 0.8)
         }
-
+        
         subLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(bannerCollectionView.snp.bottom).offset(frameHeight * 0.03)
         }
-
+        
         pageControl.snp.makeConstraints { make in
             make.top.equalTo(subLabel.snp.bottom).offset(frameHeight * 0.03)
             make.centerX.equalToSuperview()

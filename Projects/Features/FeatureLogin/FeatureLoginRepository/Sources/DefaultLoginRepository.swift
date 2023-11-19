@@ -37,8 +37,8 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
     
     public func requestAuthInfoWithOAuthAccessToken(
         with oAuthTokenInfo: OAuthTokenInfo
-    ) -> Single<Result<UserAuthInfoEntity?, LoginError>> {
-        guard let loginType = oAuthTokenInfo.loginType else { return .just(.success(nil)) }
+    ) -> Single<LoginResult> {
+        guard let loginType = oAuthTokenInfo.loginType else { return .just(.failure(loginError: .userNotExists)) }
         
         return urlSessionEndpointService
             .fetchNetworkResult(
@@ -49,15 +49,14 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
             )
             .asObservable()
             .withUnretained(self)
-            // TODO: 아래 부분 DefaultUserInfoRepository와 중복되므로 추후 개선해야 함
-            .map { `self`, networkResult -> Result<UserAuthInfoEntity?, LoginError> in
+            .map { `self`, networkResult in
                 let statusCode = networkResult.statusCode
                 guard statusCode >= 200 && statusCode < 300 else {
                     switch statusCode {
                     case 400:
-                        return .failure(.oAuthLoginFailed)
+                        return .failure(loginError: .oAuthLoginFailed)
                     case 404:
-                        return .failure(.userNotExists)
+                        return .failure(loginError: .userNotExists)
                     default:
                         throw NetworkError.invalidStatusCode(code: statusCode)
                     }
@@ -77,22 +76,17 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
                     refreshToken = cookies["refresh_token"]
                 }
 
-                let updatedUserInfo = self.createUpdatedUserAuthInfo(
+                if let updatedAuthInfo = self.createUpdatedUserAuthInfo(
                     accessToken: accessToken,
                     refreshToken: refreshToken,
                     loginType: oAuthTokenInfo.loginType
-                )
-                
-                return .success(updatedUserInfo)
+                ) {
+                    return .success(authInfo: updatedAuthInfo)
+                } else {
+                    return .failure(loginError: .updatedAuthInfoNil)
+                }
             }
             .asSingle()
-            .do(onError: { error in
-                Logger.log(
-                    message: error.localizedDescription,
-                    category: .network,
-                    type: .error
-                )
-            })
     }
 }
 

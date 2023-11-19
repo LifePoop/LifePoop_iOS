@@ -115,7 +115,7 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
                 let fullString = NSMutableAttributedString()
                 
                 let imageAttachment = NSTextAttachment()
-                imageAttachment.image = UIImage(systemName: "checkmark.circle.fill")?
+                imageAttachment.image = UIImage(systemName: message.systemImageName)?
                                             .withTintColor(ColorAsset.white.color)
                 fullString.append(NSAttributedString(attachment: imageAttachment))
             

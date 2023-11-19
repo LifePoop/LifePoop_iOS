@@ -85,7 +85,7 @@ public final class InvitationCodeViewModel: ViewModelType {
         let dismissAlertView = PublishRelay<Void>()
         let showInvitationCodePopup = PublishRelay<Void>()
         let showSharingActivityView = PublishRelay<Void>()
-        let enableConfirmButton = PublishRelay<Bool>()
+        let enableConfirmButton = BehaviorRelay<Bool>(value: false)
         let hideWarningLabel = PublishRelay<Bool>()
         let warningLabelText = BehaviorRelay<String>(value: "")
     }

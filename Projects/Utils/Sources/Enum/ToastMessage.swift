@@ -98,6 +98,20 @@ public enum ToastMessage {
             }
         }
     }
+    
+    public var systemImageName: String {
+        switch self {
+        case .invitation(let invitation):
+            switch invitation {
+            case .invitationCodeCopySuccess, .invitationCodeSharingSuccess, .addingFriendSuccess:
+                return  "checkmark.circle.fill"
+            case .invitationCodeCopyFail, .invitationCodeSharingFail, .addingFriendFail:
+                return  "exclamationmark.circle.fill"
+            }
+        default:
+            return "checkmark.circle.fill"
+        }
+    }
 }
 
 public extension ToastMessage {

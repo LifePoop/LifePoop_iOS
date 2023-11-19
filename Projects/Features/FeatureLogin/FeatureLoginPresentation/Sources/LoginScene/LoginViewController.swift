@@ -168,8 +168,8 @@ public final class LoginViewController: LifePoopViewController, ViewType {
             .disposed(by: disposeBag)
         
         output.showErrorMessage
-            .asDriver(onErrorJustReturn: "")
-            .drive(with: self, onNext: { `self`, error in
+            .asSignal()
+            .emit(with: self, onNext: { `self`, error in
                 self.showSystemAlert(title: "Login Error", message: error)
             })
             .disposed(by: disposeBag)

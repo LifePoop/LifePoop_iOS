@@ -75,7 +75,7 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
             .disposed(by: disposeBag)
         
         output.enableConfirmButton
-            .asSignal()
+            .asSignal(onErrorJustReturn: false)
             .emit(to: textFieldAlertView.rx.isConfirmButtonEnabled)
             .disposed(by: disposeBag)
         

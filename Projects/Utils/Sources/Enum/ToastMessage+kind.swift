@@ -87,6 +87,13 @@ public extension ToastMessage {
             case .addingFriendFail:
                 return .failure
             }
+        case .story(let story):
+            switch story {
+            case .fetchStoryFeedFail:
+                return .failure
+            case .fetchStoryFeedSuccess:
+                return .success
+            }
         }
     }
 }

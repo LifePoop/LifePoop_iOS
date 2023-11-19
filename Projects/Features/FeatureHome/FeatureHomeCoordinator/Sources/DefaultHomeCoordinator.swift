@@ -51,8 +51,8 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
                 self?.pushHomeViewController(animated: animated)
             case .flowDidFinish:
                 self?.flowCompletionDelegate?.finishFlow()
-            case .cheeringButtonDidTap:
-                self?.startFriendListCoordinatorFlow()
+            case .cheeringButtonDidTap(let storyFeedsStream):
+                self?.startFriendListCoordinatorFlow(storyFeedsStream: storyFeedsStream)
             case .stoolLogButtonDidTap(let stoolLogsRelay):
                 self?.startStoolLogCoordinatorFlow(stoolLogsRelay: stoolLogsRelay)
             case .settingButtonDidTap:
@@ -140,10 +140,10 @@ private extension DefaultHomeCoordinator {
         navigationController.pushViewController(viewController, animated: true)
     }
     
-    func startFriendListCoordinatorFlow() {
+    func startFriendListCoordinatorFlow(storyFeedsStream: BehaviorRelay<[StoryFeedEntity]>) {
         let friendListCoordinator = DefaultFriendListCoordinator(navigationController: navigationController)
         add(childCoordinator: friendListCoordinator)
-        friendListCoordinator.start()
+        friendListCoordinator.start(storyFeedsStream: storyFeedsStream)
     }
 }
 

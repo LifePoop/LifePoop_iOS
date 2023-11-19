@@ -47,6 +47,7 @@ public final class SettingViewModel: ViewModelType {
         let dismissLogoutAlert = PublishRelay<Void>()
         let dismissWithdrawAlert = PublishRelay<Void>()
         let showErrorMessage = PublishRelay<String>()
+        let showSystemAlert = PublishRelay<(title: String, message: String)>()
     }
     
     public struct State {
@@ -215,23 +216,34 @@ public final class SettingViewModel: ViewModelType {
         .bind(to: output.dismissWithdrawAlert)
         .disposed(by: disposeBag)
         
-        input.withdrawConfirmButtonDidTap
+        let withdrawlResult = input.withdrawConfirmButtonDidTap
             .withLatestFrom(state.userLoginType)
             .compactMap { $0 }
             .withUnretained(self)
-            .flatMap { `self`, loginType in
+            .flatMapLatestMaterialized { `self`, loginType in
                 self.userInfoUseCase.requestAccountWithdrawl(for: loginType)
             }
-            .withUnretained(self)
-            .bind { `self`, isSuccess in
-                if isSuccess {
-                    self.coordinator?.coordinate(by: .withdrawConfirmButtonDidTap)
-                } else {
-                    print("탈퇴 실패 모달 띄우기")
-                }
+            .share()
+        
+        withdrawlResult
+            .compactMap { $0.element }
+            .bind { isSuccess in
+                guard isSuccess else { return }
+                coordinator?.coordinate(by: .withdrawConfirmButtonDidTap)
             }
             .disposed(by: disposeBag)
         
+        withdrawlResult
+            .compactMap { $0.error }
+            .withUnretained(self)
+            .bind { `self`, error in
+                self.output.showSystemAlert.accept((
+                    title: "탈퇴 요청 실패",
+                    message: error.localizedDescription
+                ))
+            }
+            .disposed(by: disposeBag)
+
         // MARK: - Bind State
         
         state.settingCellViewModels

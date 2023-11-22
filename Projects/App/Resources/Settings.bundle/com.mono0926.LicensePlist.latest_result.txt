@@ -1,0 +1,13 @@
+name: Alamofire, nameSpecified: Alamofire, owner: Alamofire, version: 5.8.1, source: https://github.com/Alamofire/Alamofire
+
+name: kakao-ios-sdk, nameSpecified: KakaoOpenSDK, owner: kakao, version: 2.19.0, source: https://github.com/kakao/kakao-ios-sdk
+
+name: lottie-ios, nameSpecified: Lottie, owner: airbnb, version: 4.2.0, source: https://github.com/airbnb/lottie-ios
+
+name: RxSwift, nameSpecified: RxSwift, owner: ReactiveX, version: 6.6.0, source: https://github.com/ReactiveX/RxSwift
+
+name: SnapKit, nameSpecified: SnapKit, owner: SnapKit, version: 5.6.0, source: https://github.com/SnapKit/SnapKit
+
+add-version-numbers: false
+
+LicensePlist Version: 3.25.1

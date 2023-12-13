@@ -21,12 +21,14 @@ public final class ReportViewModel: ViewModelType {
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
         let periodDidSelect = PublishRelay<Int?>()
+        let stoolLogButtonDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
         let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
         let updatePeriodSegmentTitles = PublishRelay<[String]>()
         let selectPeriodSegmentIndexAt = PublishRelay<Int>()
+        let showEmptyReportView = PublishRelay<Void>()
         let updateStoolCountInfo = PublishRelay<(nickname: String, periodText: String, count: Int)>()
         let totalSatisfaction = PublishRelay<Int>()
         let totalDissatisfaction = PublishRelay<Int>()
@@ -86,6 +88,17 @@ public final class ReportViewModel: ViewModelType {
         
         fetchedUserStoolReports
             .compactMap { $0.element }
+            .filter {
+                $0.reduce(into: true) { partialResult, report in
+                    partialResult = partialResult && report.totalStoolCount == .zero
+                }
+            }
+            .map { _ in }
+            .bind(to: output.showEmptyReportView)
+            .disposed(by: disposeBag)
+        
+        fetchedUserStoolReports
+            .compactMap { $0.element }
             .map { reports in
                 reports.reduce(into: [ReportPeriod: StoolReport]()) { (result, report) in
                     result[report.period] = report
@@ -112,16 +125,22 @@ public final class ReportViewModel: ViewModelType {
             .bind(to: state.selectedPeriod)
             .disposed(by: disposeBag)
         
+        input.stoolLogButtonDidTap
+            .bind {
+                coordinator?.coordinate(by: .stoolLogButtonDidTapInReportView)
+            }
+            .disposed(by: disposeBag)
+        
         // MARK: - Bind State
         
         let userStoolReportForSelectedPeriod = Observable.combineLatest(
             state.selectedPeriod.compactMap { $0 },
             state.userStoolReportMap
         )
-            .compactMap { selectedPeriod, userStoolReportMap in
-                userStoolReportMap[selectedPeriod]
-            }
-            .share()
+        .compactMap { selectedPeriod, userStoolReportMap in
+            userStoolReportMap[selectedPeriod]
+        }
+        .share()
         
         let userNickname = fetchedUserNickname
             .compactMap { $0.element }

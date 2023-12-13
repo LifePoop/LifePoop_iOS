@@ -58,6 +58,7 @@ public final class SignupViewModel: ViewModelType {
         let showDetailView = PublishRelay<DocumentType>()
         let selectAllConditions = PublishRelay<Bool>()
         let activateNextButton = BehaviorRelay<Bool>(value: false)
+        let showError = PublishRelay<Error>()
     }
     
     public struct State {
@@ -213,13 +214,22 @@ public final class SignupViewModel: ViewModelType {
                 )
             }
             .withUnretained(self)
-            .flatMapLatest { `self`, signupInput in
+            .flatMapLatestMaterialized { `self`, signupInput in
                 self.signupUseCase.requestSignup(signupInput)
             }
+            .share()
+        
+        requestSignup
+            .compactMap { $0.element }
             .bind(onNext: { isSuccess in
                 guard isSuccess else { return }
                 coordinator.coordinate(by: .finishLoginFlow)
             })
+            .disposed(by: disposeBag)
+        
+        requestSignup
+            .compactMap { $0.error }
+            .bind(to: output.showError)
             .disposed(by: disposeBag)
     }
     

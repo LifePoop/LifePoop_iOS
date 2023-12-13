@@ -229,6 +229,17 @@ public final class SignupViewController: LifePoopViewController, ViewType {
                 self.selectAllConditionView.configure(with: entity)
             })
             .disposed(by: disposeBag)
+        
+        output.showError
+            .observe(on: MainScheduler.asyncInstance)
+            .withUnretained(self)
+            .bind(onNext: { `self`, error in
+                self.showSystemAlert(
+                    title: "Signup Error",
+                    message: error.localizedDescription
+                )
+            })
+            .disposed(by: disposeBag)
     }
     
     public override func configureUI() {

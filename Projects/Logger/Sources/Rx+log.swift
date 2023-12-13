@@ -15,7 +15,7 @@ public extension ObservableType {
     func log(message: String, category: OSLog.LogCategory, printElement: Bool = false) -> Observable<Element> {
         return self.logErrorIfDetected(category: category, type: .error)
             .do(onNext: { element in
-            let meesage = printElement ? "\(message)\nvalue:\(element)" : message
+            let message = printElement ? "\(message)\nvalue:\(element)" : message
             Logger.log(message: message, category: category, type: .debug)
         })
     }

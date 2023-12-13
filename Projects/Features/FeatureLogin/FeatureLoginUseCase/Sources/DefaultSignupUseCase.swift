@@ -32,18 +32,13 @@ public final class DefaultSignupUseCase: SignupUseCase {
     
     /** 사용자 입력 회원가입 정보로 서버에 새로운 회원정보 추가 요청 **/
     public func requestSignup(_ signupInfo: SignupInput) -> Observable<Bool> {
-        
+
         Logger.log(
-            message: """
-            회원 가입 요청
-            nickname: \(signupInfo.nickname)
-            gender: \(signupInfo.gender.description)
-            loginType: \(signupInfo.provider.description)
-            """,
+            message: "회원가입요청:\n\(signupInfo)",
             category: .authentication,
             type: .debug
         )
-        
+
         return signupRepository.requestSignup(with: signupInfo)
             .asObservable()
             .withUnretained(self)
@@ -57,7 +52,6 @@ public final class DefaultSignupUseCase: SignupUseCase {
                         )
                     })
             }
-            .catchAndReturn(false)
     }
     
     public func fetchSelectableConditions() -> Observable<[AgreementCondition]> {

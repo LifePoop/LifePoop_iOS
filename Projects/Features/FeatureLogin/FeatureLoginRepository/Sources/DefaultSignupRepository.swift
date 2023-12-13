@@ -71,7 +71,11 @@ public final class DefaultSignupRepository: NSObject, SignupRepository {
             .logErrorIfDetected(category: .network, type: .error)
     }
 
-    private func createUserAuthInfo(accessToken: String?, refreshToken: String?, loginType: LoginType?) throws -> UserAuthInfoEntity {
+    private func createUserAuthInfo(
+        accessToken: String?,
+        refreshToken: String?,
+        loginType: LoginType?
+    ) throws -> UserAuthInfoEntity {
         guard let accessToken = accessToken,
               let refreshToken = refreshToken,
               let loginType = loginType else {

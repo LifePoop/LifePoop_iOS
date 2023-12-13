@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SignupInput {
+public struct SignupInput: CustomStringConvertible {
     
     public let nickname: String
     public let birthDate: String?
@@ -16,6 +16,15 @@ public struct SignupInput {
     public let conditions: Set<AgreementCondition>
     public let oAuthAccessToken: String
     public let provider: LoginType
+    
+    public var description: String {
+        """
+        nickname: \(nickname)
+        gender: \(gender?.description ?? "nil")
+        conditions: \(conditions)
+        loginType: \(provider.description)
+        """
+    }
     
     public init(
         nickname: String,

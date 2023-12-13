@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct AgreementCondition {
+public struct AgreementCondition: CustomStringConvertible {
     
     public enum DescriptionTextSize {
         case large
@@ -33,6 +33,10 @@ public struct AgreementCondition {
     public let descriptionTextSize: DescriptionTextSize
     public let containsDetailView: Bool
     public let selectionType: SelectionType
+    
+    public var description: String {
+        descriptionText
+    }
     
     public init(
         descriptionText: String,

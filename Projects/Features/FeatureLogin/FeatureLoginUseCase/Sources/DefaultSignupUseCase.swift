@@ -116,7 +116,8 @@ public final class DefaultSignupUseCase: SignupUseCase {
     }
     
     // TODO: 추후에 Utils에 구현된 부분으로 대체 가능한 지 확인 후 제거
-    public func createFormattedDateString(with dateString: String) -> String? {
+    public func createFormattedDateString(with dateString: String?) -> String? {
+        guard let dateString = dateString else { return nil }
         
         let inputDateFormatter = DateFormatter()
         inputDateFormatter.dateFormat = "yyMMdd"

@@ -22,15 +22,25 @@ public final class DefaultSignupRepository: NSObject, SignupRepository {
     public override init() { }
     
     public func requestSignup(with signupInput: SignupInput) -> Single<UserAuthInfoEntity> {
-        urlSessionEndpointService
+        
+        var requestBody: [String: String] = [
+            "nickname": signupInput.nickname,
+            "oAuthAccessToken": signupInput.oAuthAccessToken
+        ]
+        
+        if let birthDate = signupInput.birthDate,
+           birthDate.count > 0 {
+            requestBody["birth"] = birthDate
+        }
+        
+        if let gender = signupInput.gender {
+            requestBody["sex"] = gender.description
+        }
+
+        return urlSessionEndpointService
             .fetchNetworkResult(
                 endpoint: LifePoopLocalTarget.signup(provider: signupInput.provider.description),
-                with: [
-                    "nickname": signupInput.nickname,
-                    "birth": signupInput.birthDate,
-                    "sex": signupInput.gender.description,
-                    "oAuthAccessToken": signupInput.oAuthAccessToken
-                ]
+                with: requestBody
             )
             .map { networkResult -> UserAuthInfoEntity in
                 let statusCode = networkResult.statusCode

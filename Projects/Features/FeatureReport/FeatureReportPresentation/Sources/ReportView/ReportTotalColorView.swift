@@ -20,6 +20,13 @@ final class ReportTotalColorView: UIView {
     
     private var colorBars: [StoolCountBarView] = []
     
+    private let emptyLabel: UILabel = {
+        let label = UILabel()
+        label.text = LocalizableString.noStoolLogForPeriod
+        label.textColor = .darkGray
+        return label
+    }()
+    
     private let barViewStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -39,6 +46,7 @@ final class ReportTotalColorView: UIView {
     }
     
     func updateColorBars(with stoolColorReports: [StoolColorReport]) {
+        emptyLabel.isHidden = !stoolColorReports.isEmpty
         clearColorBars()
         stoolColorReports.forEach {
             updateColorBar(
@@ -51,9 +59,15 @@ final class ReportTotalColorView: UIView {
     
     private func layoutUI() {
         addSubview(barViewStackView)
+        addSubview(emptyLabel)
         
         barViewStackView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        
+        emptyLabel.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(16)
+            make.centerX.equalToSuperview()
         }
     }
 }

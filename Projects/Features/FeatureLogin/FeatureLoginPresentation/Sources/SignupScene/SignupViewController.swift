@@ -33,6 +33,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         let textField = ConditionalTextField()
         textField.title = LocalizableString.pleaseSetNickname
         textField.placeholder = LocalizableString.nicknamePlaceholder
+        textField.markAsEssential = true
         return textField
     }()
     
@@ -73,7 +74,11 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         return stackView
     }()
     
-    private let selectAllConditionView: ConditionSelectionView = ConditionSelectionView()
+    private let selectAllConditionView: ConditionSelectionView = {
+        let view = ConditionSelectionView()
+        view.markAsEssential = true
+        return view
+    }()
     
     private let conditionSelectionCollectionViewDelegate = ConditionSelectionCollectionViewDelegate()
     private lazy var conditionSelectionCollectionView: UICollectionView = {

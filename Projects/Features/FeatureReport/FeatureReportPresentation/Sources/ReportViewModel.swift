@@ -31,7 +31,7 @@ public final class ReportViewModel: ViewModelType {
         let totalSatisfaction = PublishRelay<Int>()
         let totalDissatisfaction = PublishRelay<Int>()
         let totalStoolColorReport = PublishRelay<[StoolColorReport]>()
-        let totalStoolShapeCountMap = PublishRelay<[StoolShape: Int]>()
+        let totalStoolShapeCountMap = PublishRelay<[(stoolShape: StoolShape, count: Int)]>()
         let totalStoolSizeCountMap = PublishRelay<[StoolShapeSize: Int]>()
         let showErrorMessage = PublishRelay<String>()
     }
@@ -151,16 +151,20 @@ public final class ReportViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         userStoolReportForSelectedPeriod
+            .map { $0.totalStoolColorCountMap }
             .withUnretained(self)
-            .map { `self`, report in
-                let (stoolColorCountMap, count) = (report.totalStoolColorCountMap, report.totalStoolCount)
-                return self.sortedColorCountsAndRatios(from: stoolColorCountMap, totalCount: count)
+            .map { `self`, totalStoolColorCountMap in
+                self.sortColorCountsAndRatios(from: totalStoolColorCountMap)
             }
             .bind(to: output.totalStoolColorReport)
             .disposed(by: disposeBag)
         
         userStoolReportForSelectedPeriod
             .map { $0.totalStoolShapeCountMap }
+            .withUnretained(self)
+            .map { `self`, stoolShapeCount in
+                self.sortStoolShapeCount(from: stoolShapeCount)
+            }
             .bind(to: output.totalStoolShapeCountMap)
             .disposed(by: disposeBag)
         
@@ -176,15 +180,31 @@ public final class ReportViewModel: ViewModelType {
 }
 
 private extension ReportViewModel {
-    func sortedColorCountsAndRatios(from colorCounts: [StoolColor: Int], totalCount: Int) -> [StoolColorReport] {
+    func sortColorCountsAndRatios(from colorCounts: [StoolColor: Int]) -> [StoolColorReport] {
         let sortedCounts = colorCounts
             .filter { $0.value > .zero }
-            .sorted { $0.value > $1.value }
+            .sorted {
+                if $0.value == $1.value {
+                    return $0.key.rawValue < $1.key.rawValue
+                }
+                return $0.value > $1.value
+            }
         
         let maxCount = sortedCounts.first?.value ?? 1
         
         return sortedCounts.map {
             StoolColorReport(color: $0.key, count: $0.value, barWidthRatio: Double($0.value) / Double(maxCount))
         }
+    }
+    
+    func sortStoolShapeCount(from stoolShapeCount: [StoolShape: Int]) -> [(StoolShape, Int)] {
+        let sortedShapeCounts = stoolShapeCount.sorted {
+            if $0.value == $1.value {
+                return $0.key.rawValue < $1.key.rawValue
+            }
+            return $0.value > $1.value
+        }
+        
+        return sortedShapeCounts
     }
 }

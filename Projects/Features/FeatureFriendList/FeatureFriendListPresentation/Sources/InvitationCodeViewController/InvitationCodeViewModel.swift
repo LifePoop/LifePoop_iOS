@@ -72,6 +72,7 @@ public final class InvitationCodeViewModel: ViewModelType {
     }
     
     public struct Input {
+        let viewDidLoad = PublishRelay<Void>()
         let viewDidAppear = PublishRelay<Void>()
         let didEnterInvitationCode = PublishRelay<String>()
         let didTapConfirmButton = PublishRelay<Void>()
@@ -84,14 +85,19 @@ public final class InvitationCodeViewModel: ViewModelType {
         let placeholder = BehaviorRelay<String>(value: "")
         let dismissAlertView = PublishRelay<Void>()
         let showInvitationCodePopup = PublishRelay<Void>()
-        let showSharingActivityView = PublishRelay<Void>()
+        let showSharingActivityView = PublishRelay<String>()
         let enableConfirmButton = BehaviorRelay<Bool>(value: false)
         let hideWarningLabel = PublishRelay<Bool>()
         let warningLabelText = BehaviorRelay<String>(value: "")
     }
     
+    public struct State {
+        let invitationText = BehaviorRelay<String>(value: "")
+    }
+    
     public let input = Input()
     public let output = Output()
+    public let state = State()
     
     private (set)var invitationCode: String = ""
     
@@ -106,11 +112,18 @@ public final class InvitationCodeViewModel: ViewModelType {
         friendListUpdateStream: PublishRelay<Void>
     ) {
         
-        friendListUseCase.invitationCode
+        input.viewDidLoad
             .withUnretained(self)
-            .bind(onNext: { `self`, invitationCode in
-                self.invitationCode = invitationCode
-            })
+            .flatMap { `self`, _ in
+                Observable.zip(
+                    self.friendListUseCase.userNickname,
+                    self.friendListUseCase.invitationCode
+                )
+            }
+            .map { userNickname, invitationCode in
+                LocalizableString.invitationText(userNickname, invitationCode)
+            }
+            .bind(to: state.invitationText)
             .disposed(by: disposeBag)
         
         input.viewDidAppear
@@ -119,7 +132,8 @@ public final class InvitationCodeViewModel: ViewModelType {
             .bind(onNext: { `self`, invitationType in
                 switch invitationType {
                 case .sharingInvitationCode:
-                    self.output.showSharingActivityView.accept(())
+                    let invitationText = self.state.invitationText.value
+                    self.output.showSharingActivityView.accept((invitationText))
                 case .enteringInvitationCode:
                     self.output.showInvitationCodePopup.accept(())
                 }

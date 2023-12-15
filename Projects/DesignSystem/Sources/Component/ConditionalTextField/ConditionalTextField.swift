@@ -23,7 +23,7 @@ final public class ConditionalTextField: UIControl {
     private let essentialMark: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        label.textColor = ColorAsset.pooPink.color
+        label.textColor = ColorAsset.primary.color
         label.text = "*"
         label.sizeToFit()
         label.isHidden = true

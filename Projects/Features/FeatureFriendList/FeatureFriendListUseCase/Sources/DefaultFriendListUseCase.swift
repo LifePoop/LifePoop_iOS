@@ -31,6 +31,11 @@ public final class DefaultFriendListUseCase: FriendListUseCase {
             .asObservable()
     }
     
+    public var userNickname: Observable<String> {
+        userInfoUseCase.userInfo
+            .map { $0?.nickname ?? "" }
+    }
+    
     public func fetchFriendList() -> Observable<[FriendEntity]> {
         userInfoUseCase.userInfo
             .compactMap { $0?.authInfo.accessToken }

@@ -20,6 +20,16 @@ final public class ConditionalTextField: UIControl {
         return label
     }()
     
+    private let essentialMark: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        label.textColor = ColorAsset.primary.color
+        label.text = "*"
+        label.sizeToFit()
+        label.isHidden = true
+        return label
+    }()
+    
     private lazy var textField: UITextField = {
         let textField = UITextField()
         textField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -105,6 +115,12 @@ final public class ConditionalTextField: UIControl {
         }
     }
     
+    public var markAsEssential: Bool = false {
+        didSet {
+            essentialMark.isHidden = !markAsEssential
+        }
+    }
+    
     public override var intrinsicContentSize: CGSize {
         let sumOfSubViewsHeight = self.subviews.reduce(0) { $0 + $1.bounds.height }
         let sumOfMargins: CGFloat = 42
@@ -140,6 +156,7 @@ final public class ConditionalTextField: UIControl {
     private func configureUI() {
         
         addSubview(titleLabel)
+        addSubview(essentialMark)
         addSubview(textField)
         addSubview(separatorView)
         addSubview(subLabel)
@@ -147,6 +164,11 @@ final public class ConditionalTextField: UIControl {
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.equalToSuperview()
+        }
+        
+        essentialMark.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.equalTo(titleLabel.snp.trailing)
         }
         
         textField.snp.makeConstraints { make in

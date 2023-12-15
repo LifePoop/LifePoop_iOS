@@ -58,10 +58,13 @@ public final class SignupViewModel: ViewModelType {
         let showDetailView = PublishRelay<DocumentType>()
         let selectAllConditions = PublishRelay<Bool>()
         let activateNextButton = BehaviorRelay<Bool>(value: false)
+        let showError = PublishRelay<Error>()
     }
     
     public struct State {
         let selectedConditions = BehaviorRelay<Set<AgreementCondition>>(value: [])
+        let gender = BehaviorRelay<GenderType?>(value: nil)
+        let birthDate = BehaviorRelay<String?>(value: nil)
     }
     
     public let input = Input()
@@ -125,14 +128,17 @@ public final class SignupViewModel: ViewModelType {
             .bind(to: output.nicknameTextFieldStatus)
             .disposed(by: disposeBag)
         
-        let birthdayInputStatus = input.didEnterBirthDate
+        let birthDateInput = input.didEnterBirthDate.share()
+        
+        birthDateInput
+            .bind(to: state.birthDate)
+            .disposed(by: disposeBag)
+        
+        birthDateInput
             .withUnretained(self)
             .flatMap { `self`, input in
                 self.signupUseCase.isBirthdayInputValid(input)
             }
-            .share()
-  
-        birthdayInputStatus
             .map { $0.status }
             .bind(to: output.birthdayTextFieldStatus)
             .disposed(by: disposeBag)
@@ -150,9 +156,16 @@ public final class SignupViewModel: ViewModelType {
             })
             .disposed(by: disposeBag)
         
-        input.didTapGenderButton
+        let genderInput = input.didTapGenderButton
             .map { GenderType.allCases[$0] }
+            .share()
+        
+        genderInput
             .bind(to: output.selectGender)
+            .disposed(by: disposeBag)
+        
+        genderInput
+            .bind(to: state.gender)
             .disposed(by: disposeBag)
 
         input.didTapLeftBarbutton
@@ -164,11 +177,11 @@ public final class SignupViewModel: ViewModelType {
         let signupInput = Observable
             .combineLatest(
                 input.didEnterNickname,
-                input.didEnterBirthDate,
-                output.selectGender,
+                state.birthDate,
+                state.gender,
                 state.selectedConditions
             )
-            .map {(nickname: $0, birthDate: $1, gender: $2, conditions: $3)}
+            .map { (nickname: $0, birthDate: $1, gender: $2, conditions: $3) }
             .share()
         
         signupInput
@@ -176,20 +189,20 @@ public final class SignupViewModel: ViewModelType {
             .flatMap { `self`, signupInfo in
                 Observable.combineLatest(
                     self.signupUseCase.isNicknameInputValid(signupInfo.nickname).map { $0.isValid },
-                    self.signupUseCase.isBirthdayInputValid(signupInfo.birthDate).map { $0.isValid },
                     self.signupUseCase.isAllEsssentialConditionsSelected(signupInfo.conditions)
                 )
             }
-            .map { $0 && $1 && $2 }
+            .map { $0 && $1 }
             .bind(to: output.activateNextButton)
             .disposed(by: disposeBag)
         
-        input.didTapNextButton
+        let requestSignup = input.didTapNextButton
             .withLatestFrom(signupInput)
             .compactMap { [weak self] nickname, birthDate, gender, conditions -> SignupInput? in
                 guard let oAuthAccessToekn = self?.authInfo.accessToken,
-                      let provider = self?.authInfo.loginType,
-                      let birthDate = self?.signupUseCase.createFormattedDateString(with: birthDate) else { return nil }
+                      let provider = self?.authInfo.loginType else { return nil }
+                
+                let birthDate = self?.signupUseCase.createFormattedDateString(with: birthDate)
 
                 return SignupInput(
                     nickname: nickname,
@@ -201,13 +214,22 @@ public final class SignupViewModel: ViewModelType {
                 )
             }
             .withUnretained(self)
-            .flatMapLatest { `self`, signupInput in
+            .flatMapLatestMaterialized { `self`, signupInput in
                 self.signupUseCase.requestSignup(signupInput)
             }
+            .share()
+        
+        requestSignup
+            .compactMap { $0.element }
             .bind(onNext: { isSuccess in
                 guard isSuccess else { return }
                 coordinator.coordinate(by: .finishLoginFlow)
             })
+            .disposed(by: disposeBag)
+        
+        requestSignup
+            .compactMap { $0.error }
+            .bind(to: output.showError)
             .disposed(by: disposeBag)
     }
     

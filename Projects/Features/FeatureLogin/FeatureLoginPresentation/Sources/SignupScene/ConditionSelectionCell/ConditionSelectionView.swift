@@ -38,6 +38,16 @@ final class ConditionSelectionView: UIControl {
         return label
     }()
     
+    private let essentialMark: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        label.textColor = ColorAsset.primary.color
+        label.text = "*"
+        label.sizeToFit()
+        label.isHidden = true
+        return label
+    }()
+    
     var isChecked: Bool = false {
         didSet {
             let image = isChecked ? selectedCheckBoxImage : deselectedCheckBoxImage
@@ -48,6 +58,12 @@ final class ConditionSelectionView: UIControl {
     var descriptionText: String = "" {
         didSet {
             descriptionLabel.text = descriptionText
+        }
+    }
+    
+    public var markAsEssential: Bool = false {
+        didSet {
+            essentialMark.isHidden = !markAsEssential
         }
     }
 
@@ -80,6 +96,7 @@ final class ConditionSelectionView: UIControl {
         
         addSubview(checkBoxImageView)
         addSubview(descriptionLabel)
+        addSubview(essentialMark)
                 
         checkBoxImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview()
@@ -89,6 +106,11 @@ final class ConditionSelectionView: UIControl {
         descriptionLabel.snp.makeConstraints { make in
             make.leading.equalTo(checkBoxImageView.snp.trailing).offset(16)
             make.centerY.equalToSuperview()
+        }
+        
+        essentialMark.snp.makeConstraints { make in
+            make.top.equalTo(descriptionLabel.snp.top)
+            make.leading.equalTo(descriptionLabel.snp.trailing)
         }
     }
     

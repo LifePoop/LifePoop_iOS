@@ -33,6 +33,7 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         let textField = ConditionalTextField()
         textField.title = LocalizableString.pleaseSetNickname
         textField.placeholder = LocalizableString.nicknamePlaceholder
+        textField.markAsEssential = true
         return textField
     }()
     
@@ -73,7 +74,11 @@ public final class SignupViewController: LifePoopViewController, ViewType {
         return stackView
     }()
     
-    private let selectAllConditionView: ConditionSelectionView = ConditionSelectionView()
+    private let selectAllConditionView: ConditionSelectionView = {
+        let view = ConditionSelectionView()
+        view.markAsEssential = true
+        return view
+    }()
     
     private let conditionSelectionCollectionViewDelegate = ConditionSelectionCollectionViewDelegate()
     private lazy var conditionSelectionCollectionView: UICollectionView = {
@@ -227,6 +232,17 @@ public final class SignupViewController: LifePoopViewController, ViewType {
             .withUnretained(self)
             .bind(onNext: { `self`, entity in
                 self.selectAllConditionView.configure(with: entity)
+            })
+            .disposed(by: disposeBag)
+        
+        output.showError
+            .observe(on: MainScheduler.asyncInstance)
+            .withUnretained(self)
+            .bind(onNext: { `self`, error in
+                self.showSystemAlert(
+                    title: "Signup Error",
+                    message: error.localizedDescription
+                )
             })
             .disposed(by: disposeBag)
     }

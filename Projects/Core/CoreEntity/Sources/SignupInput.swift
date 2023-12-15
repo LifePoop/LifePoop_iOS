@@ -8,19 +8,28 @@
 
 import Foundation
 
-public struct SignupInput {
+public struct SignupInput: CustomStringConvertible {
     
     public let nickname: String
-    public let birthDate: String
-    public let gender: GenderType
+    public let birthDate: String?
+    public let gender: GenderType?
     public let conditions: Set<AgreementCondition>
     public let oAuthAccessToken: String
     public let provider: LoginType
     
+    public var description: String {
+        """
+        nickname: \(nickname)
+        gender: \(gender?.description ?? "nil")
+        conditions: \(conditions)
+        loginType: \(provider.description)
+        """
+    }
+    
     public init(
         nickname: String,
-        birthDate: String,
-        gender: GenderType,
+        birthDate: String?,
+        gender: GenderType?,
         conditions: Set<AgreementCondition>,
         oAuthAccessToken: String,
         provider: LoginType

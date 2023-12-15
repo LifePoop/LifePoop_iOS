@@ -17,6 +17,6 @@ public protocol SignupUseCase {
     func fetchSelectableConditions() -> Observable<[AgreementCondition]>
     func isNicknameInputValid(_ input: String) -> Observable<NicknameTextInput>
     func isBirthdayInputValid(_ input: String) -> Observable<BirthdayTextInput>
-    func createFormattedDateString(with dateString: String) -> String?
+    func createFormattedDateString(with dateString: String?) -> String?
     func isAllEsssentialConditionsSelected(_ selectedConditions: Set<AgreementCondition>) -> Observable<Bool>
 }

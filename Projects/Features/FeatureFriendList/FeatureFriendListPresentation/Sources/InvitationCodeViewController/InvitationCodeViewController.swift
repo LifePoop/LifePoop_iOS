@@ -39,6 +39,10 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
     public func bindInput(to viewModel: InvitationCodeViewModel) {
         let input = viewModel.input
         
+        rx.viewDidLoad
+            .bind(to: input.viewDidLoad)
+            .disposed(by: disposeBag)
+        
         rx.viewDidAppear
             .bind(to: input.viewDidAppear)
             .disposed(by: disposeBag)
@@ -86,8 +90,8 @@ public final class InvitationCodeViewController: LifePoopViewController, ViewTyp
         
         output.showSharingActivityView
             .asSignal()
-            .emit(with: self, onNext: { `self`, _ in
-                self.showSharingPopup()
+            .emit(with: self, onNext: { `self`, invitationText in
+                self.showSharingPopup(with: invitationText)
             })
             .disposed(by: disposeBag)
         
@@ -120,12 +124,9 @@ private extension InvitationCodeViewController {
         }
     }
     
-    func showSharingPopup() {
-        guard let invitationCode = viewModel?.invitationCode,
-              !invitationCode.isEmpty else { return }
-        
+    func showSharingPopup(with invitationText: String) {
         let activityViewController = UIActivityViewController(
-            activityItems: [invitationCode],
+            activityItems: [invitationText],
             applicationActivities: nil
         )
         

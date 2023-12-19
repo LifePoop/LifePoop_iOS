@@ -21,6 +21,7 @@ public enum InvitationError: Error {
 
 public protocol FriendListUseCase {
     var invitationCode: Observable<String> { get }
+    var userNickname: Observable<String> { get }
     func fetchFriendList() -> Observable<[FriendEntity]>
     func requestAddingFriend(with invitationCode: String) -> Observable<Bool>
     func checkInvitationCodeValidation(_ invitationCode: String) -> Observable<InvitationCodeInputStatus>

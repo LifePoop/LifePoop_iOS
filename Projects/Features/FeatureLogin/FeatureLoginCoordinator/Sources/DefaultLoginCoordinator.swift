@@ -36,27 +36,25 @@ public final class DefaultLoginCoordinator: LoginCoordinator {
     }
     
     public func coordinate(by coordinateAction: LoginCoordinateAction) {
-        DispatchQueue.main.async { [weak self] in
-            switch coordinateAction {
-            case .startLoginFlow(let showLaunchScreen):
-                if showLaunchScreen {
-                    self?.showLaunchScreenViewController()
-                } else {
-                    self?.showLoginViewController(animated: true)
-                }
-            case .skipLoginFlow:
-                self?.skipFlow()
-            case .showLoginScene:
-                self?.showLoginViewController(animated: false)
-            case .showDetailForm(let title, let detailText):
-                self?.showDocumentViewController(title: title, detailText: detailText)
-            case .didTapLoginButton(let authInfo):
-                self?.showNicknameViewController(with: authInfo)
-            case .finishLoginFlow:
-                self?.finishFlow()
-            case .popCurrentScene:
-                self?.popCurrentViewController()
+        switch coordinateAction {
+        case .startLoginFlow(let showLaunchScreen):
+            if showLaunchScreen {
+                showLaunchScreenViewController()
+            } else {
+                showLoginViewController(animated: true)
             }
+        case .skipLoginFlow:
+            skipFlow()
+        case .showLoginScene:
+            showLoginViewController(animated: false)
+        case .showDetailForm(let title, let detailText):
+            showDocumentViewController(title: title, detailText: detailText)
+        case .didTapLoginButton(let authInfo):
+            showNicknameViewController(with: authInfo)
+        case .finishLoginFlow:
+            finishFlow()
+        case .popCurrentScene:
+            popCurrentViewController()
         }
     }
     
@@ -84,10 +82,12 @@ private extension DefaultLoginCoordinator {
     }
     
     func showNicknameViewController(with authInfo: OAuthTokenInfo) {
-        let viewController = SignupViewController()
-        let viewModel = SignupViewModel(coordinator: self, authInfo: authInfo)
-        viewController.bind(viewModel: viewModel)
-        navigationController.pushViewController(viewController, animated: true)
+        DispatchQueue.main.async { [weak self] in
+            let viewController = SignupViewController()
+            let viewModel = SignupViewModel(coordinator: self, authInfo: authInfo)
+            viewController.bind(viewModel: viewModel)
+            self?.navigationController.pushViewController(viewController, animated: true)
+        }
     }
     
     func showDocumentViewController(title: String, detailText: String) {

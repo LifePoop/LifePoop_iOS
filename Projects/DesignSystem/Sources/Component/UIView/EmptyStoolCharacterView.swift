@@ -1,6 +1,6 @@
 //
-//  EmptyFriendListView.swift
-//  FeatureFriendListPresentation
+//  EmptyStoolCharacterView.swift
+//  DesignSystem
 //
 //  Created by Lee, Joon Woo on 2023/06/13.
 //  Copyright © 2023 Lifepoo. All rights reserved.
@@ -10,14 +10,12 @@ import UIKit
 
 import SnapKit
 
-import DesignSystem
 import Utils
 
-final class EmptyFriendListView: UIView {
+public final class EmptyStoolCharacterView: UIView {
     
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.text = LocalizableString.inviteFriendsAndEncourageBowelMovements
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         label.textColor = ColorAsset.gray600.color
@@ -27,8 +25,9 @@ final class EmptyFriendListView: UIView {
     
     private let characterImageView = UIImageView(image: ImageAsset.friendsEmptyStatus.original)
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    public init(descriptionText: String) {
+        super.init(frame: .zero)
+        descriptionLabel.text = descriptionText
         addSubViews()
     }
     

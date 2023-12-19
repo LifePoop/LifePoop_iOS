@@ -53,6 +53,8 @@ public final class DefaultHomeCoordinator: HomeCoordinator {
                 self?.flowCompletionDelegate?.finishFlow()
             case .cheeringButtonDidTap(let storyFeedsStream):
                 self?.startFriendListCoordinatorFlow(storyFeedsStream: storyFeedsStream)
+            case .stoolLogButtonDidTapInReportView:
+                self?.navigationController.popViewController(animated: true)
             case .stoolLogButtonDidTap(let stoolLogsRelay):
                 self?.startStoolLogCoordinatorFlow(stoolLogsRelay: stoolLogsRelay)
             case .settingButtonDidTap:

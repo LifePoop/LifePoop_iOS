@@ -30,6 +30,21 @@ public final class ReportViewController: LifePoopViewController, ViewType {
     private let scrollView = UIScrollView()
     private let scrollContentView = UIView()
     
+    private let emptyReportView: EmptyStoolCharacterView = {
+        let emptyStoolCharacterView = EmptyStoolCharacterView(
+            descriptionText: LocalizableString.emptyStoolReport
+        )
+        emptyStoolCharacterView.isHidden = true
+        return emptyStoolCharacterView
+    }()
+    
+    private let stoolLogButton: LifePoopButton = {
+        let button = LifePoopButton()
+        button.setTitle(LocalizableString.logStoolDiary, for: .normal)
+        button.isHidden = true
+        return button
+    }()
+    
     private let periodSegmentControl = LifePoopSegmentControl()
     
     private let reportTotalStoolCountView = ReportTotalStoolCountView()
@@ -100,6 +115,10 @@ public final class ReportViewController: LifePoopViewController, ViewType {
         periodSegmentControl.rx.selectedSegmentIndex
             .bind(to: input.periodDidSelect)
             .disposed(by: disposeBag)
+        
+        stoolLogButton.rx.tap
+            .bind(to: input.stoolLogButtonDidTap)
+            .disposed(by: disposeBag)
     }
     
     public func bindOutput(from viewModel: ReportViewModel) {
@@ -118,6 +137,17 @@ public final class ReportViewController: LifePoopViewController, ViewType {
         output.selectPeriodSegmentIndexAt
             .asSignal()
             .emit(to: periodSegmentControl.rx.selectedSegmentIndex)
+            .disposed(by: disposeBag)
+        
+        output.showEmptyReportView
+            .asSignal()
+            .withUnretained(self)
+            .debug()
+            .emit { `self`, _ in
+                self.emptyReportView.isHidden = false
+                self.stoolLogButton.isHidden = false
+                self.scrollContentView.isHidden = true
+            }
             .disposed(by: disposeBag)
         
         output.updateStoolCountInfo
@@ -171,6 +201,8 @@ public final class ReportViewController: LifePoopViewController, ViewType {
         }
         
         view.addSubview(scrollView)
+        view.addSubview(emptyReportView)
+        view.addSubview(stoolLogButton)
         view.addSubview(loadingIndicator)
         view.addSubview(toastMessageLabel)
         scrollView.addSubview(scrollContentView)
@@ -184,6 +216,15 @@ public final class ReportViewController: LifePoopViewController, ViewType {
         scrollView.snp.makeConstraints {
             $0.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             $0.bottom.equalToSuperview()
+        }
+        
+        emptyReportView.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        stoolLogButton.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(32)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(18)
         }
         
         loadingIndicator.snp.makeConstraints { make in

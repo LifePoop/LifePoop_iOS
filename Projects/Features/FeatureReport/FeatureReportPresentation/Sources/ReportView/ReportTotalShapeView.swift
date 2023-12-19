@@ -117,18 +117,13 @@ final class ReportTotalShapeView: UIView {
 }
 
 extension ReportTotalShapeView {
-    func updateTotalShape(by stoolShapeCountMap: [StoolShape: Int]) {
-        let sortedShapes = stoolShapeCountMap.sorted { $0.value > $1.value }
-        let stoolShapeTypeCount = StoolShape.allCases.count
-        
-        guard sortedShapes.count >= stoolShapeTypeCount else { return }
-        
+    func updateTotalShape(by stoolShapeCounts: [(stoolShape: StoolShape, count: Int)]) {
         let imageViews = [firstStoolImageView, secondStoolImageView, thirdtoolImageView]
         let labels = [firstTextLabel, secondTextLabel, thirdTextLabel]
         
-        for index in 0..<stoolShapeTypeCount {
-            let shape = sortedShapes[index].key
-            let count = sortedShapes[index].value
+        for (index, item) in stoolShapeCounts.enumerated() {
+            let shape = item.stoolShape
+            let count = item.count
             setImageViewAndLabel(for: shape, count: count, imageView: imageViews[index], label: labels[index])
         }
     }

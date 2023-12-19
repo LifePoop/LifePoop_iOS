@@ -44,10 +44,12 @@ public final class FriendListViewController: LifePoopViewController, ViewType {
         return collectionView
     }()
     
-    private let emptyFriendListView: EmptyFriendListView = {
-        let emptyFriendListView = EmptyFriendListView()
-        emptyFriendListView.isHidden = true
-        return emptyFriendListView
+    private let emptyFriendListView: EmptyStoolCharacterView = {
+        let emptyStoolCharacterView = EmptyStoolCharacterView(
+            descriptionText: LocalizableString.inviteFriendsAndEncourageBowelMovements
+        )
+        emptyStoolCharacterView.isHidden = true
+        return emptyStoolCharacterView
     }()
     
     private let toastLabel: ToastLabel = {

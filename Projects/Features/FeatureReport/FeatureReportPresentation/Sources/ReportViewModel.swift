@@ -21,17 +21,19 @@ public final class ReportViewModel: ViewModelType {
     public struct Input {
         let viewDidLoad = PublishRelay<Void>()
         let periodDidSelect = PublishRelay<Int?>()
+        let stoolLogButtonDidTap = PublishRelay<Void>()
     }
     
     public struct Output {
         let shouldLoadingIndicatorAnimating = PublishRelay<Bool>()
         let updatePeriodSegmentTitles = PublishRelay<[String]>()
         let selectPeriodSegmentIndexAt = PublishRelay<Int>()
+        let showEmptyReportView = PublishRelay<Void>()
         let updateStoolCountInfo = PublishRelay<(nickname: String, periodText: String, count: Int)>()
         let totalSatisfaction = PublishRelay<Int>()
         let totalDissatisfaction = PublishRelay<Int>()
         let totalStoolColorReport = PublishRelay<[StoolColorReport]>()
-        let totalStoolShapeCountMap = PublishRelay<[StoolShape: Int]>()
+        let totalStoolShapeCountMap = PublishRelay<[(stoolShape: StoolShape, count: Int)]>()
         let totalStoolSizeCountMap = PublishRelay<[StoolShapeSize: Int]>()
         let showErrorMessage = PublishRelay<String>()
     }
@@ -86,6 +88,17 @@ public final class ReportViewModel: ViewModelType {
         
         fetchedUserStoolReports
             .compactMap { $0.element }
+            .filter {
+                $0.reduce(into: true) { partialResult, report in
+                    partialResult = partialResult && report.totalStoolCount == .zero
+                }
+            }
+            .map { _ in }
+            .bind(to: output.showEmptyReportView)
+            .disposed(by: disposeBag)
+        
+        fetchedUserStoolReports
+            .compactMap { $0.element }
             .map { reports in
                 reports.reduce(into: [ReportPeriod: StoolReport]()) { (result, report) in
                     result[report.period] = report
@@ -112,16 +125,22 @@ public final class ReportViewModel: ViewModelType {
             .bind(to: state.selectedPeriod)
             .disposed(by: disposeBag)
         
+        input.stoolLogButtonDidTap
+            .bind {
+                coordinator?.coordinate(by: .stoolLogButtonDidTapInReportView)
+            }
+            .disposed(by: disposeBag)
+        
         // MARK: - Bind State
         
         let userStoolReportForSelectedPeriod = Observable.combineLatest(
             state.selectedPeriod.compactMap { $0 },
             state.userStoolReportMap
         )
-            .compactMap { selectedPeriod, userStoolReportMap in
-                userStoolReportMap[selectedPeriod]
-            }
-            .share()
+        .compactMap { selectedPeriod, userStoolReportMap in
+            userStoolReportMap[selectedPeriod]
+        }
+        .share()
         
         let userNickname = fetchedUserNickname
             .compactMap { $0.element }
@@ -151,16 +170,20 @@ public final class ReportViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         userStoolReportForSelectedPeriod
+            .map { $0.totalStoolColorCountMap }
             .withUnretained(self)
-            .map { `self`, report in
-                let (stoolColorCountMap, count) = (report.totalStoolColorCountMap, report.totalStoolCount)
-                return self.sortedColorCountsAndRatios(from: stoolColorCountMap, totalCount: count)
+            .map { `self`, totalStoolColorCountMap in
+                self.sortColorCountsAndRatios(from: totalStoolColorCountMap)
             }
             .bind(to: output.totalStoolColorReport)
             .disposed(by: disposeBag)
         
         userStoolReportForSelectedPeriod
             .map { $0.totalStoolShapeCountMap }
+            .withUnretained(self)
+            .map { `self`, stoolShapeCount in
+                self.sortStoolShapeCount(from: stoolShapeCount)
+            }
             .bind(to: output.totalStoolShapeCountMap)
             .disposed(by: disposeBag)
         
@@ -176,15 +199,31 @@ public final class ReportViewModel: ViewModelType {
 }
 
 private extension ReportViewModel {
-    func sortedColorCountsAndRatios(from colorCounts: [StoolColor: Int], totalCount: Int) -> [StoolColorReport] {
+    func sortColorCountsAndRatios(from colorCounts: [StoolColor: Int]) -> [StoolColorReport] {
         let sortedCounts = colorCounts
             .filter { $0.value > .zero }
-            .sorted { $0.value > $1.value }
+            .sorted {
+                if $0.value == $1.value {
+                    return $0.key.rawValue < $1.key.rawValue
+                }
+                return $0.value > $1.value
+            }
         
         let maxCount = sortedCounts.first?.value ?? 1
         
         return sortedCounts.map {
             StoolColorReport(color: $0.key, count: $0.value, barWidthRatio: Double($0.value) / Double(maxCount))
         }
+    }
+    
+    func sortStoolShapeCount(from stoolShapeCount: [StoolShape: Int]) -> [(StoolShape, Int)] {
+        let sortedShapeCounts = stoolShapeCount.sorted {
+            if $0.value == $1.value {
+                return $0.key.rawValue < $1.key.rawValue
+            }
+            return $0.value > $1.value
+        }
+        
+        return sortedShapeCounts
     }
 }

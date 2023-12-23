@@ -48,6 +48,7 @@ public final class SettingViewModel: ViewModelType {
         let dismissWithdrawAlert = PublishRelay<Void>()
         let showErrorMessage = PublishRelay<String>()
         let showSystemAlert = PublishRelay<(title: String, message: String)>()
+        let blockScreen = PublishRelay<Bool>()
     }
     
     public struct State {
@@ -220,6 +221,9 @@ public final class SettingViewModel: ViewModelType {
             .withLatestFrom(state.userLoginType)
             .compactMap { $0 }
             .withUnretained(self)
+            .do(onNext: { `self`, _ in
+                self.output.blockScreen.accept(true)
+            })
             .flatMapLatestMaterialized { `self`, loginType in
                 self.userInfoUseCase.requestAccountWithdrawl(for: loginType)
             }
@@ -227,7 +231,9 @@ public final class SettingViewModel: ViewModelType {
         
         withdrawlResult
             .compactMap { $0.element }
-            .bind { isSuccess in
+            .bind { [weak self] isSuccess in
+                self?.output.blockScreen.accept(false)
+
                 guard isSuccess else { return }
                 coordinator?.coordinate(by: .withdrawConfirmButtonDidTap)
             }
@@ -235,6 +241,9 @@ public final class SettingViewModel: ViewModelType {
         
         withdrawlResult
             .compactMap { $0.error }
+            .do(onNext: { [weak self] _ in
+                self?.output.blockScreen.accept(false)
+            })
             .withUnretained(self)
             .bind { `self`, error in
                 self.output.showSystemAlert.accept((

@@ -140,6 +140,17 @@ public final class SettingViewController: LifePoopViewController, ViewType {
                 self.showSystemAlert(title: alert.title, message: alert.message)
             })
             .disposed(by: disposeBag)
+        
+        output.blockScreen
+            .asDriver(onErrorJustReturn: false)
+            .drive(with: self, onNext: { `self`, shouldBlock in
+                if shouldBlock {
+                    self.blockScreen()
+                } else {
+                    self.unblockScreen()
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     // MARK: - UI Setup

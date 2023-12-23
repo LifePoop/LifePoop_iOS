@@ -43,7 +43,16 @@ public final class ASAuthorizationControllerProxy: DelegateProxy<ASAuthorization
     }
 
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        didComplete.onCompleted()
+        if let error = error as? ASAuthorizationError {
+            switch error.errorCode {
+            case 1001:
+                didComplete.onError(AuthenticationError.appleLoginViewClosed)
+            default:
+                didComplete.onError(error)
+            }
+        } else {
+            didComplete.onError(error)
+        }
     }
 
     public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {

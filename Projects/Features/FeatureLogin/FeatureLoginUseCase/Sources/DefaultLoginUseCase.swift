@@ -72,11 +72,12 @@ public final class DefaultLoginUseCase: LoginUseCase {
     /** 소셜 로그인(Apple, Kakao) OAuth Access Token 요청*/
     public func fetchOAuthAccessToken(for loginType: LoginType) -> Observable<OAuthTokenInfo?> {
         loginRepository.fetchOAuthAccessToken(for: loginType)
-            .catchAndReturn("")
             .logErrorIfDetected(category: .authentication)
-            .filter { !$0.isEmpty }
             .asObservable()
-            .map { OAuthTokenInfo(loginType: loginType, accessToken: $0) }
+            .map {
+                if $0.isEmpty { return nil }
+                return OAuthTokenInfo(loginType: loginType, accessToken: $0)
+            }
     }
     
     public func clearUserAuthInfoIfLaunchedFirstly() -> Completable {

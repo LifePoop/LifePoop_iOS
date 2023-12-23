@@ -33,6 +33,14 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
    
     public func fetchOAuthAccessToken(for loginType: LoginType) -> Single<String> {
         authManager(for: loginType).fetchAccessToken()
+            .catch { error in
+                if let authenticationError = error as? AuthenticationError,
+                   authenticationError == .appleLoginViewClosed {
+                    return Single.just("")
+                }
+                
+                return .error(error)
+            }
     }
     
     public func requestAuthInfoWithOAuthAccessToken(

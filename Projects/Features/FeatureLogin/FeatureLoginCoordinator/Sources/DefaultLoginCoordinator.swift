@@ -75,10 +75,12 @@ private extension DefaultLoginCoordinator {
     }
     
     func showLoginViewController(animated: Bool) {
-        let viewController = LoginViewController()
-        let viewModel = LoginViewModel(coordinator: self)
-        viewController.bind(viewModel: viewModel)
-        navigationController.pushViewController(viewController, animated: animated)
+        DispatchQueue.main.async { [weak self] in
+            let viewController = LoginViewController()
+            let viewModel = LoginViewModel(coordinator: self)
+            viewController.bind(viewModel: viewModel)
+            self?.navigationController.pushViewController(viewController, animated: animated)
+        }
     }
     
     func showNicknameViewController(with authInfo: OAuthTokenInfo) {

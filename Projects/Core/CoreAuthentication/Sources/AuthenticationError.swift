@@ -19,7 +19,7 @@ public enum AuthenticationError: LocalizedError {
         case .authInfoNotInitialized:
             return "인증 정보가 초기화되지 않았습니다."
         case .kakaoTalkLoginNotAvailable:
-            return "카카오 로그인이 현재 불가합니다."
+            return "카카오 로그인이 현재 불가합니다.\n카카오톡 설치 여부를 확인해주세요"
         case .appleLoginViewClosed:
             return "사용자가 임의로 애플 로그인 창을 닫은 상태"
         case .authTokenNil:

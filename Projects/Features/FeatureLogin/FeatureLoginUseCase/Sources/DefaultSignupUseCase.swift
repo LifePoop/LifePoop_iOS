@@ -99,7 +99,7 @@ public final class DefaultSignupUseCase: SignupUseCase {
         let isValid = getBirthdayInputValidation(input)
         
         if isEmpty {
-            return Observable.just(.init(isValid: isValid, status: .defaultWarning))
+            return Observable.just(.init(isValid: true, status: .default))
         }
         switch isValid {
         case true:

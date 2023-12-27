@@ -189,10 +189,11 @@ public final class SignupViewModel: ViewModelType {
             .flatMap { `self`, signupInfo in
                 Observable.combineLatest(
                     self.signupUseCase.isNicknameInputValid(signupInfo.nickname).map { $0.isValid },
-                    self.signupUseCase.isAllEsssentialConditionsSelected(signupInfo.conditions)
+                    self.signupUseCase.isAllEsssentialConditionsSelected(signupInfo.conditions),
+                    self.signupUseCase.isBirthdayInputValid(signupInfo.birthDate ?? "").map { $0.status != .impossible }
                 )
             }
-            .map { $0 && $1 }
+            .map { $0 && $1 && $2 }
             .bind(to: output.activateNextButton)
             .disposed(by: disposeBag)
         

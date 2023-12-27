@@ -13,6 +13,7 @@ let project = Project.makeModule(
     product: .framework,
     packages: [],
     dependencies: [
+        .Project.module(.Core(.CoreAuthentication)).dependency,
         .Project.module(.Core(.CoreDIContainer)).dependency,
         .Project.module(.Core(.CoreEntity)).dependency,
         .Project.module(.Core(.CoreNetworkService)).dependency,

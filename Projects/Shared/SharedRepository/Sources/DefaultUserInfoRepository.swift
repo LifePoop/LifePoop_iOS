@@ -80,8 +80,7 @@ public final class DefaultUserInfoRepository: UserInfoRepository {
             .fetchData(endpoint: LifePoopLocalTarget.fetchUserInfo(accessToken: authInfo.accessToken))
             .decodeMap(UserInfoDTO.self)
             .map { dto in
-                guard let genderType = GenderType(stringValue: dto.sex),
-                      let profileColor = StoolColor(rawValue: dto.characterColor),
+                guard let profileColor = StoolColor(rawValue: dto.characterColor),
                       let profileShape = StoolShape(rawValue: dto.characterShape) else {
                     throw NetworkError.dataMappingError
                 }
@@ -90,7 +89,7 @@ public final class DefaultUserInfoRepository: UserInfoRepository {
                     userId: dto.id,
                     nickname: dto.nickname,
                     birthDate: dto.birth,
-                    genderType: genderType,
+                    genderType:  GenderType(stringValue:  dto.sex),
                     profileCharacter: ProfileCharacter(color: profileColor, shape: profileShape),
                     invitationCode: dto.inviteCode,
                     authInfo: authInfo

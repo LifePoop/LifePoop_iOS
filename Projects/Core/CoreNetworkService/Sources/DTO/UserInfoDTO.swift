@@ -12,8 +12,8 @@ public struct UserInfoDTO: Codable {
     
     public let id: Int
     public let nickname: String
-    public let birth: String
-    public let sex: String
+    public let birth: String?
+    public let sex: String?
     public let characterColor: Int
     public let characterShape: Int
     public let inviteCode: String

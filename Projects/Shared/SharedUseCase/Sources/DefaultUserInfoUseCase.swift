@@ -33,14 +33,26 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             .catchAndReturn(nil)
             .asObservable()
         
-        let userId: Observable<Int?> = userDefaultsRepository.getValue(for: .userId).asObservable()
-        let nickname: Observable<String?> = userDefaultsRepository.getValue(for: .userNickname).asObservable()
-        let birthDate: Observable<String?> = userDefaultsRepository.getValue(for: .birthDate).asObservable()
-        let genderType: Observable<GenderType?> = userDefaultsRepository.getValue(for: .genderType).asObservable()
-        let invitationCode: Observable<String?> = userDefaultsRepository.getValue(for: .invitationCode).asObservable()
-        let profileCharacter: Observable<ProfileCharacter?> = userDefaultsRepository.getValue(
-            for: .profileCharacter
-        ).asObservable()
+        let userId: Observable<Int?> = userDefaultsRepository
+            .getValue(for: .userId)
+            .asObservable()
+        let nickname: Observable<String?> = userDefaultsRepository
+            .getValue(for: .userNickname)
+            .asObservable()
+        let birthDate: Observable<String?> = userDefaultsRepository
+            .getValue(for: .birthDate)
+            .catchAndReturn(nil)
+            .asObservable()
+        let genderType: Observable<GenderType?> = userDefaultsRepository
+            .getValue(for: .genderType)
+            .catchAndReturn(nil)
+            .asObservable()
+        let invitationCode: Observable<String?> = userDefaultsRepository
+            .getValue(for: .invitationCode)
+            .asObservable()
+        let profileCharacter: Observable<ProfileCharacter?> = userDefaultsRepository
+            .getValue(for: .profileCharacter)
+            .asObservable()
         
         return Observable.combineLatest(
             userAuthInfo,
@@ -55,8 +67,6 @@ public final class DefaultUserInfoUseCase: UserInfoUseCase {
             guard let authInfo = authInfo,
                   let userId = userId,
                   let nickname = nickname,
-                  let birthDate = birthDate,
-                  let genderType = genderType,
                   let invitationCode = invitationCode,
                   let profileCharacter = profileCharacter else { return nil }
             

@@ -35,7 +35,8 @@ public enum GenderType: Int, CaseIterable, CustomStringConvertible, Codable {
         }
     }    
     
-    public init?(stringValue: String) {
+    public init?(stringValue: String?) {
+        guard let stringValue = stringValue else { return nil }
         switch stringValue.uppercased() {
         case "MALE":
             self = .male

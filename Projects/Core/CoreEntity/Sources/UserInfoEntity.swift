@@ -12,8 +12,8 @@ public struct UserInfoEntity: Codable {
     
     public let userId: Int
     public let nickname: String
-    public let birthDate: String
-    public let genderType: GenderType
+    public let birthDate: String?
+    public let genderType: GenderType?
     public let profileCharacter: ProfileCharacter
     public let invitationCode: String
     public let authInfo: UserAuthInfoEntity
@@ -21,8 +21,8 @@ public struct UserInfoEntity: Codable {
     public init(
         userId: Int,
         nickname: String,
-        birthDate: String,
-        genderType: GenderType,
+        birthDate: String?,
+        genderType: GenderType?,
         profileCharacter: ProfileCharacter,
         invitationCode: String,
         authInfo: UserAuthInfoEntity) {

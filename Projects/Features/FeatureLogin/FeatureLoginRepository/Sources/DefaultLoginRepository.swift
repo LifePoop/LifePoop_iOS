@@ -41,7 +41,7 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
                 
                 let isAuthenticationProcessCancelledByUser =
                     error == .kakaoLoginCancelledByUser
-                    || error == .appleLoginViewClosed
+                    || error == .appleLoginCancelledByUser
                 
                 if isAuthenticationProcessCancelledByUser {
                     return Single.just("")

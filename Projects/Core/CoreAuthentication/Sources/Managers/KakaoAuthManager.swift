@@ -40,30 +40,34 @@ public final class KakaoAuthManager: AuthManagable {
     }
         
     public func fetchAccessToken() -> Single<String> {
-        Single.create { observer in
+        return Single.create { observer in
             guard KakaoAuthManager.isAlreadyInitialized else {
                 observer(.failure(AuthenticationError.authInfoNotInitialized))
                 return Disposables.create { }
             }
-            
-            guard UserApi.isKakaoTalkLoginAvailable() else {
-                observer(.failure(AuthenticationError.kakaoTalkLoginNotAvailable))
-                return Disposables.create { }
-            }
-            
-            UserApi.shared.loginWithKakaoTalk(completion: { token, error in
+
+            let isKakaoTalkLoginAvailable = UserApi.isKakaoTalkLoginAvailable()
+            let handleAuthToken: (OAuthToken?, Error?) -> Result<String, Error> = { token, error in
                 if let error = error {
-                    observer(.failure(error))
-                    return
+                    return .failure(error)
                 }
                 
                 guard let token = token else {
-                    observer(.failure(AuthenticationError.authTokenNil))
-                    return
+                    return .failure(AuthenticationError.authTokenNil)
                 }
                 
-                observer(.success(token.accessToken))
-            })
+                return .success(token.accessToken)
+            }
+
+            if isKakaoTalkLoginAvailable {
+                UserApi.shared.loginWithKakaoTalk { token, error in
+                    observer(handleAuthToken(token, error))
+                }
+            } else {
+                UserApi.shared.loginWithKakaoAccount { token, error in
+                    observer(handleAuthToken(token, error))
+                }
+            }
             
             return Disposables.create()
         }

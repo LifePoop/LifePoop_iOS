@@ -47,29 +47,48 @@ public final class KakaoAuthManager: AuthManagable {
             }
 
             let isKakaoTalkLoginAvailable = UserApi.isKakaoTalkLoginAvailable()
-            let handleAuthToken: (OAuthToken?, Error?) -> Result<String, Error> = { token, error in
-                if let error = error {
-                    return .failure(error)
-                }
-                
-                guard let token = token else {
-                    return .failure(AuthenticationError.authTokenNil)
-                }
-                
-                return .success(token.accessToken)
-            }
 
             if isKakaoTalkLoginAvailable {
                 UserApi.shared.loginWithKakaoTalk { token, error in
-                    observer(handleAuthToken(token, error))
+                    observer(handleResult(token, error))
                 }
             } else {
                 UserApi.shared.loginWithKakaoAccount { token, error in
-                    observer(handleAuthToken(token, error))
+                    observer(handleResult(token, error))
                 }
             }
             
             return Disposables.create()
+        }
+        
+        func handleResult(_ token: OAuthToken?, _ error: Error?) -> Result<String, Error> {
+            if let error = error {
+                return .failure(handleError(error))
+            }
+            
+            guard let token = token else {
+                return .failure(AuthenticationError.authTokenNil)
+            }
+            
+            return .success(token.accessToken)
+        }
+        
+        func handleError(_ error: Error) -> Error {
+            guard let error = error as? SdkError  else {
+                return error
+            }
+            
+            switch error {
+            case .ClientFailed(let reason, _):
+                switch reason {
+                case .Cancelled:
+                    return AuthenticationError.kakaoLoginCancelledByUser
+                default:
+                    return error
+                }
+            default:
+                return error
+            }
         }
     }
 }

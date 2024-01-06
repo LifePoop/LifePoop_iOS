@@ -40,32 +40,55 @@ public final class KakaoAuthManager: AuthManagable {
     }
         
     public func fetchAccessToken() -> Single<String> {
-        Single.create { observer in
+        return Single.create { observer in
             guard KakaoAuthManager.isAlreadyInitialized else {
                 observer(.failure(AuthenticationError.authInfoNotInitialized))
                 return Disposables.create { }
             }
-            
-            guard UserApi.isKakaoTalkLoginAvailable() else {
-                observer(.failure(AuthenticationError.kakaoTalkLoginNotAvailable))
-                return Disposables.create { }
+
+            let isKakaoTalkLoginAvailable = UserApi.isKakaoTalkLoginAvailable()
+
+            if isKakaoTalkLoginAvailable {
+                UserApi.shared.loginWithKakaoTalk { token, error in
+                    observer(handleResult(token, error))
+                }
+            } else {
+                UserApi.shared.loginWithKakaoAccount { token, error in
+                    observer(handleResult(token, error))
+                }
             }
             
-            UserApi.shared.loginWithKakaoTalk(completion: { token, error in
-                if let error = error {
-                    observer(.failure(error))
-                    return
-                }
-                
-                guard let token = token else {
-                    observer(.failure(AuthenticationError.authTokenNil))
-                    return
-                }
-                
-                observer(.success(token.accessToken))
-            })
-            
             return Disposables.create()
+        }
+        
+        func handleResult(_ token: OAuthToken?, _ error: Error?) -> Result<String, Error> {
+            if let error = error {
+                return .failure(handleError(error))
+            }
+            
+            guard let token = token else {
+                return .failure(AuthenticationError.authTokenNil)
+            }
+            
+            return .success(token.accessToken)
+        }
+        
+        func handleError(_ error: Error) -> Error {
+            guard let error = error as? SdkError  else {
+                return error
+            }
+            
+            switch error {
+            case .ClientFailed(let reason, _):
+                switch reason {
+                case .Cancelled:
+                    return AuthenticationError.kakaoLoginCancelledByUser
+                default:
+                    return error
+                }
+            default:
+                return error
+            }
         }
     }
 }

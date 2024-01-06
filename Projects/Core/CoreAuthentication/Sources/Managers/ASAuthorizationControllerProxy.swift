@@ -8,8 +8,8 @@
 
 import AuthenticationServices
 
-import RxSwift
 import RxCocoa
+import RxSwift
 
 extension ASAuthorizationController: HasDelegate {
     public typealias Delegate = ASAuthorizationControllerDelegate
@@ -46,7 +46,7 @@ public final class ASAuthorizationControllerProxy: DelegateProxy<ASAuthorization
         if let error = error as? ASAuthorizationError {
             switch error.errorCode {
             case 1001:
-                didComplete.onError(AuthenticationError.appleLoginViewClosed)
+                didComplete.onError(AuthenticationError.appleLoginCancelledByUser)
             default:
                 didComplete.onError(error)
             }

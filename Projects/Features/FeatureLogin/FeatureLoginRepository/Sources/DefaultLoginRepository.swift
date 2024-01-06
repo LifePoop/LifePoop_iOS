@@ -33,9 +33,17 @@ public final class DefaultLoginRepository: NSObject, LoginRepository {
    
     public func fetchOAuthAccessToken(for loginType: LoginType) -> Single<String> {
         authManager(for: loginType).fetchAccessToken()
+            .logErrorIfDetected(category: .authentication)
             .catch { error in
-                if let authenticationError = error as? AuthenticationError,
-                   authenticationError == .appleLoginViewClosed {
+                guard let error = error as? AuthenticationError else {
+                    return .error(error)
+                }
+                
+                let isAuthenticationProcessCancelledByUser =
+                    error == .kakaoLoginCancelledByUser
+                    || error == .appleLoginCancelledByUser
+                
+                if isAuthenticationProcessCancelledByUser {
                     return Single.just("")
                 }
                 
